@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>渠道管理与流量管理 PRD 评审版</title>
+<style>
+:root { --blue:#4f6df5; --ink:#172033; --muted:#687386; --line:#e7ebf3; --soft:#f6f8fc; --card:#fff; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin:0; background:#f3f5f9; color:var(--ink); font:14px/1.72 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif; }
+a { color:var(--blue); text-decoration:none; }
+.layout { display:grid; grid-template-columns: 280px minmax(0,1fr); min-height:100vh; }
+aside { position:sticky; top:0; height:100vh; overflow:auto; padding:24px 18px; background:#111827; color:#d6deee; }
+.brand { margin-bottom:22px; }
+.brand h1 { margin:0 0 8px; font-size:20px; line-height:1.25; color:#fff; }
+.brand p { margin:0; color:#9aa6bd; font-size:12px; }
+.nav-title { margin:20px 0 8px; font-size:12px; color:#8fa0bd; letter-spacing:.08em; text-transform:uppercase; }
+.toc a { display:block; padding:6px 8px; border-radius:6px; color:#d6deee; line-height:1.35; }
+.toc a:hover { background:#1f2a3f; color:#fff; }
+.toc-l1 { font-weight:700; margin-top:6px; }
+.toc-l2 { padding-left:18px !important; font-size:13px; color:#b8c3d8 !important; }
+.toc-l3 { padding-left:30px !important; font-size:12px; color:#9aa6bd !important; }
+main { padding:32px; }
+.hero { background:linear-gradient(135deg,#405cf5,#6d8cff); color:white; padding:34px; border-radius:16px; box-shadow:0 18px 40px rgba(57,82,210,.22); margin-bottom:24px; }
+.hero h1 { margin:0 0 12px; font-size:30px; line-height:1.2; color:#fff; border:0; padding:0; }
+.hero p { margin:0; max-width:900px; color:#eef2ff; }
+.meta-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:24px; }
+.meta-card { background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.24); border-radius:10px; padding:12px; }
+.meta-card strong { display:block; font-size:18px; color:#fff; }
+.meta-card span { color:#dfe6ff; font-size:12px; }
+.doc-section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:30px; margin-bottom:22px; box-shadow:0 8px 24px rgba(18,26,43,.05); }
+.section-label { display:inline-flex; align-items:center; gap:8px; height:28px; padding:0 10px; border-radius:999px; background:#edf2ff; color:#4159d8; font-weight:700; margin-bottom:8px; }
+h1,h2,h3,h4 { color:#121a2d; line-height:1.3; scroll-margin-top:24px; }
+h1 { font-size:28px; margin:10px 0 18px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+h2 { font-size:22px; margin:34px 0 14px; padding-top:8px; }
+h3 { font-size:17px; margin:24px 0 10px; }
+h4 { font-size:15px; margin:18px 0 8px; }
+p { margin:8px 0 14px; }
+ul,ol { margin:8px 0 18px 22px; padding:0; }
+li { margin:4px 0; }
+strong { color:#101828; }
+code { background:#f0f3f8; border:1px solid #dfe5ef; border-radius:5px; padding:1px 5px; font-family:"SFMono-Regular",Consolas,Menlo,monospace; font-size:.92em; }
+pre { background:#111827; color:#dbe7ff; overflow:auto; padding:16px; border-radius:10px; }
+pre code { background:transparent; border:0; color:inherit; padding:0; }
+.table-wrap { overflow:auto; border:1px solid var(--line); border-radius:10px; margin:12px 0 22px; }
+table { width:100%; border-collapse:collapse; min-width:720px; background:#fff; }
+th,td { border-bottom:1px solid var(--line); border-right:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; white-space:normal; }
+th:last-child,td:last-child { border-right:0; }
+tr:last-child td { border-bottom:0; }
+th { background:#f7f9fd; color:#4a5568; font-weight:700; white-space:nowrap; }
+tbody tr:nth-child(even) { background:#fbfcff; }
+.diagram { background:#fbfcff; border:1px solid var(--line); border-radius:12px; padding:16px; margin:14px 0 24px; overflow:auto; }
+.footer { color:#7b8495; text-align:center; padding:18px 0 40px; }
+@media (max-width: 980px) { .layout { grid-template-columns:1fr; } aside { position:relative; height:auto; } main { padding:18px; } .meta-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .doc-section { padding:20px; } }
+@media print { body { background:#fff; } aside { display:none; } .layout { display:block; } main { padding:0; } .hero,.doc-section { box-shadow:none; border:0; border-radius:0; page-break-inside:avoid; } .doc-section { padding:18px 0; } a { color:#172033; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">
+      <h1>渠道管理与流量管理 PRD</h1>
+      <p>评审阅读版 · 更新于 2026/5/18 22:49:23 · channel-traffic-management</p>
+    </div>
+    <div class="nav-title">目录</div>
+    <nav class="toc"><a class="toc-l1" href="#prd-渠道管理与流量管理产品需求文档（PRD）">渠道管理与流量管理产品需求文档（PRD）</a>
+<a class="toc-l2" href="#prd-1.-需求背景与目标">1. 需求背景与目标</a>
+<a class="toc-l3" href="#prd-1.1-业务背景">1.1 业务背景</a>
+<a class="toc-l3" href="#prd-1.2-需求目标">1.2 需求目标</a>
+<a class="toc-l3" href="#prd-1.3-需求范围">1.3 需求范围</a>
+<a class="toc-l2" href="#prd-2.-角色与权限">2. 角色与权限</a>
+<a class="toc-l2" href="#prd-3.-功能清单">3. 功能清单</a>
+<a class="toc-l2" href="#prd-4.-页面与交互">4. 页面与交互</a>
+<a class="toc-l3" href="#prd-4.1-渠道管理-渠道列表">4.1 渠道管理-渠道列表</a>
+<a class="toc-l3" href="#prd-4.2-新增编辑渠道弹窗">4.2 新增/编辑渠道弹窗</a>
+<a class="toc-l3" href="#prd-4.3-渠道管理-应用列表">4.3 渠道管理-应用列表</a>
+<a class="toc-l3" href="#prd-4.4-新增编辑应用弹窗">4.4 新增/编辑应用弹窗</a>
+<a class="toc-l3" href="#prd-4.5-版本管理弹窗">4.5 版本管理弹窗</a>
+<a class="toc-l3" href="#prd-4.6-应用配置弹窗">4.6 应用配置弹窗</a>
+<a class="toc-l3" href="#prd-4.7-流量管理-医生流量分配">4.7 流量管理-医生流量分配</a>
+<a class="toc-l3" href="#prd-4.8-流量管理-团队流量分配">4.8 流量管理-团队流量分配</a>
+<a class="toc-l3" href="#prd-4.9-流量管理-医助流量分配">4.9 流量管理-医助流量分配</a>
+<a class="toc-l2" href="#prd-5.-核心业务规则">5. 核心业务规则</a>
+<a class="toc-l3" href="#prd-5.1-分配计算规则">5.1 分配计算规则</a>
+<a class="toc-l2" href="#prd-6.-状态与流转">6. 状态与流转</a>
+<a class="toc-l3" href="#prd-6.1-状态定义">6.1 状态定义</a>
+<a class="toc-l3" href="#prd-6.2-状态流转图">6.2 状态流转图</a>
+<a class="toc-l2" href="#prd-7.-异常处理">7. 异常处理</a>
+<a class="toc-l2" href="#prd-8.-验收标准">8. 验收标准</a>
+<a class="toc-l3" href="#prd-8.1-渠道管理">8.1 渠道管理</a>
+<a class="toc-l3" href="#prd-8.2-应用管理">8.2 应用管理</a>
+<a class="toc-l3" href="#prd-8.3-流量分配">8.3 流量分配</a>
+<a class="toc-l2" href="#prd-9.-权限说明">9. 权限说明</a>
+<a class="toc-l3" href="#prd-9.1-菜单权限">9.1 菜单权限</a>
+<a class="toc-l3" href="#prd-9.2-数据权限">9.2 数据权限</a>
+<a class="toc-l3" href="#prd-9.3-操作权限">9.3 操作权限</a>
+<a class="toc-l3" href="#prd-9.4-权限校验规则">9.4 权限校验规则</a>
+<a class="toc-l2" href="#prd-10.-修订记录">10. 修订记录</a>
+<a class="toc-l1" href="#fields-渠道管理与流量管理字段清单">渠道管理与流量管理字段清单</a>
+<a class="toc-l2" href="#fields-1.-字段类型说明">1. 字段类型说明</a>
+<a class="toc-l2" href="#fields-2.-Channel（渠道）">2. Channel（渠道）</a>
+<a class="toc-l2" href="#fields-3.-App（应用）">3. App（应用）</a>
+<a class="toc-l2" href="#fields-4.-AppVersion（应用版本）">4. AppVersion（应用版本）</a>
+<a class="toc-l2" href="#fields-5.-ChannelAppConfig（渠道应用配置）">5. ChannelAppConfig（渠道应用配置）</a>
+<a class="toc-l2" href="#fields-6.-DoctorTrafficRule（医生流量分配）">6. DoctorTrafficRule（医生流量分配）</a>
+<a class="toc-l2" href="#fields-7.-TeamTrafficRule（团队流量分配）">7. TeamTrafficRule（团队流量分配）</a>
+<a class="toc-l2" href="#fields-8.-AssistantTrafficRule（医助流量分配）">8. AssistantTrafficRule（医助流量分配）</a>
+<a class="toc-l2" href="#fields-9.-AllocationRecord（分配记录）">9. AllocationRecord（分配记录）</a>
+<a class="toc-l2" href="#fields-10.-枚举值">10. 枚举值</a>
+<a class="toc-l3" href="#fields-status（通用状态）">status（通用状态）</a>
+<a class="toc-l3" href="#fields-id_type（ID类型）">id_type（ID类型）</a>
+<a class="toc-l3" href="#fields-acquisition_method（获客方式）">acquisition_method（获客方式）</a>
+<a class="toc-l3" href="#fields-doctor_allocation_type（医生分配类型）">doctor_allocation_type（医生分配类型）</a>
+<a class="toc-l3" href="#fields-traffic_type-allocation_type（流量或医助分配类型）">traffic_type / allocation_type（流量或医助分配类型）</a>
+<a class="toc-l3" href="#fields-allocation_result（分配结果）">allocation_result（分配结果）</a>
+<a class="toc-l2" href="#fields-11.-字段约束与规则">11. 字段约束与规则</a>
+<a class="toc-l2" href="#fields-12.-修订记录">12. 修订记录</a>
+<a class="toc-l1" href="#process-渠道管理与流量管理业务流程推演">渠道管理与流量管理业务流程推演</a>
+<a class="toc-l2" href="#process-1.-业务背景">1. 业务背景</a>
+<a class="toc-l2" href="#process-2.-主流程">2. 主流程</a>
+<a class="toc-l2" href="#process-3.-配置流程">3. 配置流程</a>
+<a class="toc-l3" href="#process-3.1-渠道配置流程">3.1 渠道配置流程</a>
+<a class="toc-l3" href="#process-3.2-应用与版本配置流程">3.2 应用与版本配置流程</a>
+<a class="toc-l3" href="#process-3.3-渠道应用配置流程">3.3 渠道应用配置流程</a>
+<a class="toc-l3" href="#process-3.4-医生流量配置流程">3.4 医生流量配置流程</a>
+<a class="toc-l3" href="#process-3.5-团队流量配置流程">3.5 团队流量配置流程</a>
+<a class="toc-l3" href="#process-3.6-医助流量配置流程">3.6 医助流量配置流程</a>
+<a class="toc-l2" href="#process-4.-数据推演">4. 数据推演</a>
+<a class="toc-l3" href="#process-4.1-示例配置">4.1 示例配置</a>
+<a class="toc-l3" href="#process-4.2-新流量进入">4.2 新流量进入</a>
+<a class="toc-l3" href="#process-4.3-分配结果">4.3 分配结果</a>
+<a class="toc-l2" href="#process-5.-异常流程">5. 异常流程</a>
+<a class="toc-l2" href="#process-6.-关键节点说明">6. 关键节点说明</a>
+<a class="toc-l2" href="#process-7.-边界场景">7. 边界场景</a>
+<a class="toc-l2" href="#process-8.-修订记录">8. 修订记录</a></nav>
+  </aside>
+  <main>
+    <div class="hero">
+      <h1>渠道管理与流量管理 PRD 评审版</h1>
+      <p>合并产品需求、字段清单和业务流程，面向产品评审、研发拆解和测试用例设计。当前页面由最新 Markdown 文档重新生成。</p>
+      <div class="meta-grid">
+        <div class="meta-card"><strong>3</strong><span>核心文档合并</span></div>
+        <div class="meta-card"><strong>10</strong><span>PRD 一级章节</span></div>
+        <div class="meta-card"><strong>12</strong><span>字段章节</span></div>
+        <div class="meta-card"><strong>2026/5/18 22:49:23</strong><span>HTML 生成时间</span></div>
+      </div>
+    </div>
+    <section class="doc-section" id="section-prd"><div class="section-label">产品需求文档</div><h1 id="prd-渠道管理与流量管理产品需求文档（PRD）">渠道管理与流量管理产品需求文档（PRD）</h1><ul><li><strong>文档类型</strong>：PRD</li><li><strong>模块</strong>：渠道管理与流量管理（channel-traffic-management）</li><li><strong>版本</strong>：V1.0</li><li><strong>创建日期</strong>：2026-05-17</li><li><strong>最后更新</strong>：2026-05-17</li><li><strong>作者</strong>：产品（AI辅助起草）</li><li><strong>原型依据</strong>：渠道管理与流量管理增删改查页面截图（2026-05-17）</li><li><strong>关联上下文</strong>：<code>context/公司业务信息/1. 公司&amp;业务介绍.md</code>、<code>4. 核心业务流程详解.md</code>、<code>5. 数据模型与业务对象.md</code>、<code>6. 系统功能清单和上下游集成系统.md</code></li></ul><h2 id="prd-1.-需求背景与目标">1. 需求背景与目标</h2><h3 id="prd-1.1-业务背景">1.1 业务背景</h3><p>榕树家中医通过百度、广点通、快手、微博、第三方合作等渠道投放 AI 舌诊、问诊、快测等应用，将用户引导至 H5、小程序，再由医生、医助团队和医助承接。当前渠道与承接配置分散，流量分配依赖人工维护，运营无法稳定控制不同渠道、应用版本、医生、团队和医助之间的分配比例。</p><p>本需求建设统一的渠道管理与流量管理后台，支撑运营配置渠道、应用、应用版本、渠道和应用版本绑定关系，并按权重将新进入流量分配给医生、服务团队和医助。</p><h3 id="prd-1.2-需求目标">1.2 需求目标</h3><div class="table-wrap"><table><thead><tr><th>目标编号</th><th>目标描述</th><th>衡量方式</th></tr></thead><tbody><tr><td>G01</td><td>统一维护渠道、应用、版本及渠道-应用配置</td><td>渠道和应用配置可在后台完成增删改查与启停</td></tr><tr><td>G02</td><td>支持医生、团队、医助三层流量分配</td><td>新流量可根据配置命中医生、团队和医助</td></tr><tr><td>G03</td><td>支持权重化分配与指定医助实验流量</td><td>权重、占比展示正确；指定医助优先命中</td></tr><tr><td>G04</td><td>保障配置变更安全</td><td>必填、唯一性、启停、删除、关联校验生效</td></tr></tbody></table></div><h3 id="prd-1.3-需求范围">1.3 需求范围</h3><p><strong>包含</strong>：</p><ul><li>渠道列表、新增/编辑渠道、删除渠道、启停渠道。</li><li>应用列表、新增/编辑应用、版本管理、删除应用、启停应用。</li><li>渠道应用配置：为渠道绑定应用、版本、权重。</li><li>医生流量分配：按平台、渠道、服务医生配置权重。</li><li>团队流量分配：按平台、渠道、服务团队配置权重。</li><li>医助流量分配：团队通用、指定医助两类配置。</li><li>分配规则、异常处理、权限与验收标准。</li></ul><p><strong>不包含</strong>：</p><ul><li>医生、医助、团队主数据维护。</li><li>历史已分配用户的自动重分配。</li></ul><h2 id="prd-2.-角色与权限">2. 角色与权限</h2><div class="table-wrap"><table><thead><tr><th>角色</th><th>菜单权限</th><th>数据权限</th><th>说明</th></tr></thead><tbody><tr><td>超级管理员</td><td>渠道管理、流量管理</td><td>全部数据权限</td><td>可维护全部渠道、应用、版本和流量分配配置</td></tr><tr><td>普通角色</td><td>无</td><td>无</td><td>不展示渠道管理和流量管理菜单</td></tr><tr><td>CRM管理员</td><td>渠道管理、流量管理</td><td>全部数据权限</td><td>可维护全部渠道、应用、版本和流量分配配置</td></tr><tr><td>AIGC管理员（待确认）</td><td>渠道管理、流量管理</td><td>指定部门数据权限</td><td>可维护授权部门范围内配置</td></tr><tr><td>流量组长</td><td>流量管理-医助流量分配</td><td>本部门及以下数据权限</td><td>不展示渠道管理；不展示医生流量分配、团队流量分配</td></tr><tr><td>医生</td><td>无</td><td>无</td><td>不展示渠道管理和流量管理菜单</td></tr><tr><td>医助</td><td>无</td><td>无</td><td>不展示渠道管理和流量管理菜单</td></tr></tbody></table></div><h2 id="prd-3.-功能清单">3. 功能清单</h2><div class="table-wrap"><table><thead><tr><th>编号</th><th>功能名称</th><th>功能描述</th><th>优先级</th></tr></thead><tbody><tr><td>F01</td><td>渠道列表</td><td>按渠道名称、渠道标识、应用标识、状态筛选渠道，展示渠道基础信息和操作入口</td><td>P0</td></tr><tr><td>F02</td><td>新增/编辑渠道</td><td>维护平台名称、渠道名称、渠道标识、是否子渠道</td><td>P0</td></tr><tr><td>F03</td><td>渠道应用配置</td><td>为渠道绑定应用、版本、权重，支持移除和保存</td><td>P0</td></tr><tr><td>F04</td><td>应用列表</td><td>按应用名称、应用标识、状态筛选应用，展示版本与状态</td><td>P0</td></tr><tr><td>F05</td><td>新增/编辑应用</td><td>维护应用名称、应用标识、ID类型、ID取值、获客方式、备注、状态</td><td>P0</td></tr><tr><td>F06</td><td>版本管理</td><td>查看、添加、删除、启停应用版本</td><td>P0</td></tr><tr><td>F07</td><td>医生流量分配</td><td>按平台、渠道、服务医生筛选，配置医生权重</td><td>P0</td></tr><tr><td>F08</td><td>团队流量分配</td><td>按平台、渠道、服务团队筛选，配置服务团队权重</td><td>P0</td></tr><tr><td>F09</td><td>医助流量分配-团队通用</td><td>按团队配置医助通用承接权重</td><td>P0</td></tr><tr><td>F10</td><td>医助流量分配-指定医助</td><td>按渠道和团队配置指定医助实验流量</td><td>P0</td></tr><tr><td>F11</td><td>批量修改权重</td><td>对勾选记录批量调整权重</td><td>P1</td></tr><tr><td>F12</td><td>分配记录</td><td>记录新流量命中的渠道、应用版本、医生、团队、医助和结果</td><td>P1</td></tr></tbody></table></div><h2 id="prd-4.-页面与交互">4. 页面与交互</h2><h3 id="prd-4.1-渠道管理-渠道列表">4.1 渠道管理-渠道列表</h3><p><strong>筛选项</strong>：</p><div class="table-wrap"><table><thead><tr><th>筛选项</th><th>控件</th><th>说明</th></tr></thead><tbody><tr><td>渠道名称</td><td>输入框</td><td>支持精确或模糊查询</td></tr><tr><td>应用名称</td><td>输入框</td><td>查询已配置指定应用的渠道</td></tr><tr><td>状态</td><td>下拉单选</td><td>在线/关闭</td></tr></tbody></table></div><p><strong>列表字段</strong>：</p><div class="table-wrap"><table><thead><tr><th>列名</th><th>说明</th></tr></thead><tbody><tr><td>平台名称</td><td>渠道所属平台，如百度商业推广</td></tr><tr><td>渠道名称</td><td>渠道展示名称</td></tr><tr><td>渠道标识</td><td>系统识别来源的唯一标识</td></tr><tr><td>子渠道信息</td><td>展示子渠道关联信息，无则展示 <code>-</code></td></tr><tr><td>应用列表</td><td>已绑定应用列表，无则展示 <code>-</code></td></tr><tr><td>状态</td><td>在线/关闭</td></tr><tr><td>操作</td><td>编辑、应用配置、删除</td></tr></tbody></table></div><p><strong>交互规则</strong>：</p><ul><li>点击“添加渠道”打开新增渠道弹窗。</li><li>点击“编辑”打开编辑渠道弹窗，字段回显。</li><li>点击“应用配置”打开应用配置弹窗。</li><li>点击“删除”需二次确认，存在生效配置时禁止删除。</li></ul><h3 id="prd-4.2-新增编辑渠道弹窗">4.2 新增/编辑渠道弹窗</h3><div class="table-wrap"><table><thead><tr><th>字段</th><th>控件</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td>平台名称</td><td>下拉选择</td><td>是</td><td>选择渠道所属平台</td></tr><tr><td>渠道名称</td><td>输入框</td><td>是</td><td>示例：百度h5</td></tr><tr><td>渠道标识</td><td>输入框</td><td>是</td><td>示例：<code>baidu_doctor_h5</code></td></tr><tr><td>子渠道</td><td>单选</td><td>是</td><td>关闭/开启，默认关闭</td></tr></tbody></table></div><p>弹窗支持取消、保存。保存失败时提示具体字段或规则原因。</p><h3 id="prd-4.3-渠道管理-应用列表">4.3 渠道管理-应用列表</h3><p><strong>筛选项</strong>：应用名称、应用标识、状态。</p><p><strong>列表字段</strong>：应用名称、应用标识、ID 类型、ID 取值、获客方式、在用版本号、备注、状态、最新版本时间、操作。</p><p><strong>行内操作</strong>：编辑、版本管理、删除。</p><h3 id="prd-4.4-新增编辑应用弹窗">4.4 新增/编辑应用弹窗</h3><div class="table-wrap"><table><thead><tr><th>字段</th><th>控件</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td>应用名称</td><td>输入框</td><td>是</td><td>如问诊、快测、舌诊</td></tr><tr><td>应用标识</td><td>输入框</td><td>是</td><td>全局唯一</td></tr><tr><td>ID 类型</td><td>下拉选择</td><td>否</td><td>如第三方传入</td></tr><tr><td>ID 取值</td><td>输入框</td><td>否</td><td>对应外部 ID</td></tr><tr><td>获客方式</td><td>下拉选择</td><td>否</td><td>如链接</td></tr><tr><td>备注</td><td>多行输入</td><td>否</td><td>说明应用用途</td></tr><tr><td>状态</td><td>单选</td><td>是</td><td>开启/关闭，默认开启</td></tr></tbody></table></div><h3 id="prd-4.5-版本管理弹窗">4.5 版本管理弹窗</h3><p>展示当前应用名称、版本号、备注、状态、版本时间、操作。</p><ul><li>“添加版本”新增一行版本配置。</li><li>版本状态支持开启/关闭。</li><li>删除版本需校验是否存在生效渠道应用配置。</li><li>关闭版本不可被新增应用配置引用，历史配置保留。</li></ul><h3 id="prd-4.6-应用配置弹窗">4.6 应用配置弹窗</h3><p>展示当前设置的渠道，如“百度商业推广 / 百度商业推广 / baidu_business_promotion 渠道”。</p><div class="table-wrap"><table><thead><tr><th>字段</th><th>控件</th><th>说明</th></tr></thead><tbody><tr><td>应用名称</td><td>下拉选择</td><td>仅可选择开启状态应用</td></tr><tr><td>版本号</td><td>下拉选择</td><td>仅可选择开启状态版本</td></tr><tr><td>状态</td><td>读取</td><td>开启/关闭</td></tr><tr><td>权重</td><td>数字输入</td><td>范围 0-100</td></tr><tr><td>版本时间</td><td>文本</td><td>版本创建或更新时间</td></tr><tr><td>操作</td><td>文本按钮</td><td>移除</td></tr></tbody></table></div><p>点击“添加应用”新增配置行。保存时校验同一渠道下应用版本配置不重复。</p><h3 id="prd-4.7-流量管理-医生流量分配">4.7 流量管理-医生流量分配</h3><p><strong>筛选项</strong>：平台名称、渠道名称、渠道标识、服务医生。</p><p><strong>列表展示</strong>按渠道分组，组头展示平台名称、渠道名称、渠道标识、医生分配类型。组内展示医生名称、占比、权重、操作。</p><p><strong>操作</strong>：新增、编辑、批量修改权重、删除、单行删除。</p><p>新增/编辑弹窗字段：平台名称、渠道、医生分配方式、医生名、权重、占比。 医生分配方式支持自主分配医生/第三方指定医生。</p><h3 id="prd-4.8-流量管理-团队流量分配">4.8 流量管理-团队流量分配</h3><p><strong>筛选项</strong>：平台名称、渠道名称、服务团队。</p><p><strong>列表展示</strong>按渠道分组，组头展示平台名称、渠道名称、渠道标识、医生分配、流量类型。组内展示服务团队、占比、权重、操作。</p><p>新增/编辑弹窗字段：平台名称、渠道、流量分配类型、团队名、权重、占比。流量分配类型支持团队通用、指定医助。</p><h3 id="prd-4.9-流量管理-医助流量分配">4.9 流量管理-医助流量分配</h3><p>医助流量分配包含二级页签：团队通用、指定医助。</p><p><strong>团队通用</strong>：</p><ul><li>筛选项：服务团队、医助姓名。</li><li>列表字段：医助名称、所属团队、所属医生、占比、权重。</li><li>支持批量修改权重。</li></ul><p><strong>指定医助</strong>：</p><ul><li>筛选项：平台名称、渠道名称、服务团队、医助名。</li><li>列表按渠道与服务团队分组，组头展示平台名称、渠道名称、渠道标识、医生分配、服务团队。</li><li>组内展示医助名称、占比、权重、操作。</li><li>支持添加医助、批量修改权重、删除。</li></ul><h2 id="prd-5.-核心业务规则">5. 核心业务规则</h2><div class="table-wrap"><table><thead><tr><th>编号</th><th>规则描述</th><th>适用场景</th></tr></thead><tbody><tr><td>R01</td><td>平台名称、渠道名称、渠道标识为渠道必填项</td><td>新增/编辑渠道</td></tr><tr><td>R02</td><td>渠道标识全局唯一，不允许重复</td><td>新增/编辑渠道</td></tr><tr><td>R03</td><td>应用名称、应用标识为应用必填项，应用标识全局唯一</td><td>新增/编辑应用</td></tr><tr><td>R04</td><td>应用版本关闭后不可被新增配置引用，历史配置保留但不再承接新流量</td><td>版本启停、应用配置</td></tr><tr><td>R05</td><td>删除渠道、应用、版本、医生、团队、医助前需校验是否存在生效配置</td><td>删除操作</td></tr><tr><td>R06</td><td>权重修改保存后立即影响新进入流量，历史已分配用户不重分配</td><td>权重保存</td></tr><tr><td>R07</td><td>批量修改权重仅对已勾选记录生效</td><td>批量修改</td></tr><tr><td>R08</td><td>删除分配明细后，该对象不再参与后续分配</td><td>删除明细</td></tr></tbody></table></div><h3 id="prd-5.1-分配计算规则">5.1 分配计算规则</h3><ul><li>权重范围为 0-100，仅允许整数。</li><li>占比 = 当前明细权重 / 同一分配组内启用明细权重合计。</li><li>同一分配组内所有启用项权重合计为 0 时，规则不可启用。</li><li>单项权重为 0 时，占比展示 0%，不参与实际分配。</li><li>分配组按平台、渠道、分配类型和上级承接对象确定。</li></ul><h2 id="prd-6.-状态与流转">6. 状态与流转</h2><h3 id="prd-6.1-状态定义">6.1 状态定义</h3><div class="table-wrap"><table><thead><tr><th>对象</th><th>状态</th><th>说明</th></tr></thead><tbody><tr><td>渠道</td><td>在线</td><td>可被应用配置引用，可承接新流量</td></tr><tr><td>渠道</td><td>关闭</td><td>不可承接新流量，不可被新增配置引用</td></tr><tr><td>应用</td><td>开启</td><td>可被渠道应用配置引用</td></tr><tr><td>应用</td><td>关闭</td><td>不可被新增配置引用</td></tr><tr><td>版本</td><td>开启</td><td>可被渠道应用配置引用</td></tr><tr><td>版本</td><td>关闭</td><td>不可被新增配置引用</td></tr></tbody></table></div><h3 id="prd-6.2-状态流转图">6.2 状态流转图</h3><div class="diagram"><div class="mermaid">stateDiagram-v2
+    [*] --&gt; Enabled: 新增保存
+    Enabled --&gt; Disabled: 关闭
+    Disabled --&gt; Enabled: 开启
+    Enabled --&gt; Deleted: 删除校验通过
+    Disabled --&gt; Deleted: 删除校验通过
+    Deleted --&gt; [*]</div></div><h2 id="prd-7.-异常处理">7. 异常处理</h2><div class="table-wrap"><table><thead><tr><th>异常场景</th><th>触发条件</th><th>系统处理</th><th>提示信息</th></tr></thead><tbody><tr><td>必填缺失</td><td>保存时必填字段为空</td><td>阻止保存</td><td>请填写必填项：字段名</td></tr><tr><td>标识重复</td><td>渠道标识或应用标识已存在</td><td>阻止保存</td><td>标识已存在，请更换</td></tr><tr><td>权重越界</td><td>权重小于0或大于100</td><td>阻止保存</td><td>权重范围为0-100</td></tr><tr><td>删除受限</td><td>存在生效配置或历史承接关系</td><td>阻止删除</td><td>当前对象存在生效配置，不可删除</td></tr><tr><td>并发修改</td><td>保存时配置版本已变化</td><td>后提交失败</td><td>配置已被他人修改，请刷新后重试</td></tr></tbody></table></div><h2 id="prd-8.-验收标准">8. 验收标准</h2><h3 id="prd-8.1-渠道管理">8.1 渠道管理</h3><div class="table-wrap"><table><thead><tr><th>验收项</th><th>验收方式</th><th>通过标准</th></tr></thead><tbody><tr><td>新增渠道</td><td>构造完整和缺失字段数据</td><td>完整数据保存成功，缺失必填阻断</td></tr><tr><td>唯一性校验</td><td>使用重复渠道标识保存</td><td>保存失败并提示重复</td></tr><tr><td>列表查询</td><td>输入渠道标识、应用标识、状态</td><td>返回结果符合筛选条件</td></tr><tr><td>应用配置</td><td>为渠道绑定应用版本和权重</td><td>保存成功并在渠道列表可见</td></tr><tr><td>删除校验</td><td>删除存在生效配置的渠道</td><td>删除被阻断</td></tr></tbody></table></div><h3 id="prd-8.2-应用管理">8.2 应用管理</h3><div class="table-wrap"><table><thead><tr><th>验收项</th><th>验收方式</th><th>通过标准</th></tr></thead><tbody><tr><td>新增应用</td><td>输入应用名称和应用标识</td><td>保存成功并出现在应用列表</td></tr><tr><td>版本管理</td><td>新增、启停、删除版本</td><td>版本状态和版本时间展示正确</td></tr><tr><td>关闭版本引用</td><td>关闭版本后新增应用配置</td><td>关闭版本不可选</td></tr><tr><td>应用启停</td><td>关闭应用</td><td>不可被新增配置引用</td></tr></tbody></table></div><h3 id="prd-8.3-流量分配">8.3 流量分配</h3><div class="table-wrap"><table><thead><tr><th>验收项</th><th>验收方式</th><th>通过标准</th></tr></thead><tbody><tr><td>医生分配</td><td>配置医生权重并模拟新流量</td><td>新流量按医生规则命中</td></tr><tr><td>团队分配</td><td>配置团队权重并模拟新流量</td><td>新流量按团队规则命中</td></tr><tr><td>医助团队通用</td><td>配置团队内医助权重</td><td>占比按同组权重计算</td></tr><tr><td>指定医助优先</td><td>同时存在指定医助和团队通用</td><td>新流量优先命中指定医助</td></tr><tr><td>批量修改</td><td>勾选多条记录批量修改权重</td><td>仅勾选记录发生变化</td></tr><tr><td>删除明细</td><td>删除医生/团队/医助明细</td><td>后续新流量不再命中该对象</td></tr></tbody></table></div><h2 id="prd-9.-权限说明">9. 权限说明</h2><h3 id="prd-9.1-菜单权限">9.1 菜单权限</h3><div class="table-wrap"><table><thead><tr><th>角色</th><th>渠道管理</th><th>流量管理</th><th>医生流量分配</th><th>团队流量分配</th><th>医助流量分配</th></tr></thead><tbody><tr><td>超级管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>有</td></tr><tr><td>普通角色</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td></tr><tr><td>CRM管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>有</td></tr><tr><td>AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>有</td></tr><tr><td>流量组长</td><td>无</td><td>有</td><td>无</td><td>无</td><td>有</td></tr><tr><td>医生</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td></tr><tr><td>医助</td><td>无</td><td>无</td><td>无</td><td>无</td><td>无</td></tr></tbody></table></div><h3 id="prd-9.2-数据权限">9.2 数据权限</h3><div class="table-wrap"><table><thead><tr><th>角色</th><th>数据权限</th></tr></thead><tbody><tr><td>超级管理员</td><td>全部数据权限</td></tr><tr><td>CRM管理员</td><td>全部数据权限</td></tr><tr><td>AIGC管理员</td><td>指定部门数据权限</td></tr><tr><td>流量组长</td><td>本部门及以下数据权限</td></tr><tr><td>普通角色</td><td>无</td></tr><tr><td>医生</td><td>无</td></tr><tr><td>医助</td><td>无</td></tr></tbody></table></div><h3 id="prd-9.3-操作权限">9.3 操作权限</h3><div class="table-wrap"><table><thead><tr><th>页面/对象</th><th>可操作角色</th><th>查看</th><th>新增</th><th>编辑</th><th>删除</th><th>启停</th><th>批量修改</th></tr></thead><tbody><tr><td>渠道列表</td><td>超级管理员、CRM管理员、AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td></tr><tr><td>应用列表</td><td>超级管理员、CRM管理员、AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td></tr><tr><td>版本管理</td><td>超级管理员、CRM管理员、AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td></tr><tr><td>应用配置</td><td>超级管理员、CRM管理员、AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td><td>-</td></tr><tr><td>医生流量分配</td><td>超级管理员、CRM管理员、AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td><td>有</td></tr><tr><td>团队流量分配</td><td>超级管理员、CRM管理员、AIGC管理员</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td><td>有</td></tr><tr><td>医助流量分配</td><td>超级管理员、CRM管理员、AIGC管理员、流量组长</td><td>有</td><td>有</td><td>有</td><td>有</td><td>-</td><td>有</td></tr></tbody></table></div><h3 id="prd-9.4-权限校验规则">9.4 权限校验规则</h3><ul><li>普通角色、医生、医助不展示渠道管理和流量管理菜单。</li><li>流量组长仅展示流量管理下的医助流量分配，不展示渠道管理、医生流量分配、团队流量分配。</li><li>AIGC管理员（待确认）仅可查看和维护指定部门范围内的数据。</li><li>流量组长仅可查看和维护本部门及以下范围内的医助流量分配数据。</li><li>无菜单权限时，前端不展示入口；直接访问 URL 时，后端仍需返回无权限。</li></ul><h2 id="prd-10.-修订记录">10. 修订记录</h2><div class="table-wrap"><table><thead><tr><th>版本</th><th>日期</th><th>修订内容</th><th>修订人</th></tr></thead><tbody><tr><td>V1.0</td><td>2026-05-17</td><td>初始版本，覆盖渠道管理与流量分配 CRUD、规则、异常和验收</td><td>产品（AI辅助起草）</td></tr><tr><td>V1.1</td><td>2026-05-17</td><td>根据角色权限图更新菜单权限、数据权限和操作权限矩阵</td><td>产品（AI辅助起草）</td></tr></tbody></table></div></section>
+<section class="doc-section" id="section-fields"><div class="section-label">字段清单</div><h1 id="fields-渠道管理与流量管理字段清单">渠道管理与流量管理字段清单</h1><ul><li><strong>文档类型</strong>：字段清单</li><li><strong>模块</strong>：渠道管理与流量管理（channel-traffic-management）</li><li><strong>版本</strong>：V1.0</li><li><strong>创建日期</strong>：2026-05-17</li><li><strong>最后更新</strong>：2026-05-17</li><li><strong>作者</strong>：产品（AI辅助起草）</li></ul><h2 id="fields-1.-字段类型说明">1. 字段类型说明</h2><div class="table-wrap"><table><thead><tr><th>类型</th><th>说明</th></tr></thead><tbody><tr><td>String</td><td>字符串</td></tr><tr><td>Integer</td><td>整数</td></tr><tr><td>Decimal</td><td>小数</td></tr><tr><td>Boolean</td><td>布尔值</td></tr><tr><td>Enum</td><td>枚举</td></tr><tr><td>DateTime</td><td>日期时间</td></tr><tr><td>Ref&lt;T&gt;</td><td>关联对象</td></tr></tbody></table></div><h2 id="fields-2.-Channel（渠道）">2. Channel（渠道）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>channel_id</td><td>渠道ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>platform_name</td><td>平台名称</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>如百度商业推广、广点通</td></tr><tr><td>channel_name</td><td>渠道名称</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>渠道展示名称</td></tr><tr><td>channel_code</td><td>渠道标识</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>全局唯一，如 <code>baidu_doctor_h5</code></td></tr><tr><td>is_sub_channel</td><td>是否子渠道</td><td>Boolean</td><td>是</td><td>是</td><td>弹窗</td><td>默认 false</td></tr><tr><td>sub_channel_info</td><td>子渠道信息</td><td>String</td><td>否</td><td>是</td><td>列表</td><td>子渠道开启时填写</td></tr><tr><td>app_summary</td><td>应用列表</td><td>String</td><td>否</td><td>否</td><td>列表</td><td>已配置应用摘要</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>是</td><td>列表</td><td>ONLINE/OFFLINE</td></tr><tr><td>created_at</td><td>创建时间</td><td>DateTime</td><td>是</td><td>否</td><td>-</td><td>系统生成</td></tr><tr><td>created_by</td><td>创建人</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统获取</td></tr><tr><td>updated_at</td><td>更新时间</td><td>DateTime</td><td>是</td><td>否</td><td>-</td><td>系统维护</td></tr><tr><td>updated_by</td><td>更新人</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统获取</td></tr></tbody></table></div><h2 id="fields-3.-App（应用）">3. App（应用）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>app_id</td><td>应用ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>app_name</td><td>应用名称</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>如问诊、快测、舌诊</td></tr><tr><td>app_code</td><td>应用标识</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>全局唯一</td></tr><tr><td>id_type</td><td>ID类型</td><td>Enum</td><td>否</td><td>是</td><td>列表/弹窗</td><td>如第三方传入</td></tr><tr><td>id_value</td><td>ID取值</td><td>String</td><td>否</td><td>是</td><td>列表/弹窗</td><td>外部传入 ID</td></tr><tr><td>acquisition_method</td><td>获客方式</td><td>Enum</td><td>否</td><td>是</td><td>列表/弹窗</td><td>如链接</td></tr><tr><td>active_version_summary</td><td>在用版本号</td><td>String</td><td>否</td><td>否</td><td>列表</td><td>开启状态版本摘要</td></tr><tr><td>remark</td><td>备注</td><td>String</td><td>否</td><td>是</td><td>列表/弹窗</td><td>最长500字符</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>是</td><td>列表/弹窗</td><td>ENABLED/DISABLED</td></tr><tr><td>latest_version_time</td><td>最新版本时间</td><td>DateTime</td><td>否</td><td>否</td><td>列表</td><td>最新版本更新时间</td></tr><tr><td>created_at</td><td>创建时间</td><td>DateTime</td><td>是</td><td>否</td><td>-</td><td>系统生成</td></tr><tr><td>updated_at</td><td>更新时间</td><td>DateTime</td><td>是</td><td>否</td><td>-</td><td>系统维护</td></tr></tbody></table></div><h2 id="fields-4.-AppVersion（应用版本）">4. AppVersion（应用版本）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>version_id</td><td>版本ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>app_id</td><td>应用ID</td><td>Ref&lt;App&gt;</td><td>是</td><td>否</td><td>弹窗</td><td>所属应用</td></tr><tr><td>version_no</td><td>版本号</td><td>String</td><td>是</td><td>是</td><td>弹窗</td><td>如 default、V1、V2</td></tr><tr><td>remark</td><td>备注</td><td>String</td><td>否</td><td>是</td><td>弹窗</td><td>版本说明</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>是</td><td>弹窗</td><td>ENABLED/DISABLED</td></tr><tr><td>version_time</td><td>版本时间</td><td>DateTime</td><td>是</td><td>否</td><td>弹窗</td><td>系统生成或维护</td></tr></tbody></table></div><h2 id="fields-5.-ChannelAppConfig（渠道应用配置）">5. ChannelAppConfig（渠道应用配置）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>config_id</td><td>配置ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>channel_id</td><td>渠道ID</td><td>Ref&lt;Channel&gt;</td><td>是</td><td>否</td><td>弹窗</td><td>当前配置所属渠道</td></tr><tr><td>app_id</td><td>应用ID</td><td>Ref&lt;App&gt;</td><td>是</td><td>是</td><td>弹窗</td><td>仅可选择开启应用</td></tr><tr><td>version_id</td><td>版本ID</td><td>Ref&lt;AppVersion&gt;</td><td>是</td><td>是</td><td>弹窗</td><td>仅可选择开启版本</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>否</td><td>弹窗</td><td>继承应用/版本有效性展示</td></tr><tr><td>weight</td><td>权重</td><td>Integer</td><td>是</td><td>是</td><td>弹窗</td><td>0-100</td></tr><tr><td>version_time</td><td>版本时间</td><td>DateTime</td><td>否</td><td>否</td><td>弹窗</td><td>版本时间</td></tr></tbody></table></div><h2 id="fields-6.-DoctorTrafficRule（医生流量分配）">6. DoctorTrafficRule（医生流量分配）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>rule_id</td><td>规则ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>platform_name</td><td>平台名称</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>筛选和组头展示</td></tr><tr><td>channel_id</td><td>渠道ID</td><td>Ref&lt;Channel&gt;</td><td>是</td><td>是</td><td>列表/弹窗</td><td>关联渠道</td></tr><tr><td>channel_name</td><td>渠道名称</td><td>String</td><td>是</td><td>否</td><td>列表</td><td>冗余展示</td></tr><tr><td>channel_code</td><td>渠道标识</td><td>String</td><td>是</td><td>否</td><td>列表</td><td>冗余展示</td></tr><tr><td>doctor_allocation_type</td><td>医生分配类型</td><td>Enum</td><td>是</td><td>是</td><td>列表/弹窗</td><td>WEIGHTED/SPECIFIED</td></tr><tr><td>doctor_id</td><td>医生ID</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>服务医生</td></tr><tr><td>doctor_name</td><td>医生名称</td><td>String</td><td>是</td><td>否</td><td>列表</td><td>展示字段</td></tr><tr><td>weight</td><td>权重</td><td>Integer</td><td>是</td><td>是</td><td>列表/弹窗</td><td>0-100</td></tr><tr><td>ratio</td><td>占比</td><td>Decimal</td><td>是</td><td>否</td><td>列表/弹窗</td><td>系统计算</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>否</td><td>-</td><td>ACTIVE/DELETED</td></tr></tbody></table></div><h2 id="fields-7.-TeamTrafficRule（团队流量分配）">7. TeamTrafficRule（团队流量分配）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>rule_id</td><td>规则ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>platform_name</td><td>平台名称</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>筛选和组头展示</td></tr><tr><td>channel_id</td><td>渠道ID</td><td>Ref&lt;Channel&gt;</td><td>是</td><td>是</td><td>列表/弹窗</td><td>关联渠道</td></tr><tr><td>doctor_id</td><td>医生ID</td><td>String</td><td>否</td><td>是</td><td>列表</td><td>上级医生</td></tr><tr><td>doctor_name</td><td>医生名称</td><td>String</td><td>否</td><td>否</td><td>列表</td><td>展示字段</td></tr><tr><td>traffic_type</td><td>流量类型</td><td>Enum</td><td>是</td><td>是</td><td>列表/弹窗</td><td>TEAM_GENERAL/SPECIFIED_ASSISTANT</td></tr><tr><td>team_id</td><td>服务团队ID</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>服务团队</td></tr><tr><td>team_name</td><td>服务团队</td><td>String</td><td>是</td><td>否</td><td>列表</td><td>展示字段</td></tr><tr><td>weight</td><td>权重</td><td>Integer</td><td>是</td><td>是</td><td>列表/弹窗</td><td>0-100</td></tr><tr><td>ratio</td><td>占比</td><td>Decimal</td><td>是</td><td>否</td><td>列表/弹窗</td><td>系统计算</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>否</td><td>-</td><td>ACTIVE/DELETED</td></tr></tbody></table></div><h2 id="fields-8.-AssistantTrafficRule（医助流量分配）">8. AssistantTrafficRule（医助流量分配）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>可编辑</th><th>展示位置</th><th>说明</th></tr></thead><tbody><tr><td>rule_id</td><td>规则ID</td><td>String</td><td>是</td><td>否</td><td>-</td><td>系统生成唯一标识</td></tr><tr><td>allocation_type</td><td>分配类型</td><td>Enum</td><td>是</td><td>是</td><td>列表/弹窗</td><td>TEAM_GENERAL/SPECIFIED_ASSISTANT</td></tr><tr><td>platform_name</td><td>平台名称</td><td>String</td><td>否</td><td>是</td><td>指定医助</td><td>指定医助必填</td></tr><tr><td>channel_id</td><td>渠道ID</td><td>Ref&lt;Channel&gt;</td><td>否</td><td>是</td><td>指定医助</td><td>指定医助必填</td></tr><tr><td>team_id</td><td>服务团队ID</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>所属服务团队</td></tr><tr><td>team_name</td><td>所属团队</td><td>String</td><td>是</td><td>否</td><td>列表</td><td>展示字段</td></tr><tr><td>doctor_id</td><td>所属医生ID</td><td>String</td><td>否</td><td>否</td><td>列表</td><td>所属医生</td></tr><tr><td>doctor_name</td><td>所属医生</td><td>String</td><td>否</td><td>否</td><td>列表</td><td>展示字段</td></tr><tr><td>assistant_id</td><td>医助ID</td><td>String</td><td>是</td><td>是</td><td>列表/弹窗</td><td>服务医助</td></tr><tr><td>assistant_name</td><td>医助名称</td><td>String</td><td>是</td><td>否</td><td>列表</td><td>展示字段</td></tr><tr><td>weight</td><td>权重</td><td>Integer</td><td>是</td><td>是</td><td>列表/弹窗</td><td>0-100</td></tr><tr><td>ratio</td><td>占比</td><td>Decimal</td><td>是</td><td>否</td><td>列表/弹窗</td><td>系统计算</td></tr><tr><td>status</td><td>状态</td><td>Enum</td><td>是</td><td>否</td><td>-</td><td>ACTIVE/DELETED</td></tr></tbody></table></div><h2 id="fields-9.-AllocationRecord（分配记录）">9. AllocationRecord（分配记录）</h2><div class="table-wrap"><table><thead><tr><th>字段英文名</th><th>字段中文名</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td>record_id</td><td>记录ID</td><td>String</td><td>是</td><td>系统生成唯一标识</td></tr><tr><td>lead_id</td><td>线索ID</td><td>String</td><td>是</td><td>新进入流量或线索标识</td></tr><tr><td>user_id</td><td>用户ID</td><td>String</td><td>否</td><td>已识别用户</td></tr><tr><td>channel_id</td><td>渠道ID</td><td>Ref&lt;Channel&gt;</td><td>是</td><td>命中渠道</td></tr><tr><td>app_id</td><td>应用ID</td><td>Ref&lt;App&gt;</td><td>否</td><td>命中应用</td></tr><tr><td>version_id</td><td>版本ID</td><td>Ref&lt;AppVersion&gt;</td><td>否</td><td>命中版本</td></tr><tr><td>doctor_id</td><td>医生ID</td><td>String</td><td>否</td><td>分配医生</td></tr><tr><td>team_id</td><td>服务团队ID</td><td>String</td><td>否</td><td>分配团队</td></tr><tr><td>assistant_id</td><td>医助ID</td><td>String</td><td>否</td><td>分配医助</td></tr><tr><td>matched_rule_ids</td><td>命中规则ID</td><td>String</td><td>否</td><td>多个规则用逗号分隔</td></tr><tr><td>allocation_result</td><td>分配结果</td><td>Enum</td><td>是</td><td>SUCCESS/FAILED/MANUAL_PENDING</td></tr><tr><td>fail_reason</td><td>失败原因</td><td>String</td><td>否</td><td>失败或人工待处理原因</td></tr><tr><td>allocated_at</td><td>分配时间</td><td>DateTime</td><td>是</td><td>系统生成</td></tr></tbody></table></div><h2 id="fields-10.-枚举值">10. 枚举值</h2><h3 id="fields-status（通用状态）">status（通用状态）</h3><div class="table-wrap"><table><thead><tr><th>枚举值</th><th>说明</th></tr></thead><tbody><tr><td>ENABLED</td><td>开启</td></tr><tr><td>DISABLED</td><td>关闭</td></tr><tr><td>ONLINE</td><td>在线</td></tr><tr><td>OFFLINE</td><td>关闭</td></tr><tr><td>ACTIVE</td><td>生效</td></tr><tr><td>DELETED</td><td>已删除/停用</td></tr></tbody></table></div><h3 id="fields-id_type（ID类型）">id_type（ID类型）</h3><div class="table-wrap"><table><thead><tr><th>枚举值</th><th>说明</th></tr></thead><tbody><tr><td>THIRD_PARTY</td><td>第三方传入</td></tr><tr><td>INTERNAL</td><td>内部生成</td></tr></tbody></table></div><h3 id="fields-acquisition_method（获客方式）">acquisition_method（获客方式）</h3><div class="table-wrap"><table><thead><tr><th>枚举值</th><th>说明</th></tr></thead><tbody><tr><td>LINK</td><td>链接</td></tr><tr><td>QR_CODE</td><td>二维码</td></tr><tr><td>API</td><td>API传入</td></tr></tbody></table></div><h3 id="fields-doctor_allocation_type（医生分配类型）">doctor_allocation_type（医生分配类型）</h3><div class="table-wrap"><table><thead><tr><th>枚举值</th><th>说明</th></tr></thead><tbody><tr><td>WEIGHTED</td><td>自主分配医生/按权重分配医生</td></tr><tr><td>SPECIFIED</td><td>指定医生</td></tr></tbody></table></div><h3 id="fields-traffic_type-allocation_type（流量或医助分配类型）">traffic_type / allocation_type（流量或医助分配类型）</h3><div class="table-wrap"><table><thead><tr><th>枚举值</th><th>说明</th></tr></thead><tbody><tr><td>TEAM_GENERAL</td><td>团队通用</td></tr><tr><td>SPECIFIED_ASSISTANT</td><td>指定医助</td></tr></tbody></table></div><h3 id="fields-allocation_result（分配结果）">allocation_result（分配结果）</h3><div class="table-wrap"><table><thead><tr><th>枚举值</th><th>说明</th></tr></thead><tbody><tr><td>SUCCESS</td><td>分配成功</td></tr><tr><td>FAILED</td><td>分配失败</td></tr><tr><td>MANUAL_PENDING</td><td>待人工分配</td></tr></tbody></table></div><h2 id="fields-11.-字段约束与规则">11. 字段约束与规则</h2><ul><li><code>channel_code</code> 全局唯一，建议仅允许英文、数字、下划线。</li><li><code>app_code</code> 全局唯一，建议仅允许英文、数字、下划线。</li><li><code>version_no</code> 在同一应用下唯一。</li><li><code>weight</code> 仅允许 0-100 的整数。</li><li><code>ratio</code> 由系统计算，不允许手动编辑。</li><li>关闭状态的渠道、应用、版本不可被新增配置引用。</li><li>删除对象前必须校验是否存在生效配置。</li><li>权重修改只影响新进入流量，不追溯历史分配记录。</li></ul><h2 id="fields-12.-修订记录">12. 修订记录</h2><div class="table-wrap"><table><thead><tr><th>版本</th><th>日期</th><th>修订内容</th><th>修订人</th></tr></thead><tbody><tr><td>V1.0</td><td>2026-05-17</td><td>初始版本</td><td>产品（AI辅助起草）</td></tr></tbody></table></div></section>
+<section class="doc-section" id="section-process"><div class="section-label">业务流程</div><h1 id="process-渠道管理与流量管理业务流程推演">渠道管理与流量管理业务流程推演</h1><ul><li><strong>文档类型</strong>：业务流程推演</li><li><strong>业务场景</strong>：渠道识别与医生/团队/医助流量分配</li><li><strong>版本</strong>：V1.0</li><li><strong>创建日期</strong>：2026-05-17</li><li><strong>分析人员</strong>：产品（AI辅助起草）</li></ul><h2 id="process-1.-业务背景">1. 业务背景</h2><p>流量运营在渠道管理中维护平台、渠道、应用和版本，在流量管理中配置医生、服务团队和医助的承接权重。用户从广告、合作入口或第三方平台进入舌诊、问诊、快测等应用后，系统需要识别来源并自动完成分配，减少人工派单，提高渠道承接效率。</p><h2 id="process-2.-主流程">2. 主流程</h2><div class="diagram"><div class="mermaid">graph TD
+    A[新流量进入] --&gt; B[识别平台与渠道]
+    B --&gt; C{渠道是否在线}
+    C --&gt;|否| X[进入待人工分配]
+    C --&gt;|是| D[识别应用与版本]
+    D --&gt; E{应用和版本是否开启}
+    E --&gt;|否| X
+    E --&gt;|是| F[匹配医生分配规则]
+    F --&gt; G{是否命中指定医生}
+    G --&gt;|是| H[分配指定医生]
+    G --&gt;|否| I[按医生权重分配]
+    H --&gt; J[匹配团队分配规则]
+    I --&gt; J
+    J --&gt; K{是否为指定医助流量}
+    K --&gt;|是| L[优先匹配指定医助]
+    K --&gt;|否| M[按团队通用规则分配服务团队]
+    M --&gt; N[按团队内医助权重分配]
+    L --&gt; O{是否有可用医助}
+    N --&gt; O
+    O --&gt;|是| P[写入分配记录]
+    O --&gt;|否| X
+    P --&gt; Q[同步CRM或企微承接关系]
+    Q --&gt; R[流程结束]
+    X --&gt; Y[记录失败原因和待处理任务]
+    Y --&gt; R</div></div><h2 id="process-3.-配置流程">3. 配置流程</h2><h3 id="process-3.1-渠道配置流程">3.1 渠道配置流程</h3><ol><li>运营进入渠道管理-渠道列表。</li><li>点击“添加渠道”，填写平台名称、渠道名称、渠道标识、是否子渠道。</li><li>系统校验必填项和渠道标识唯一性。</li><li>保存成功后，渠道默认在线，可在列表中编辑、配置应用或删除。</li></ol><h3 id="process-3.2-应用与版本配置流程">3.2 应用与版本配置流程</h3><ol><li>运营进入渠道管理-应用列表。</li><li>点击“添加应用”，填写应用名称、应用标识、ID 类型、ID 取值、获客方式、备注、状态。</li><li>保存应用后，通过“版本管理”维护版本号、备注、状态。</li><li>开启状态的应用和版本可用于渠道应用配置。</li></ol><h3 id="process-3.3-渠道应用配置流程">3.3 渠道应用配置流程</h3><ol><li>运营在渠道列表点击“应用配置”。</li><li>系统展示当前渠道信息。</li><li>运营添加应用，选择应用名称、版本号并填写权重。</li><li>系统校验应用和版本均为开启状态，且同一渠道下应用版本不重复。</li><li>保存后，新流量可按渠道识别到对应应用和版本。</li></ol><h3 id="process-3.4-医生流量配置流程">3.4 医生流量配置流程</h3><ol><li>运营进入流量管理-医生流量分配。</li><li>点击“新增”，选择平台名称、渠道和医生分配方式。</li><li>选择医生并填写权重。</li><li>系统计算同组占比。</li><li>保存后，新流量按指定医生或医生权重命中服务医生。</li></ol><h3 id="process-3.5-团队流量配置流程">3.5 团队流量配置流程</h3><ol><li>运营进入流量管理-团队流量分配。</li><li>点击“新增”，选择平台名称、渠道和流量分配类型。</li><li>选择服务团队并填写权重。</li><li>系统计算同组占比。</li><li>保存后，新流量按团队通用或指定医助类型进入下一层分配。</li></ol><h3 id="process-3.6-医助流量配置流程">3.6 医助流量配置流程</h3><ol><li>运营进入流量管理-医助流量分配。</li><li>若配置团队内通用承接，进入“团队通用”页签，按服务团队筛选医助并维护权重。</li><li>若配置特殊渠道或实验流量，进入“指定医助”页签，选择平台、渠道、服务团队和医助并维护权重。</li><li>系统按同组权重计算占比。</li><li>保存后，指定医助规则优先于团队通用规则。</li></ol><h2 id="process-4.-数据推演">4. 数据推演</h2><h3 id="process-4.1-示例配置">4.1 示例配置</h3><pre><code>{
+  "channel": {
+    "platform_name": "百度",
+    "channel_name": "百度舌诊H5",
+    "channel_code": "baidu_h5",
+    "status": "ONLINE"
+  },
+  "app": {
+    "app_name": "舌诊",
+    "app_code": "1",
+    "version_no": "V2",
+    "status": "ENABLED"
+  },
+  "doctor_rules": [
+    { "doctor_name": "朱子玉", "weight": 50, "ratio": "50.00%" },
+    { "doctor_name": "李付印", "weight": 50, "ratio": "50.00%" }
+  ],
+  "team_rules": [
+    { "team_name": "流量A组", "weight": 50, "ratio": "50.00%" },
+    { "team_name": "流量E组", "weight": 50, "ratio": "50.00%" }
+  ],
+  "assistant_rules": [
+    { "assistant_name": "潘月hll", "team_name": "流量A组", "weight": 50, "ratio": "100.00%" }
+  ]
+}</code></pre><h3 id="process-4.2-新流量进入">4.2 新流量进入</h3><pre><code>{
+  "lead_id": "L202605170001",
+  "platform_name": "百度",
+  "channel_code": "baidu_h5",
+  "app_code": "1",
+  "version_no": "V2",
+  "entered_at": "2026-05-17 23:20:00"
+}</code></pre><h3 id="process-4.3-分配结果">4.3 分配结果</h3><pre><code>{
+  "record_id": "AR202605170001",
+  "lead_id": "L202605170001",
+  "channel_code": "baidu_h5",
+  "app_code": "1",
+  "version_no": "V2",
+  "doctor_name": "李付印",
+  "team_name": "流量A组",
+  "assistant_name": "潘月hll",
+  "allocation_result": "SUCCESS",
+  "allocated_at": "2026-05-17 23:20:01"
+}</code></pre><h2 id="process-5.-异常流程">5. 异常流程</h2><div class="diagram"><div class="mermaid">graph TD
+    A[分配触发] --&gt; B{渠道在线且可识别}
+    B --&gt;|否| M[待人工分配]
+    B --&gt;|是| C{应用版本开启}
+    C --&gt;|否| M
+    C --&gt;|是| D{医生规则有效}
+    D --&gt;|否| M
+    D --&gt;|是| E{团队规则有效}
+    E --&gt;|否| M
+    E --&gt;|是| F{医助规则有效}
+    F --&gt;|否| M
+    F --&gt;|是| G[分配成功]
+    M --&gt; N[记录失败原因]
+    N --&gt; O[运营人工处理]</div></div><h2 id="process-6.-关键节点说明">6. 关键节点说明</h2><div class="table-wrap"><table><thead><tr><th>节点编号</th><th>节点名称</th><th>触发条件</th><th>处理逻辑</th><th>输出结果</th><th>异常处理</th></tr></thead><tbody><tr><td>N01</td><td>渠道识别</td><td>新流量进入</td><td>根据平台和渠道标识匹配渠道</td><td>命中渠道</td><td>未命中进入人工队列</td></tr><tr><td>N02</td><td>应用版本识别</td><td>渠道命中</td><td>根据应用标识和版本匹配配置</td><td>命中应用版本</td><td>关闭或缺失进入人工队列</td></tr><tr><td>N03</td><td>医生分配</td><td>应用版本有效</td><td>指定医生优先，否则按权重</td><td>分配医生</td><td>无有效医生进入人工队列</td></tr><tr><td>N04</td><td>团队分配</td><td>医生命中</td><td>按渠道和医生匹配团队规则</td><td>分配服务团队</td><td>无有效团队进入人工队列</td></tr><tr><td>N05</td><td>医助分配</td><td>团队命中</td><td>指定医助优先，否则团队通用</td><td>分配医助</td><td>无有效医助进入人工队列</td></tr><tr><td>N06</td><td>记录同步</td><td>分配完成</td><td>写入分配记录并同步 CRM/企微</td><td>承接关系生效</td><td>同步失败记录重试任务</td></tr></tbody></table></div><h2 id="process-7.-边界场景">7. 边界场景</h2><div class="table-wrap"><table><thead><tr><th>场景</th><th>处理规则</th></tr></thead><tbody><tr><td>权重为0</td><td>占比展示0%，不参与实际分配</td></tr><tr><td>同组权重合计为0</td><td>禁止启用该分配组</td></tr><tr><td>修改权重</td><td>仅影响保存后的新流量</td></tr><tr><td>删除明细</td><td>后续新流量不再命中该对象，历史记录保留</td></tr><tr><td>指定医助和团队通用同时存在</td><td>优先命中指定医助</td></tr><tr><td>用户重复进入</td><td>使用原分配结果，不自动改派</td></tr><tr><td>医助离职或关闭</td><td>不参与新分配，命中时进入人工队列</td></tr></tbody></table></div><h2 id="process-8.-修订记录">8. 修订记录</h2><div class="table-wrap"><table><thead><tr><th>版本</th><th>日期</th><th>修订内容</th><th>修订人</th></tr></thead><tbody><tr><td>V1.0</td><td>2026-05-17</td><td>初始版本</td><td>产品（AI辅助起草）</td></tr></tbody></table></div></section>
+    <div class="footer">Generated from Markdown PRD files. Mermaid diagrams render when network access to CDN is available.</div>
+  </main>
+</div>
+<script>if (window.mermaid) mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });</script>
+</body>
+</html>

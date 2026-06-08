@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>渠道管理与流量管理 PRD</title>
+<style>
+:root{--brand:#4f6df5;--ink:#172033;--muted:#687386;--line:#e7ebf3;--bg:#f3f5f9;--card:#fff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:15px;}
+body{background:var(--bg);color:var(--ink);font:14px/1.72 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+a{color:var(--brand);text-decoration:none;}
+.layout{display:grid;grid-template-columns:292px minmax(0,1fr);min-height:100vh;}
+.side{position:sticky;top:0;height:100vh;overflow:auto;background:#111827;color:#d6deee;border-right:1px solid #1f2937;padding:24px 18px;}
+.side-brand{padding:4px 8px 18px;border-bottom:1px solid rgba(226,232,240,.14);margin-bottom:16px;}
+.side-brand h1{font-size:1rem;line-height:1.35;color:#fff;margin-bottom:8px;font-weight:700;}
+.side-brand p{font-size:.78rem;color:#9aa6bd;line-height:1.5;}
+.toc-title{font-size:.78rem;margin:0 0 10px;padding:0 8px;color:#8fa0bd;letter-spacing:.08em;font-weight:700;}
+.toc{list-style:none;margin:0;padding:0;}
+.toc li{margin:2px 0;}
+.toc a{display:block;color:#d6deee;border-radius:8px;padding:7px 8px;line-height:1.35;}
+.toc a:hover{background:#1f2a3f;color:#fff;}
+.toc .lv1{font-weight:700;color:#fff;}
+.toc .lv2{padding-left:18px;font-size:.88rem;color:#b8c3d8;}
+.toc .lv3{padding-left:30px;font-size:.82rem;color:#9aa6bd;}
+.main{width:100%;max-width:1080px;margin:0 auto;padding:32px 34px 80px;}
+.hero{background:linear-gradient(135deg,#405cf5,#6d8cff);color:#fff;padding:34px;border-radius:16px;box-shadow:0 18px 40px rgba(57,82,210,.22);margin-bottom:24px;}
+.hero h1{font-size:1.95rem;line-height:1.25;margin-bottom:12px;}
+.hero p{color:#eef2ff;max-width:880px;}
+.doc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 8px 24px rgba(18,26,43,.05);}
+h1,h2,h3,h4{color:#121a2d;line-height:1.3;scroll-margin-top:24px;}
+.doc h1{font-size:1.85rem;margin:4px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+h2{font-size:1.45rem;margin:34px 0 14px;padding-top:8px;color:#2537bf;}
+h3{font-size:1.12rem;margin:24px 0 10px;}
+h4{font-size:1rem;margin:18px 0 8px;color:#344054;}
+p{margin:8px 0 14px;}
+ul,ol{margin:8px 0 18px 22px;padding:0;}
+li{margin:4px 0;}
+strong{color:#101828;}
+code{background:#f0f3f8;border:1px solid #dfe5ef;border-radius:5px;padding:1px 5px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.92em;}
+pre{background:#111827;color:#dbe7ff;overflow:auto;padding:16px;border-radius:10px;margin:12px 0 20px;}
+pre code{background:transparent;border:0;color:inherit;padding:0;}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin:12px 0 22px;}
+table{width:100%;border-collapse:collapse;min-width:720px;background:#fff;}
+th,td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;white-space:normal;}
+th:last-child,td:last-child{border-right:0;}
+tr:last-child td{border-bottom:0;}
+th{background:#f7f9fd;color:#4a5568;font-weight:700;white-space:nowrap;}
+tbody tr:nth-child(even){background:#fbfcff;}
+.diagram{background:#fbfcff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0 24px;overflow:auto;}
+.top{position:fixed;right:22px;bottom:22px;width:40px;height:40px;border:0;border-radius:50%;background:var(--brand);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.16);opacity:.78;}
+.top:hover{opacity:1;}
+.empty{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;color:var(--muted);}
+@media(max-width:900px){.layout{display:block;}.side{position:relative;height:auto;max-height:45vh;}.main{padding:18px 14px 70px;}.hero{padding:26px 20px;}.doc{padding:20px;}}
+@media print{body{background:#fff;}.layout{display:block;}.side,.top{display:none;}.main{max-width:100%;padding:0;}.hero,.doc{box-shadow:none;border:0;border-radius:0;}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="side-brand">
+      <h1>渠道管理与流量管理 PRD</h1>
+      <p>目录会根据 PRD.md 自动生成，浏览文档时保持在左侧。</p>
+    </div>
+    <div class="toc-title">目录</div>
+    <ul id="toc" class="toc"></ul>
+  </aside>
+  <main class="main">
+    <div class="hero">
+      <h1>渠道管理与流量管理 PRD</h1>
+      <p>面向产品评审、研发拆解和测试用例设计的单文档阅读版，内容来源于同目录的 PRD.md。</p>
+    </div>
+    <article id="content" class="doc"><div class="empty">正在加载 PRD.md...</div></article>
+  </main>
+</div>
+<button class="top" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function inline(s){
+  s=esc(s);
+  s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+  s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>');
+  return s;
+}
+function slug(text,prefix){return (prefix+'-'+text).trim().replace(/\s+/g,'-').replace(/[\\/#?%&<>"'`{}|^~\[\]]/g,'').replace(/-+/g,'-');}
+function isTableSep(line){return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);}
+function splitRow(line){
+  var t=line.trim();
+  if(t[0]==='|')t=t.slice(1);
+  if(t[t.length-1]==='|')t=t.slice(0,-1);
+  return t.split('|').map(function(c){return c.trim();});
+}
+function renderTable(lines,start){
+  var headers=splitRow(lines[start]), i=start+2, rows=[];
+  while(i<lines.length && /^\s*\|/.test(lines[i])){rows.push(splitRow(lines[i]));i++;}
+  var head=headers.map(function(h){return '<th>'+inline(h)+'</th>';}).join('');
+  var body=rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+inline(c)+'</td>';}).join('')+'</tr>';}).join('');
+  return {html:'<div class="table-wrap"><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>',next:i};
+}
+function renderMd(md){
+  var lines=md.replace(/\r\n/g,'\n').split('\n'), html=[], toc=[], para=[], list=null, i=0;
+  function flushPara(){if(para.length){html.push('<p>'+inline(para.join(' '))+'</p>');para=[];}}
+  function closeList(){if(list){html.push('</'+list+'>');list=null;}}
+  function openList(type){if(list!==type){closeList();list=type;html.push('<'+type+'>');}}
+  while(i<lines.length){
+    var line=lines[i], trimmed=line.trim();
+    if(!trimmed){flushPara();closeList();i++;continue;}
+    var fence=trimmed.match(/^```(\w+)?/);
+    if(fence){
+      flushPara();closeList();i++;
+      var code=[];
+      while(i<lines.length && !lines[i].trim().startsWith('```')){code.push(lines[i]);i++;}
+      i++;
+      var content=esc(code.join('\n'));
+      html.push(fence[1]==='mermaid'?'<div class="diagram"><div class="mermaid">'+content+'</div></div>':'<pre><code>'+content+'</code></pre>');
+      continue;
+    }
+    var h=trimmed.match(/^(#{1,6})\s+(.+)$/);
+    if(h){
+      flushPara();closeList();
+      var level=h[1].length, text=h[2].trim(), id=slug(text,'prd');
+      toc.push({level:level,text:text,id:id});
+      html.push('<h'+level+' id="'+esc(id)+'">'+inline(text)+'</h'+level+'>');
+      i++;continue;
+    }
+    if(i+1<lines.length && /^\s*\|/.test(line) && isTableSep(lines[i+1])){
+      flushPara();closeList();
+      var table=renderTable(lines,i);
+      html.push(table.html);i=table.next;continue;
+    }
+    var bullet=trimmed.match(/^[-*]\s+(.+)$/);
+    if(bullet){flushPara();openList('ul');html.push('<li>'+inline(bullet[1])+'</li>');i++;continue;}
+    var ordered=trimmed.match(/^\d+\.\s+(.+)$/);
+    if(ordered){flushPara();openList('ol');html.push('<li>'+inline(ordered[1])+'</li>');i++;continue;}
+    closeList();para.push(trimmed);i++;
+  }
+  flushPara();closeList();
+  return {html:html.join(''),toc:toc};
+}
+fetch('PRD.md').then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.text();
+}).then(function(md){
+  var rendered=renderMd(md);
+  document.getElementById('content').innerHTML=rendered.html;
+  document.getElementById('toc').innerHTML=rendered.toc.map(function(item){
+    var cls=item.level===1?'lv1':item.level===2?'lv2':'lv3';
+    return '<li><a class="'+cls+'" href="#'+esc(item.id)+'">'+inline(item.text)+'</a></li>';
+  }).join('');
+  if(window.mermaid)mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});
+}).catch(function(e){
+  document.getElementById('content').innerHTML='<div class="empty"><strong>无法加载 PRD.md</strong><p>请确认 prd.html 与 PRD.md 在同一目录，并通过本地 HTTP 服务访问。</p><p>错误详情：'+esc(String(e))+'</p></div>';
+});
+</script>
+</body>
+</html>

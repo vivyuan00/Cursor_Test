@@ -14,7 +14,6 @@
         * {
             margin: 0;
             padding: 0;
-            
             box-sizing: border-box;
         }
 
@@ -47,6 +46,110 @@
             font-size: 0.75rem;
             color: #5b6e8c;
             margin-top: 4px;
+        }
+
+        /* Annotation System Styles */
+        .req-marker {
+            display: inline-block;
+            vertical-align: top;
+            background-color: rgb(250, 173, 20);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 14px;
+            padding: 0px 4px;
+            border-radius: 2px;
+            cursor: pointer;
+            position: absolute;
+            top: -8px;
+            right: -4px;
+            z-index: 10000;
+        }
+
+        .req-tooltip {
+            position: absolute;
+            background-color: #f0efef;
+            border-radius: 4px;
+            width: 450px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            padding: 16px;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .req-tooltip-header {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .req-tooltip-close {
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            font-size: 16px;
+            line-height: 1;
+            padding: 4px;
+        }
+
+        .req-tooltip-close:hover {
+            color: #333;
+        }
+
+        .req-tooltip-content {
+            margin-bottom: 12px;
+        }
+
+        .req-tooltip-content p {
+            margin-bottom: 12px;
+        }
+
+        .req-tooltip-content strong {
+            font-weight: bold;
+        }
+
+        .req-tooltip-content em {
+            font-style: italic;
+        }
+
+        .req-tooltip-content ul,
+        .req-tooltip-content ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .req-tooltip-content li {
+            margin-bottom: 4px;
+        }
+
+        .req-tooltip-content blockquote {
+            border-left: 3px solid #ccc;
+            padding-left: 12px;
+            margin: 12px 0;
+            color: #666;
+        }
+
+        .req-tooltip-section {
+            margin-bottom: 16px;
+        }
+
+        .req-tooltip-section-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .req-marker-wrapper {
+            position: relative;
+            display: inline-block;
         }
 
         /* 筛选卡片 */
@@ -473,6 +576,24 @@
         .tab-btn:not(.active) { color: #64748b; }
         .tab-btn:not(.active):hover { color: #334155; border-bottom-color: #cbd5e1; }
         .funnel-bar { height: 36px; border-radius: 4px; display: flex; align-items: center; padding: 0 12px; font-size: 13px; font-weight: 500; color: #fff; transition: width 0.4s ease; }
+        .metric-help {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            margin-left: 3px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: help;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        .metric-help:hover { background: #0d9488; color: #fff; }
+        th .metric-help { position: relative; top: -1px; }
     </style>
 </head>
 <body>
@@ -617,11 +738,11 @@
       trend:[{d:'05-10',first:28600,revisit:41200},{d:'05-11',first:31400,revisit:45800},{d:'05-12',first:29800,revisit:43100},{d:'05-13',first:35200,revisit:48600},{d:'05-14',first:33480,revisit:52290},{d:'05-15',first:30100,revisit:49800},{d:'05-16',first:33480,revisit:52290}]
     };
     const ASSISTANTS=[
-      {name:'张医助',f01:820,f02:552,f03:414,f04:276,f05:133,f06:106,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080},
-      {name:'李医助',f01:760,f02:496,f03:372,f04:248,f05:119,f06:95,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560},
-      {name:'王医助',f01:680,f02:440,f03:330,f04:220,f05:106,f06:85,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570},
-      {name:'赵医助',f01:620,f02:400,f03:300,f04:200,f05:96,f06:77,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060},
-      {name:'刘医助',f01:580,f02:376,f03:282,f04:188,f05:90,f06:72,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550}
+      {name:'张医助',exposure:1200,f01:820,f02:552,f03:414,f04:276,f05:133,f06:106,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080},
+      {name:'李医助',exposure:1100,f01:760,f02:496,f03:372,f04:248,f05:119,f06:95,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560},
+      {name:'王医助',exposure:950,f01:680,f02:440,f03:330,f04:220,f05:106,f06:85,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570},
+      {name:'赵医助',exposure:880,f01:620,f02:400,f03:300,f04:200,f05:96,f06:77,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060},
+      {name:'刘医助',exposure:820,f01:580,f02:376,f03:282,f04:188,f05:90,f06:72,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550}
     ];
     const CHANNELS=[
       {ch:'baidu_doctor_h5',sub:'SEM投放',product:'舌诊',version:'v3.2',pv:12800,uv:9600,reportCnt:6720,reportUser:5890,addWx:820,payCnt:120},
@@ -631,7 +752,7 @@
       {ch:'weixin_mp',sub:'公众号',product:'舌诊',version:'v3.2',pv:4200,uv:3100,reportCnt:2100,reportUser:1900,addWx:450,payCnt:70},
       {ch:'weixin_mp',sub:'公众号',product:'体质测试',version:'v2.1',pv:3100,uv:2300,reportCnt:1500,reportUser:1400,addWx:280,payCnt:45}
     ];
-    const PRODUCT_FUNNEL={
+    const PRODUCT_FUNNEL_TONGUE={
       channel:'baidu_doctor_h5',product:'舌诊',
       pagePv:12800,pageUv:9600,
       uploadPv:8960,
@@ -640,6 +761,97 @@
       summaryCnt:4830,summaryUser:4120,
       leadCnt:2980
     };
+    const PRODUCT_FUNNEL_QUICK={
+      channel:'baidu_doctor_h5',product:'体质测试',
+      pagePv:8500,pageUv:6200,
+      openSession:5100,
+      avgTurns:6.8,avgReportTurns:9.4,
+      reportCnt:4200,reportUser:3800,
+      addFans:510
+    };
+    const QUICK_TEST_PRODUCTS=['体质测试','问诊H5'];
+    function isQuickTestProduct(prod){return QUICK_TEST_PRODUCTS.indexOf(prod)>=0;}
+
+    // 指标口径定义（参考 PRD 第6节漏斗定义及第7.2节各模块指标说明）
+    const METRIC_DEFS={
+      '日期':'业务日，按天排列展示统计数据',
+      '首页PV':'AI工具首页页面浏览量或工具新建量，比如舌诊首页浏览量、快测对话页数量',
+      '首页UV':'AI工具首页独立访客数',
+      '报告数':'用户生成的舌诊/体质报告数或快测结论报告数',
+      '报告人次':'生成报告的去重用户数',
+      '加企微数':'通过AI工具或渠道/产品最终添加企微的去重人数',
+      '报告-加微转化率PV':'加企微数 / 报告数',
+      '首页-加微转化率PV':'加企微数 / 首页PV',
+      '开口':'用户主动发送首条消息的去重人数',
+      '舌象上传':'用户提交舌象图片的去重人数',
+      '开方':'完成病例总结和开方的去重人数',
+      '支付':'支付成功的去重人数（R01）',
+      '确认':'付费确认（含药房发货确认等最终节点）的去重人数',
+      '支付转化率':'支付数 / 加企微数',
+      '汤剂订单数':'当日药物类型为汤剂的支付成功订单数',
+      '汤剂订单金额':'当日汤剂订单实付金额合计（R01）',
+      '丸剂订单数':'当日药物类型为丸剂的支付成功订单数',
+      '丸剂订单金额':'当日丸剂订单实付金额合计（R01）',
+      '初诊订单数':'当日首次成交用户的支付成功订单数',
+      '初诊金额':'当日初诊订单实付金额合计',
+      '复诊订单数':'当日非首次成交（复购）用户的支付成功订单数',
+      '复诊金额':'当日复诊订单实付金额合计',
+      '总订单数':'当日全部支付成功订单数（= 汤剂+丸剂 = 初诊+复诊）',
+      '总订单金额':'当日全部实付金额合计',
+      '曝光数':'企微分配曝光的数量',
+      '加粉数':'该医助在筛选时段内分配到的新加企微好友去重人数，或快测产品新增企微好友去重人数',
+      '开口数':'该医助服务的用户主动开口去重人数',
+      '舌象上传数':'该医助服务的用户提交舌象去重人数',
+      '开方数':'该医助服务的用户完成病例总结和开方的去重人数',
+      '支付数':'该医助服务的用户支付成功去重人数，或首诊支付成功的去重人数',
+      '确认数':'该医助服务的用户付费确认去重人数',
+      '加粉-支付转化率':'支付数 / 加粉数',
+      '医助':'医助名称',
+      '渠道':'投放渠道',
+      '产品':'投放产品',
+      '版本':'产品版本',
+      '加企微-支付转化率':'支付数 / 加企微数',
+      '首页-支付转化率':'支付数 / 首页PV',
+      '舌象上传PV':'舌象图片上传次数',
+      '舌象上传折损率':'1 - 舌诊报告数 / 舌象上传PV',
+      '舌诊报告数':'用户生成的舌诊报告数',
+      '舌诊报告人次':'生成舌诊报告的去重用户数',
+      '首页-报告转化率':'舌诊报告数 / 首页PV，或报告数量 / 首页PV（会话数）',
+      '人均舌诊报告数':'舌诊报告数 / 舌诊报告人次',
+      '对话数':'对话会话总数',
+      '开口对话数':'有效产生对话的会话数',
+      '开口对话率':'开口对话数 / 对话数',
+      '平均对话轮次':'总对话轮次 / 会话数',
+      '平均出小结轮次':'出小结前总轮次 / 小结数',
+      '小结数':'生成小结的数量',
+      '小结人次':'生成小结的去重用户数',
+      '报告-小结率PV':'小结数 / 舌诊报告数',
+      '首页-小结率PV':'小结数 / 首页PV',
+      '留资数':'完成留资的数量',
+      '小结-留资率PV':'留资数 / 小结数',
+      '舌诊报告-留资率PV':'留资数 / 舌诊报告数',
+      '首页-留资率PV':'留资数 / 首页PV',
+      '首页PV（会话数）':'快测对话页新建会话数',
+      '开口会话数':'用户主动发送首条消息的会话数',
+      '会话开口率':'开口会话数 / 首页PV（会话数）',
+      '平均出报告轮次':'出报告前总轮次 / 报告数量',
+      '报告数量':'用户生成的快测结论报告数',
+      '人均报告数':'报告数量 / 报告人次',
+      '报告-加粉转化率':'加粉数 / 报告数量',
+      '首页-加粉转化率':'加粉数 / 首页PV（会话数）'
+    };
+    function _th(label,metricKey,className){
+      var key=metricKey||label;
+      var tip=METRIC_DEFS[key]||'';
+      var help=tip?'<span class="metric-help" title="'+h(tip)+'">?</span>':'';
+      return '<th class="'+(className||'')+'">'+h(label)+help+'</th>';
+    }
+    function _thLabel(label,metricKey){
+      var key=metricKey||label;
+      var tip=METRIC_DEFS[key]||'';
+      var help=tip?'<span class="metric-help" title="'+h(tip)+'">?</span>':'';
+      return h(label)+help;
+    }
 
     // Funnel state
     let funnelState={
@@ -666,30 +878,61 @@
     function pct(n){return(n*100).toFixed(1)+'%';}
     function _chip(label,active,attr){return '<button '+attr+' class="text-xs px-3 py-1 rounded-full border transition-colors '+(active?'bg-brand-600 text-white border-brand-600':'border-slate-200 hover:border-brand-300')+'">'+h(label)+'</button>';}
     function _quickTime(){var items=[{k:'today',l:'今日'},{k:'yesterday',l:'昨日'},{k:'7d',l:'近7天'},{k:'30d',l:'近30天'}];return items.map(function(i){return _chip(i.l,funnelState.fTimeQuick===i.k,'data-ftime="'+i.k+'"');}).join('');}
-    function _dimChips(){var items=[{k:'hour',l:'按时'},{k:'day',l:'按日'},{k:'week',l:'按周'},{k:'month',l:'按月'}];return items.map(function(i){return _chip(i.l,funnelState.fDim===i.k,'data-fdim="'+i.k+'"');}).join('');}
-    function _queryReset(){return '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button>';}
+    function _dimChips(){var items=[{k:'hour',l:'按时'},{k:'day',l:'按日'}];return items.map(function(i){return _chip(i.l,funnelState.fDim===i.k,'data-fdim="'+i.k+'"');}).join('');}
+    function _selectOpts(opts,sel){return opts.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+h(o)+'</option>';}).join('');}
+    function _queryReset(){return '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-export>📎 导出Excel</button>';}
+    function getChDetailMeta(){
+      var parts=(funnelState.chDetailRow||'').split('|');
+      if(parts.length>=4) return {ch:parts[0],sub:parts[1],product:parts[2],version:parts[3]};
+      if(parts.length===3) return {ch:parts[0],sub:'—',product:parts[1],version:parts[2]};
+      return {ch:'baidu_doctor_h5',sub:'SEM投放',product:'舌诊',version:'v3.2'};
+    }
+    function exportFunnelTableMock(filename,sheetName,headers,rows){
+      if(typeof XLSX==='undefined'){alert('导出组件未加载');return;}
+      var sheet=[headers].concat(rows);
+      var ws=XLSX.utils.aoa_to_sheet(sheet);
+      var wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,sheetName||'数据');
+      XLSX.writeFile(wb,filename);
+    }
+    var funnelChartInstances=[];
+    function destroyFunnelCharts(){funnelChartInstances.forEach(function(c){try{c.destroy();}catch(e){}});funnelChartInstances=[];}
 
     function renderFilterDaily(){
-      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap">'+
+      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper">'+
+        '<span class="req-marker" data-id="1">1</span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span><input type="date" value="2026-01-01" class="border rounded px-2 py-1 text-xs w-28"/>—<input type="date" value="2026-05-16" class="border rounded px-2 py-1 text-xs w-28"/>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">维度：</span>'+_dimChips()+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>baidu_doctor_h5</option><option>douyin_info</option><option>weixin_mp</option></select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],'全部')+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">团队：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>团队A</option><option>团队B</option></select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<input type="text" placeholder="医助名称搜索" class="border rounded px-2 py-1 text-xs w-28"/>'+
+        '<input type="text" placeholder="系统用户名/企微id" class="border rounded px-2 py-1 text-xs w-32" title="筛选医助后首页PV/UV灰置"/>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         _queryReset()+
       '</div>';
     }
     function renderFilterAssistant(){
-      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap">'+
+      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper">'+
+        '<span class="req-marker" data-id="2">2</span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span>'+_quickTime()+
         '<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36 ml-1"/>—<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36"/>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>baidu_doctor_h5</option><option>douyin_info</option><option>weixin_mp</option></select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],'全部')+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">团队：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>团队A</option><option>团队B</option></select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
@@ -699,7 +942,8 @@
       '</div>';
     }
     function renderFilterChannel(){
-      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap">'+
+      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper">'+
+        '<span class="req-marker" data-id="3">3</span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span>'+_quickTime()+
         '<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36 ml-1"/>—<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36"/>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
@@ -738,7 +982,7 @@
         '<h2 class="text-xl font-bold">全链路漏斗</h2>'+
         '<div class="border-b border-slate-200 flex">'+tabsHtml+'</div>'+
         filter+
-        (subTabs?'<div class="border-b border-slate-100 flex">'+subTabs+'</div>':'')+
+        (subTabs?'<div class="border-b border-slate-100 flex gap-1">'+subTabs+'</div>':'')+
         content+
       '</div>';
     }
@@ -763,47 +1007,79 @@
       }).join('');
       var asstPayRate=((ASSISTANT_FUNNEL_STEPS[4].count/ASSISTANT_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
       
-      // 数据表格
+      // 数据表格 — 医助转化去掉与 AI 重复的「加企微」列
       var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
       var aiHeader='<th colspan="7" class="px-3 py-2 text-center bg-brand-50 text-brand-700 font-semibold">AI工具转化</th>';
-      var asstHeader='<th colspan="7" class="px-3 py-2 text-center bg-brand-50 text-brand-700 font-semibold">医助转化</th>';
-      var aiSubHeaders=AI_FUNNEL_STEPS.map(function(s){return '<th class="px-2 py-1 text-right text-xs">'+h(s.label.split(' ')[1])+'</th>';}).join('')+'<th class="px-2 py-1 text-right text-xs text-brand-700">报告-加微转化率PV</th><th class="px-2 py-1 text-right text-xs text-brand-700">首页-加微转化率PV</th>';
-      var asstSubHeaders=ASSISTANT_FUNNEL_STEPS.map(function(s){return '<th class="px-2 py-1 text-right text-xs">'+h(s.label.split(' ')[1])+'</th>';}).join('')+'<th class="px-2 py-1 text-right text-xs text-brand-700">支付转化率</th>';
+      var asstHeader='<th colspan="6" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
+      var aiSubHeaders=[
+        _th('首页PV','首页PV','px-2 py-1 text-right text-xs'),
+        _th('首页UV','首页UV','px-2 py-1 text-right text-xs'),
+        _th('报告数','报告数','px-2 py-1 text-right text-xs'),
+        _th('报告人次','报告人次','px-2 py-1 text-right text-xs'),
+        _th('加企微数','加企微数','px-2 py-1 text-right text-xs'),
+        _th('报告-加微转化率PV','报告-加微转化率PV','px-2 py-1 text-right text-xs text-brand-700'),
+        _th('首页-加微转化率PV','首页-加微转化率PV','px-2 py-1 text-right text-xs text-brand-700')
+      ].join('');
+      var asstSubHeaders=[
+        _th('开口','开口','px-2 py-1 text-right text-xs'),
+        _th('舌象上传','舌象上传','px-2 py-1 text-right text-xs'),
+        _th('开方','开方','px-2 py-1 text-right text-xs'),
+        _th('支付','支付','px-2 py-1 text-right text-xs'),
+        _th('确认','确认','px-2 py-1 text-right text-xs'),
+        _th('支付转化率','支付转化率','px-2 py-1 text-right text-xs text-blue-700')
+      ].join('');
       var dayRows=dates.map(function(d,idx){
         var aiScale=0.9+idx*0.02;
         var asstScale=0.85+idx*0.025;
         var aiCounts=AI_FUNNEL_STEPS.map(function(s){return Math.round(s.count*aiScale);});
         var asstCounts=ASSISTANT_FUNNEL_STEPS.map(function(s){return Math.round(s.count*asstScale);});
-        // Ensure 加企微数 equals 加企微 by using the same value
         var commonWx=aiCounts[4];
         asstCounts[0]=commonWx;
         var aiReportToWxRate=aiCounts[2]>0?((aiCounts[4]/aiCounts[2])*100).toFixed(1)+'%':'—';
         var aiPvToWxRate=aiCounts[0]>0?((aiCounts[4]/aiCounts[0])*100).toFixed(1)+'%':'—';
         var asstPayRate=asstCounts[0]>0?((asstCounts[4]/asstCounts[0])*100).toFixed(1)+'%':'—';
         var aiRow=aiCounts.map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-brand-700">'+aiReportToWxRate+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+aiPvToWxRate+'</td>';
-        var asstRow=asstCounts.map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-brand-700">'+asstPayRate+'</td>';
+        var asstRow=asstCounts.slice(1).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-blue-700">'+asstPayRate+'</td>';
         return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+aiRow+asstRow+'</tr>';
       }).join('');
       
-      return '<div class="space-y-4">'+
+      return '<div class="space-y-4 req-marker-wrapper"><span class="req-marker" data-id="4">4</span>'+
         '<div class="grid grid-cols-2 gap-4">'+
           '<div class="card"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">统计从用户访问AI工具首页到加企微的转化链路</p><div class="space-y-2">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">报告-加微转化率PV: '+aiReportToWxRate+'</span> | <span class="font-medium text-brand-700">首页-加微转化率PV: '+aiPvToWxRate+'</span></div></div>'+
           '<div class="card"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">仅统计初诊流程转化，从加企微到付费确认的完整链路</p><div class="space-y-2">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div>'+
         '</div>'+
-        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2 sticky left-0 bg-white">日期</th>'+aiHeader+asstHeader+'</tr><tr class="text-left text-xs text-slate-500 border-b bg-slate-50"><th class="px-3 py-2 sticky left-0 bg-slate-50"></th>'+aiSubHeaders+asstSubHeaders+'</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2 sticky left-0 bg-white" rowspan="2">'+_thLabel('日期','日期')+'</th>'+aiHeader+asstHeader+'</tr><tr class="text-left text-xs text-slate-500 border-b bg-slate-50">'+aiSubHeaders+asstSubHeaders+'</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
       '</div>';
     }
 
     function renderDailyOrder(){
       var O=DAILY_ORDERS;
-      var trendBars=O.trend.map(function(t){var max=100000;var h1=Math.round(t.first/max*100);var h2=Math.round(t.revisit/max*100);return '<div class="flex-1 flex flex-col items-center gap-0.5"><div class="flex items-end gap-0.5 h-[80px]"><div class="w-3 bg-brand-400 rounded-t" style="height:'+h1+'%"></div><div class="w-3 bg-blue-400 rounded-t" style="height:'+h2+'%"></div></div><div class="text-[10px] text-slate-400">'+h(t.d)+'</div></div>';}).join('');
       var dayRows=O.trend.map(function(t){
         var dOrd=Math.round(52*(t.first/33480));var pOrd=Math.round(31*(t.revisit/52290));var fOrd=Math.round(45*(t.first/33480));var rOrd=Math.round(38*(t.revisit/52290));
-        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs">'+h(t.d)+'</td><td class="px-3 py-1.5 text-right">'+fmt(dOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(Math.round(t.first*1.16))+'</td><td class="px-3 py-1.5 text-right">'+fmt(pOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(Math.round(t.revisit*0.89))+'</td><td class="px-3 py-1.5 text-right">'+fmt(fOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(t.first)+'</td><td class="px-3 py-1.5 text-right">'+fmt(rOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(t.revisit)+'</td><td class="px-3 py-1.5 text-right font-semibold">'+fmt(fOrd+rOrd)+'</td><td class="px-3 py-1.5 text-right font-semibold">¥'+fmt(t.first+t.revisit)+'</td></tr>';
+        var dGmv=Math.round(t.first*1.16);var pGmv=Math.round(t.revisit*0.89);
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(t.d)+'</td><td class="px-3 py-1.5 text-right">'+fmt(dOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(dGmv)+'</td><td class="px-3 py-1.5 text-right">'+fmt(pOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(pGmv)+'</td><td class="px-3 py-1.5 text-right">'+fmt(fOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(t.first)+'</td><td class="px-3 py-1.5 text-right">'+fmt(rOrd)+'</td><td class="px-3 py-1.5 text-right">¥'+fmt(t.revisit)+'</td><td class="px-3 py-1.5 text-right font-semibold">'+fmt(fOrd+rOrd)+'</td><td class="px-3 py-1.5 text-right font-semibold">¥'+fmt(t.first+t.revisit)+'</td></tr>';
       }).join('');
-      return '<div class="space-y-4">'+
-        '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 初诊/复诊金额趋势</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>初诊金额</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-400 inline-block"></span>复诊金额</span></div><div class="flex items-end gap-2 px-2">'+trendBars+'</div></div>'+
-        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2">日期</th><th class="px-3 py-2 text-right">汤剂单数</th><th class="px-3 py-2 text-right">汤剂金额</th><th class="px-3 py-2 text-right">丸剂单数</th><th class="px-3 py-2 text-right">丸剂金额</th><th class="px-3 py-2 text-right">初诊单数</th><th class="px-3 py-2 text-right">初诊金额</th><th class="px-3 py-2 text-right">复诊单数</th><th class="px-3 py-2 text-right">复诊金额</th><th class="px-3 py-2 text-right">总单数</th><th class="px-3 py-2 text-right">总金额</th></tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+      return '<div class="space-y-4 req-marker-wrapper"><span class="req-marker" data-id="5-order">5</span>'+
+        '<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">'+
+          '<div class="card lg:col-span-1"><p class="text-xs text-slate-400 mb-2">辅助图表 · 初复诊汇总（汤剂/丸剂堆叠）</p><div class="h-[130px]"><canvas id="orderChartVisit"></canvas></div></div>'+
+          '<div class="card lg:col-span-3"><p class="text-xs text-slate-400 mb-2">辅助图表 · 金额趋势折线图</p><div class="h-[130px]"><canvas id="orderChartTrend"></canvas></div></div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3>'+
+        '<table class="min-w-full text-sm"><thead>'+
+          '<tr class="text-left text-xs text-slate-500 border-b bg-slate-50"><th class="px-3 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-3 py-2 text-center" colspan="4">处方类型</th><th class="px-3 py-2 text-center" colspan="4">初复诊类型</th><th class="px-3 py-2 text-center" colspan="2">总订单</th></tr>'+
+          '<tr class="text-left text-xs text-slate-500 border-b">'+
+            _th('汤剂订单数','汤剂订单数','px-3 py-2 text-right')+
+            _th('汤剂订单金额','汤剂订单金额','px-3 py-2 text-right')+
+            _th('丸剂订单数','丸剂订单数','px-3 py-2 text-right')+
+            _th('丸剂订单金额','丸剂订单金额','px-3 py-2 text-right')+
+            _th('初诊订单数','初诊订单数','px-3 py-2 text-right')+
+            _th('初诊金额','初诊金额','px-3 py-2 text-right')+
+            _th('复诊订单数','复诊订单数','px-3 py-2 text-right')+
+            _th('复诊金额','复诊金额','px-3 py-2 text-right')+
+            _th('总订单数','总订单数','px-3 py-2 text-right')+
+            _th('总订单金额','总订单金额','px-3 py-2 text-right')+
+          '</tr>'+
+        '</thead><tbody>'+dayRows+'</tbody></table></div>'+
       '</div>';
     }
 
@@ -811,24 +1087,39 @@
       var topBar=ASSISTANTS.map(function(a){var conv=((a.f06/a.f01)*100).toFixed(1);var w=Math.round((a.f06/a.f01)*100/15*100);return '<div class="flex items-center gap-2"><span class="w-16 text-xs font-medium">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold">'+conv+'%</span></div>';}).join('');
       var aRows=ASSISTANTS.map(function(a){
         var conv=((a.f06/a.f01)*100).toFixed(1);
-        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f01)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f06)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td></tr>';
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f01)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f06)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td></tr>';
       }).join('');
       return '<div class="space-y-4">'+
-        '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 转化率排行</p><div class="space-y-1.5">'+topBar+'</div></div>'+
-        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2">医助</th><th class="px-3 py-2 text-right">加企微数</th><th class="px-3 py-2 text-right">开口数</th><th class="px-3 py-2 text-right">舌象上传数</th><th class="px-3 py-2 text-right">开方数</th><th class="px-3 py-2 text-right">支付数</th><th class="px-3 py-2 text-right">确认数</th><th class="px-3 py-2 text-right">支付转化率</th></tr></thead><tbody>'+aRows+'</tbody></table></div>'+
+        '<div class="card req-marker-wrapper"><span class="req-marker" data-id="5">5</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-支付转化率排行</p><div class="space-y-1.5">'+topBar+'</div></div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_th('曝光数','曝光数','px-3 py-2 text-right')+_th('加粉数','加粉数','px-3 py-2 text-right')+_th('开口数','开口数','px-3 py-2 text-right')+_th('舌象上传数','舌象上传数','px-3 py-2 text-right')+_th('开方数','开方数','px-3 py-2 text-right')+_th('支付数','支付数','px-3 py-2 text-right')+_th('确认数','确认数','px-3 py-2 text-right')+_th('加粉-支付转化率','加粉-支付转化率','px-3 py-2 text-right')+'</tr></thead><tbody>'+aRows+'</tbody></table></div>'+
       '</div>';
     }
 
     function renderAsstTrade(){
-      var totalAll=ASSISTANTS.reduce(function(s,a){return {ord:s.ord+a.firstOrd+a.revOrd,gmv:s.gmv+a.firstGmv+a.revGmv};},{ord:0,gmv:0});
-      var barData=ASSISTANTS.map(function(a){var total=a.firstGmv+a.revGmv;var maxG=22000;return '<div class="flex items-center gap-2"><span class="w-16 text-xs font-medium">'+h(a.name)+'</span><div class="flex-1 flex h-5"><div class="bg-brand-400 rounded-l h-5" style="width:'+Math.round(a.firstGmv/maxG*100)+'%"></div><div class="bg-blue-400 rounded-r h-5" style="width:'+Math.round(a.revGmv/maxG*100)+'%"></div></div><span class="w-16 text-xs text-right font-semibold">¥'+fmt(total)+'</span></div>';}).join('');
+      var sortedOrd=ASSISTANTS.slice().sort(function(a,b){return (b.firstOrd+b.revOrd)-(a.firstOrd+a.revOrd);});
+      var sortedGmv=ASSISTANTS.slice().sort(function(a,b){return (b.firstGmv+b.revGmv)-(a.firstGmv+a.revGmv);});
+      var maxOrd=sortedOrd[0]?sortedOrd[0].firstOrd+sortedOrd[0].revOrd:1;
+      var maxGmv=sortedGmv[0]?sortedGmv[0].firstGmv+sortedGmv[0].revGmv:1;
+      var ordTop=sortedOrd.map(function(a){
+        var total=a.firstOrd+a.revOrd;
+        var w=Math.round(total/maxOrd*100);
+        return '<div class="flex items-center gap-2"><span class="w-16 text-xs font-medium truncate">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-brand-500" style="width:'+w+'%"></div></div><span class="w-10 text-xs text-right font-semibold">'+fmt(total)+'</span></div>';
+      }).join('');
+      var gmvTop=sortedGmv.map(function(a){
+        var total=a.firstGmv+a.revGmv;
+        var w=Math.round(total/maxGmv*100);
+        return '<div class="flex items-center gap-2"><span class="w-16 text-xs font-medium truncate">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-emerald-500" style="width:'+w+'%"></div></div><span class="w-16 text-xs text-right font-semibold">¥'+fmt(total)+'</span></div>';
+      }).join('');
       var tRows=ASSISTANTS.map(function(a){
         var total=a.firstOrd+a.revOrd;var totalGmv=a.firstGmv+a.revGmv;
         return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.firstOrd)+'</td><td class="px-3 py-2 text-right">¥'+fmt(a.firstGmv)+'</td><td class="px-3 py-2 text-right">'+fmt(a.revOrd)+'</td><td class="px-3 py-2 text-right">¥'+fmt(a.revGmv)+'</td><td class="px-3 py-2 text-right font-semibold">'+fmt(total)+'</td><td class="px-3 py-2 text-right font-semibold">¥'+fmt(totalGmv)+'</td></tr>';
       }).join('');
       return '<div class="space-y-4">'+
-        '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 初诊/复诊金额对比</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>初诊</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-400 inline-block"></span>复诊</span></div><div class="space-y-1.5">'+barData+'</div></div>'+
-        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2">医助</th><th class="px-3 py-2 text-right">初诊订单</th><th class="px-3 py-2 text-right">初诊金额</th><th class="px-3 py-2 text-right">复诊订单</th><th class="px-3 py-2 text-right">复诊金额</th><th class="px-3 py-2 text-right">总订单</th><th class="px-3 py-2 text-right">总金额</th></tr></thead><tbody>'+tRows+'</tbody></table></div>'+
+        '<div class="grid grid-cols-2 gap-4">'+
+          '<div class="card req-marker-wrapper"><span class="req-marker" data-id="6">6</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 总订单数 Top 排行</p><div class="space-y-1.5">'+ordTop+'</div></div>'+
+          '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 总订单金额 Top 排行</p><div class="space-y-1.5">'+gmvTop+'</div></div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_th('初诊订单数','初诊订单数','px-3 py-2 text-right')+_th('初诊金额','初诊金额','px-3 py-2 text-right')+_th('复诊订单数','复诊订单数','px-3 py-2 text-right')+_th('复诊金额','复诊金额','px-3 py-2 text-right')+_th('总订单数','总订单数','px-3 py-2 text-right')+_th('总订单金额','总订单金额','px-3 py-2 text-right')+'</tr></thead><tbody>'+tRows+'</tbody></table></div>'+
       '</div>';
     }
 
@@ -863,83 +1154,209 @@
           var iPvToWxRate=i.pv>0?((i.addWx/i.pv)*100).toFixed(1)+'%':'—';
           var iWxToPayRate=i.addWx>0?((i.payCnt/i.addWx)*100).toFixed(1)+'%':'—';
           var iPvToPayRate=i.pv>0?((i.payCnt/i.pv)*100).toFixed(1)+'%':'—';
-          chTable+='<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-2 py-1.5 pl-8 text-slate-500 text-xs">└ '+h(i.sub)+'</td><td class="px-2 py-1.5 text-sm">'+h(i.product)+'</td><td class="px-2 py-1.5 text-xs text-slate-400">'+h(i.version)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.pv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.uv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportUser)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.addWx)+'</td><td class="px-2 py-1.5 text-right">'+iReportToWxRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToWxRate+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.payCnt)+'</td><td class="px-2 py-1.5 text-right">'+iWxToPayRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToPayRate+'</td><td class="px-2 py-1.5 text-center"><button data-ch-detail="'+h(i.ch+'|'+i.product+'|'+i.version)+'" class="text-xs text-brand-600 hover:underline">查看详情</button></td></tr>';
+          chTable+='<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-2 py-1.5 pl-8 text-slate-500 text-xs">└ '+h(i.sub)+'</td><td class="px-2 py-1.5 text-sm">'+h(i.product)+'</td><td class="px-2 py-1.5 text-xs text-slate-400">'+h(i.version)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.pv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.uv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportUser)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.addWx)+'</td><td class="px-2 py-1.5 text-right">'+iReportToWxRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToWxRate+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.payCnt)+'</td><td class="px-2 py-1.5 text-right">'+iWxToPayRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToPayRate+'</td><td class="px-2 py-1.5 text-center"><button data-ch-detail="'+h(i.ch+'|'+i.sub+'|'+i.product+'|'+i.version)+'" class="text-xs text-brand-600 hover:underline">查看详情</button></td></tr>';
         });
       });
       
       return '<div class="space-y-4">'+
         '<div class="grid grid-cols-2 gap-4">'+
-          '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道加企微分布</p><div class="space-y-1.5">'+chBars+'</div></div>'+
+          '<div class="card req-marker-wrapper"><span class="req-marker" data-id="7">7</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道加企微分布</p><div class="space-y-1.5">'+chBars+'</div></div>'+
           '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道初诊支付分布</p><div class="space-y-1.5">'+payBars+'</div></div>'+
         '</div>'+
-        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-2 py-2">渠道</th><th class="px-2 py-2">产品</th><th class="px-2 py-2">版本</th><th class="px-2 py-2 text-right">首页PV</th><th class="px-2 py-2 text-right">首页UV</th><th class="px-2 py-2 text-right">报告数</th><th class="px-2 py-2 text-right">报告人次</th><th class="px-2 py-2 text-right">加企微数</th><th class="px-2 py-2 text-right">报告-加微转化率PV</th><th class="px-2 py-2 text-right">首页-加微转化率PV</th><th class="px-2 py-2 text-right">支付数</th><th class="px-2 py-2 text-right">加企微-支付转化率</th><th class="px-2 py-2 text-right">首页-支付转化率</th><th class="px-2 py-2 text-center">操作</th></tr></thead><tbody>'+chTable+'</tbody></table></div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead>'+
+          '<tr class="text-left text-xs text-slate-500 border-b bg-slate-50"><th class="px-2 py-2" rowspan="2">'+_thLabel('渠道','渠道')+'</th><th class="px-2 py-2" rowspan="2">'+_thLabel('产品','产品')+'</th><th class="px-2 py-2" rowspan="2">'+_thLabel('版本','版本')+'</th><th class="px-2 py-2 text-center" colspan="7">AI工具转化</th><th class="px-2 py-2 text-center" colspan="3">医助转化</th><th class="px-2 py-2 text-center" rowspan="2">操作</th></tr>'+
+          '<tr class="text-left text-xs text-slate-500 border-b">'+
+            _th('首页PV','首页PV','px-2 py-2 text-right')+
+            _th('首页UV','首页UV','px-2 py-2 text-right')+
+            _th('报告数','报告数','px-2 py-2 text-right')+
+            _th('报告人次','报告人次','px-2 py-2 text-right')+
+            _th('加企微数','加企微数','px-2 py-2 text-right')+
+            _th('报告-加微转化率PV','报告-加微转化率PV','px-2 py-2 text-right')+
+            _th('首页-加微转化率PV','首页-加微转化率PV','px-2 py-2 text-right')+
+            _th('支付数','支付数','px-2 py-2 text-right')+
+            _th('加企微-支付转化率','加企微-支付转化率','px-2 py-2 text-right')+
+            _th('首页-支付转化率','首页-支付转化率','px-2 py-2 text-right')+
+          '</tr>'+
+        '</thead><tbody>'+chTable+'</tbody></table></div>'+
       '</div>';
     }
 
     function renderChDetailPage(){
-      var parts=(funnelState.chDetailRow||'').split('|');
-      var dCh=parts[0]||'baidu_doctor_h5';var dProd=parts[1]||'舌诊';var dVer=parts[2]||'v3.2';
-      var pf=PRODUCT_FUNNEL;
+      var meta=getChDetailMeta();
+      var dCh=meta.ch,dSub=meta.sub,dProd=meta.product,dVer=meta.version;
+      var isQuick=isQuickTestProduct(dProd);
       var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
+      var typeBadge=isQuick?'<span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 ml-2">快测类型产品</span>':'<span class="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 ml-2">舌诊类产品</span>';
+      var detailFilterBar='<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper"><span class="req-marker" data-id="8">8</span>'+
+        '<span class="text-slate-500 text-xs font-medium">渠道：</span><span class="border rounded px-2 py-1 text-xs font-mono">'+h(dCh)+'</span>'+
+        '<span class="text-slate-500 text-xs font-medium ml-2">子渠道：</span><span class="border rounded px-2 py-1 text-xs">'+h(dSub)+'</span>'+
+        '<span class="text-slate-500 text-xs font-medium ml-2">产品：</span><span class="border rounded px-2 py-1 text-xs">'+h(dProd)+'</span>'+
+        '<span class="text-slate-500 text-xs font-medium ml-2">版本：</span><span class="border rounded px-2 py-1 text-xs">'+h(dVer)+'</span>'+
+        '<span class="border-l border-slate-200 h-5 mx-2"></span>'+
+        '<span class="text-slate-500 text-xs font-medium">时间：</span><input type="date" value="2026-05-10" class="border rounded px-2 py-1 text-xs w-28"/>—<input type="date" value="2026-05-16" class="border rounded px-2 py-1 text-xs w-28"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-2"></span>'+
+        '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-export>📎 导出Excel</button>'+
+      '</div>';
+
+      if(isQuick){
+        var pf=PRODUCT_FUNNEL_QUICK;
+        var dayRows=dates.map(function(d,idx){
+          var scale=0.9+idx*0.02;
+          var pagePv=Math.round(pf.pagePv*scale/7);var pageUv=Math.round(pf.pageUv*scale/7);
+          var openSession=Math.round(pf.openSession*scale/7);
+          var openRate=pagePv>0?((openSession/pagePv)*100).toFixed(1)+'%':'—';
+          var reportCnt=Math.round(pf.reportCnt*scale/7);var reportUser=Math.round(pf.reportUser*scale/7);
+          var avgReport=reportUser>0?(reportCnt/reportUser).toFixed(2):'—';
+          var reportConv=pagePv>0?((reportCnt/pagePv)*100).toFixed(1)+'%':'—';
+          var addFans=Math.round(pf.addFans*scale/7);
+          var reportToFan=reportCnt>0?((addFans/reportCnt)*100).toFixed(1)+'%':'—';
+          var pvToFan=pagePv>0?((addFans/pagePv)*100).toFixed(1)+'%':'—';
+          return '<tr class="border-t border-slate-100 hover:bg-slate-50">'+
+            '<td class="px-2 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(pagePv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(pageUv)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(openSession)+'</td><td class="px-2 py-1.5 text-right text-brand-700">'+openRate+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+pf.avgTurns+'</td><td class="px-2 py-1.5 text-right">'+pf.avgReportTurns+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(reportUser)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+avgReport+'</td><td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(addFans)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+reportToFan+'</td><td class="px-2 py-1.5 text-right">'+pvToFan+'</td>'+
+          '</tr>';
+        }).join('');
+        var trendBars=dates.map(function(d,idx){var scale=0.9+idx*0.02;var pv=Math.round(pf.pagePv*scale/7);var rep=Math.round(pf.reportCnt*scale/7);var fans=Math.round(pf.addFans*scale/7);var max=pf.pagePv/5;var h1=Math.round(pv/max*100);var h2=Math.round(rep/max*100);var h3=Math.round(fans/max*100);return '<div class="flex-1 flex flex-col items-center gap-0.5"><div class="flex items-end gap-0.5 h-[80px]"><div class="w-2 bg-brand-400 rounded-t" style="height:'+Math.min(h1,100)+'%"></div><div class="w-2 bg-emerald-400 rounded-t" style="height:'+Math.min(h2,100)+'%"></div><div class="w-2 bg-amber-400 rounded-t" style="height:'+Math.min(h3,100)+'%"></div></div><div class="text-[10px] text-slate-400">'+h(d)+'</div></div>';}).join('');
+        return '<div class="space-y-4">'+
+          '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2>'+typeBadge+'</div>'+
+          detailFilterBar+
+          '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 每日核心指标趋势（快测类）</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>首页PV</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-400 inline-block"></span>报告数量</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>加粉数</span></div><div class="flex items-end gap-2 px-2">'+trendBars+'</div></div>'+
+          '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
+          '<table class="min-w-[1200px] text-xs"><thead><tr class="text-left text-[10px] text-slate-500 border-b">'+
+            _th('日期','日期','px-2 py-2 sticky left-0 bg-white')+
+            _th('首页PV（会话数）','首页PV（会话数）','px-2 py-2 text-right')+
+            _th('首页UV','首页UV','px-2 py-2 text-right')+
+            _th('开口会话数','开口会话数','px-2 py-2 text-right')+
+            _th('会话开口率','会话开口率','px-2 py-2 text-right')+
+            _th('平均对话轮次','平均对话轮次','px-2 py-2 text-right')+
+            _th('平均出报告轮次','平均出报告轮次','px-2 py-2 text-right')+
+            _th('报告数量','报告数量','px-2 py-2 text-right')+
+            _th('报告人次','报告人次','px-2 py-2 text-right')+
+            _th('人均报告数','人均报告数','px-2 py-2 text-right')+
+            _th('首页-报告转化率','首页-报告转化率','px-2 py-2 text-right')+
+            _th('加粉数','加粉数','px-2 py-2 text-right')+
+            _th('报告-加粉转化率','报告-加粉转化率','px-2 py-2 text-right')+
+            _th('首页-加粉转化率','首页-加粉转化率','px-2 py-2 text-right')+
+          '</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+        '</div>';
+      }
+
+      var pf=PRODUCT_FUNNEL_TONGUE;
       var dayRows=dates.map(function(d,idx){
         var scale=0.9+idx*0.02;
         var pagePv=Math.round(pf.pagePv*scale/7);var pageUv=Math.round(pf.pageUv*scale/7);
-        var uploadPv=Math.round(pf.uploadPv*scale/7);var uploadLoss=((1-uploadPv/pagePv)*100).toFixed(1);
+        var uploadPv=Math.round(pf.uploadPv*scale/7);
         var reportCnt=Math.round(pf.reportCnt*scale/7);var reportUser=Math.round(pf.reportUser*scale/7);
-        var reportConv=((reportCnt/pagePv)*100).toFixed(1);var avgReport=(reportCnt/reportUser).toFixed(1);
+        var uploadLoss=uploadPv>0?((1-reportCnt/uploadPv)*100).toFixed(1):'—';
+        var reportConv=pagePv>0?((reportCnt/pagePv)*100).toFixed(1)+'%':'—';
+        var avgReport=reportUser>0?(reportCnt/reportUser).toFixed(2):'—';
         var dialogCnt=Math.round(pf.dialogCnt*scale/7);var validDialog=Math.round(pf.validDialog*scale/7);
-        var validRate=((validDialog/dialogCnt)*100).toFixed(1);var avgTurns=pf.avgTurns;var avgSumTurns=pf.avgSummaryTurns;
+        var validRate=dialogCnt>0?((validDialog/dialogCnt)*100).toFixed(1)+'%':'—';
         var summaryCnt=Math.round(pf.summaryCnt*scale/7);var summaryUser=Math.round(pf.summaryUser*scale/7);
-        var sumRatePv=((summaryCnt/reportCnt)*100).toFixed(1);var sumRatePv2=((summaryCnt/pagePv)*100).toFixed(1);
+        var sumRatePv=reportCnt>0?((summaryCnt/reportCnt)*100).toFixed(1)+'%':'—';
+        var sumRateHome=pagePv>0?((summaryCnt/pagePv)*100).toFixed(1)+'%':'—';
         var leadCnt=Math.round(pf.leadCnt*scale/7);
-        var leadR1=((leadCnt/summaryCnt)*100).toFixed(1);var leadR2=((leadCnt/reportCnt)*100).toFixed(1);var leadR3=((leadCnt/pagePv)*100).toFixed(1);
+        var leadR1=summaryCnt>0?((leadCnt/summaryCnt)*100).toFixed(1)+'%':'—';
+        var leadR2=reportCnt>0?((leadCnt/reportCnt)*100).toFixed(1)+'%':'—';
+        var leadR3=pagePv>0?((leadCnt/pagePv)*100).toFixed(1)+'%':'—';
         return '<tr class="border-t border-slate-100 hover:bg-slate-50">'+
           '<td class="px-2 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(pagePv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(pageUv)+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(uploadPv)+'</td><td class="px-2 py-1.5 text-right text-red-600">'+uploadLoss+'%</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(reportUser)+'</td>'+
-          '<td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'%</td><td class="px-2 py-1.5 text-right">'+avgReport+'</td>'+
+          '<td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'</td><td class="px-2 py-1.5 text-right">'+avgReport+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(dialogCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(validDialog)+'</td>'+
-          '<td class="px-2 py-1.5 text-right">'+validRate+'%</td><td class="px-2 py-1.5 text-right">'+avgTurns+'</td><td class="px-2 py-1.5 text-right">'+avgSumTurns+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+validRate+'</td><td class="px-2 py-1.5 text-right">'+pf.avgTurns+'</td><td class="px-2 py-1.5 text-right">'+pf.avgSummaryTurns+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(summaryCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(summaryUser)+'</td>'+
-          '<td class="px-2 py-1.5 text-right">'+sumRatePv+'%</td><td class="px-2 py-1.5 text-right">'+sumRatePv2+'%</td>'+
+          '<td class="px-2 py-1.5 text-right">'+sumRatePv+'</td><td class="px-2 py-1.5 text-right">'+sumRateHome+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(leadCnt)+'</td>'+
-          '<td class="px-2 py-1.5 text-right">'+leadR1+'%</td><td class="px-2 py-1.5 text-right">'+leadR2+'%</td><td class="px-2 py-1.5 text-right">'+leadR3+'%</td>'+
+          '<td class="px-2 py-1.5 text-right">'+leadR1+'</td><td class="px-2 py-1.5 text-right">'+leadR2+'</td><td class="px-2 py-1.5 text-right">'+leadR3+'</td>'+
         '</tr>';
       }).join('');
-      var trendBars=dates.map(function(d,idx){var scale=0.9+idx*0.02;var pv=Math.round(pf.pagePv*scale/7);var rep=Math.round(pf.reportCnt*scale/7);var lead=Math.round(pf.leadCnt*scale/7);var max=pf.pagePv/5;var h1=Math.round(pv/max*100);var h2=Math.round(rep/max*100);var h3=Math.round(lead/max*100);return '<div class="flex-1 flex flex-col items-center gap-0.5"><div class="flex items-end gap-0.5 h-[80px]"><div class="w-2 bg-brand-400 rounded-t" style="height:'+Math.min(h1,100)+'%"></div><div class="w-2 bg-emerald-400 rounded-t" style="height:'+Math.min(h2,100)+'%"></div><div class="w-2 bg-amber-400 rounded-t" style="height:'+Math.min(h3,100)+'%"></div></div><div class="text-[10px] text-slate-400">'+h(d)+'</div></div>';}).join('');
+      var trendBars=dates.map(function(d,idx){var scale=0.9+idx*0.02;var pv=Math.round(pf.pagePv*scale/7);var rep=Math.round(pf.reportCnt*scale/7);var sum=Math.round(pf.summaryCnt*scale/7);var lead=Math.round(pf.leadCnt*scale/7);var max=pf.pagePv/5;var h1=Math.round(pv/max*100);var h2=Math.round(rep/max*100);var h3=Math.round(sum/max*100);var h4=Math.round(lead/max*100);return '<div class="flex-1 flex flex-col items-center gap-0.5"><div class="flex items-end gap-0.5 h-[80px]"><div class="w-2 bg-brand-400 rounded-t" style="height:'+Math.min(h1,100)+'%"></div><div class="w-2 bg-emerald-400 rounded-t" style="height:'+Math.min(h2,100)+'%"></div><div class="w-2 bg-violet-400 rounded-t" style="height:'+Math.min(h3,100)+'%"></div><div class="w-2 bg-amber-400 rounded-t" style="height:'+Math.min(h4,100)+'%"></div></div><div class="text-[10px] text-slate-400">'+h(d)+'</div></div>';}).join('');
       return '<div class="space-y-4">'+
-        '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2></div>'+
-        '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap">'+
-          '<span class="text-slate-500 text-xs font-medium">渠道：</span><span class="border rounded px-2 py-1 text-xs font-mono">'+h(dCh)+'</span>'+
-          '<span class="text-slate-500 text-xs font-medium ml-2">产品：</span><span class="border rounded px-2 py-1 text-xs">'+h(dProd)+'</span>'+
-          '<span class="text-slate-500 text-xs font-medium ml-2">版本：</span><span class="border rounded px-2 py-1 text-xs">'+h(dVer)+'</span>'+
-          '<span class="border-l border-slate-200 h-5 mx-2"></span>'+
-          '<span class="text-slate-500 text-xs font-medium">时间：</span><input type="date" value="2026-05-10" class="border rounded px-2 py-1 text-xs w-28"/>—<input type="date" value="2026-05-16" class="border rounded px-2 py-1 text-xs w-28"/>'+
-          '<span class="border-l border-slate-200 h-5 mx-2"></span>'+
-          '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button>'+
-        '</div>'+
-        '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 核心指标趋势</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>首页PV</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-400 inline-block"></span>舌诊报告数</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>留资数</span></div><div class="flex items-end gap-2 px-2">'+trendBars+'</div></div>'+
+        '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2>'+typeBadge+'</div>'+
+        detailFilterBar+
+        '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 每日核心指标趋势（舌诊类）</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>首页PV</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-400 inline-block"></span>舌诊报告数</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-violet-400 inline-block"></span>小结数</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>留资数</span></div><div class="flex items-end gap-2 px-2">'+trendBars+'</div></div>'+
         '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
-        '<table class="min-w-[1400px] text-xs"><thead><tr class="text-left text-[10px] text-slate-500 border-b">'+
-          '<th class="px-2 py-2 sticky left-0 bg-white">日期</th>'+
-          '<th class="px-2 py-2 text-right">首页PV</th><th class="px-2 py-2 text-right">首页UV</th>'+
-          '<th class="px-2 py-2 text-right">舌象上传PV</th><th class="px-2 py-2 text-right">上传折损率</th>'+
-          '<th class="px-2 py-2 text-right">舌诊报告数</th><th class="px-2 py-2 text-right">报告人次</th>'+
-          '<th class="px-2 py-2 text-right">报告转化率</th><th class="px-2 py-2 text-right">人均报告数</th>'+
-          '<th class="px-2 py-2 text-right">对话数</th><th class="px-2 py-2 text-right">有效对话数</th>'+
-          '<th class="px-2 py-2 text-right">有效对话率</th><th class="px-2 py-2 text-right">平均轮次</th><th class="px-2 py-2 text-right">出小结轮次</th>'+
-          '<th class="px-2 py-2 text-right">小结数</th><th class="px-2 py-2 text-right">小结人次</th>'+
-          '<th class="px-2 py-2 text-right">小结率PV</th><th class="px-2 py-2 text-right">小结率PV2</th>'+
-          '<th class="px-2 py-2 text-right">留资数</th>'+
-          '<th class="px-2 py-2 text-right">留资率PV1</th><th class="px-2 py-2 text-right">留资率PV2</th><th class="px-2 py-2 text-right">留资率PV3</th>'+
-        '</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+        '<table class="min-w-[1600px] text-xs"><thead>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="8">首页与舌象</th><th class="px-2 py-2 text-center" colspan="8">对话与小结</th><th class="px-2 py-2 text-center" colspan="4">留资</th></tr>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b">'+
+            _th('首页PV','首页PV','px-2 py-2 text-right')+
+            _th('首页UV','首页UV','px-2 py-2 text-right')+
+            _th('舌象上传PV','舌象上传PV','px-2 py-2 text-right')+
+            _th('舌象上传折损率','舌象上传折损率','px-2 py-2 text-right')+
+            _th('舌诊报告数','舌诊报告数','px-2 py-2 text-right')+
+            _th('舌诊报告人次','舌诊报告人次','px-2 py-2 text-right')+
+            _th('首页-报告转化率','首页-报告转化率','px-2 py-2 text-right')+
+            _th('人均舌诊报告数','人均舌诊报告数','px-2 py-2 text-right')+
+            _th('对话数','对话数','px-2 py-2 text-right')+
+            _th('开口对话数','开口对话数','px-2 py-2 text-right')+
+            _th('开口对话率','开口对话率','px-2 py-2 text-right')+
+            _th('平均对话轮次','平均对话轮次','px-2 py-2 text-right')+
+            _th('平均出小结轮次','平均出小结轮次','px-2 py-2 text-right')+
+            _th('小结数','小结数','px-2 py-2 text-right')+
+            _th('小结人次','小结人次','px-2 py-2 text-right')+
+            _th('报告-小结率PV','报告-小结率PV','px-2 py-2 text-right')+
+            _th('首页-小结率PV','首页-小结率PV','px-2 py-2 text-right')+
+            _th('留资数','留资数','px-2 py-2 text-right')+
+            _th('小结-留资率PV','小结-留资率PV','px-2 py-2 text-right')+
+            _th('舌诊报告-留资率PV','舌诊报告-留资率PV','px-2 py-2 text-right')+
+            _th('首页-留资率PV','首页-留资率PV','px-2 py-2 text-right')+
+          '</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
       '</div>';
     }
 
+    function initOrderCharts(){
+      if(funnelState.tab!=='daily'||funnelState.dailySub!=='order') return;
+      var O=DAILY_ORDERS;
+      var labels=O.trend.map(function(t){return t.d;});
+      var totals=O.trend.map(function(t){return t.first+t.revisit;});
+      var firstVisit=O.byVisit[0].orderCnt;
+      var revisitVisit=O.byVisit[1].orderCnt;
+      var decoTotal=O.byDrug[0].orderCnt;
+      var pillTotal=O.byDrug[1].orderCnt;
+      var firstDeco=Math.round(decoTotal*firstVisit/(firstVisit+revisitVisit));
+      var firstPill=firstVisit-firstDeco;
+      var revDeco=decoTotal-firstDeco;
+      var revPill=pillTotal-firstPill;
+      var mk=function(id,cfg){var el=document.getElementById(id);if(!el||typeof Chart==='undefined') return;funnelChartInstances.push(new Chart(el.getContext('2d'),cfg));};
+      mk('orderChartVisit',{type:'bar',data:{labels:['初诊','复诊'],datasets:[{label:'汤剂',data:[firstDeco,revDeco],backgroundColor:'#14b8a6',stack:'s'},{label:'丸剂',data:[firstPill,revPill],backgroundColor:'#38bdf8',stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:9},padding:8}}},scales:{x:{stacked:true,ticks:{font:{size:9}}},y:{stacked:true,beginAtZero:true,ticks:{font:{size:9},maxTicksLimit:5}}}}});
+      mk('orderChartTrend',{type:'line',data:{labels:labels,datasets:[{label:'总金额',data:totals,borderColor:'#0f766e',backgroundColor:'rgba(15,118,110,0.08)',tension:0.3,fill:true},{label:'初诊金额',data:O.trend.map(function(t){return t.first;}),borderColor:'#14b8a6',tension:0.3},{label:'复诊金额',data:O.trend.map(function(t){return t.revisit;}),borderColor:'#3b82f6',tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},scales:{y:{beginAtZero:true,ticks:{font:{size:9}}},x:{ticks:{font:{size:9}}}}}});
+    }
+
+    function handleFunnelExport(){
+      var ts=new Date().toISOString().slice(0,10);
+      if(funnelState.chDetailRow){
+        var meta=getChDetailMeta();
+        exportFunnelTableMock('产品详细转化_'+meta.product+'_'+ts+'.xlsx','产品转化',['日期','指标示例'],['05-16','导出示例数据']);
+        return;
+      }
+      if(funnelState.tab==='daily'){
+        if(funnelState.dailySub==='conversion'){
+          exportFunnelTableMock('每日转化数据_'+ts+'.xlsx','每日转化',['日期','首页PV','加企微数','开口','支付','支付转化率'],['05-16',fmt(AI_FUNNEL_STEPS[0].count),fmt(AI_FUNNEL_STEPS[4].count),fmt(ASSISTANT_FUNNEL_STEPS[1].count),fmt(ASSISTANT_FUNNEL_STEPS[4].count),'19.8%']);
+        }else{
+          exportFunnelTableMock('每日订单金额_'+ts+'.xlsx','订单金额',['日期','汤剂订单数','丸剂订单数','总订单金额'],['05-16','52','31','85770']);
+        }
+      }else if(funnelState.tab==='assistant'){
+        var name=funnelState.assistantSub==='efficiency'?'医助人效':'医助成交';
+        exportFunnelTableMock(name+'_'+ts+'.xlsx',name,['医助','示例指标'],[ASSISTANTS[0].name,'示例值']);
+      }else{
+        exportFunnelTableMock('渠道维度统计_'+ts+'.xlsx','渠道统计',['渠道','产品','首页PV','加企微数'],[CHANNELS[0].ch,CHANNELS[0].product,CHANNELS[0].pv,CHANNELS[0].addWx]);
+      }
+    }
+
     function renderFunnelPage(){
+      destroyFunnelCharts();
       document.getElementById('funnel-content').innerHTML=renderFunnel();
       bindFunnelEvents();
+      initOrderCharts();
     }
 
     function bindFunnelEvents(){
@@ -952,11 +1369,20 @@
       document.querySelectorAll('[data-asst-sub]').forEach(function(el){
         el.addEventListener('click',function(){funnelState.assistantSub=el.getAttribute('data-asst-sub');renderFunnelPage();});
       });
+      document.querySelectorAll('[data-fdim]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.fDim=el.getAttribute('data-fdim');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-ftime]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.fTimeQuick=el.getAttribute('data-ftime');renderFunnelPage();});
+      });
       document.querySelectorAll('[data-ch-detail]').forEach(function(el){
         el.addEventListener('click',function(){funnelState.chDetailRow=el.getAttribute('data-ch-detail');renderFunnelPage();});
       });
       var backBtn=document.getElementById('btn-back-overview');
       if(backBtn) backBtn.addEventListener('click',function(){funnelState.chDetailRow=null;renderFunnelPage();});
+      document.querySelectorAll('[data-funnel-export]').forEach(function(el){
+        el.addEventListener('click',handleFunnelExport);
+      });
     }
 
     // Navigation
@@ -1201,6 +1627,402 @@
     
     // Initialize navigation
     bindNavigation();
+
+    // Annotation System
+    const annotationData = {
+        '1': {
+            title: '7.2.1 每日数据统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">二级 Tab</div>
+  <p><strong>每日转化数据</strong> | <strong>每日订单金额数据</strong></p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间筛选</strong>：日期范围，默认 2026-01-01 → 2026-05-16，支持选择具体时间段（日维度）</li>
+    <li><strong>维度筛选</strong>：按时、按日（默认）</li>
+    <li><strong>渠道筛选</strong>：全部、baidu_doctor_h5、douyin_info、weixin_mp</li>
+    <li><strong>子渠道筛选</strong>：全部、baidu_doctor_h501、baidu_doctor_h502</li>
+    <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
+    <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
+    <li><strong>团队筛选</strong>：按团队筛选；筛选团队后首页 PV/UV 灰置</li>
+    <li><strong>医助筛选</strong>：系统用户名或企微 id 搜索；筛选医助后首页 PV/UV 灰置</li>
+    <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">业务规则</div>
+  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。</p>
+</div>
+`
+        },
+        '2': {
+            title: '7.2.2 医助服务统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">二级 Tab</div>
+  <p><strong>医助服务人效统计</strong> | <strong>医助成交数据</strong></p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间筛选（快捷）</strong>：今日、昨日、近7天、近30天</li>
+    <li><strong>时间筛选（自定义）</strong>：日期时间范围，支持到时分维度</li>
+    <li><strong>渠道筛选</strong>：全部、baidu_doctor_h5、douyin_info、weixin_mp</li>
+    <li><strong>子渠道筛选</strong>：全部、baidu_doctor_h501、baidu_doctor_h502</li>
+    <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
+    <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
+    <li><strong>团队筛选</strong>：按团队筛选</li>
+    <li><strong>医助名称搜索</strong>：输入医助名称模糊搜索</li>
+    <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">业务规则</div>
+  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。</p>
+</div>
+`
+        },
+        '3': {
+            title: '7.2.3 渠道维度统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">二级 Tab</div>
+  <p><strong>渠道核心数据概览</strong>（产品详细转化数据通过操作列「查看详情」进入独立页面）</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间筛选（快捷）</strong>：今日、昨日、近7天、近30天</li>
+    <li><strong>时间筛选（自定义）</strong>：日期时间范围，支持到时分维度</li>
+    <li><strong>渠道筛选</strong>：全部、baidu_doctor_h5、douyin_info、weixin_mp</li>
+    <li><strong>子渠道筛选</strong>：全部、SEM投放、信息流、公众号</li>
+    <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
+    <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
+    <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">业务规则</div>
+  <p>上述筛选栏控制渠道核心数据概览；产品详细转化数据页继承本模块筛选条件。</p>
+</div>
+`
+        },
+        '4': {
+            title: '7.2.1.1 每日转化数据统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计口径</div>
+  <p>全链路漏斗分为两大类：<strong>AI工具转化</strong>和<strong>医助转化</strong>。</p>
+  <ul>
+    <li><strong>AI工具转化</strong>：统计从用户访问 AI 工具首页到加企微的转化链路</li>
+    <li><strong>医助转化</strong>：仅统计初诊流程转化，从加企微到付费确认的完整链路</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">AI工具转化（A01～A07）</div>
+  <ul>
+    <li><strong>A01 首页PV</strong>：AI 工具首页页面浏览量或工具新建量，如舌诊首页浏览量、快测对话页数量</li>
+    <li><strong>A02 首页UV</strong>：AI 工具首页独立访客数</li>
+    <li><strong>A03 报告数</strong>：用户生成的舌诊/体质报告数</li>
+    <li><strong>A04 报告人次</strong>：生成报告的去重用户数</li>
+    <li><strong>A05 加企微数</strong>：通过 AI 工具新增企微好友去重人数</li>
+    <li><strong>A06 报告-加微转化率PV</strong>：加企微数 / 报告数</li>
+    <li><strong>A07 首页-加微转化率PV</strong>：加企微数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">医助转化（F01～F07）</div>
+  <ul>
+    <li><strong>F01 加企微数</strong>：当日通过各渠道新增企微好友去重人数</li>
+    <li><strong>F02 开口数</strong>：用户主动发送首条消息的去重人数</li>
+    <li><strong>F03 舌象上传数</strong>：用户提交舌象图片的去重人数（本期可实现为用户上传图片即算）</li>
+    <li><strong>F04 开方数</strong>：完成病例总结和开方的去重人数</li>
+    <li><strong>F05 支付数</strong>：支付成功的去重人数（R01）</li>
+    <li><strong>F06 确认数</strong>：付费确认（含药房发货确认等最终节点）的去重人数</li>
+    <li><strong>F07 支付转化率</strong>：支付数 / 加企微数</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>AI工具转化漏斗图</strong>：A01 首页PV → A02 首页UV → A03 报告数 → A04 报告人次 → A05 加企微数；显示各步人数与环节转化率；底部显示报告-加微转化率 PV、首页-加微转化率 PV。格式：漏斗条形图，与医助转化并列展示</li>
+    <li><strong>医助转化漏斗图</strong>：F01 加企微 → F02 开口 → F03 舌象上传 → F04 开方 → F05 支付 → F06 确认；显示各步人数与环节转化率；底部显示支付转化率。格式：漏斗条形图，与 AI 工具转化并列展示</li>
+    <li><strong>数据表</strong>：纵坐标=日期；横坐标=AI 工具转化（首页PV、首页UV、报告数、报告人次、加企微数、报告-加微转化率PV、首页-加微转化率PV）+ 医助转化（加企微、开口、舌象上传、开方、支付、确认、支付转化率）。格式：宽表格，支持横向滚动、排序、导出</li>
+  </ul>
+</div>
+`
+        },
+        '5-order': {
+            title: '7.2.1.2 每日订单金额数据',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计口径</div>
+  <p>按业务日统计订单与金额，分别按<strong>药物类型</strong>、<strong>初复诊</strong>两个维度拆分。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">按药物类型拆分</div>
+  <ul>
+    <li><strong>汤剂订单数</strong>：当日药物类型为汤剂的支付成功订单数</li>
+    <li><strong>汤剂订单金额</strong>：当日汤剂订单实付金额合计（R01）</li>
+    <li><strong>丸剂订单数</strong>：当日药物类型为丸剂的支付成功订单数</li>
+    <li><strong>丸剂订单金额</strong>：当日丸剂订单实付金额合计（R01）</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">按初复诊拆分</div>
+  <ul>
+    <li><strong>初诊订单数</strong>：当日首次成交用户的支付成功订单数</li>
+    <li><strong>初诊金额</strong>：当日初诊订单实付金额合计</li>
+    <li><strong>复诊订单数</strong>：当日非首次成交（复购）用户的支付成功订单数</li>
+    <li><strong>复诊金额</strong>：当日复诊订单实付金额合计</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">汇总指标</div>
+  <ul>
+    <li><strong>总订单数</strong>：当日全部支付成功订单数（= 汤剂+丸剂 = 初诊+复诊）</li>
+    <li><strong>总订单金额</strong>：当日全部实付金额合计</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>药物类型分析</strong>：初诊/复诊合并堆叠柱状图（汤剂+丸剂，同一图表两根汇总柱）</li>
+    <li><strong>趋势图</strong>：所选范围内每日总金额、初诊金额、复诊金额趋势（折线图）</li>
+    <li><strong>明细表</strong>：横坐标分处方类型、初复诊类型、总订单三组维度；按日期展示全部指标，支持排序与导出</li>
+  </ul>
+</div>
+`
+        },
+        '5': {
+            title: '7.2.2.1 医助服务人效统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计维度</div>
+  <p>以医助（assistant_id）为主维度，在筛选的时间段内汇总每个医助的转化数据。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义</div>
+  <ul>
+    <li><strong>曝光数</strong>：企微分配曝光的数量</li>
+    <li><strong>加粉数</strong>：该医助在筛选时段内分配到的新加企微好友去重人数</li>
+    <li><strong>开口数</strong>：该医助服务的用户主动开口去重人数</li>
+    <li><strong>舌象上传数</strong>：该医助服务的用户提交舌象去重人数</li>
+    <li><strong>开方数</strong>：该医助服务的用户完成病例总结和开方的去重人数</li>
+    <li><strong>支付数</strong>：该医助服务的用户支付成功去重人数</li>
+    <li><strong>确认数</strong>：该医助服务的用户付费确认去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>排行榜</strong>：医助按加粉-支付转化率排序的 TopN（水平条形图）</li>
+    <li><strong>明细表</strong>：每行一个医助，列出曝光数、加粉数、开口数、舌象上传数、开方数、支付数、确认数、加粉-支付转化率；支持按列排序、搜索医助</li>
+  </ul>
+</div>
+`
+        },
+        '6': {
+            title: '7.2.2.2 医助成交数据',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计维度</div>
+  <p>以医助（assistant_id）为主维度，在筛选时段内汇总每个医助的订单与金额数据。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义</div>
+  <ul>
+    <li><strong>初诊订单数</strong>：该医助服务的初诊用户支付成功订单数</li>
+    <li><strong>初诊金额</strong>：该医助服务的初诊订单实付金额合计</li>
+    <li><strong>复诊订单数</strong>：该医助服务的复诊用户支付成功订单数</li>
+    <li><strong>复诊金额</strong>：该医助服务的复诊订单实付金额合计</li>
+    <li><strong>总订单数</strong>：初诊订单数 + 复诊订单数</li>
+    <li><strong>总订单金额</strong>：初诊金额 + 复诊金额</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>排行榜</strong>：医助按总订单数、总订单金额分别排序的 TopN（水平条形图）</li>
+    <li><strong>明细表</strong>：每行一个医助，列出初诊订单数、初诊金额、复诊订单数、复诊金额、总订单数、总订单金额；支持排序、导出</li>
+  </ul>
+</div>
+`
+        },
+        '7': {
+            title: '7.2.3.1 渠道核心数据概览',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计维度</div>
+  <p>以渠道（channel）→ 子渠道（sub_channel）→ 投放产品（product）→ 产品版本（product_version）为层级，在所选时间段内汇总核心指标。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义</div>
+  <ul>
+    <li><strong>首页PV</strong>：AI 工具首页页面浏览量或工具新建量，如舌诊首页浏览量、快测对话页数量</li>
+    <li><strong>首页UV</strong>：该渠道/产品的落地页独立访客数</li>
+    <li><strong>报告数</strong>：用户生成的舌诊报告/快测结论报告数</li>
+    <li><strong>报告人次</strong>：生成报告的去重用户数</li>
+    <li><strong>加企微数</strong>：通过该渠道/产品最终添加企微的去重人数</li>
+    <li><strong>报告-加微转化率PV</strong>：加企微数 / 报告数</li>
+    <li><strong>首页-加微转化率PV</strong>：加企微数 / 首页PV</li>
+    <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
+    <li><strong>加企微-支付转化率</strong>：支付数 / 加企微数</li>
+    <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>辅助图表1</strong>：各渠道加企微分布（水平条形图，显示各渠道加企微数占比）</li>
+    <li><strong>辅助图表2</strong>：各渠道初诊支付分布（水平条形图，显示各渠道支付数占比）</li>
+    <li><strong>层级钻取表</strong>：行=渠道→子渠道→产品→版本；列分 AI 工具转化（首页PV～首页-加微转化率PV）与医助转化（支付数～首页-支付转化率）；操作列含「查看详情」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">操作说明</div>
+  <p>点击「查看详情」进入产品详细转化数据页，默认选中当前行对应的渠道、子渠道、产品和版本。</p>
+</div>
+`
+        },
+        '8': {
+            title: '7.2.3.1a 产品详细转化数据页',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">入口与上下文</div>
+  <p><strong>入口</strong>：渠道核心数据概览表 → 操作列「查看详情」</p>
+  <p><strong>上下文</strong>：默认继承上一级已选的渠道、子渠道、产品、产品版本；时间范围继承全局筛选栏设置。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项（页面顶部）</div>
+  <ul>
+    <li><strong>渠道 / 子渠道 / 产品 / 产品版本</strong>：展示继承值</li>
+    <li><strong>时间范围</strong>：日期范围，支持时分维度</li>
+    <li><strong>操作</strong>：「查询」「重置」「返回概览」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">数据表结构</div>
+  <p>纵坐标=日期；横坐标根据产品类型自动切换：</p>
+  <ul>
+    <li><strong>舌诊类产品</strong>：分首页与舌象、对话与小结、留资三阶段；含舌象上传折损率、首页-报告转化率、开口对话数、小结率、留资率等</li>
+    <li><strong>快测类型产品</strong>：首页PV（会话数）、开口会话数、会话开口率、报告数量、加粉数、首页-报告转化率、报告-加粉转化率、首页-加粉转化率等 13 列</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>辅助图表（舌诊类）</strong>：每日核心指标趋势（首页PV、舌诊报告数、小结数、留资数）折线图</li>
+    <li><strong>辅助图表（快测类）</strong>：每日核心指标趋势（首页PV、报告数量、加粉数）折线图</li>
+    <li><strong>核心数据表</strong>：宽表格，支持横向滚动、排序、导出；列头「?」展示指标口径</li>
+  </ul>
+</div>
+`
+        }
+    };
+
+    let activeTooltip = null;
+    let activeMarker = null;
+    let isDragging = false;
+    let dragOffset = { x: 0, y: 0 };
+
+    function createTooltip(markerId, data) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'req-tooltip';
+        tooltip.id = 'tooltip-' + markerId;
+        tooltip.innerHTML = `
+            <div class="req-tooltip-header">
+                <span>${markerId} ${data.title}</span>
+                <span class="req-tooltip-close" onclick="closeTooltip('${markerId}')">×</span>
+            </div>
+            <div class="req-tooltip-content">
+                ${data.content}
+            </div>
+        `;
+        
+        // Position tooltip
+        const marker = document.querySelector('.req-marker[data-id="' + markerId + '"]');
+        if (marker) {
+            const markerRect = marker.getBoundingClientRect();
+            let tooltipLeft = markerRect.left - 8;
+            let tooltipTop = markerRect.bottom + 8;
+            
+            // Boundary check
+            if (tooltipLeft + 450 > window.innerWidth) {
+                tooltipLeft = window.innerWidth - 450 - 16;
+            }
+            if (tooltipTop + 400 > window.innerHeight) {
+                tooltipTop = markerRect.top - 400 - 8;
+            }
+            
+            tooltip.style.left = tooltipLeft + 'px';
+            tooltip.style.top = tooltipTop + 'px';
+        }
+        
+        // Drag functionality
+        tooltip.addEventListener('mousedown', function(e) {
+            if (e.target.classList.contains('req-tooltip-close')) return;
+            isDragging = true;
+            activeTooltip = tooltip;
+            dragOffset.x = e.clientX - tooltip.offsetLeft;
+            dragOffset.y = e.clientY - tooltip.offsetTop;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging && activeTooltip === tooltip) {
+                tooltip.style.left = (e.clientX - dragOffset.x) + 'px';
+                tooltip.style.top = (e.clientY - dragOffset.y) + 'px';
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+        
+        // Prevent event bubbling
+        tooltip.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        return tooltip;
+    }
+
+    function showTooltip(markerId) {
+        // Close existing tooltip with same ID
+        closeTooltip(markerId);
+        
+        const data = annotationData[markerId];
+        if (!data) return;
+        
+        const tooltip = createTooltip(markerId, data);
+        document.body.appendChild(tooltip);
+        activeTooltip = tooltip;
+    }
+
+    function closeTooltip(markerId) {
+        const tooltip = document.getElementById('tooltip-' + markerId);
+        if (tooltip) {
+            tooltip.remove();
+        }
+        if (activeTooltip && activeTooltip.id === 'tooltip-' + markerId) {
+            activeTooltip = null;
+        }
+    }
+
+    // Initialize markers using event delegation for dynamically added elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Use event delegation to handle hover on dynamically added markers
+        document.body.addEventListener('mouseenter', function(e) {
+            if (e.target.classList.contains('req-marker')) {
+                const markerId = e.target.getAttribute('data-id');
+                showTooltip(markerId);
+            }
+        }, true);
+    });
 </script>
 </body>
 </html>

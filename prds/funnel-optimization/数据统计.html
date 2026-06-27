@@ -1181,6 +1181,26 @@
       '</div>';
     }
 
+    function _aggAcrossDates(dates,pfn){
+      return dates.reduce(function(sum,_,idx){
+        var scale=0.9+idx*0.02;
+        return sum+Math.round(pfn(scale));
+      },0);
+    }
+    function _fmtTurns(n){return Number(n).toFixed(1)+'轮';}
+    function _buildHfunnel(steps,color,fmtFn,opts){
+      if(!steps.length) return '';
+      opts=opts||{};
+      fmtFn=fmtFn||fmt;
+      var max=opts.wideBar?Math.max.apply(null,steps.map(function(s){return s.value||0})):(steps[0].value||1);
+      if(!max) max=1;
+      return '<div class="space-y-1.5">'+steps.map(function(s,i){
+        var w=Math.max(10,Math.round(s.value/max*100));
+        var rate=i>0&&steps[i-1].value>0?((s.value/steps[i-1].value)*100).toFixed(1)+'%':'—';
+        return '<div class="flex items-center gap-2"><div class="w-28 text-xs text-right font-medium shrink-0">'+h(s.label)+'</div><div class="flex-1 min-w-0"><div class="funnel-bar '+color+'" style="width:'+w+'%">'+fmtFn(s.value)+'</div></div><div class="w-14 text-xs text-slate-500 text-right shrink-0">'+rate+'</div></div>';
+      }).join('')+'</div>';
+    }
+
     function renderChDetailPage(){
       var meta=getChDetailMeta();
       var dCh=meta.ch,dSub=meta.sub,dProd=meta.product,dVer=meta.version;
@@ -1222,11 +1242,20 @@
             '<td class="px-2 py-1.5 text-right">'+reportToFan+'</td><td class="px-2 py-1.5 text-right">'+pvToFan+'</td>'+
           '</tr>';
         }).join('');
-        var trendBars=dates.map(function(d,idx){var scale=0.9+idx*0.02;var pv=Math.round(pf.pagePv*scale/7);var rep=Math.round(pf.reportCnt*scale/7);var fans=Math.round(pf.addFans*scale/7);var max=pf.pagePv/5;var h1=Math.round(pv/max*100);var h2=Math.round(rep/max*100);var h3=Math.round(fans/max*100);return '<div class="flex-1 flex flex-col items-center gap-0.5"><div class="flex items-end gap-0.5 h-[80px]"><div class="w-2 bg-brand-400 rounded-t" style="height:'+Math.min(h1,100)+'%"></div><div class="w-2 bg-emerald-400 rounded-t" style="height:'+Math.min(h2,100)+'%"></div><div class="w-2 bg-amber-400 rounded-t" style="height:'+Math.min(h3,100)+'%"></div></div><div class="text-[10px] text-slate-400">'+h(d)+'</div></div>';}).join('');
+        var aggPv=_aggAcrossDates(dates,function(sc){return pf.pagePv*sc/7;});
+        var aggOpen=_aggAcrossDates(dates,function(sc){return pf.openSession*sc/7;});
+        var aggReport=_aggAcrossDates(dates,function(sc){return pf.reportCnt*sc/7;});
+        var aggFans=_aggAcrossDates(dates,function(sc){return pf.addFans*sc/7;});
+        var coreFunnel=_buildHfunnel([
+          {label:'首页PV（会话数）',value:aggPv},
+          {label:'开口会话数',value:aggOpen},
+          {label:'报告数量',value:aggReport},
+          {label:'加粉数',value:aggFans}
+        ],'bg-brand-600');
         return '<div class="space-y-4">'+
           '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2>'+typeBadge+'</div>'+
           detailFilterBar+
-          '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 每日核心指标趋势（快测类）</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>首页PV</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-400 inline-block"></span>报告数量</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>加粉数</span></div><div class="flex items-end gap-2 px-2">'+trendBars+'</div></div>'+
+          '<div class="card"><p class="text-xs text-slate-400 mb-3">辅助图表 · 核心转化漏斗（汇总，快测类）</p>'+coreFunnel+'</div>'+
           '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
           '<table class="min-w-[1200px] text-xs"><thead><tr class="text-left text-[10px] text-slate-500 border-b">'+
             _th('日期','日期','px-2 py-2 sticky left-0 bg-white')+
@@ -1279,11 +1308,34 @@
           '<td class="px-2 py-1.5 text-right">'+leadR1+'</td><td class="px-2 py-1.5 text-right">'+leadR2+'</td><td class="px-2 py-1.5 text-right">'+leadR3+'</td>'+
         '</tr>';
       }).join('');
-      var trendBars=dates.map(function(d,idx){var scale=0.9+idx*0.02;var pv=Math.round(pf.pagePv*scale/7);var rep=Math.round(pf.reportCnt*scale/7);var sum=Math.round(pf.summaryCnt*scale/7);var lead=Math.round(pf.leadCnt*scale/7);var max=pf.pagePv/5;var h1=Math.round(pv/max*100);var h2=Math.round(rep/max*100);var h3=Math.round(sum/max*100);var h4=Math.round(lead/max*100);return '<div class="flex-1 flex flex-col items-center gap-0.5"><div class="flex items-end gap-0.5 h-[80px]"><div class="w-2 bg-brand-400 rounded-t" style="height:'+Math.min(h1,100)+'%"></div><div class="w-2 bg-emerald-400 rounded-t" style="height:'+Math.min(h2,100)+'%"></div><div class="w-2 bg-violet-400 rounded-t" style="height:'+Math.min(h3,100)+'%"></div><div class="w-2 bg-amber-400 rounded-t" style="height:'+Math.min(h4,100)+'%"></div></div><div class="text-[10px] text-slate-400">'+h(d)+'</div></div>';}).join('');
+      var aggPv=_aggAcrossDates(dates,function(sc){return pf.pagePv*sc/7;});
+      var aggReport=_aggAcrossDates(dates,function(sc){return pf.reportCnt*sc/7;});
+      var aggSummary=_aggAcrossDates(dates,function(sc){return pf.summaryCnt*sc/7;});
+      var aggLead=_aggAcrossDates(dates,function(sc){return pf.leadCnt*sc/7;});
+      var aggDialog=_aggAcrossDates(dates,function(sc){return pf.dialogCnt*sc/7;});
+      var aggOpenDialog=_aggAcrossDates(dates,function(sc){return pf.validDialog*sc/7;});
+      var coreFunnel=_buildHfunnel([
+        {label:'首页PV',value:aggPv},
+        {label:'舌诊报告数',value:aggReport},
+        {label:'小结数',value:aggSummary},
+        {label:'留资数',value:aggLead}
+      ],'bg-brand-600');
+      var dialogFunnel=_buildHfunnel([
+        {label:'对话数',value:aggDialog},
+        {label:'开口对话数',value:aggOpenDialog}
+      ],'bg-emerald-600');
+      var turnsFunnel=_buildHfunnel([
+        {label:'平均出小结轮次',value:pf.avgSummaryTurns},
+        {label:'平均对话轮次',value:pf.avgTurns}
+      ],'bg-violet-600',_fmtTurns,{wideBar:true});
       return '<div class="space-y-4">'+
         '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2>'+typeBadge+'</div>'+
         detailFilterBar+
-        '<div class="card"><p class="text-xs text-slate-400 mb-2">辅助图表 · 每日核心指标趋势（舌诊类）</p><div class="flex items-center gap-4 mb-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-brand-400 inline-block"></span>首页PV</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-400 inline-block"></span>舌诊报告数</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-violet-400 inline-block"></span>小结数</span><span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>留资数</span></div><div class="flex items-end gap-2 px-2">'+trendBars+'</div></div>'+
+        '<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">'+
+          '<div class="card"><p class="text-xs text-slate-400 mb-3">辅助图表 · 核心转化漏斗（汇总，舌诊类）</p>'+coreFunnel+'</div>'+
+          '<div class="card"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话转化漏斗（汇总）</p>'+dialogFunnel+'</div>'+
+          '<div class="card"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话轮次漏斗（汇总）</p>'+turnsFunnel+'</div>'+
+        '</div>'+
         '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
         '<table class="min-w-[1600px] text-xs"><thead>'+
           '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="8">首页与舌象</th><th class="px-2 py-2 text-center" colspan="8">对话与小结</th><th class="px-2 py-2 text-center" colspan="4">留资</th></tr>'+
@@ -1915,8 +1967,8 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
-    <li><strong>辅助图表（舌诊类）</strong>：每日核心指标趋势（首页PV、舌诊报告数、小结数、留资数）折线图</li>
-    <li><strong>辅助图表（快测类）</strong>：每日核心指标趋势（首页PV、报告数量、加粉数）折线图</li>
+    <li><strong>辅助图表（舌诊类）</strong>：汇总日期范围内全部数据，横向漏斗柱状图三组——①核心转化（首页PV→舌诊报告数→小结数→留资数）②对话转化（对话数→开口对话数）③对话轮次（平均出小结轮次→平均对话轮次）</li>
+    <li><strong>辅助图表（快测类）</strong>：汇总日期范围内全部数据，横向漏斗柱状图——核心转化（首页PV→开口会话数→报告数量→加粉数）</li>
     <li><strong>核心数据表</strong>：宽表格，支持横向滚动、排序、导出；列头「?」展示指标口径</li>
   </ul>
 </div>

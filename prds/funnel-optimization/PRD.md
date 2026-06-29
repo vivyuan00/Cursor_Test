@@ -6,6 +6,7 @@
 - **创建日期**：2026-06-06
 - **作者**：产品（从 data-platform-bi PRD 拆分）
 - **关联上下文**：原 `data-platform-bi/PRD.md` 第 8.2 节及相关数据模型
+- **交互原型**：[全链路漏斗优化运营看板](https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1.html)
 
 ## 1. 需求背景与目标
 

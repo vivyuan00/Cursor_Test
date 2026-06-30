@@ -2037,7 +2037,7 @@
 `
         },
         '8': {
-            title: '7.2.3.1a 产品详细转化数据页',
+            title: '4.1.4.2 产品详细转化数据页',
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">入口与上下文</div>
@@ -2054,18 +2054,66 @@
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">数据表结构</div>
-  <p>纵坐标=日期；横坐标根据产品类型自动切换：</p>
+  <p>纵坐标=日期（按天排列）；横坐标根据产品类型自动切换指标列（见下方分类型说明）。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">舌诊类产品 · 指标定义</div>
+  <p>表头分四阶段：<strong>首页与舌象</strong>｜<strong>对话与小结</strong>｜<strong>留资</strong>｜<strong>支付转化</strong></p>
   <ul>
-    <li><strong>舌诊类产品</strong>：分首页与舌象、对话与小结、留资、支付转化四阶段；含支付数、加粉-支付转化率、首页-支付转化率等</li>
-    <li><strong>快测类型产品</strong>：分会话、留资、支付转化三阶段；含支付数、加粉-支付转化率、首页-支付转化率等列</li>
+    <li><strong>首页PV</strong>：AI 工具首页页面浏览量</li>
+    <li><strong>首页UV</strong>：落地页独立访客数</li>
+    <li><strong>舌象上传PV</strong>：用户提交舌象图片的次数</li>
+    <li><strong>舌象上传折损率</strong>：1 - 舌诊报告数 / 舌象上传PV</li>
+    <li><strong>舌诊报告数</strong>：用户生成的舌诊报告数</li>
+    <li><strong>舌诊报告人次</strong>：生成舌诊报告的去重用户数</li>
+    <li><strong>首页-报告转化率</strong>：舌诊报告数 / 首页PV</li>
+    <li><strong>人均舌诊报告数</strong>：舌诊报告数 / 舌诊报告人次</li>
+    <li><strong>对话数</strong>：对话页新建会话数</li>
+    <li><strong>开口对话数</strong>：用户主动发送首条消息的会话数</li>
+    <li><strong>开口对话率</strong>：开口对话数 / 对话数</li>
+    <li><strong>平均对话轮次</strong>：总对话轮次 / 对话数</li>
+    <li><strong>平均出小结轮次</strong>：出小结前总轮次 / 小结数</li>
+    <li><strong>小结数</strong>：生成小结的数量</li>
+    <li><strong>小结人次</strong>：生成小结的去重用户数</li>
+    <li><strong>报告-小结率PV</strong>：小结数 / 舌诊报告数</li>
+    <li><strong>首页-小结率PV</strong>：小结数 / 首页PV</li>
+    <li><strong>留资数</strong>：完成留资的去重人数</li>
+    <li><strong>小结-留资率PV</strong>：留资数 / 小结数</li>
+    <li><strong>舌诊报告-留资率PV</strong>：留资数 / 舌诊报告数</li>
+    <li><strong>首页-留资率PV</strong>：留资数 / 首页PV</li>
+    <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">快测类型产品 · 指标定义</div>
+  <p>表头分三阶段：<strong>会话</strong>｜<strong>留资</strong>｜<strong>支付转化</strong></p>
+  <ul>
+    <li><strong>首页PV（会话数）</strong>：快测对话页新建会话数</li>
+    <li><strong>首页UV</strong>：快测落地页独立访客数</li>
+    <li><strong>开口会话数</strong>：用户主动发送首条消息的会话数</li>
+    <li><strong>会话开口率</strong>：开口会话数 / 首页PV（会话数）</li>
+    <li><strong>平均对话轮次</strong>：总对话轮次 / 会话数</li>
+    <li><strong>平均出报告轮次</strong>：出报告前总轮次 / 报告数量</li>
+    <li><strong>报告数量</strong>：用户生成的快测结论报告数</li>
+    <li><strong>报告人次</strong>：生成报告的去重用户数</li>
+    <li><strong>人均报告数</strong>：报告数量 / 报告人次</li>
+    <li><strong>首页-报告转化率</strong>：报告数量 / 首页PV（会话数）</li>
+    <li><strong>加粉数</strong>：通过快测产品新增企微好友去重人数</li>
+    <li><strong>报告-加粉转化率</strong>：加粉数 / 报告数量</li>
+    <li><strong>首页-加粉转化率</strong>：加粉数 / 首页PV（会话数）</li>
+    <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
-    <li><strong>辅助图表（舌诊类）</strong>：汇总日期范围内全部数据，横向漏斗柱状图三组——①核心转化（首页PV→舌诊报告数→小结数→留资数）②对话转化（对话数→开口对话数）③对话轮次（平均出小结轮次→平均对话轮次）</li>
-    <li><strong>辅助图表（快测类）</strong>：汇总日期范围内全部数据——①核心转化漏斗（首页PV→开口会话数→报告数量→加粉数）②对话轮次漏斗（平均出报告轮次→平均对话轮次）</li>
-    <li><strong>核心数据表</strong>：宽表格，支持横向滚动、排序、导出；列头「?」展示指标口径</li>
+    <li><strong>辅助图表（舌诊类）</strong>：汇总日期范围内全部数据，横向漏斗柱状图三组——①核心转化（首页PV→舌诊报告数→小结数→留资数）②对话转化（对话数→开口对话数）③对话轮次（平均出小结轮次→平均对话轮次）；一行三列并排</li>
+    <li><strong>辅助图表（快测类）</strong>：汇总日期范围内全部数据——①核心转化漏斗（首页PV→开口会话数→报告数量→加粉数）②对话轮次漏斗（平均出报告轮次→平均对话轮次）；一行两列并排，不含对话转化漏斗</li>
+    <li><strong>核心数据表</strong>：宽表格，表头按阶段分组，支持横向滚动、排序、导出；列头「?」展示指标口径</li>
   </ul>
 </div>
 `

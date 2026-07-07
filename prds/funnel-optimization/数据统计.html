@@ -606,8 +606,10 @@
         .order-core-table .th-revisit { background: #eff6ff; color: #1d4ed8; }
         .order-core-table .th-first-sub { background: #f0fdfa; }
         .order-core-table .th-revisit-sub { background: #eff6ff; }
+        .order-core-table .th-total-sub { background: #f8fafc; }
         .order-core-table tbody td.td-first-sum { background: #f0fdfa; font-weight: 500; }
         .order-core-table tbody td.td-revisit-sum { background: #eff6ff; font-weight: 500; }
+        .order-core-table tbody td.td-total-sum { background: #f1f5f9; font-weight: 600; }
         .metric-help {
             display: inline-flex;
             align-items: center;
@@ -762,7 +764,7 @@
 <script>
     // ===== Funnel Mock Data =====
     const AI_FUNNEL_STEPS=[{label:'A01 首页PV',count:12800},{label:'A02 首页UV',count:9600},{label:'A03 报告数',count:6720},{label:'A04 报告人次',count:5890},{label:'A05 加粉数',count:4500}];
-    const ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数',count:4500},{label:'F02 开口',count:3720},{label:'F03 舌象上传',count:2790},{label:'F04 开方',count:1860},{label:'F05 支付',count:893},{label:'F06 确认',count:715}];
+    const ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数',count:4500},{label:'F02 开口',count:3720},{label:'F03 舌象上传',count:2790},{label:'F04 开方',count:1860},{label:'F05 支付',count:893}];
     const DAILY_ORDERS={
       byDrug:[{type:'汤剂',orderCnt:52,gmv:38960},{type:'丸剂',orderCnt:31,gmv:46810}],
       byVisit:[{type:'初诊',orderCnt:45,gmv:33480},{type:'复诊',orderCnt:38,gmv:52290}],
@@ -792,6 +794,7 @@
     const PRODUCT_FUNNEL_TONGUE={
       channel:'baidu_doctor_h5',product:'舌诊',
       pagePv:12800,pageUv:9600,
+      shootPagePv:10200,
       uploadPv:8960,
       reportCnt:6720,reportUser:5890,
       dialogCnt:15800,validDialog:11060,avgTurns:8.2,avgSummaryTurns:12.5,
@@ -804,6 +807,7 @@
       sessionCnt:8500,
       openSession:5100,
       avgTurns:6.8,avgReportTurns:9.4,
+      createReportCnt:4600,
       reportCnt:4200,reportUser:3800,
       addFans:510,payCnt:85
     };
@@ -824,7 +828,6 @@
       '舌象上传':'用户提交舌象图片的去重人数',
       '开方':'完成病例总结和开方的去重人数',
       '支付':'支付成功的去重人数（R01）',
-      '确认':'付费确认（含药房发货确认等最终节点）的去重人数',
       '支付转化率':'支付数 / 加粉数',
       '初诊汤剂订单数':'当日初诊且药物类型为汤剂的支付成功订单数',
       '初诊汤剂金额':'当日初诊汤剂订单实付金额合计',
@@ -840,18 +843,22 @@
       '复诊金额':'当日复诊订单实付金额合计',
       '总订单数':'当日全部支付成功订单数（= 汤剂+丸剂 = 初诊+复诊）',
       '总订单金额':'当日全部实付金额合计',
+      '总汤剂订单数':'当日汤剂支付成功订单数合计（初诊汤剂+复诊汤剂）',
+      '总丸剂订单数':'当日丸剂支付成功订单数合计（初诊丸剂+复诊丸剂）',
+      '总汤剂订单金额':'当日汤剂订单实付金额合计',
+      '总丸剂订单金额':'当日丸剂订单实付金额合计',
       '曝光数':'企微分配曝光的数量',
       '开口数':'该医助服务的用户主动开口去重人数',
       '舌象上传数':'该医助服务的用户提交舌象去重人数',
       '开方数':'该医助服务的用户完成病例总结和开方的去重人数',
       '支付数':'该医助服务的用户支付成功去重人数，或首诊支付成功的去重人数',
-      '确认数':'该医助服务的用户付费确认去重人数',
       '加粉-支付转化率':'支付数 / 加粉数',
       '医助':'医助名称',
       '渠道':'投放渠道',
       '产品':'投放产品',
       '版本':'产品版本',
       '首页-支付转化率':'支付数 / 首页PV',
+      '舌诊拍摄页PV':'舌诊拍摄页页面浏览量',
       '舌象上传PV':'舌象图片上传次数',
       '舌象上传折损率':'1 - 舌诊报告数 / 舌象上传PV',
       '舌诊报告数':'用户生成的舌诊报告数',
@@ -870,12 +877,17 @@
       '留资数':'完成留资的数量',
       '小结-留资率PV':'留资数 / 小结数',
       '舌诊报告-留资率PV':'留资数 / 舌诊报告数',
+      '舌诊报告-留资率UV':'留资数 / 舌诊报告人次',
       '首页-留资率PV':'留资数 / 首页PV',
+      '舌诊拍摄页PV-留资转化':'留资数 / 舌诊拍摄页PV',
       '首页PV（会话数）':'快测对话页新建会话数',
       '会话数':'快测对话页新建会话数',
       '开口会话数':'用户主动发送首条消息的会话数',
       '会话开口率':'开口会话数 / 会话数',
       '平均出报告轮次':'出报告前总轮次 / 报告数量',
+      'create报告数':'用户触发生成快测报告的次数（create 事件）',
+      'create报告数-小结转化率':'报告数量 / create报告数',
+      'create报告数-加粉转化率':'加粉数 / create报告数',
       '报告数量':'用户生成的快测结论报告数',
       '人均报告数':'报告数量 / 报告人次',
       '会话-报告转化率':'报告数量 / 会话数',
@@ -900,7 +912,7 @@
     }
     function _asstEffVal(a,key){
       if(key==='exposure') return a.exposure;
-      if(key==='conv') return a.f01?a.f06/a.f01:0;
+      if(key==='conv') return a.f01?a.f05/a.f01:0;
       return a[key]!=null?a[key]:0;
     }
     function _asstTradeVal(a,key){
@@ -949,7 +961,8 @@
       var rdDeco=Math.round(rvOrd*r),rdPill=rvOrd-rdDeco;
       var fdDecoG=Math.round(t.first*r),fdPillG=t.first-fdDecoG;
       var rdDecoG=Math.round(t.revisit*r),rdPillG=t.revisit-rdDecoG;
-      return {fdDeco:fdDeco,fdPill:fdPill,rdDeco:rdDeco,rdPill:rdPill,fdDecoG:fdDecoG,fdPillG:fdPillG,rdDecoG:rdDecoG,rdPillG:rdPillG,firstOrd:fvOrd,revisitOrd:rvOrd,firstGmv:t.first,revisitGmv:t.revisit,totalOrd:fvOrd+rvOrd,totalGmv:t.first+t.revisit};
+      var totalDeco=fdDeco+rdDeco,totalPill=fdPill+rdPill,totalDecoG=fdDecoG+rdDecoG,totalPillG=fdPillG+rdPillG;
+      return {fdDeco:fdDeco,fdPill:fdPill,rdDeco:rdDeco,rdPill:rdPill,fdDecoG:fdDecoG,fdPillG:fdPillG,rdDecoG:rdDecoG,rdPillG:rdPillG,firstOrd:fvOrd,revisitOrd:rvOrd,firstGmv:t.first,revisitGmv:t.revisit,totalDeco:totalDeco,totalPill:totalPill,totalDecoG:totalDecoG,totalPillG:totalPillG,totalOrd:fvOrd+rvOrd,totalGmv:t.first+t.revisit};
     }
 
     // 模拟对话数据
@@ -1099,7 +1112,7 @@
       // 数据表格 — 医助转化去掉与 AI 重复的「加粉数」列
       var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
       var aiHeader='<th colspan="7" class="px-3 py-2 text-center bg-brand-50 text-brand-700 font-semibold">AI工具转化</th>';
-      var asstHeader='<th colspan="6" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
+      var asstHeader='<th colspan="5" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
       var aiSubHeaders=[
         _th('首页PV','首页PV','px-2 py-1 text-right text-xs'),
         _th('首页UV','首页UV','px-2 py-1 text-right text-xs'),
@@ -1114,7 +1127,6 @@
         _th('舌象上传','舌象上传','px-2 py-1 text-right text-xs'),
         _th('开方','开方','px-2 py-1 text-right text-xs'),
         _th('支付','支付','px-2 py-1 text-right text-xs'),
-        _th('确认','确认','px-2 py-1 text-right text-xs'),
         _th('支付转化率','支付转化率','px-2 py-1 text-right text-xs text-blue-700')
       ].join('');
       var dayRows=dates.map(function(d,idx){
@@ -1135,7 +1147,7 @@
       return '<div class="daily-panel space-y-4 req-marker-wrapper"><span class="req-marker" data-id="4">4</span>'+
         '<div class="aux-charts-row cols-2">'+
           '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">统计从用户访问AI工具首页到加粉的转化链路</p><div class="space-y-2 funnel-bar-track">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">报告-加微转化率PV: '+aiReportToWxRate+'</span> | <span class="font-medium text-brand-700">首页-加微转化率PV: '+aiPvToWxRate+'</span></div></div>'+
-          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">仅统计初诊流程转化，从加粉到付费确认的完整链路</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div>'+
+          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">仅统计初诊流程转化，从加粉到支付的完整链路</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div>'+
         '</div>'+
         '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2 sticky left-0 bg-white" rowspan="2">'+_thLabel('日期','日期')+'</th>'+aiHeader+asstHeader+'</tr><tr class="text-left text-xs text-slate-500 border-b bg-slate-50">'+aiSubHeaders+asstSubHeaders+'</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
       '</div>';
@@ -1152,7 +1164,9 @@
           '<td class="px-3 py-1.5 text-right th-revisit-sub">'+fmt(b.rdDeco)+'</td><td class="px-3 py-1.5 text-right th-revisit-sub">¥'+fmt(b.rdDecoG)+'</td>'+
           '<td class="px-3 py-1.5 text-right th-revisit-sub">'+fmt(b.rdPill)+'</td><td class="px-3 py-1.5 text-right th-revisit-sub">¥'+fmt(b.rdPillG)+'</td>'+
           '<td class="px-3 py-1.5 text-right td-revisit-sum">'+fmt(b.revisitOrd)+'</td><td class="px-3 py-1.5 text-right td-revisit-sum">¥'+fmt(b.revisitGmv)+'</td>'+
-          '<td class="px-3 py-1.5 text-right font-semibold">'+fmt(b.totalOrd)+'</td><td class="px-3 py-1.5 text-right font-semibold">¥'+fmt(b.totalGmv)+'</td></tr>';
+          '<td class="px-3 py-1.5 text-right th-total-sub">'+fmt(b.totalDeco)+'</td><td class="px-3 py-1.5 text-right th-total-sub">¥'+fmt(b.totalDecoG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-total-sub">'+fmt(b.totalPill)+'</td><td class="px-3 py-1.5 text-right th-total-sub">¥'+fmt(b.totalPillG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right font-semibold td-total-sum">'+fmt(b.totalOrd)+'</td><td class="px-3 py-1.5 text-right font-semibold td-total-sum">¥'+fmt(b.totalGmv)+'</td></tr>';
       }).join('');
       var trendMode=funnelState.orderTrendMode;
       var trendToggle='<div class="order-trend-toggle">'+
@@ -1171,7 +1185,7 @@
             '<th class="px-3 py-2 sticky left-0 bg-slate-50 z-10" rowspan="3">'+_thLabel('日期','日期')+'</th>'+
             '<th class="px-3 py-2 text-center th-first font-semibold" colspan="6">初诊</th>'+
             '<th class="px-3 py-2 text-center th-revisit font-semibold" colspan="6">复诊</th>'+
-            '<th class="px-3 py-2 text-center bg-slate-100 font-semibold" colspan="2">总订单</th>'+
+            '<th class="px-3 py-2 text-center bg-slate-100 font-semibold" colspan="6">总订单</th>'+
           '</tr>'+
           '<tr class="text-left text-[10px] text-slate-500 border-b">'+
             '<th class="px-2 py-1.5 text-center th-first-sub" colspan="2">汤剂</th>'+
@@ -1180,8 +1194,9 @@
             '<th class="px-2 py-1.5 text-center th-revisit-sub" colspan="2">汤剂</th>'+
             '<th class="px-2 py-1.5 text-center th-revisit-sub" colspan="2">丸剂</th>'+
             '<th class="px-2 py-1.5 text-center th-revisit-sub font-medium" colspan="2">合计</th>'+
-            '<th class="px-2 py-1.5 text-right bg-slate-50" rowspan="2">'+_thLabel('总订单数','总订单数')+'</th>'+
-            '<th class="px-2 py-1.5 text-right bg-slate-50" rowspan="2">'+_thLabel('总订单金额','总订单金额')+'</th>'+
+            '<th class="px-2 py-1.5 text-center th-total-sub" colspan="2">汤剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-total-sub" colspan="2">丸剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-total-sub font-medium" colspan="2">合计</th>'+
           '</tr>'+
           '<tr class="text-left text-[10px] text-slate-500 border-b">'+
             _th('订单数','初诊汤剂订单数','px-2 py-1 text-right th-first-sub')+
@@ -1196,6 +1211,12 @@
             _th('金额','复诊丸剂金额','px-2 py-1 text-right th-revisit-sub')+
             _th('订单数','复诊订单数','px-2 py-1 text-right th-revisit-sub')+
             _th('金额','复诊金额','px-2 py-1 text-right th-revisit-sub')+
+            _th('订单数','总汤剂订单数','px-2 py-1 text-right th-total-sub')+
+            _th('金额','总汤剂订单金额','px-2 py-1 text-right th-total-sub')+
+            _th('订单数','总丸剂订单数','px-2 py-1 text-right th-total-sub')+
+            _th('金额','总丸剂订单金额','px-2 py-1 text-right th-total-sub')+
+            _th('订单数','总订单数','px-2 py-1 text-right th-total-sub')+
+            _th('金额','总订单金额','px-2 py-1 text-right th-total-sub')+
           '</tr>'+
         '</thead><tbody>'+dayRows+'</tbody></table></div>'+
       '</div>';
@@ -1210,16 +1231,16 @@
     function renderAsstEfficiency(){
       var sk=funnelState.asstEffSortKey,sd=funnelState.asstEffSortDir;
       var sortedForRank=_sortList(ASSISTANTS,'conv','desc',_asstEffVal);
-      var topRows=sortedForRank.slice(0,10).map(function(a){var conv=((a.f06/a.f01)*100).toFixed(1);var w=Math.round((a.f06/a.f01)*100/15*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
+      var topRows=sortedForRank.slice(0,10).map(function(a){var conv=((a.f05/a.f01)*100).toFixed(1);var w=Math.round((a.f05/a.f01)*100/15*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
       var topBar=_dualRankBars(topRows);
       var tableList=_sortList(ASSISTANTS,sk,sd,_asstEffVal);
       var aRows=tableList.map(function(a){
-        var conv=((a.f06/a.f01)*100).toFixed(1);
-        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f01)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f06)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td></tr>';
+        var conv=((a.f05/a.f01)*100).toFixed(1);
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f01)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td></tr>';
       }).join('');
       return '<div class="space-y-4">'+
         '<div class="card req-marker-wrapper w-full"><span class="req-marker" data-id="5">5</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-支付转化率排行</p>'+topBar+'</div>'+
-        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_sortableTh('曝光数','曝光数','exposure',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉数','加粉数','f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('确认数','确认数','f06',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'</tr></thead><tbody>'+aRows+'</tbody></table></div>'+
+        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_sortableTh('曝光数','曝光数','exposure',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉数','加粉数','f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'</tr></thead><tbody>'+aRows+'</tbody></table></div>'+
       '</div>';
     }
 
@@ -1356,13 +1377,16 @@
           var sessionCnt=Math.round(pf.sessionCnt*scale/7);
           var openSession=Math.round(pf.openSession*scale/7);
           var openRate=sessionCnt>0?((openSession/sessionCnt)*100).toFixed(1)+'%':'—';
+          var createReportCnt=Math.round(pf.createReportCnt*scale/7);
           var reportCnt=Math.round(pf.reportCnt*scale/7);var reportUser=Math.round(pf.reportUser*scale/7);
           var avgReport=reportUser>0?(reportCnt/reportUser).toFixed(2):'—';
           var sessionReportConv=sessionCnt>0?((reportCnt/sessionCnt)*100).toFixed(1)+'%':'—';
+          var createSummaryConv=createReportCnt>0?((reportCnt/createReportCnt)*100).toFixed(1)+'%':'—';
           var reportConv=pagePv>0?((reportCnt/pagePv)*100).toFixed(1)+'%':'—';
           var addFans=Math.round(pf.addFans*scale/7);
           var payCnt=Math.round(pf.payCnt*scale/7);
           var reportToFan=reportCnt>0?((addFans/reportCnt)*100).toFixed(1)+'%':'—';
+          var createToFan=createReportCnt>0?((addFans/createReportCnt)*100).toFixed(1)+'%':'—';
           var pvToFan=pagePv>0?((addFans/pagePv)*100).toFixed(1)+'%':'—';
           var fanToPay=addFans>0?((payCnt/addFans)*100).toFixed(1)+'%':'—';
           var pvToPay=pagePv>0?((payCnt/pagePv)*100).toFixed(1)+'%':'—';
@@ -1373,12 +1397,16 @@
             '<td class="px-2 py-1.5 text-right">'+fmt(sessionCnt)+'</td>'+
             '<td class="px-2 py-1.5 text-right text-brand-700">'+openRate+'</td>'+
             '<td class="px-2 py-1.5 text-right">'+pf.avgTurns+'</td><td class="px-2 py-1.5 text-right">'+pf.avgReportTurns+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(createReportCnt)+'</td>'+
             '<td class="px-2 py-1.5 text-right">'+fmt(reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(reportUser)+'</td>'+
             '<td class="px-2 py-1.5 text-right">'+avgReport+'</td>'+
             '<td class="px-2 py-1.5 text-right text-brand-700">'+sessionReportConv+'</td>'+
+            '<td class="px-2 py-1.5 text-right text-brand-700">'+createSummaryConv+'</td>'+
             '<td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'</td>'+
             '<td class="px-2 py-1.5 text-right">'+fmt(addFans)+'</td>'+
-            '<td class="px-2 py-1.5 text-right">'+reportToFan+'</td><td class="px-2 py-1.5 text-right">'+pvToFan+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+reportToFan+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+createToFan+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+pvToFan+'</td>'+
             '<td class="px-2 py-1.5 text-right">'+fmt(payCnt)+'</td>'+
             '<td class="px-2 py-1.5 text-right">'+fanToPay+'</td><td class="px-2 py-1.5 text-right">'+pvToPay+'</td>'+
           '</tr>';
@@ -1405,8 +1433,8 @@
             '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话轮次漏斗（汇总）</p>'+turnsFunnel+'</div>'+
           '</div>'+
           '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
-          '<table class="min-w-[1500px] text-xs"><thead>'+
-            '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="12">会话</th><th class="px-2 py-2 text-center" colspan="3">留资</th><th class="px-2 py-2 text-center" colspan="3">支付转化</th></tr>'+
+          '<table class="min-w-[1680px] text-xs"><thead>'+
+            '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="14">会话</th><th class="px-2 py-2 text-center" colspan="4">留资</th><th class="px-2 py-2 text-center" colspan="3">支付转化</th></tr>'+
             '<tr class="text-left text-[10px] text-slate-500 border-b">'+
             _th('首页PV','首页PV','px-2 py-2 text-right')+
             _th('首页UV','首页UV','px-2 py-2 text-right')+
@@ -1415,13 +1443,16 @@
             _th('会话开口率','会话开口率','px-2 py-2 text-right')+
             _th('平均对话轮次','平均对话轮次','px-2 py-2 text-right')+
             _th('平均出报告轮次','平均出报告轮次','px-2 py-2 text-right')+
+            _th('create报告数','create报告数','px-2 py-2 text-right')+
             _th('报告数量','报告数量','px-2 py-2 text-right')+
             _th('报告人次','报告人次','px-2 py-2 text-right')+
             _th('人均报告数','人均报告数','px-2 py-2 text-right')+
             _th('会话-报告转化率','会话-报告转化率','px-2 py-2 text-right')+
+            _th('create报告数-小结转化率','create报告数-小结转化率','px-2 py-2 text-right')+
             _th('首页-报告转化率','首页-报告转化率','px-2 py-2 text-right')+
             _th('加粉数','加粉数','px-2 py-2 text-right')+
             _th('报告-加粉转化率','报告-加粉转化率','px-2 py-2 text-right')+
+            _th('create报告数-加粉转化率','create报告数-加粉转化率','px-2 py-2 text-right')+
             _th('首页-加粉转化率','首页-加粉转化率','px-2 py-2 text-right')+
             _th('支付数','支付数','px-2 py-2 text-right')+
             _th('加粉-支付转化率','加粉-支付转化率','px-2 py-2 text-right')+
@@ -1434,6 +1465,7 @@
       var dayRows=dates.map(function(d,idx){
         var scale=0.9+idx*0.02;
         var pagePv=Math.round(pf.pagePv*scale/7);var pageUv=Math.round(pf.pageUv*scale/7);
+        var shootPagePv=Math.round(pf.shootPagePv*scale/7);
         var uploadPv=Math.round(pf.uploadPv*scale/7);
         var reportCnt=Math.round(pf.reportCnt*scale/7);var reportUser=Math.round(pf.reportUser*scale/7);
         var uploadLoss=uploadPv>0?((1-reportCnt/uploadPv)*100).toFixed(1):'—';
@@ -1449,12 +1481,15 @@
         var payCnt=Math.round(pf.payCnt*scale/7);
         var leadR1=summaryCnt>0?((leadCnt/summaryCnt)*100).toFixed(1)+'%':'—';
         var leadR2=reportCnt>0?((leadCnt/reportCnt)*100).toFixed(1)+'%':'—';
+        var leadR2uv=reportUser>0?((leadCnt/reportUser)*100).toFixed(1)+'%':'—';
         var leadR3=pagePv>0?((leadCnt/pagePv)*100).toFixed(1)+'%':'—';
+        var shootLeadConv=shootPagePv>0?((leadCnt/shootPagePv)*100).toFixed(1)+'%':'—';
         var fanToPay=addFans>0?((payCnt/addFans)*100).toFixed(1)+'%':'—';
         var pvToPay=pagePv>0?((payCnt/pagePv)*100).toFixed(1)+'%':'—';
         return '<tr class="border-t border-slate-100 hover:bg-slate-50">'+
           '<td class="px-2 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(pagePv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(pageUv)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(shootPagePv)+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(uploadPv)+'</td><td class="px-2 py-1.5 text-right text-red-600">'+uploadLoss+'%</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(reportUser)+'</td>'+
           '<td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'</td><td class="px-2 py-1.5 text-right">'+avgReport+'</td>'+
@@ -1463,7 +1498,7 @@
           '<td class="px-2 py-1.5 text-right">'+fmt(summaryCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(summaryUser)+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+sumRatePv+'</td><td class="px-2 py-1.5 text-right">'+sumRateHome+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(leadCnt)+'</td>'+
-          '<td class="px-2 py-1.5 text-right">'+leadR1+'</td><td class="px-2 py-1.5 text-right">'+leadR2+'</td><td class="px-2 py-1.5 text-right">'+leadR3+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+leadR1+'</td><td class="px-2 py-1.5 text-right">'+leadR2+'</td><td class="px-2 py-1.5 text-right">'+leadR2uv+'</td><td class="px-2 py-1.5 text-right">'+leadR3+'</td><td class="px-2 py-1.5 text-right">'+shootLeadConv+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fmt(payCnt)+'</td>'+
           '<td class="px-2 py-1.5 text-right">'+fanToPay+'</td><td class="px-2 py-1.5 text-right">'+pvToPay+'</td>'+
         '</tr>';
@@ -1497,11 +1532,12 @@
           '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话轮次漏斗（汇总）</p>'+turnsFunnel+'</div>'+
         '</div>'+
         '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
-        '<table class="min-w-[1750px] text-xs"><thead>'+
-          '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="8">首页与舌象</th><th class="px-2 py-2 text-center" colspan="8">对话与小结</th><th class="px-2 py-2 text-center" colspan="4">留资</th><th class="px-2 py-2 text-center" colspan="3">支付转化</th></tr>'+
+        '<table class="min-w-[1920px] text-xs"><thead>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="9">首页与舌象</th><th class="px-2 py-2 text-center" colspan="8">对话与小结</th><th class="px-2 py-2 text-center" colspan="6">留资</th><th class="px-2 py-2 text-center" colspan="3">支付转化</th></tr>'+
           '<tr class="text-left text-[10px] text-slate-500 border-b">'+
             _th('首页PV','首页PV','px-2 py-2 text-right')+
             _th('首页UV','首页UV','px-2 py-2 text-right')+
+            _th('舌诊拍摄页PV','舌诊拍摄页PV','px-2 py-2 text-right')+
             _th('舌象上传PV','舌象上传PV','px-2 py-2 text-right')+
             _th('舌象上传折损率','舌象上传折损率','px-2 py-2 text-right')+
             _th('舌诊报告数','舌诊报告数','px-2 py-2 text-right')+
@@ -1520,7 +1556,9 @@
             _th('留资数','留资数','px-2 py-2 text-right')+
             _th('小结-留资率PV','小结-留资率PV','px-2 py-2 text-right')+
             _th('舌诊报告-留资率PV','舌诊报告-留资率PV','px-2 py-2 text-right')+
+            _th('舌诊报告-留资率UV','舌诊报告-留资率UV','px-2 py-2 text-right')+
             _th('首页-留资率PV','首页-留资率PV','px-2 py-2 text-right')+
+            _th('舌诊拍摄页PV-留资转化','舌诊拍摄页PV-留资转化','px-2 py-2 text-right')+
             _th('支付数','支付数','px-2 py-2 text-right')+
             _th('加粉-支付转化率','加粉-支付转化率','px-2 py-2 text-right')+
             _th('首页-支付转化率','首页-支付转化率','px-2 py-2 text-right')+
@@ -1958,7 +1996,7 @@
   <p>全链路漏斗分为两大类：<strong>AI工具转化</strong>和<strong>医助转化</strong>。</p>
   <ul>
     <li><strong>AI工具转化</strong>：统计从用户访问 AI 工具首页到加粉的转化链路</li>
-    <li><strong>医助转化</strong>：仅统计初诊流程转化，从加粉到付费确认的完整链路</li>
+    <li><strong>医助转化</strong>：仅统计初诊流程转化，从加粉到支付的完整链路</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
@@ -1974,23 +2012,22 @@
   </ul>
 </div>
 <div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">医助转化（F01～F07）</div>
+  <div class="req-tooltip-section-title">医助转化（F01～F06）</div>
   <ul>
     <li><strong>F01 加粉数</strong>：当日通过各渠道新增企微好友去重人数</li>
     <li><strong>F02 开口数</strong>：用户主动发送首条消息的去重人数</li>
     <li><strong>F03 舌象上传数</strong>：用户提交舌象图片的去重人数（本期可实现为用户上传图片即算）</li>
     <li><strong>F04 开方数</strong>：完成病例总结和开方的去重人数</li>
     <li><strong>F05 支付数</strong>：支付成功的去重人数（R01）</li>
-    <li><strong>F06 确认数</strong>：付费确认（含药房发货确认等最终节点）的去重人数</li>
-    <li><strong>F07 支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>F06 支付转化率</strong>：支付数 / 加粉数</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
     <li><strong>AI工具转化漏斗图</strong>：A01 首页PV → A02 首页UV → A03 报告数 → A04 报告人次 → A05 加粉数；显示各步人数与环节转化率；底部显示报告-加微转化率 PV、首页-加微转化率 PV。格式：漏斗条形图，与医助转化并列展示</li>
-    <li><strong>医助转化漏斗图</strong>：F01 加粉数 → F02 开口 → F03 舌象上传 → F04 开方 → F05 支付 → F06 确认；显示各步人数与环节转化率；底部显示支付转化率。格式：漏斗条形图，与 AI 工具转化并列展示</li>
-    <li><strong>数据表</strong>：纵坐标=日期；横坐标=AI 工具转化（首页PV、首页UV、报告数、报告人次、加粉数、报告-加微转化率PV、首页-加微转化率PV）+ 医助转化（加粉、开口、舌象上传、开方、支付、确认、支付转化率）。格式：宽表格，支持横向滚动、排序、导出</li>
+    <li><strong>医助转化漏斗图</strong>：F01 加粉数 → F02 开口 → F03 舌象上传 → F04 开方 → F05 支付；显示各步人数与环节转化率；底部显示支付转化率。格式：漏斗条形图，与 AI 工具转化并列展示</li>
+    <li><strong>数据表</strong>：纵坐标=日期；横坐标=AI 工具转化（首页PV、首页UV、报告数、报告人次、加粉数、报告-加微转化率PV、首页-加微转化率PV）+ 医助转化（开口、舌象上传、开方、支付、支付转化率）。格式：宽表格，支持横向滚动、排序、导出</li>
   </ul>
 </div>
 `
@@ -2010,6 +2047,8 @@
     <li><strong>复诊汤剂订单数 / 金额</strong>：当日复诊且药物类型为汤剂的订单数与实付金额</li>
     <li><strong>复诊丸剂订单数 / 金额</strong>：当日复诊且药物类型为丸剂的订单数与实付金额</li>
     <li><strong>总订单数 / 总订单金额</strong>：当日全部支付成功订单数与实付金额合计</li>
+    <li><strong>总汤剂订单数 / 总汤剂订单金额</strong>：当日汤剂订单数与金额合计（初诊汤剂+复诊汤剂）</li>
+    <li><strong>总丸剂订单数 / 总丸剂订单金额</strong>：当日丸剂订单数与金额合计（初诊丸剂+复诊丸剂）</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
@@ -2018,7 +2057,7 @@
     <li><strong>辅助图表1（左）</strong>：订单数统计 · 初复诊汇总堆叠柱图（汤剂+丸剂）</li>
     <li><strong>辅助图表2（中）</strong>：订单金额统计 · 初复诊汇总堆叠柱图（汤剂+丸剂）</li>
     <li><strong>辅助图表3（右，占一半宽度）</strong>：趋势折线图，支持<strong>订单金额 / 订单数</strong>开关切换；金额维度含总金额、初诊汤剂、初诊丸剂、复诊汤剂、复诊丸剂；订单数维度含总订单、初诊汤剂、初诊丸剂、复诊汤剂、复诊丸剂</li>
-    <li><strong>明细表</strong>：三级表头上下结构——初诊/复诊 → 汤剂/丸剂/合计 → 订单数/金额；初复诊区块分色展示，保留总订单数、总订单金额</li>
+    <li><strong>明细表</strong>：三级表头上下结构——初诊/复诊/总订单 → 汤剂/丸剂/合计 → 订单数/金额；总订单区块与初复诊结构一致，含总汤剂、总丸剂及合计列</li>
   </ul>
 </div>
 `
@@ -2039,7 +2078,6 @@
     <li><strong>舌象上传数</strong>：该医助服务的用户提交舌象去重人数</li>
     <li><strong>开方数</strong>：该医助服务的用户完成病例总结和开方的去重人数</li>
     <li><strong>支付数</strong>：该医助服务的用户支付成功去重人数</li>
-    <li><strong>确认数</strong>：该医助服务的用户付费确认去重人数</li>
     <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
   </ul>
 </div>
@@ -2048,7 +2086,7 @@
   <ul>
     <li><strong>数据表</strong>：支持点击表头指标排序（正序/倒序切换），默认人效按加粉数倒序、成交按总订单金额倒序</li>
     <li><strong>排行榜</strong>：医助按加粉-支付转化率排序 Top10，左 5 右 5 分列展示，辅助图表横向撑满</li>
-    <li><strong>明细表</strong>：每行一个医助，列出曝光数、加粉数、开口数、舌象上传数、开方数、支付数、确认数、加粉-支付转化率；支持按列排序、搜索医助</li>
+    <li><strong>明细表</strong>：每行一个医助，列出曝光数、加粉数、开口数、舌象上传数、开方数、支付数、加粉-支付转化率；支持按列排序、搜索医助</li>
   </ul>
 </div>
 `
@@ -2143,6 +2181,7 @@
   <ul>
     <li><strong>首页PV</strong>：AI 工具首页页面浏览量</li>
     <li><strong>首页UV</strong>：落地页独立访客数</li>
+    <li><strong>舌诊拍摄页PV</strong>：舌诊拍摄页页面浏览量</li>
     <li><strong>舌象上传PV</strong>：用户提交舌象图片的次数</li>
     <li><strong>舌象上传折损率</strong>：1 - 舌诊报告数 / 舌象上传PV</li>
     <li><strong>舌诊报告数</strong>：用户生成的舌诊报告数</li>
@@ -2161,7 +2200,9 @@
     <li><strong>留资数</strong>：完成留资的去重人数</li>
     <li><strong>小结-留资率PV</strong>：留资数 / 小结数</li>
     <li><strong>舌诊报告-留资率PV</strong>：留资数 / 舌诊报告数</li>
+    <li><strong>舌诊报告-留资率UV</strong>：留资数 / 舌诊报告人次</li>
     <li><strong>首页-留资率PV</strong>：留资数 / 首页PV</li>
+    <li><strong>舌诊拍摄页PV-留资转化</strong>：留资数 / 舌诊拍摄页PV</li>
     <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
     <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
     <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
@@ -2178,13 +2219,16 @@
     <li><strong>会话开口率</strong>：开口会话数 / 会话数</li>
     <li><strong>平均对话轮次</strong>：总对话轮次 / 会话数</li>
     <li><strong>平均出报告轮次</strong>：出报告前总轮次 / 报告数量</li>
+    <li><strong>create报告数</strong>：用户触发生成快测报告的次数（create 事件）</li>
     <li><strong>报告数量</strong>：用户生成的快测结论报告数</li>
     <li><strong>报告人次</strong>：生成报告的去重用户数</li>
     <li><strong>人均报告数</strong>：报告数量 / 报告人次</li>
     <li><strong>会话-报告转化率</strong>：报告数量 / 会话数</li>
+    <li><strong>create报告数-小结转化率</strong>：报告数量 / create报告数</li>
     <li><strong>首页-报告转化率</strong>：报告数量 / 首页PV</li>
     <li><strong>加粉数</strong>：通过快测产品新增企微好友去重人数</li>
     <li><strong>报告-加粉转化率</strong>：加粉数 / 报告数量</li>
+    <li><strong>create报告数-加粉转化率</strong>：加粉数 / create报告数</li>
     <li><strong>首页-加粉转化率</strong>：加粉数 / 首页PV（会话数）</li>
     <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
     <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>

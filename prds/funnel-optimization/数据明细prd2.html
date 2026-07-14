@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用户转化明细产品需求文档（PRD）</title>
+<style>
+:root{--brand:#2563eb;--ink:#172033;--muted:#687386;--line:#e7ebf3;--bg:#f3f5f9;--card:#fff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:15px;}
+body{background:var(--bg);color:var(--ink);font:14px/1.72 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+a{color:var(--brand);text-decoration:none;} a:hover{text-decoration:underline;}
+.layout{display:grid;grid-template-columns:292px minmax(0,1fr);min-height:100vh;}
+.side{position:sticky;top:0;height:100vh;overflow:auto;background:#111827;color:#d6deee;border-right:1px solid #1f2937;padding:24px 18px;}
+.side-brand{padding:4px 8px 18px;border-bottom:1px solid rgba(226,232,240,.14);margin-bottom:16px;}
+.side-brand h1{font-size:1rem;line-height:1.35;color:#fff;margin-bottom:8px;font-weight:700;}
+.side-brand p{font-size:.78rem;color:#9aa6bd;line-height:1.5;}
+.toc-title{font-size:.78rem;margin:0 0 10px;padding:0 8px;color:#8fa0bd;letter-spacing:.08em;font-weight:700;}
+.toc{list-style:none;} .toc li{margin:2px 0;}
+.toc a{display:block;color:#d6deee;border-radius:8px;padding:7px 8px;line-height:1.35;}
+.toc a:hover{background:#1f2a3f;color:#fff;text-decoration:none;}
+.toc .lv1{font-weight:700;} .toc .lv1 a{color:#fff;}
+.toc .lv2 a{padding-left:18px;font-size:.88rem;color:#b8c3d8;}
+.toc .lv3 a{padding-left:30px;font-size:.82rem;color:#9aa6bd;}
+.main{width:100%;max-width:1080px;margin:0 auto;padding:32px 34px 80px;}
+.hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:34px;border-radius:16px;box-shadow:0 18px 40px rgba(37,99,235,.22);margin-bottom:24px;}
+.hero h1{font-size:1.95rem;line-height:1.25;margin-bottom:12px;}
+.hero p{color:#eff6ff;max-width:880px;}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.meta span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 10px;font-size:.75rem;}
+.links{margin-top:12px;font-size:.85rem;} .links a{color:#dbeafe;margin-right:14px;}
+.doc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 8px 24px rgba(18,26,43,.05);}
+.doc > h1:first-child{display:none;}
+h2{font-size:1.45rem;margin:34px 0 14px;padding-top:8px;color:#1d4ed8;scroll-margin-top:24px;}
+h3{font-size:1.12rem;margin:24px 0 10px;scroll-margin-top:24px;}
+h4{font-size:1rem;margin:18px 0 8px;color:#344054;scroll-margin-top:24px;}
+p{margin:8px 0 14px;} ul,ol{margin:8px 0 18px 22px;} li{margin:4px 0;}
+strong{color:#101828;}
+code{background:#f0f3f8;border:1px solid #dfe5ef;border-radius:5px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em;}
+pre{background:#111827;color:#dbe7ff;overflow:auto;padding:16px;border-radius:10px;margin:12px 0 20px;}
+pre code{background:transparent;border:0;color:inherit;padding:0;}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin:12px 0 22px;}
+table{width:100%;border-collapse:collapse;min-width:720px;background:#fff;}
+th,td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;}
+th:last-child,td:last-child{border-right:0;} tr:last-child td{border-bottom:0;}
+th{background:#eff6ff;color:#1d4ed8;font-weight:700;white-space:nowrap;}
+tbody tr:nth-child(even){background:#fbfcff;}
+.top{position:fixed;right:22px;bottom:22px;width:40px;height:40px;border:0;border-radius:50%;background:var(--brand);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.16);opacity:.78;}
+.top:hover{opacity:1;}
+@media(max-width:900px){.layout{display:block;}.side{position:relative;height:auto;max-height:45vh;}.main{padding:18px 14px 70px;}.hero{padding:26px 20px;}.doc{padding:20px;}}
+@media print{body{background:#fff;}.layout{display:block;}.side,.top{display:none;}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="side-brand">
+      <h1>用户转化明细 PRD</h1>
+      <p>数据明细prd2 · HTML 预览版</p>
+    </div>
+    <div class="toc-title">目录</div>
+    <ul class="toc"><li class="lv1"><a href="#用户转化明细产品需求文档PRD">用户转化明细产品需求文档（PRD）</a></li>
+<li class="lv2"><a href="#1-需求背景与目标">1. 需求背景与目标</a></li>
+<li class="lv3"><a href="#11-业务背景">1.1 业务背景</a></li>
+<li class="lv3"><a href="#12-需求目标">1.2 需求目标</a></li>
+<li class="lv3"><a href="#13-需求范围与功能清单">1.3 需求范围与功能清单</a></li>
+<li class="lv2"><a href="#2-角色与权限">2. 角色与权限</a></li>
+<li class="lv2"><a href="#3-页面与交互">3. 页面与交互</a></li>
+<li class="lv3"><a href="#31-页面结构">3.1 页面结构</a></li>
+<li class="lv3"><a href="#32-筛选项">3.2 筛选项</a></li>
+<li class="lv3"><a href="#321-时间维度切换规则">3.2.1 时间维度切换规则</a></li>
+<li class="lv3"><a href="#322-应用与应用版本筛选规则">3.2.2 应用与应用版本筛选规则</a></li>
+<li class="lv3"><a href="#323-状态筛选规则">3.2.3 状态筛选规则</a></li>
+<li class="lv3"><a href="#324-渠道筛选与全部渠道口径U07">3.2.4 渠道筛选与「全部渠道」口径（U07）</a></li>
+<li class="lv3"><a href="#33-漏斗汇总表下钻明细U05">3.3 漏斗汇总表下钻明细（U05）</a></li>
+<li class="lv3"><a href="#34-异步导出-ExcelU01">3.4 异步导出 Excel（U01）</a></li>
+<li class="lv3"><a href="#341-交互流程">3.4.1 交互流程</a></li>
+<li class="lv3"><a href="#342-导出字段">3.4.2 导出字段</a></li>
+<li class="lv3"><a href="#35-统计卡片与趋势图">3.5 统计卡片与趋势图</a></li>
+<li class="lv3"><a href="#351-时间维度--加粉时间">3.5.1 时间维度 = 加粉时间</a></li>
+<li class="lv3"><a href="#352-时间维度--支付时间">3.5.2 时间维度 = 支付时间</a></li>
+<li class="lv3"><a href="#36-核心数据列表U04">3.6 核心数据列表（U04）</a></li>
+<li class="lv3"><a href="#361-表头结构">3.6.1 表头结构</a></li>
+<li class="lv3"><a href="#362-字段定义">3.6.2 字段定义</a></li>
+<li class="lv3"><a href="#363-更多详情">3.6.3 「更多详情」</a></li>
+<li class="lv2"><a href="#4-数据字段映射">4. 数据字段映射</a></li>
+<li class="lv2"><a href="#5-业务规则">5. 业务规则</a></li>
+<li class="lv2"><a href="#6-验收标准UAT">6. 验收标准（UAT）</a></li>
+<li class="lv2"><a href="#7-原型改造对照">7. 原型改造对照</a></li>
+</ul>
+  </aside>
+  <main class="main">
+    <div class="hero">
+      <h1>用户转化明细产品需求文档（PRD）</h1>
+      <p>便于评审与联调的 HTML 阅读版，内容来自同目录「数据明细prd2.md」。</p>
+      <div class="meta"><span>版本 V1.3</span><span>模块：用户转化明细</span></div>
+      <div class="links">
+        <a href="./数据统计2.html" target="_blank">交互原型 · 合一看板</a>
+        <a href="./数据统计.html" target="_blank">交互原型 · 漏斗旧版</a>
+        <a href="./多维度数据统计.html" target="_blank">关联 · 多维度数据统计 PRD</a>
+      </div>
+    </div>
+    <article class="doc">
+<h1 id="用户转化明细产品需求文档PRD">用户转化明细产品需求文档（PRD）</h1>
+<ul>
+<li><strong>文档类型</strong>：PRD</li>
+<li><strong>模块</strong>：全链路漏斗优化 / 用户转化明细</li>
+<li><strong>版本</strong>：V1.3</li>
+<li><strong>创建日期</strong>：2026-07-13</li>
+<li><strong>修订日期</strong>：2026-07-14</li>
+<li><strong>作者</strong>：产品</li>
+<li><strong>交互原型</strong>：<a href="./数据统计2.html" target="_blank" rel="noopener">全链路漏斗 + 用户转化明细 V2 合一原型</a>（左侧导航切换；汇总表操作列页内跳转明细并带入筛选）</li>
+<li><strong>关联文档</strong>：<a href="./多维度数据统计.html" target="_blank" rel="noopener">全链路漏斗优化 PRD</a> · <a href="./数据统计.html" target="_blank" rel="noopener">全链路漏斗旧原型</a></li>
+</ul>
+<h2 id="1-需求背景与目标">1. 需求背景与目标</h2>
+<h3 id="11-业务背景">1.1 业务背景</h3>
+<p>「用户转化明细」是全链路漏斗优化看板的核心下钻页面，用于追踪单用户从线索（加粉）→ 沟通 → 开方 → 成交的全链路转化情况。运营、流量组长、医助管理者依赖该页面进行个案排查、转化归因与数据导出分析。</p>
+<p>本轮改造的核心目的，是<strong>拓展明细数据的可筛范围与使用场景</strong>：在既有「加粉时间」口径上增加「支付时间」维度、在核心列表补充支付时间与复诊信息、补充应用/应用版本筛选，使明细页不仅能独立排查个案，还能承接全链路漏斗汇总表的下钻——从漏斗任意汇总行一键跳入明细，并自动带入对应日期、渠道、医助等筛选条件。</p>
+<div class="table-wrap"><table>
+<tr><th>问题</th><th>现状</th><th>影响</th></tr>
+<tr><td>时间维度单一</td><td>仅支持按「加粉时间」筛选</td><td>无法按支付节点复盘转化，也无法承接漏斗「支付/订单」口径下钻</td></tr>
+<tr><td>成交信息过简</td><td>成交信息仅展示「开方状态」「成交状态」</td><td>初诊/复诊成交细节不足，无法与漏斗订单口径对齐</td></tr>
+<tr><td>加粉状态不可筛</td><td>列表展示加粉状态，但无筛选项</td><td>无法快速定位重复添加、已删除用户</td></tr>
+<tr><td>漏斗与明细割裂</td><td>汇总表无法一键进入明细</td><td>运营需手工重选筛选条件，排查效率低</td></tr>
+<tr><td>导出超时</td><td>同步导出，前端一次性拉取全量数据生成 Excel</td><td>筛选数据量大时导出失败，影响运营取数</td></tr>
+</table></div>
+<h3 id="12-需求目标">1.2 需求目标</h3>
+<div class="table-wrap"><table>
+<tr><th>目标编号</th><th>目标描述</th><th>衡量方式</th></tr>
+<tr><td>G01</td><td>支持加粉/支付双时间维度，筛选与统计口径随维度切换</td><td>切换后筛选项、统计卡片、列表、趋势图口径一致</td></tr>
+<tr><td>G02</td><td>核心列表直接展示支付时间与复诊关键字段</td><td>无需展开详情即可查看支付时间、复诊次数/时间</td></tr>
+<tr><td>G03</td><td>支持加粉状态及初诊/复诊成交状态精准筛选</td><td>结果与列表展示状态一致</td></tr>
+<tr><td>G04</td><td>全链路漏斗汇总表可一键下钻至明细</td><td>各表操作列链接带入正确时间维度与筛选项</td></tr>
+<tr><td>G05</td><td>支持大数据量场景下的稳定数据导出</td><td>10 万条以内筛选结果异步导出成功率 ≥ 99%</td></tr>
+<tr><td>G06</td><td>每日数据 / 医助维度默认覆盖全部渠道口径</td><td>默认「全部」含 AI 工具渠道 + 非工具「线下转介绍等」</td></tr>
+</table></div>
+<h3 id="13-需求范围与功能清单">1.3 需求范围与功能清单</h3>
+<p><strong>包含</strong>：</p>
+<div class="table-wrap"><table>
+<tr><th>编号</th><th>功能名称</th><th>功能描述</th><th>优先级</th></tr>
+<tr><td>U01</td><td>时间维度筛选</td><td>支持加粉时间、支付时间；切换后筛选项可见性与统计卡片布局随之变化</td><td>P0</td></tr>
+<tr><td>U02</td><td>成交信息字段拓展</td><td>核心列表展示初诊成交（开方状态、支付状态、支付时间）+ 复诊成交；开方时间收入「更多详情」</td><td>P0</td></tr>
+<tr><td>U03</td><td>应用与应用版本筛选</td><td>新增应用、应用版本筛选项，并在核心数据表展示</td><td>P0</td></tr>
+<tr><td>U04</td><td>加粉/成交状态筛选</td><td>加粉状态下拉；初诊开方/初诊成交/复诊成交状态（仅加粉时间维度展示）</td><td>P0</td></tr>
+<tr><td>U05</td><td>漏斗汇总表下钻明细</td><td>每日转化 / 订单金额 / 医助人效 / 医助成交 / 渠道维度表增加操作列，链接至明细并带入筛选</td><td>P0</td></tr>
+<tr><td>U06</td><td>异步导出 Excel</td><td>点击导出后后台异步生成文件，前端展示导出状态提示（进行中 / 成功 / 失败）</td><td>P0</td></tr>
+<tr><td>U07</td><td>全部渠道口径与线下渠道</td><td>每日数据、医助维度默认取全部渠道；渠道筛选项末尾增加「线下转介绍等」，归集非 AI 工具来源</td><td>P0</td></tr>
+</table></div>
+<h2 id="2-角色与权限">2. 角色与权限</h2>
+<p>沿用 <a href="./多维度数据统计.html" target="_blank" rel="noopener">全链路漏斗优化 PRD</a> 权限体系：</p>
+<div class="table-wrap"><table>
+<tr><th>角色</th><th>本页权限</th></tr>
+<tr><td>管理员</td><td>全量数据查看、导出</td></tr>
+<tr><td>运营管理员</td><td>查看权限范围内数据、导出</td></tr>
+<tr><td>流量组长</td><td>查看本团队及以下数据、导出</td></tr>
+</table></div>
+<h2 id="3-页面与交互">3. 页面与交互</h2>
+<h3 id="31-页面结构">3.1 页面结构</h3>
+<p>页面标题：<strong>用户转化数据明细表</strong></p>
+<p>副标题动态展示当前时间维度，例如：<code>线索 → 沟通 → 开方 → 成交 · 全链路转化监控（当前时间筛选：加粉时间）</code></p>
+<p>页面自上而下分为：</p>
+<ol>
+<li>筛选栏（随时间维度显隐部分筛选项）</li>
+<li>统计卡片区 + 趋势图（卡片集合随时间维度切换）</li>
+<li>核心数据列表（宽表格，支持横向滚动、分页）</li>
+<li>底部分页与说明</li>
+</ol>
+<h3 id="32-筛选项">3.2 筛选项</h3>
+<div class="table-wrap"><table>
+<tr><th>筛选项</th><th>类型</th><th>默认值</th><th>可见性</th><th>说明</th></tr>
+<tr><td><strong>时间维度</strong></td><td>单选下拉</td><td>加粉时间</td><td>始终</td><td>加粉时间 / 支付时间</td></tr>
+<tr><td>时间快捷</td><td>按钮组</td><td>今日</td><td>始终</td><td>今日 / 昨日 / 近7天 / 近30天</td></tr>
+<tr><td>日期起 / 止</td><td>日期</td><td>今日</td><td>始终</td><td>标签随时间维度变为「加粉日期」或「支付日期」</td></tr>
+<tr><td>所属渠道 / 子渠道</td><td>下拉</td><td>全部</td><td>始终</td><td>子渠道随渠道联动；渠道选项末尾含「线下转介绍等」，见 3.2.4</td></tr>
+<tr><td>应用 / 应用版本</td><td>下拉</td><td>全部</td><td>始终</td><td>版本随应用联动</td></tr>
+<tr><td>所属团队</td><td>下拉</td><td>全部</td><td>始终</td><td>沿用现状</td></tr>
+<tr><td>医助名(搜索)</td><td>输入框</td><td>—</td><td>始终</td><td>支持姓名 / 企微账号模糊搜索</td></tr>
+<tr><td><strong>加粉状态</strong></td><td>下拉</td><td>全部</td><td>仅加粉时间</td><td>全部 / 正常 / 重复添加 / 已删除</td></tr>
+<tr><td><strong>响应状态</strong></td><td>下拉</td><td>全部</td><td>仅加粉时间</td><td>全部 / 优 / 良 / 差</td></tr>
+<tr><td><strong>初诊开方状态</strong></td><td>下拉</td><td>全部</td><td>仅加粉时间</td><td>原「开方状态」；全部 / 已开方 / 未开方</td></tr>
+<tr><td><strong>初诊成交状态</strong></td><td>下拉</td><td>全部</td><td>仅加粉时间</td><td>原「成交状态」；全部 / 已成交 / 未成交</td></tr>
+<tr><td><strong>复诊成交状态</strong></td><td>下拉</td><td>全部</td><td>仅加粉时间</td><td><strong>新增</strong>；全部 / 已成交 / 未成交</td></tr>
+<tr><td>昵称/编号</td><td>输入框</td><td>—</td><td>始终</td><td>患者昵称或编号模糊搜索</td></tr>
+<tr><td>操作</td><td>按钮组</td><td>—</td><td>始终</td><td>「筛选」「重置」「导出 Excel」</td></tr>
+</table></div>
+<h4 id="321-时间维度切换规则">3.2.1 时间维度切换规则</h4>
+<div class="table-wrap"><table>
+<tr><th>时间维度</th><th>筛选字段</th><th>列表命中逻辑</th><th>筛选项</th><th>统计卡片</th></tr>
+<tr><td>加粉时间（默认）</td><td><code>add_wx_at</code></td><td>加粉时间落在日期范围内</td><td>展示加粉状态、响应状态、初诊开方/初诊成交/复诊成交状态</td><td>见 3.5「加粉时间」卡片集</td></tr>
+<tr><td>支付时间</td><td>初诊 <code>first_paid_at</code> 或复诊支付时间</td><td>初诊支付或任一复诊支付时间落在日期范围内即命中；两端均无支付则不命中</td><td><strong>隐藏</strong>加粉状态、响应状态、初诊开方状态、初诊成交状态、复诊成交状态</td><td>见 3.5「支付时间」卡片集</td></tr>
+</table></div>
+<p><strong>交互说明</strong>：</p>
+<ol>
+<li>切换时间维度后，快捷文案、日期标签、筛选项显隐、统计卡片布局同步更新；已选日期范围<strong>保留不清空</strong>。</li>
+<li>支付时间维度下被隐藏的筛选项不参与查询（等同于「全部」）。</li>
+<li>页脚说明同步更新当前时间维度。</li>
+</ol>
+<h4 id="322-应用与应用版本筛选规则">3.2.2 应用与应用版本筛选规则</h4>
+<div class="table-wrap"><table>
+<tr><th>应用</th><th>可选版本</th></tr>
+<tr><td>舌诊</td><td>v3.2、v2.1</td></tr>
+<tr><td>体质测试</td><td>v3.2、v1.0</td></tr>
+<tr><td>问诊H5</td><td>v2.1、v1.0</td></tr>
+</table></div>
+<p>切换应用后版本重置为「全部」。</p>
+<h4 id="323-状态筛选规则">3.2.3 状态筛选规则</h4>
+<p><strong>加粉状态</strong>（由 <code>是否删除</code>、<code>重复添加</code> 派生）：</p>
+<div class="table-wrap"><table>
+<tr><th>展示值</th><th>判定规则</th></tr>
+<tr><td>正常</td><td>是否删除 = 否 且 重复添加 = 否</td></tr>
+<tr><td>重复添加</td><td>重复添加 = 是（优先于已删除）</td></tr>
+<tr><td>已删除</td><td>是否删除 = 是 且 重复添加 = 否</td></tr>
+</table></div>
+<p><strong>初诊开方状态</strong>：已开方 = 存在初诊处方；未开方 = 无。</p>
+<p><strong>初诊成交状态</strong>：已成交 = 初诊支付成功；未成交 = 未支付（含未开方）。</p>
+<p><strong>复诊成交状态</strong>：已成交 = 复诊次数 &gt; 0；未成交 = 复诊次数 = 0。</p>
+<h4 id="324-渠道筛选与全部渠道口径U07">3.2.4 渠道筛选与「全部渠道」口径（U07）</h4>
+<p>适用于：<strong>数据统计</strong>中的每日数据统计（每日转化、每日订单金额）、医助维度统计（医助服务人效、医助成交），以及用户转化明细的渠道筛选。渠道维度统计表本身按渠道行展开，不改变「全部」默认逻辑。</p>
+<div class="table-wrap"><table>
+<tr><th>规则</th><th>说明</th></tr>
+<tr><td>默认值</td><td>渠道筛选默认 = <strong>全部</strong></td></tr>
+<tr><td>「全部」含义</td><td>包含<strong>所有渠道来源</strong>的加粉 / 支付 / 订单数据，<strong>不限于</strong>通过 AI 工具（舌诊、体质测试、问诊 H5 等）转化进线的用户</td></tr>
+<tr><td>非工具归集</td><td>凡非通过 AI 工具转化来的流量 / 加粉（如线下转介绍、自然添加、其他人工转介等），统一归入渠道 <strong>「线下转介绍等」</strong></td></tr>
+<tr><td>选项位置</td><td>渠道下拉在既有 AI / 投放等渠道选项之后，<strong>最后一项</strong>增加「线下转介绍等」</td></tr>
+<tr><td>筛选行为</td><td>选择具体 AI 渠道时，仅返回该渠道数据；选择「线下转介绍等」时，仅返回非工具来源数据；选择「全部」时上述两类一并统计</td></tr>
+</table></div>
+<p><strong>渠道选项示意</strong>（顺序，具体投放渠道名称沿用现网）：</p>
+<pre><code>全部
+├─ baidu_doctor_h5 / 百度巧舱 …
+├─ douyin_info …
+├─ weixin_mp …
+└─ 线下转介绍等    ← 新增，置于末尾；非 AI 工具转化均归入此渠道</code></pre>
+<p><strong>口径说明</strong>：</p>
+<ol>
+<li>每日转化、每日订单金额、医助人效、医助成交在默认「全部」下，汇总数字 = AI 工具各渠道合计 + 「线下转介绍等」。</li>
+<li>「线下转介绍等」用户通常无应用 / 应用版本（或为空）；明细列表对应字段展示 <code>—</code> 或空，不影响筛选。</li>
+<li>从漏斗下钻至明细时：若漏斗当前选的是「全部」，明细带入渠道=全部；若选的是「线下转介绍等」，明细带入该渠道。</li>
+</ol>
+<h3 id="33-漏斗汇总表下钻明细U05">3.3 漏斗汇总表下钻明细（U05）</h3>
+<p>在全链路漏斗各汇总表<strong>最右侧新增（或调整）操作列</strong>，链接至用户转化明细页，并通过页内跳转带入时间维度与筛选项；明细页落地后自动按带入条件执行一次筛选。</p>
+<p>&gt; 原型实现：<a href="./数据统计2.html" target="_blank" rel="noopener"><code>数据统计2.html</code></a> 为合一页（左侧导航：全链路漏斗 / 用户转化明细）。操作列点击后切换至明细 Tab，并自动写入筛选条件后查询（不再新开独立页面）。</p>
+<div class="table-wrap"><table>
+<tr><th>来源页面</th><th>操作文案</th><th>带入明细的筛选条件</th></tr>
+<tr><td>每日转化数据</td><td><strong>加粉明细</strong></td><td>时间维度=加粉时间；日期起止=该行日期；渠道/子渠道/应用等=当前漏斗筛选条件</td></tr>
+<tr><td>每日转化数据</td><td><strong>支付明细</strong></td><td>时间维度=支付时间；日期起止=该行日期；渠道等筛选项带入</td></tr>
+<tr><td>每日订单金额数据</td><td><strong>数据明细</strong></td><td>时间维度=支付时间；日期起止=该行日期；渠道等筛选项带入</td></tr>
+<tr><td>医助服务人效统计</td><td><strong>加粉明细</strong></td><td>时间维度=加粉时间；日期起止=当前查询日期范围；医助企微 ID（或医助账号）；渠道等筛选项带入</td></tr>
+<tr><td>医助服务人效统计</td><td><strong>支付明细</strong></td><td>时间维度=支付时间；日期起止=当前查询日期范围；医助企微 ID；渠道等筛选项带入</td></tr>
+<tr><td>医助成交数据</td><td><strong>数据明细</strong></td><td>时间维度=支付时间；日期起止=当前查询日期范围；医助企微 ID；渠道等筛选项带入</td></tr>
+<tr><td>渠道维度数据</td><td><strong>转化详细</strong>（原「查看详情」改名）</td><td>仍进入渠道产品详细转化页（原逻辑不变）</td></tr>
+<tr><td>渠道维度数据</td><td><strong>加粉明细</strong></td><td>时间维度=加粉时间；带入该行渠道、子渠道、应用(产品)、应用版本；日期=当前查询范围</td></tr>
+<tr><td>渠道维度数据</td><td><strong>支付明细</strong></td><td>时间维度=支付时间；带入同上渠道维度字段；日期=当前查询范围</td></tr>
+</table></div>
+<p><strong>参数约定（建议）</strong>：</p>
+<div class="table-wrap"><table>
+<tr><th>参数</th><th>说明</th><th>示例</th></tr>
+<tr><td><code>timeDim</code></td><td><code>add</code> / <code>pay</code></td><td><code>pay</code></td></tr>
+<tr><td><code>start</code> / <code>end</code></td><td>日期起止 YYYY-MM-DD</td><td><code>2026-05-16</code></td></tr>
+<tr><td><code>channel</code> / <code>subChannel</code></td><td>渠道 / 子渠道</td><td></td></tr>
+<tr><td><code>app</code> / <code>appVersion</code></td><td>应用 / 应用版本</td><td></td></tr>
+<tr><td><code>doctorId</code></td><td>医助企微账号 / ID</td><td></td></tr>
+<tr><td><code>autoQuery</code></td><td><code>1</code> 时落地自动筛选</td><td><code>1</code></td></tr>
+</table></div>
+<h3 id="34-异步导出-ExcelU01">3.4 异步导出 Excel（U01）</h3>
+<h4 id="341-交互流程">3.4.1 交互流程</h4>
+<pre><code>用户点击「导出 Excel」
+    ↓
+校验：是否已执行筛选（detailQueried = true）
+    ↓ 否 → Toast「请先筛选数据后再导出」
+    ↓ 是
+按钮置灰 + 文案变为「导出中...」
+    ↓
+后端创建导出任务（携带当前全部筛选条件快照）
+    ↓
+前端轮询任务状态
+    ↓
+成功 → Toast「导出成功」+ 下载；失败/超时 → 提示原因并恢复按钮</code></pre>
+<h4 id="342-导出字段">3.4.2 导出字段</h4>
+<div class="table-wrap"><table>
+<tr><th>分组</th><th>导出列</th></tr>
+<tr><td>线索信息</td><td>患者编号、患者昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、报告时间、加粉时间、加粉状态</td></tr>
+<tr><td>沟通信息</td><td>患者对话数、医助回复数、患者图片数、响应状态</td></tr>
+<tr><td>初诊成交信息</td><td>开方状态、支付状态、支付时间</td></tr>
+<tr><td>复诊成交信息</td><td>复诊次数、复诊支付时间</td></tr>
+<tr><td>扩展字段</td><td>开方时间、首单编号、开单医生、首单金额、剂型(汤剂/丸剂)、物流发货时间、成交周期</td></tr>
+</table></div>
+<p>文件命名：<code>用户转化追踪明细_{时间维度}_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
+<h3 id="35-统计卡片与趋势图">3.5 统计卡片与趋势图</h3>
+<p>统计基准跟随「时间维度」。卡片主数字为加总；汤剂 / 丸剂以<strong>弱层级副文案</strong>展示（如 <code>汤剂 12 单 · 丸剂 8 单</code>）。</p>
+<h4 id="351-时间维度--加粉时间">3.5.1 时间维度 = 加粉时间</h4>
+<div class="table-wrap"><table>
+<tr><th>统计卡片</th><th>统计口径</th></tr>
+<tr><td>添加用户数</td><td>全部渠道加粉次数（删除后重新添加会累加，<strong>不去重</strong>）</td></tr>
+<tr><td>已开口用户数</td><td>客户对话数 &gt; 0 的加粉记录数</td></tr>
+<tr><td>初诊成交单数</td><td>初诊支付成功订单数；副文案：汤剂 x 单、丸剂 x 单</td></tr>
+<tr><td>初诊成交金额</td><td>初诊实付金额合计；副文案：汤剂 / 丸剂金额</td></tr>
+<tr><td>复诊成交单数</td><td>复诊支付成功订单数；副文案：汤剂 x 单、丸剂 x 单</td></tr>
+<tr><td>复诊成交金额</td><td>复诊实付金额合计；副文案：汤剂 / 丸剂金额</td></tr>
+</table></div>
+<h4 id="352-时间维度--支付时间">3.5.2 时间维度 = 支付时间</h4>
+<div class="table-wrap"><table>
+<tr><th>统计卡片</th><th>统计口径</th></tr>
+<tr><td>初诊成交单数</td><td>支付日期落在筛选范围内的初诊订单数；副文案：汤剂 / 丸剂</td></tr>
+<tr><td>初诊成交金额</td><td>同上口径金额；副文案：汤剂 / 丸剂</td></tr>
+<tr><td>复诊成交单数</td><td>支付日期落在筛选范围内的复诊订单数；副文案：汤剂 / 丸剂</td></tr>
+<tr><td>复诊成交金额</td><td>同上口径金额；副文案：汤剂 / 丸剂</td></tr>
+</table></div>
+<p>点击卡片切换右侧趋势图聚合指标；对比功能沿用现状，对比基准日期随当前时间维度计算。</p>
+<p>趋势图 X 轴：单日按小时、多日按天，时间字段与当前时间维度一致。</p>
+<h3 id="36-核心数据列表U04">3.6 核心数据列表（U04）</h3>
+<h4 id="361-表头结构">3.6.1 表头结构</h4>
+<pre><code>🔍 线索信息 (10列) | 💬 沟通信息 (4列) | 💰 初诊成交信息 (3列) | 🔄 复诊成交信息 (2列) | 操作
+患者 | 医助 | 团队 | 渠道 | 子渠道 | 应用 | 应用版本 | 报告时间 | 加粉时间 | 加粉状态
+患者对话数 | 医助回复数 | 患者图片数 | 响应状态
+开方状态 | 支付状态 | 支付时间
+复诊次数 | 复诊支付时间
+更多详情 | 对话</code></pre>
+<h4 id="362-字段定义">3.6.2 字段定义</h4>
+<p><strong>初诊成交信息</strong></p>
+<div class="table-wrap"><table>
+<tr><th>列名</th><th>说明</th><th>展示</th></tr>
+<tr><td>开方状态</td><td>是否存在初诊处方</td><td>已开方 / 未开方</td></tr>
+<tr><td>支付状态</td><td>初诊是否支付成功</td><td>已支付 / 未支付 / 未开方</td></tr>
+<tr><td>支付时间</td><td>初诊支付成功时间</td><td>有则显示时间，否则 <code>—</code></td></tr>
+</table></div>
+<p><strong>复诊成交信息</strong></p>
+<div class="table-wrap"><table>
+<tr><th>列名</th><th>说明</th><th>展示</th></tr>
+<tr><td>复诊次数</td><td>复诊支付成功订单数</td><td>整数，无为 <code>0</code></td></tr>
+<tr><td>复诊支付时间</td><td>最近一次复诊支付时间</td><td>有则显示，否则 <code>—</code></td></tr>
+</table></div>
+<h4 id="363-更多详情">3.6.3 「更多详情」</h4>
+<ul>
+<li><strong>初诊成交详情</strong>：开方时间、首单编号、开单医生、首单金额、剂型、物流发货时间、成交周期</li>
+<li><strong>复诊成交详情</strong>（复诊次数 &gt; 0）：历次复诊支付时间、金额、剂型</li>
+</ul>
+<h2 id="4-数据字段映射">4. 数据字段映射</h2>
+<div class="table-wrap"><table>
+<tr><th>界面字段</th><th>建议数据源字段</th><th>类型</th><th>说明</th></tr>
+<tr><td>加粉时间</td><td><code>add_wx_at</code></td><td>DATETIME</td><td>企微好友添加时间</td></tr>
+<tr><td>应用 / 应用版本</td><td><code>product</code> / <code>product_version</code></td><td>STRING</td><td>AI 智能体应用及版本</td></tr>
+<tr><td>加粉状态</td><td>派生</td><td>STRING</td><td><code>is_deleted</code> + <code>is_duplicate_add</code></td></tr>
+<tr><td>开方状态 / 开方时间</td><td>派生 / <code>prescription_at</code></td><td>—</td><td>开方时间仅详情展示</td></tr>
+<tr><td>支付状态 / 支付时间</td><td>派生 / <code>first_paid_at</code></td><td>—</td><td>初诊首单</td></tr>
+<tr><td>剂型</td><td><code>drug_form</code></td><td>STRING</td><td>汤剂 / 丸剂</td></tr>
+<tr><td>复诊次数</td><td><code>revisit_paid_cnt</code></td><td>INT</td><td>复诊支付成功单数</td></tr>
+<tr><td>复诊支付时间</td><td><code>last_revisit_paid_at</code></td><td>DATETIME</td><td>最近复诊支付</td></tr>
+<tr><td>所属渠道</td><td><code>channel</code></td><td>STRING</td><td>含投放渠道及末项「线下转介绍等」；全部=含非 AI 工具来源</td></tr>
+</table></div>
+<h2 id="5-业务规则">5. 业务规则</h2>
+<div class="table-wrap"><table>
+<tr><th>规则编号</th><th>规则描述</th><th>适用场景</th></tr>
+<tr><td>UR01</td><td>加粉状态优先级：重复添加 &gt; 已删除 &gt; 正常</td><td>列表与筛选</td></tr>
+<tr><td>UR02</td><td>时间维度切换仅改变时间命中字段、筛选项显隐与卡片集，其他已选条件尽量保留</td><td>时间筛选</td></tr>
+<tr><td>UR03</td><td>支付时间维度：初诊或复诊支付时间为空则该端不参与命中；两端均空不返回</td><td>时间筛选</td></tr>
+<tr><td>UR04</td><td>添加用户数按加粉次数累计，删除后重新添加计入新一次</td><td>统计卡片</td></tr>
+<tr><td>UR05</td><td>汤剂/丸剂拆分以订单剂型字段为准；无剂型时归入「其他」不计入副文案分子展示时可并入合计</td><td>统计卡片</td></tr>
+<tr><td>UR06</td><td>漏斗下钻携带完整筛选快照；明细页 <code>autoQuery=1</code> 时自动执行筛选</td><td>下钻</td></tr>
+<tr><td>UR07</td><td>导出任务携带筛选快照，创建后变更不影响已创建任务</td><td>异步导出</td></tr>
+<tr><td>UR08</td><td>应用版本随应用联动，切换应用后版本重置为「全部」</td><td>应用筛选</td></tr>
+<tr><td>UR09</td><td>每日数据、医助维度渠道默认「全部」，口径含 AI 工具渠道 + 「线下转介绍等」</td><td>渠道筛选</td></tr>
+<tr><td>UR10</td><td>非 AI 工具转化（线下转介绍、自然添加等）统一归属渠道「线下转介绍等」，该选项固定为渠道列表末项</td><td>渠道筛选</td></tr>
+</table></div>
+<h2 id="6-验收标准UAT">6. 验收标准（UAT）</h2>
+<div class="table-wrap"><table>
+<tr><th>编号</th><th>验收项</th><th>通过标准</th></tr>
+<tr><td>A01</td><td>异步导出-进行中/成功/失败</td><td>按钮状态与 Toast 符合交互流程</td></tr>
+<tr><td>A02</td><td>加粉时间维度筛选项</td><td>展示加粉状态、响应状态、初诊开方/初诊成交/复诊成交状态，文案正确</td></tr>
+<tr><td>A03</td><td>支付时间维度筛选项</td><td>上述 5 项筛选项隐藏且不参与过滤</td></tr>
+<tr><td>A04</td><td>加粉时间统计卡片</td><td>6 张卡片含添加用户数、已开口、初诊/复诊单数与金额，副文案含汤剂/丸剂</td></tr>
+<tr><td>A05</td><td>支付时间统计卡片</td><td>4 张卡片：初诊/复诊成交单数与金额，含汤剂/丸剂副文案</td></tr>
+<tr><td>A06</td><td>核心列表支付与复诊</td><td>列表含支付时间、复诊次数、复诊支付时间；开方时间仅在更多详情</td></tr>
+<tr><td>A07</td><td>每日转化下钻</td><td>「加粉明细」「支付明细」带入对应时间维度与日期</td></tr>
+<tr><td>A08</td><td>每日订单金额下钻</td><td>「数据明细」带入支付时间维度与该行日期</td></tr>
+<tr><td>A09</td><td>医助人效/成交下钻</td><td>加粉明细 / 支付明细 / 数据明细带入医助企微 ID 与日期</td></tr>
+<tr><td>A10</td><td>渠道维度操作</td><td>「查看详情」改为「转化详细」；新增「加粉明细」「支付明细」并带入渠道维</td></tr>
+<tr><td>A11</td><td>应用版本联动与列展示</td><td>版本随应用联动；列表含应用、应用版本列</td></tr>
+<tr><td>A12</td><td>重置</td><td>恢复默认：加粉时间、今日、状态类=全部、应用=全部</td></tr>
+<tr><td>A13</td><td>全部渠道默认口径</td><td>每日转化 / 订单金额 / 医助人效 / 医助成交默认渠道=全部，汇总含非 AI 工具来源</td></tr>
+<tr><td>A14</td><td>线下转介绍等</td><td>渠道下拉末项为「线下转介绍等」；单选该渠道时仅返回非工具转化数据</td></tr>
+</table></div>
+<h2 id="7-原型改造对照">7. 原型改造对照</h2>
+<div class="table-wrap"><table>
+<tr><th>区域</th><th>现状</th><th>目标</th></tr>
+<tr><td>明细筛选栏</td><td>时间维度两项；开方/成交状态固定展示</td><td>加粉时间下重命名并新增复诊成交状态；支付时间下隐藏 5 项状态筛选</td></tr>
+<tr><td>明细统计卡片</td><td>4 张固定卡片</td><td>加粉时间 6 张 / 支付时间 4 张，含汤剂丸剂副文案</td></tr>
+<tr><td>明细列表</td><td>已含支付时间与复诊信息</td><td>保持；详情补充剂型</td></tr>
+<tr><td>每日转化数据</td><td>无操作列</td><td>末列增加「加粉明细」「支付明细」</td></tr>
+<tr><td>每日订单金额</td><td>无操作列</td><td>末列增加「数据明细」</td></tr>
+<tr><td>医助服务人效</td><td>无操作列</td><td>末列增加「加粉明细」「支付明细」</td></tr>
+<tr><td>医助成交数据</td><td>无操作列</td><td>末列增加「数据明细」</td></tr>
+<tr><td>渠道维度</td><td>「查看详情」</td><td>改为「转化详细」，并增「加粉明细」「支付明细」</td></tr>
+<tr><td>渠道筛选项</td><td>仅 AI / 投放渠道</td><td>末项增加「线下转介绍等」；每日数据、医助维度默认「全部」且含非工具来源</td></tr>
+</table></div>
+
+    </article>
+  </main>
+</div>
+<button class="top" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+</body>
+</html>

@@ -1,0 +1,3328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全链路漏斗优化 · V2 原型</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{brand:{50:'#f0fdfa',100:'#ccfbf1',500:'#14b8a6',600:'#0d9488',700:'#0f766e'}}}}}</script>
+    <style>
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f0f2f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 20px;
+            color: #1e293b;
+        }
+        .dashboard-container { max-width: 100%; background: #fff; min-height: calc(100vh - 40px); border-radius: 12px; overflow: hidden; }
+        .dashboard-container .main-layout { min-height: calc(100vh - 40px); }
+        .dashboard-container .content-area { background: #fff; }
+        /* 避免漏斗页 .btn-primary 覆盖明细按钮 */
+        #page-detail .btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; font-size: 0.7rem; padding: 6px 14px; border-radius: 40px; }
+        .detail-drill-btn { font-family: inherit; }
+        .page-header { padding: 16px 24px 10px; border-bottom: 1px solid #eef2f8; }
+        .page-title { font-size: 1.4rem; font-weight: 700; color: #1e293b; }
+        .page-sub { font-size: 0.75rem; color: #5b6e8c; margin-top: 4px; }
+        .version-tag {
+            display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 20px;
+            background: #dbeafe; color: #1d4ed8; font-size: 0.65rem; font-weight: 600; vertical-align: middle;
+        }
+        .filter-card { background: #f8fafc; margin: 16px 24px; padding: 14px 18px; border-radius: 20px; border: 1px solid #e2e8f0; }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; min-width: 120px; }
+        .filter-group label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #475569; }
+        .filter-group input, .filter-group select {
+            padding: 6px 10px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 0.75rem; outline: none;
+        }
+        .quick-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .quick-btn {
+            padding: 5px 10px; border-radius: 30px; font-size: 0.65rem; font-weight: 500;
+            background: #fff; border: 1px solid #cbd5e1; cursor: pointer;
+        }
+        .quick-btn.active { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn {
+            padding: 6px 14px; border-radius: 40px; font-weight: 500; font-size: 0.7rem;
+            cursor: pointer; border: 1px solid #cbd5e1; background: #fff;
+        }
+        .btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .stats-trend-wrapper { display: flex; gap: 16px; margin: 0 24px 20px; flex-wrap: wrap; }
+        .stats-cards { flex: 0 0 300px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
+        .stats-cards.mode-pay { flex: 0 0 280px; }
+        .stat-card {
+            background: #fff; border-radius: 14px; padding: 10px 12px; border: 1px solid #edf2f7;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .stat-card.hidden { display: none; }
+        .stat-card.active { border-left: 3px solid #3b82f6; background: #f8fafc; }
+        .stat-label { font-size: 0.65rem; color: #5b6e8c; font-weight: 600; }
+        .stat-number { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-top: 4px; }
+        .stat-desc { font-size: 0.55rem; color: #94a3b8; margin-top: 2px; line-height: 1.35; }
+        .filter-add-only.hidden { display: none; }
+        .trend-panel {
+            flex: 1; background: #fff; border-radius: 16px; padding: 12px 16px;
+            border: 1px solid #edf2f7; min-width: 300px;
+        }
+        .trend-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #eef2f8; }
+        .trend-title { font-size: 0.9rem; font-weight: 600; }
+        .trend-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 0.7rem; }
+        .compare-date-picker { display: none; align-items: center; gap: 6px; }
+        .compare-date-picker.show { display: flex; }
+        .compare-date-picker input { padding: 3px 6px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.65rem; }
+        .trend-subtitle { font-size: 0.65rem; color: #5b6e8c; margin-bottom: 8px; }
+        .chart-container { height: 200px; position: relative; }
+        .table-wrapper { margin: 0 24px 16px; overflow-x: auto; border-radius: 20px; border: 1px solid #eef2f8; background: #fff; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 1680px; }
+        .data-table th { background: #f9fafb; padding: 10px 6px; border-bottom: 1px solid #e2e8f0; font-weight: 600; text-align: center; vertical-align: middle; }
+        .group-header { background: #f1f5f9; font-size: 0.7rem; border-bottom: 1px solid #cbd5e1; }
+        .group-header .th-first { background: #ecfdf5; color: #047857; }
+        .group-header .th-revisit { background: #eff6ff; color: #1d4ed8; }
+        .data-table td { padding: 8px 5px; border-bottom: 1px solid #f0f2f5; white-space: nowrap; }
+        .data-table tr:hover { background: #fefce8; }
+        .response-excellent { color: #15803d; font-weight: 500; }
+        .response-good { color: #b45309; font-weight: 500; }
+        .response-poor { color: #b91c1c; font-weight: 500; }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 30px; font-weight: 500; font-size: 0.65rem; }
+        .prescribed-yes { background: #dcfce7; color: #15803d; }
+        .prescribed-no { background: #fef9c3; color: #854d0e; }
+        .pay-yes { background: #dbeafe; color: #1e40af; }
+        .pay-no { background: #fff3e3; color: #b45309; }
+        .pay-na { background: #f1f5f9; color: #64748b; }
+        .status-normal { color: #15803d; }
+        .status-deleted { color: #b91c1c; }
+        .status-duplicate { color: #854d0e; }
+        .action-btn {
+            background: none; border: none; cursor: pointer; font-size: 0.65rem; color: #3b82f6;
+            font-weight: 500; padding: 3px 8px; border-radius: 30px; margin: 0 2px;
+        }
+        .action-btn:hover { background: #eef2ff; }
+        .sub-details td { padding: 8px 12px; background: #faf9fe; border-bottom: 1px solid #e9eef3; }
+        .detail-section { margin-bottom: 8px; border-left: 3px solid #3b82f6; padding-left: 10px; }
+        .detail-section-title { font-weight: 600; color: #334155; margin-bottom: 4px; font-size: 0.7rem; }
+        .detail-flex { display: flex; gap: 16px; flex-wrap: wrap; }
+        .detail-item { background: #f8fafc; padding: 3px 10px; border-radius: 16px; font-size: 0.65rem; }
+        .sub-text { font-size: 0.6rem; color: #6c757d; }
+        .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin: 12px 24px 0; }
+        .footer-note { text-align: right; font-size: 0.65rem; color: #6c757d; margin: 10px 24px 20px; }
+        .search-input-sm { min-width: 140px; }
+        .chat-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 1001; justify-content: center; align-items: center;
+        }
+        .chat-modal-content { background: #fff; border-radius: 20px; width: 90%; max-width: 550px; max-height: 65vh; overflow-y: auto; padding: 20px; }
+        .chat-message { padding: 6px 10px; margin: 6px 0; border-radius: 14px; background: #f1f5f9; }
+        .chat-message.customer { background: #dbeafe; }
+        .chat-message.doctor { background: #dcfce7; }
+        .chat-sender { font-weight: 600; font-size: 0.65rem; margin-bottom: 3px; }
+        .modal-close { float: right; font-size: 22px; cursor: pointer; color: #94a3b8; }
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+        .toast {
+            min-width: 260px; padding: 12px 16px; border-radius: 12px; font-size: 0.8rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); animation: slideIn 0.25s ease;
+        }
+        .toast-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .toast-success { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .toast-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .toast-warn { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .export-bar {
+            display: none; margin: 0 24px 12px; padding: 10px 14px; border-radius: 12px;
+            background: #eff6ff; border: 1px solid #bfdbfe; font-size: 0.75rem; color: #1e40af;
+        }
+        .export-bar.show { display: flex; align-items: center; gap: 10px; }
+        .export-spinner {
+            width: 14px; height: 14px; border: 2px solid #93c5fd; border-top-color: #1d4ed8;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    
+        /* Annotation System Styles */
+        .req-marker {
+            display: inline-block;
+            vertical-align: top;
+            background-color: rgb(250, 173, 20);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 14px;
+            padding: 0px 4px;
+            border-radius: 2px;
+            cursor: pointer;
+            position: absolute;
+            top: -8px;
+            right: -4px;
+            z-index: 10000;
+        }
+
+        .req-tooltip {
+            position: absolute;
+            background-color: #f0efef;
+            border-radius: 4px;
+            width: 450px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            padding: 16px;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .req-tooltip-header {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .req-tooltip-close {
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            font-size: 16px;
+            line-height: 1;
+            padding: 4px;
+        }
+
+        .req-tooltip-close:hover {
+            color: #333;
+        }
+
+        .req-tooltip-content {
+            margin-bottom: 12px;
+        }
+
+        .req-tooltip-content p {
+            margin-bottom: 12px;
+        }
+
+        .req-tooltip-content strong {
+            font-weight: bold;
+        }
+
+        .req-tooltip-content em {
+            font-style: italic;
+        }
+
+        .req-tooltip-content ul,
+        .req-tooltip-content ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .req-tooltip-content li {
+            margin-bottom: 4px;
+        }
+
+        .req-tooltip-content blockquote {
+            border-left: 3px solid #ccc;
+            padding-left: 12px;
+            margin: 12px 0;
+            color: #666;
+        }
+
+        .req-tooltip-section {
+            margin-bottom: 16px;
+        }
+
+        .req-tooltip-section-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .req-marker-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* 筛选卡片 */
+        .filter-card {
+            background: #f8fafc;
+            margin: 16px 24px;
+            padding: 14px 18px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 12px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 120px;
+        }
+        .filter-group label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #475569;
+        }
+        .filter-group input, .filter-group select {
+            padding: 6px 10px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 0.75rem;
+            outline: none;
+        }
+        .quick-btns {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .quick-btn {
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            background: white;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.7rem;
+            cursor: pointer;
+            border: 1px solid #cbd5e1;
+            background: white;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        /* 左右结构：数据卡片 + 趋势图表 - 高度压缩 */
+        .stats-trend-wrapper {
+            display: flex;
+            gap: 16px;
+            margin: 0 24px 20px 24px;
+            flex-wrap: wrap;
+        }
+        .stats-cards {
+            flex: 0 0 260px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 10px 12px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .stat-card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+            border-color: #cbd5e1;
+        }
+        .stat-card.active {
+            border-left: 3px solid #3b82f6;
+            background: #f8fafc;
+        }
+        .stat-label {
+            font-size: 0.65rem;
+            color: #5b6e8c;
+            font-weight: 600;
+        }
+        .stat-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+        .stat-desc {
+            font-size: 0.55rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .trend-panel {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            padding: 12px 16px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .trend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eef2f8;
+        }
+        .trend-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .trend-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .compare-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        .compare-date-picker {
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+        .compare-date-picker.show {
+            display: flex;
+        }
+        .compare-date-picker input {
+            padding: 3px 6px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.65rem;
+        }
+        .trend-subtitle {
+            font-size: 0.65rem;
+            color: #5b6e8c;
+            margin-bottom: 8px;
+        }
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        /* 表格样式 */
+        .table-wrapper {
+            margin: 0 0 16px 0;
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid #eef2f8;
+            background: white;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            min-width: 1300px;
+        }
+        .data-table th {
+            background: #f9fafb;
+            padding: 10px 6px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .group-header {
+            background: #f1f5f9;
+            font-size: 0.7rem;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .data-table td {
+            padding: 8px 5px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .data-table tr:hover {
+            background: #fefce8;
+        }
+        
+        .response-excellent { color: #15803d; font-weight: 500; }
+        .response-good { color: #b45309; font-weight: 500; }
+        .response-poor { color: #b91c1c; font-weight: 500; }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.65rem;
+        }
+        .prescribed-yes { background: #dcfce7; color: #15803d; }
+        .prescribed-no { background: #fef9c3; color: #854d0e; }
+        .deal-yes { background: #dbeafe; color: #1e40af; }
+        .deal-no { background: #fee2e2; color: #b91c1c; }
+        .deal-pending { background: #fff3e3; color: #b45309; }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.65rem;
+            color: #3b82f6;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            margin: 0 2px;
+        }
+        .action-btn:hover {
+            background: #eef2ff;
+        }
+        .hidden-detail-row {
+            display: none;
+        }
+        .sub-details td {
+            padding: 8px 12px;
+            background: #faf9fe;
+            border-bottom: 1px solid #e9eef3;
+        }
+        .detail-section {
+            margin-bottom: 8px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 10px;
+        }
+        .detail-section-title {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 4px;
+            font-size: 0.7rem;
+        }
+        .detail-flex {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .detail-item {
+            background: #f8fafc;
+            padding: 3px 10px;
+            border-radius: 16px;
+            font-size: 0.65rem;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            margin-right: 24px;
+        }
+        .footer-note {
+            text-align: right;
+            font-size: 0.65rem;
+            color: #6c757d;
+            margin: 10px 24px 0;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .search-input-sm { min-width: 140px; }
+        .combined-cell { line-height: 1.3; }
+        .sub-text { font-size: 0.6rem; color: #6c757d; }
+        .status-text { font-size: 0.6rem; margin-top: 3px; }
+        .status-normal { color: #15803d; }
+        .status-deleted { color: #b91c1c; }
+        .status-duplicate { color: #854d0e; }
+
+        /* 对话弹窗 */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        .chat-modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 65vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .chat-message {
+            padding: 6px 10px;
+            margin: 6px 0;
+            border-radius: 14px;
+            background: #f1f5f9;
+        }
+        .chat-message.customer { background: #dbeafe; }
+        .chat-message.doctor { background: #dcfce7; }
+        .chat-sender { font-weight: 600; font-size: 0.65rem; margin-bottom: 3px; }
+        .modal-close {
+            float: right;
+            font-size: 22px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        .modal-close:hover { color: #1e293b; }
+
+        /* Navigation styles - Left Sidebar */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 200px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 20px 16px;
+            flex-shrink: 0;
+        }
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .nav-item {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+        .nav-item.active {
+            background: #0d9488;
+            color: white;
+        }
+        .nav-item.active:hover {
+            background: #0f766e;
+        }
+        .content-area {
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /* Funnel page styles (Tailwind-based) */
+        .funnel-page { display: none; width: 100%; }
+        .funnel-page.active { display: block; width: 100%; }
+        #funnel-content {
+            width: 100%;
+            max-width: none;
+            padding: 16px 20px 32px;
+            box-sizing: border-box;
+        }
+        .funnel-root { width: 100%; max-width: none; }
+        .daily-panel { width: 100%; max-width: none; }
+        .daily-panel .card { width: 100%; max-width: none; box-sizing: border-box; }
+        .daily-panel table { width: 100%; max-width: none; }
+        .daily-panel .funnel-bar-track { width: 100%; }
+        .daily-panel .funnel-bar-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .daily-panel .funnel-bar-row .bar-wrap { flex: 1; min-width: 0; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
+        .kpi-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center; }
+        .kpi-val { font-size: 24px; font-weight: 700; margin-top: 4px; }
+        .kpi-label { font-size: 12px; color: #64748b; }
+        .btn-primary { background: #0d9488; color: #fff; font-size: 14px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s; }
+        .btn-primary:hover { background: #0f766e; }
+        .btn-outline { background: #fff; border: 1px solid #e2e8f0; font-size: 14px; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+        .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .tab-btn { padding: 8px 16px; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
+        .tab-btn.active { border-bottom-color: #0d9488; color: #0f766e; }
+        .tab-btn:not(.active) { color: #64748b; }
+        .tab-btn:not(.active):hover { color: #334155; border-bottom-color: #cbd5e1; }
+        .funnel-bar { height: 36px; border-radius: 4px; display: flex; align-items: center; padding: 0 12px; font-size: 13px; font-weight: 500; color: #fff; transition: width 0.4s ease; }
+        .sort-th { cursor: pointer; user-select: none; }
+        .sort-th:hover { background: #f1f5f9 !important; }
+        .aux-charts-row { display: grid; width: 100%; gap: 16px; }
+        .aux-charts-row.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .aux-charts-row.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .aux-charts-row.order-charts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); }
+        .aux-charts-row .card { min-width: 0; }
+        .order-trend-toggle { display: flex; gap: 6px; margin-bottom: 8px; }
+        .order-trend-toggle button { font-size: 11px; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; }
+        .order-trend-toggle button.active { background: #0d9488; color: #fff; border-color: #0d9488; }
+        .order-core-table thead th { white-space: nowrap; }
+        .order-core-table .th-first { background: #f0fdfa; color: #0f766e; }
+        .order-core-table .th-revisit { background: #eff6ff; color: #1d4ed8; }
+        .order-core-table .th-first-sub { background: #f0fdfa; }
+        .order-core-table .th-revisit-sub { background: #eff6ff; }
+        .order-core-table .th-total-sub { background: #f8fafc; }
+        .order-core-table tbody td.td-first-sum { background: #f0fdfa; font-weight: 500; }
+        .order-core-table tbody td.td-revisit-sum { background: #eff6ff; font-weight: 500; }
+        .order-core-table tbody td.td-total-sum { background: #f1f5f9; font-weight: 600; }
+        .metric-help {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            margin-left: 3px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: help;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        .metric-help:hover { background: #0d9488; color: #fff; }
+        th .metric-help { position: relative; top: -1px; }
+
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="main-layout">
+        <div class="sidebar">
+            <div class="sidebar-title">全链路漏斗优化</div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-page="funnel">📊 全链路漏斗</div>
+                <div class="nav-item" data-page="detail">📋 用户转化明细</div>
+            </div>
+        </div>
+        <div class="content-area">
+            <div id="page-detail" class="funnel-page">
+<div class="page-header">
+        <div class="page-title">📊 用户转化数据明细表 <span class="version-tag">V1.2 · PRD 原型</span></div>
+        <div class="page-sub" id="pageSub">线索 → 沟通 → 开方 → 成交 · 全链路转化监控（当前时间筛选：加粉时间）</div>
+    </div>
+
+    <div class="filter-card">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>时间维度</label>
+                <select id="timeDimSelect">
+                    <option value="add">加粉时间</option>
+                    <option value="pay">支付时间</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label id="quickDateLabel">📅 时间快捷(加粉时间)</label>
+                <div class="quick-btns" id="quickDateBtns">
+                    <button data-range="today" class="quick-btn active">今日</button>
+                    <button data-range="yesterday" class="quick-btn">昨日</button>
+                    <button data-range="last7" class="quick-btn">近7天</button>
+                    <button data-range="last30" class="quick-btn">近30天</button>
+                </div>
+            </div>
+            <div class="filter-group"><label id="startDateLabel">📅 加粉日期起</label><input type="date" id="startDate"></div>
+            <div class="filter-group"><label id="endDateLabel">➡️ 加粉日期止</label><input type="date" id="endDate"></div>
+            <div class="filter-group"><label>所属渠道</label><select id="channelSelect"><option value="all">全部</option></select></div>
+            <div class="filter-group"><label>子渠道</label><select id="subChannelSelect"><option value="all">全部</option></select></div>
+            <div class="filter-group"><label>应用</label><select id="appSelect"><option value="all">全部</option></select></div>
+            <div class="filter-group"><label>应用版本</label><select id="appVersionSelect"><option value="all">全部</option></select></div>
+            <div class="filter-group"><label>所属团队</label><select id="groupSelect"><option value="all">全部</option><option value="B组">B组</option></select></div>
+            <div class="filter-group"><label>医助名(搜索)</label><input type="text" id="doctorSearch" class="search-input-sm" placeholder="输入医助姓名"></div>
+            <div class="filter-group filter-add-only" id="fgAddStatus">
+                <label>加粉状态</label>
+                <select id="addStatusSelect">
+                    <option value="all">全部</option>
+                    <option value="正常">正常</option>
+                    <option value="重复添加">重复添加</option>
+                    <option value="已删除">已删除</option>
+                </select>
+            </div>
+            <div class="filter-group filter-add-only" id="fgResponse"><label>响应状态</label><select id="responseSelect"><option value="all">全部</option><option value="优">优</option><option value="良">良</option><option value="差">差</option></select></div>
+            <div class="filter-group filter-add-only" id="fgPrescribe"><label>初诊开方状态</label><select id="prescribeSelect"><option value="all">全部</option><option value="yes">已开方</option><option value="no">未开方</option></select></div>
+            <div class="filter-group filter-add-only" id="fgDeal"><label>初诊成交状态</label><select id="dealSelect"><option value="all">全部</option><option value="yes">已成交</option><option value="no">未成交</option></select></div>
+            <div class="filter-group filter-add-only" id="fgRevisitDeal"><label>复诊成交状态</label><select id="revisitDealSelect"><option value="all">全部</option><option value="yes">已成交</option><option value="no">未成交</option></select></div>
+            <div class="filter-group"><label>🔍 昵称/编号</label><input type="text" id="searchKeyword" placeholder="患者昵称/编号"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="applyFilterBtn">筛选</button>
+                <button class="btn" id="resetFilterBtn">重置</button>
+                <button class="btn" id="exportBtn">📎 导出 Excel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="export-bar" id="exportBar"><span class="export-spinner"></span><span id="exportBarText">正在导出，请稍候...</span></div>
+
+    <div class="stats-trend-wrapper">
+        <div class="stats-cards" id="statsCards">
+            <div class="stat-card active stat-add-only" data-stat="total">
+                <div class="stat-label">添加用户数</div>
+                <div class="stat-number" id="totalUsers">-</div>
+                <div class="stat-desc">全部渠道加粉次数（重加累加）</div>
+            </div>
+            <div class="stat-card stat-add-only" data-stat="communicated">
+                <div class="stat-label">已开口用户数</div>
+                <div class="stat-number" id="communicatedUsers">-</div>
+                <div class="stat-desc">产生对话</div>
+            </div>
+            <div class="stat-card" data-stat="firstOrd">
+                <div class="stat-label">初诊成交单数</div>
+                <div class="stat-number" id="firstOrdCnt">-</div>
+                <div class="stat-desc" id="firstOrdDesc">汤剂 — · 丸剂 —</div>
+            </div>
+            <div class="stat-card" data-stat="firstAmt">
+                <div class="stat-label">初诊成交金额</div>
+                <div class="stat-number" id="firstAmtVal">-</div>
+                <div class="stat-desc" id="firstAmtDesc">汤剂 — · 丸剂 —</div>
+            </div>
+            <div class="stat-card" data-stat="revOrd">
+                <div class="stat-label">复诊成交单数</div>
+                <div class="stat-number" id="revOrdCnt">-</div>
+                <div class="stat-desc" id="revOrdDesc">汤剂 — · 丸剂 —</div>
+            </div>
+            <div class="stat-card" data-stat="revAmt">
+                <div class="stat-label">复诊成交金额</div>
+                <div class="stat-number" id="revAmtVal">-</div>
+                <div class="stat-desc" id="revAmtDesc">汤剂 — · 丸剂 —</div>
+            </div>
+        </div>
+        <div class="trend-panel">
+            <div class="trend-header">
+                <div class="trend-title" id="trendTitle">添加用户趋势</div>
+                <div class="trend-controls">
+                    <label><input type="checkbox" id="compareCheckbox"> 开启对比</label>
+                    <div id="compareDatePicker" class="compare-date-picker">
+                        <span>对比日期:</span>
+                        <input type="date" id="compareDate">
+                    </div>
+                </div>
+            </div>
+            <div class="trend-subtitle" id="trendSubtitle">请选择时间范围后查询</div>
+            <div class="chart-container"><canvas id="trendChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr class="group-header">
+                    <th colspan="10">🔍 线索信息</th>
+                    <th colspan="4">💬 沟通信息</th>
+                    <th colspan="3" class="th-first">💰 初诊成交信息</th>
+                    <th colspan="2" class="th-revisit">🔄 复诊成交信息</th>
+                    <th rowspan="2">操作</th>
+                </tr>
+                <tr>
+                    <th>患者(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>报告时间</th><th>加粉时间</th><th>加粉状态</th>
+                    <th>患者对话数</th><th>医助回复数</th><th>患者图片数</th><th>响应状态</th>
+                    <th>开方状态</th><th>支付状态</th><th>支付时间</th>
+                    <th>复诊次数</th><th>复诊支付时间</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <div class="pagination">
+        <button class="btn" id="prevPageBtn">◀ 上一页</button>
+        <span id="pageInfo">第1页</span>
+        <button class="btn" id="nextPageBtn">下一页 ▶</button>
+    </div>
+    <div class="footer-note" id="footerNote">当前时间筛选基于「加粉时间」；点击左侧卡片切换趋势图；支持开启对比功能。</div>
+            </div>
+            <div id="page-funnel" class="funnel-page active">
+                <div id="funnel-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<div id="chatModal" class="chat-modal">
+    <div class="chat-modal-content">
+        <span class="modal-close" onclick="closeChatModal()">&times;</span>
+        <div class="modal-title" style="margin-bottom:12px;font-weight:600;">对话记录</div>
+        <div id="chatContent"></div>
+    </div>
+</div>
+
+<script>
+// ===== 全链路漏斗 =====
+    // ===== Funnel Mock Data =====
+    const AI_FUNNEL_STEPS=[{label:'A01 首页PV',count:12800},{label:'A02 首页UV',count:9600},{label:'A03 报告数',count:6720},{label:'A04 报告人次',count:5890},{label:'A05 加粉数',count:4500}];
+    const ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数',count:4500},{label:'F02 开口',count:3720},{label:'F03 舌象上传',count:2790},{label:'F04 开方',count:1860},{label:'F05 支付',count:893}];
+    const DAILY_ORDERS={
+      byDrug:[{type:'汤剂',orderCnt:52,gmv:38960},{type:'丸剂',orderCnt:31,gmv:46810}],
+      byVisit:[{type:'初诊',orderCnt:45,gmv:33480},{type:'复诊',orderCnt:38,gmv:52290}],
+      total:{orderCnt:83,gmv:85770},
+      trend:[{d:'05-10',first:28600,revisit:41200},{d:'05-11',first:31400,revisit:45800},{d:'05-12',first:29800,revisit:43100},{d:'05-13',first:35200,revisit:48600},{d:'05-14',first:33480,revisit:52290},{d:'05-15',first:30100,revisit:49800},{d:'05-16',first:33480,revisit:52290}]
+    };
+    const ASSISTANTS=[
+      {name:'张医助',wecomId:'zhang_assistant',exposure:1200,f01:820,f02:552,f03:414,f04:276,f05:133,f06:106,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080},
+      {name:'李医助',wecomId:'li_assistant',exposure:1100,f01:760,f02:496,f03:372,f04:248,f05:119,f06:95,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560},
+      {name:'王医助',wecomId:'wang_assistant',exposure:950,f01:680,f02:440,f03:330,f04:220,f05:106,f06:85,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570},
+      {name:'赵医助',wecomId:'zhao_assistant',exposure:880,f01:620,f02:400,f03:300,f04:200,f05:96,f06:77,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060},
+      {name:'刘医助',wecomId:'liu_assistant',exposure:820,f01:580,f02:376,f03:282,f04:188,f05:90,f06:72,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550},
+      {name:'陈医助',wecomId:'chen_assistant',exposure:780,f01:540,f02:350,f03:262,f04:175,f05:84,f06:67,firstOrd:6,firstGmv:4680,revOrd:5,revGmv:6820},
+      {name:'杨医助',wecomId:'yang_assistant',exposure:720,f01:510,f02:331,f03:248,f04:166,f05:80,f06:64,firstOrd:6,firstGmv:4420,revOrd:4,revGmv:6180},
+      {name:'周医助',wecomId:'zhou_assistant',exposure:690,f01:480,f02:312,f03:234,f04:156,f05:75,f06:60,firstOrd:5,firstGmv:3950,revOrd:4,revGmv:5720},
+      {name:'吴医助',wecomId:'wu_assistant',exposure:650,f01:450,f02:292,f03:219,f04:146,f05:70,f06:56,firstOrd:5,firstGmv:3680,revOrd:3,revGmv:4890},
+      {name:'郑医助',wecomId:'zheng_assistant',exposure:610,f01:420,f02:273,f03:205,f04:137,f05:66,f06:53,firstOrd:4,firstGmv:3320,revOrd:3,revGmv:4510}
+    ];
+    const CHANNELS=[
+      {ch:'baidu_doctor_h5',sub:'SEM投放',product:'舌诊',version:'v3.2',pv:12800,uv:9600,reportCnt:6720,reportUser:5890,addWx:820,payCnt:120},
+      {ch:'baidu_doctor_h5',sub:'SEM投放',product:'体质测试',version:'v2.1',pv:8500,uv:6200,reportCnt:4200,reportUser:3800,addWx:510,payCnt:85},
+      {ch:'douyin_info',sub:'信息流',product:'舌诊',version:'v3.2',pv:15600,uv:11200,reportCnt:8200,reportUser:7100,addWx:1120,payCnt:180},
+      {ch:'douyin_info',sub:'信息流',product:'问诊H5',version:'v1.0',pv:6800,uv:4900,reportCnt:3100,reportUser:2800,addWx:390,payCnt:65},
+      {ch:'weixin_mp',sub:'公众号',product:'舌诊',version:'v3.2',pv:4200,uv:3100,reportCnt:2100,reportUser:1900,addWx:450,payCnt:70},
+      {ch:'weixin_mp',sub:'公众号',product:'体质测试',version:'v2.1',pv:3100,uv:2300,reportCnt:1500,reportUser:1400,addWx:280,payCnt:45}
+    ];
+    const PRODUCT_FUNNEL_TONGUE={
+      channel:'baidu_doctor_h5',product:'舌诊',
+      pagePv:12800,pageUv:9600,
+      shootPagePv:10200,
+      uploadPv:8960,
+      reportCnt:6720,reportUser:5890,
+      dialogCnt:15800,validDialog:11060,avgTurns:8.2,avgSummaryTurns:12.5,
+      summaryCnt:4830,summaryUser:4120,
+      leadCnt:2980,addFans:2650,payCnt:385
+    };
+    const PRODUCT_FUNNEL_QUICK={
+      channel:'baidu_doctor_h5',product:'体质测试',
+      pagePv:8500,pageUv:6200,
+      sessionCnt:8500,
+      openSession:5100,
+      avgTurns:6.8,avgReportTurns:9.4,
+      createReportCnt:4600,
+      reportCnt:4200,reportUser:3800,
+      addFans:510,payCnt:85
+    };
+    const QUICK_TEST_PRODUCTS=['体质测试','问诊H5'];
+    function isQuickTestProduct(prod){return QUICK_TEST_PRODUCTS.indexOf(prod)>=0;}
+
+    // 指标口径定义（参考 PRD 第6节漏斗定义及第7.2节各模块指标说明）
+    const METRIC_DEFS={
+      '日期':'业务日，按天排列展示统计数据',
+      // 4.1.2.1 每日转化 · AI工具转化
+      '首页PV':'AI智能体工具首页页面浏览量，比如舌诊首页浏览量、快测对话页浏览量',
+      '首页UV':'AI工具首页独立访客数',
+      '报告数':'用户生成（成功状态）的报告数，比如舌诊报告、快测报告',
+      '报告人次':'生成报告的去重用户数',
+      '首页-报告转化率PV':'报告数 / 首页PV',
+      '加粉数':'通过 AI 工具新增企微好友人数',
+      '报告-加微转化率PV':'加粉数 / 报告数',
+      '首页-加微转化率PV':'加粉数 / 首页PV',
+      // 4.1.2.1 每日转化 · 医助转化
+      '开口':'用户有发送消息的去重人数，不包含首次添加的系统招呼',
+      '舌象上传':'用户有上传图片即算',
+      '开方':'完成初诊病例总结和开方的数量',
+      '支付':'初诊支付成功的订单数量',
+      '支付转化率':'支付数 / 加粉数',
+      // 4.1.2.2 每日订单金额
+      '初诊汤剂订单数':'当日初诊且药物类型为汤剂的支付成功订单数',
+      '初诊汤剂金额':'当日初诊汤剂订单实付金额合计',
+      '初诊丸剂订单数':'当日初诊且药物类型为丸剂的支付成功订单数',
+      '初诊丸剂金额':'当日初诊丸剂订单实付金额合计',
+      '初诊订单数':'当日首次成交用户的支付成功订单数',
+      '初诊金额':'当日初诊订单实付金额合计',
+      '复诊汤剂订单数':'当日复诊且药物类型为汤剂的支付成功订单数',
+      '复诊汤剂金额':'当日复诊汤剂订单实付金额合计',
+      '复诊丸剂订单数':'当日复诊且药物类型为丸剂的支付成功订单数',
+      '复诊丸剂金额':'当日复诊丸剂订单实付金额合计',
+      '复诊订单数':'当日非首次成交（复购）用户的支付成功订单数',
+      '复诊金额':'当日复诊订单实付金额合计',
+      '总汤剂订单数':'当日药物类型为汤剂的支付成功订单数',
+      '总汤剂订单金额':'当日汤剂订单实付金额合计',
+      '总丸剂订单数':'当日药物类型为丸剂的支付成功订单数',
+      '总丸剂订单金额':'当日丸剂订单实付金额合计',
+      '总订单数':'当日全部支付成功订单数（= 汤剂+丸剂 = 初诊+复诊）',
+      '总订单金额':'当日全部实付金额合计',
+      // 4.1.3.1 医助服务人效
+      '曝光数':'AI智能体报告中分配企微曝光的数量',
+      '加粉数@医助':'该医助在筛选时段内加粉好友人数',
+      '开口数':'该医助服务的用户有发送消息的人数',
+      '舌象上传数':'该医助服务的用户提交图片的人数',
+      '开方数':'该医助服务的用户完成病例总结和开方的人数',
+      '加粉-开方转化率':'开方数 / 加粉数',
+      '支付数@医助':'该医助服务的用户支付成功订单数',
+      '加粉-支付转化率':'支付数 / 加粉数',
+      // 4.1.3.2 医助成交
+      '初诊订单数@医助':'该医助服务的初诊用户支付成功订单数',
+      '初诊金额@医助':'该医助服务的初诊订单实付金额合计',
+      '复诊订单数@医助':'该医助服务的复诊用户支付成功订单数',
+      '复诊金额@医助':'该医助服务的复诊订单实付金额合计',
+      '总订单数@医助':'初诊订单数 + 复诊订单数',
+      '总订单金额@医助':'初诊金额 + 复诊金额',
+      // 4.1.4.1 渠道核心数据
+      '支付数@渠道':'初诊支付成功的订单数量',
+      '首页-支付转化率@渠道':'支付数 / 首页PV',
+      // 4.1.4.2 舌诊类产品
+      '舌诊_首页PV':'AI智能体工具首页页面浏览量',
+      '舌诊_首页UV':'舌诊工具首页独立访客数',
+      '舌诊拍摄页PV':'舌诊工具拍摄舌象页面浏览量',
+      '舌象上传PV':'舌象上传的次数',
+      '舌象上传折损率':'1 - 舌诊报告数 / 舌象上传PV',
+      '舌诊报告数':'舌诊报告成功的数量',
+      '舌诊报告人次':'舌诊报告成功的去重人数',
+      '舌诊_首页-报告转化率':'舌诊报告数 / 首页PV',
+      '人均舌诊报告数':'舌诊报告数 / 舌诊报告人次',
+      '舌诊_对话数':'对话页新建会话数',
+      '舌诊_开口对话数':'用户发送消息的会话数',
+      '开口对话率':'开口对话数 / 对话数',
+      '舌诊_平均对话轮次':'总对话轮次 / 开口对话数',
+      '舌诊_平均出小结轮次':'出小结的总轮次 / 成功小结数',
+      '小结数':'若舌诊后接入医生Agent对话，对话完成生成的成功状态的小结数量',
+      '小结人次':'小结去重人数',
+      '报告-小结率PV':'小结数 / 舌诊报告数',
+      '首页-小结率PV':'小结数 / 首页PV',
+      '加粉数@舌诊':'通过 AI 工具新增企微好友人数',
+      '小结-加粉转化率PV':'加粉数 / 小结数',
+      '舌诊报告-加粉转化率PV':'加粉数 / 舌诊报告数',
+      '舌诊_首页-加粉转化率PV':'加粉数 / 首页PV',
+      '留资数':'完成留资的数量',
+      '小结-留资率PV':'留资数 / 小结数',
+      '舌诊报告-留资率PV':'留资数 / 舌诊报告数',
+      '舌诊报告-留资率UV':'留资数 / 舌诊报告人次',
+      '首页-留资率PV':'留资数 / 首页PV',
+      '舌诊拍摄页PV-留资转化':'留资数 / 舌诊拍摄页PV',
+      '支付数@产品':'首诊支付成功的订单数',
+      '首页-支付转化率@产品':'支付数 / 首页PV',
+      // 4.1.4.2 快测类型产品
+      '快测_首页PV':'快测对话页浏览量',
+      '快测_首页UV':'快测落地页独立访客数',
+      '会话数':'快测对话页新建会话数',
+      '开口会话数':'用户发送消息的会话数',
+      '会话开口率':'开口会话数 / 会话数',
+      '快测_平均对话轮次':'总对话轮次 / 会话数',
+      '平均出报告轮次':'出报告的总轮次 / 成功报告数量',
+      '报告总数':'创建的报告总数，包含初始状态、成功等',
+      '报告数（成功）':'生成成功状态的报告数',
+      '快测_报告人次':'生成成功状态报告的去重用户数',
+      '人均报告数':'报告数（成功） / 报告人次',
+      '报告总数-小结转化率':'报告数（成功） / 首页PV（会话数）',
+      '快测_首页-报告转化率':'报告数（成功） / 首页PV',
+      '报告-加粉转化率':'加粉数 / 报告数（成功）',
+      '报告总数-加粉转化率':'加粉数 / 报告总数',
+      '快测_首页-加粉转化率':'加粉数 / 首页PV（会话数）',
+      '支付数@快测':'首诊支付成功的去重人数',
+      // 通用
+      '医助':'医助名称',
+      '渠道':'投放渠道',
+      '产品':'投放产品',
+      '版本':'产品版本',
+      '首页-报告转化率':'报告数 / 首页PV',
+      '首页-加粉转化率':'加粉数 / 首页PV'
+    };
+    function _th(label,metricKey,className){
+      var key=metricKey||label;
+      var tip=METRIC_DEFS[key]||'';
+      var help=tip?'<span class="metric-help" title="'+h(tip)+'">?</span>':'';
+      return '<th class="'+(className||'')+'">'+h(label)+help+'</th>';
+    }
+    function _thLabel(label,metricKey){
+      var key=metricKey||label;
+      var tip=METRIC_DEFS[key]||'';
+      var help=tip?'<span class="metric-help" title="'+h(tip)+'">?</span>':'';
+      return h(label)+help;
+    }
+    function _sortableTh(label,metricKey,sortDataKey,sortKey,sortDir,scope,className){
+      var icon=sortDataKey===sortKey?(sortDir==='asc'?' ↑':' ↓'):' <span class="text-slate-300">↕</span>';
+      return '<th class="'+(className||'')+' sort-th" data-asst-sort="'+scope+'" data-sort-key="'+sortDataKey+'" title="点击切换排序">'+_thLabel(label,metricKey)+'<span class="text-brand-600">'+icon+'</span></th>';
+    }
+    function _asstEffVal(a,key){
+      if(key==='exposure') return a.exposure;
+      if(key==='conv') return a.f01?a.f05/a.f01:0;
+      if(key==='convRx') return a.f01?a.f04/a.f01:0;
+      return a[key]!=null?a[key]:0;
+    }
+    function _asstTradeVal(a,key){
+      if(key==='totalOrd') return a.firstOrd+a.revOrd;
+      if(key==='totalGmv') return a.firstGmv+a.revGmv;
+      return a[key]!=null?a[key]:0;
+    }
+    function _sortList(list,key,dir,valFn){
+      var m=dir==='asc'?1:-1;
+      return list.slice().sort(function(a,b){return m*(valFn(a,key)-valFn(b,key));});
+    }
+
+    // Funnel state
+    let funnelState={
+      tab:'daily',
+      dailySub:'conversion',
+      assistantSub:'efficiency',
+      chDetailRow:null,
+      fTimeQuick:'today',
+      fDim:'day',
+      asstEffSortKey:'f01',
+      asstEffSortDir:'desc',
+      asstTradeSortKey:'totalGmv',
+      asstTradeSortDir:'desc',
+      orderTrendMode:'gmv'
+    };
+
+    function _orderDecoRatio(){
+      var O=DAILY_ORDERS;
+      return O.total.orderCnt>0?O.byDrug[0].orderCnt/O.total.orderCnt:0.626;
+    }
+    function _orderSummarySplit(){
+      var O=DAILY_ORDERS,r=_orderDecoRatio();
+      var fv=O.byVisit[0],rv=O.byVisit[1];
+      var fdDeco=Math.round(fv.orderCnt*r),fdPill=fv.orderCnt-fdDeco;
+      var rdDeco=Math.round(rv.orderCnt*r),rdPill=rv.orderCnt-rdDeco;
+      var fdDecoG=Math.round(fv.gmv*r),fdPillG=fv.gmv-fdDecoG;
+      var rdDecoG=Math.round(rv.gmv*r),rdPillG=rv.gmv-rdDecoG;
+      return {fdDeco:fdDeco,fdPill:fdPill,rdDeco:rdDeco,rdPill:rdPill,fdDecoG:fdDecoG,fdPillG:fdPillG,rdDecoG:rdDecoG,rdPillG:rdPillG};
+    }
+    function _orderDaySplit(t){
+      var r=_orderDecoRatio();
+      var fvOrd=Math.max(1,Math.round(45*(t.first/33480)));
+      var rvOrd=Math.max(1,Math.round(38*(t.revisit/52290)));
+      var fdDeco=Math.round(fvOrd*r),fdPill=fvOrd-fdDeco;
+      var rdDeco=Math.round(rvOrd*r),rdPill=rvOrd-rdDeco;
+      var fdDecoG=Math.round(t.first*r),fdPillG=t.first-fdDecoG;
+      var rdDecoG=Math.round(t.revisit*r),rdPillG=t.revisit-rdDecoG;
+      var totalDeco=fdDeco+rdDeco,totalPill=fdPill+rdPill,totalDecoG=fdDecoG+rdDecoG,totalPillG=fdPillG+rdPillG;
+      return {fdDeco:fdDeco,fdPill:fdPill,rdDeco:rdDeco,rdPill:rdPill,fdDecoG:fdDecoG,fdPillG:fdPillG,rdDecoG:rdDecoG,rdPillG:rdPillG,firstOrd:fvOrd,revisitOrd:rvOrd,firstGmv:t.first,revisitGmv:t.revisit,totalDeco:totalDeco,totalPill:totalPill,totalDecoG:totalDecoG,totalPillG:totalPillG,totalOrd:fvOrd+rvOrd,totalGmv:t.first+t.revisit};
+    }
+
+    // 模拟对话数据
+    const mockChats = {
+        "b801fd6f236994b7953423164446aa3a": [{sender:"customer",content:"你好，我想咨询一下",time:"10:00"},{sender:"doctor",content:"您好，请问有什么可以帮助您？",time:"10:01"},{sender:"customer",content:"我的情况是...",time:"10:02"}],
+        "b801fd6f236994b7953423164446aa4a": [{sender:"customer",content:"请问这个药怎么用？",time:"09:30"},{sender:"doctor",content:"每天两次，每次一粒",time:"09:32"}],
+        "test001": [{sender:"customer",content:"在吗？",time:"08:00"},{sender:"doctor",content:"在的，请说",time:"08:05"},{sender:"customer",content:"慢响应测试",time:"08:10"}],
+        "test002": [{sender:"customer",content:"测试消息",time:"07:00"}]
+    };
+    function getMockChat(patientId) { return mockChats[patientId] || [{sender:"customer",content:"暂无对话记录",time:"-"}] ; }
+
+    // ===== Funnel Helper Functions =====
+    function h(s){return s==null?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function fmt(n){return n==null?'-':n.toLocaleString('zh-CN');}
+    function pct(n){return(n*100).toFixed(1)+'%';}
+    function _chip(label,active,attr){return '<button '+attr+' class="text-xs px-3 py-1 rounded-full border transition-colors '+(active?'bg-brand-600 text-white border-brand-600':'border-slate-200 hover:border-brand-300')+'">'+h(label)+'</button>';}
+    function _quickTime(){var items=[{k:'today',l:'今日'},{k:'yesterday',l:'昨日'},{k:'7d',l:'近7天'},{k:'30d',l:'近30天'}];return items.map(function(i){return _chip(i.l,funnelState.fTimeQuick===i.k,'data-ftime="'+i.k+'"');}).join('');}
+    function _dimChips(){var items=[{k:'hour',l:'按时'},{k:'day',l:'按日'}];return items.map(function(i){return _chip(i.l,funnelState.fDim===i.k,'data-fdim="'+i.k+'"');}).join('');}
+    function _selectOpts(opts,sel){return opts.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+h(o)+'</option>';}).join('');}
+    function _queryReset(){return '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-export>📎 导出Excel</button>';}
+    function getChDetailMeta(){
+      var parts=(funnelState.chDetailRow||'').split('|');
+      if(parts.length>=4) return {ch:parts[0],sub:parts[1],product:parts[2],version:parts[3]};
+      if(parts.length===3) return {ch:parts[0],sub:'—',product:parts[1],version:parts[2]};
+      return {ch:'baidu_doctor_h5',sub:'SEM投放',product:'舌诊',version:'v3.2'};
+    }
+    function exportFunnelTableMock(filename,sheetName,headers,rows){
+      if(typeof XLSX==='undefined'){alert('导出组件未加载');return;}
+      var sheet=[headers].concat(rows);
+      var ws=XLSX.utils.aoa_to_sheet(sheet);
+      var wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,sheetName||'数据');
+      XLSX.writeFile(wb,filename);
+    }
+    var funnelChartInstances=[];
+    function destroyFunnelCharts(){funnelChartInstances.forEach(function(c){try{c.destroy();}catch(e){}});funnelChartInstances=[];}
+
+    function renderFilterDaily(){
+      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper">'+
+        '<span class="req-marker" data-id="1">1</span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span><input type="date" value="2026-01-01" class="border rounded px-2 py-1 text-xs w-28"/>—<input type="date" value="2026-05-16" class="border rounded px-2 py-1 text-xs w-28"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">维度：</span>'+_dimChips()+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">团队：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>团队A</option><option>团队B</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">医助：</span><input type="text" placeholder="系统用户名/企微id" class="border rounded px-2 py-1 text-xs w-32" title="筛选医助后首页PV/UV灰置"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        _queryReset()+
+      '</div>';
+    }
+    function renderFilterAssistant(){
+      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper">'+
+        '<span class="req-marker" data-id="2">2</span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span>'+_quickTime()+
+        '<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36 ml-1"/>—<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],'全部')+'</select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">团队：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>团队A</option><option>团队B</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">医助：</span><input type="text" placeholder="系统用户名/企微id" class="border rounded px-2 py-1 text-xs w-32"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        _queryReset()+
+      '</div>';
+    }
+    function renderFilterChannel(){
+      return '<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper">'+
+        '<span class="req-marker" data-id="3">3</span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span>'+_quickTime()+
+        '<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36 ml-1"/>—<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>baidu_doctor_h5</option><option>douyin_info</option><option>weixin_mp</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>SEM投放</option><option>信息流</option><option>公众号</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>舌诊</option><option>体质测试</option><option>问诊H5</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>v3.2</option><option>v2.1</option><option>v1.0</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        _queryReset()+
+      '</div>';
+    }
+
+    function renderFunnel(){
+      if(funnelState.chDetailRow) return renderChDetailPage();
+      var tabs=[{key:'daily',label:'每日数据统计'},{key:'assistant',label:'医助服务统计'},{key:'channel',label:'渠道维度统计'}];
+      var tabsHtml=tabs.map(function(t){return '<button data-funnel-tab="'+h(t.key)+'" class="tab-btn '+(funnelState.tab===t.key?'active':'')+'">'+h(t.label)+'</button>';}).join('');
+      var filter='',subTabs='',content='';
+      if(funnelState.tab==='daily'){
+        filter=renderFilterDaily();
+        var subs=[{key:'conversion',label:'每日转化数据'},{key:'order',label:'每日订单金额数据'}];
+        subTabs=subs.map(function(s){return '<button data-daily-sub="'+h(s.key)+'" class="tab-btn text-xs '+(funnelState.dailySub===s.key?'active':'')+'">'+h(s.label)+'</button>';}).join('');
+        content=funnelState.dailySub==='conversion'?renderDailyConversion():renderDailyOrder();
+      } else if(funnelState.tab==='assistant'){
+        filter=renderFilterAssistant();
+        var subs2=[{key:'efficiency',label:'医助服务人效统计'},{key:'trade',label:'医助成交数据'}];
+        subTabs=subs2.map(function(s){return '<button data-asst-sub="'+h(s.key)+'" class="tab-btn text-xs '+(funnelState.assistantSub===s.key?'active':'')+'">'+h(s.label)+'</button>';}).join('');
+        content=funnelState.assistantSub==='efficiency'?renderAsstEfficiency():renderAsstTrade();
+      } else {
+        filter=renderFilterChannel();
+        content=renderChOverview();
+      }
+      return '<div class="space-y-4 funnel-root w-full max-w-none">'+
+        '<h2 class="text-xl font-bold">全链路漏斗</h2>'+
+        '<div class="border-b border-slate-200 flex">'+tabsHtml+'</div>'+
+        filter+
+        (subTabs?'<div class="border-b border-slate-100 flex gap-1">'+subTabs+'</div>':'')+
+        content+
+      '</div>';
+    }
+
+    function _detailLink(timeDim, start, end, extra){
+      extra=extra||{};
+      return JSON.stringify({
+        timeDim: timeDim,
+        start: start,
+        end: end,
+        channel: extra.channel || '',
+        subChannel: extra.subChannel || '',
+        app: extra.app || '',
+        appVersion: extra.appVersion || '',
+        doctorId: extra.doctorId || ''
+      });
+    }
+    function _mmddToYmd(mmdd){
+      var y=new Date().getFullYear();
+      var parts=String(mmdd).split('-');
+      if(parts.length===2) return y+'-'+parts[0]+'-'+parts[1];
+      return mmdd;
+    }
+    function _funnelDateRange(){
+      // 原型：快捷时间映射为近 N 天，具体起止用今日回推
+      var end=new Date();
+      var start=new Date();
+      var q=funnelState.fTimeQuick||'7d';
+      if(q==='today'){ /* same day */ }
+      else if(q==='yesterday'){ start.setDate(end.getDate()-1); end=new Date(start); }
+      else if(q==='30d'){ start.setDate(end.getDate()-29); }
+      else { start.setDate(end.getDate()-6); }
+      function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+      return {start:fmt(start),end:fmt(end)};
+    }
+    function _opsCell(html){
+      return '<td class="px-2 py-1.5 text-center whitespace-nowrap">'+html+'</td>';
+    }
+    function _opsLink(payload,label){
+      var safe = String(payload).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+      return '<button type="button" class="detail-drill-btn text-xs text-brand-600 hover:underline mx-0.5 bg-transparent border-0 cursor-pointer p-0" data-detail-nav="'+safe+'">'+label+'</button>';
+    }
+
+    function renderDailyConversion(){
+      // AI工具转化漏斗
+      var aiMaxCount=AI_FUNNEL_STEPS[0].count;
+      var aiBars=AI_FUNNEL_STEPS.map(function(s,i){
+        var w=Math.round(s.count/aiMaxCount*100);
+        var convRate=i>0?((s.count/AI_FUNNEL_STEPS[i-1].count)*100).toFixed(1)+'%':'—';
+        return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-28 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-600" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
+      }).join('');
+      var aiReportToWxRate=((AI_FUNNEL_STEPS[4].count/AI_FUNNEL_STEPS[2].count)*100).toFixed(1)+'%';
+      var aiPvToReportRate=((AI_FUNNEL_STEPS[2].count/AI_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
+      var aiPvToWxRate=((AI_FUNNEL_STEPS[4].count/AI_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
+      
+      // 医助转化漏斗
+      var asstMaxCount=ASSISTANT_FUNNEL_STEPS[0].count;
+      var asstBars=ASSISTANT_FUNNEL_STEPS.map(function(s,i){
+        var w=Math.round(s.count/asstMaxCount*100);
+        var convRate=i>0?((s.count/ASSISTANT_FUNNEL_STEPS[i-1].count)*100).toFixed(1)+'%':'—';
+        return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-28 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-500" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
+      }).join('');
+      var asstPayRate=((ASSISTANT_FUNNEL_STEPS[4].count/ASSISTANT_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
+      
+      // 数据表格 — 医助转化去掉与 AI 重复的「加粉数」列
+      var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
+      var aiHeader='<th colspan="8" class="px-3 py-2 text-center bg-brand-50 text-brand-700 font-semibold">AI工具转化</th>';
+      var asstHeader='<th colspan="5" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
+      var aiSubHeaders=[
+        _th('首页PV','首页PV','px-2 py-1 text-right text-xs'),
+        _th('首页UV','首页UV','px-2 py-1 text-right text-xs'),
+        _th('报告数','报告数','px-2 py-1 text-right text-xs'),
+        _th('报告人次','报告人次','px-2 py-1 text-right text-xs'),
+        _th('首页-报告转化率PV','首页-报告转化率PV','px-2 py-1 text-right text-xs text-brand-700'),
+        _th('加粉数','加粉数','px-2 py-1 text-right text-xs'),
+        _th('报告-加微转化率PV','报告-加微转化率PV','px-2 py-1 text-right text-xs text-brand-700'),
+        _th('首页-加微转化率PV','首页-加微转化率PV','px-2 py-1 text-right text-xs text-brand-700')
+      ].join('');
+      var asstSubHeaders=[
+        _th('开口','开口','px-2 py-1 text-right text-xs'),
+        _th('舌象上传','舌象上传','px-2 py-1 text-right text-xs'),
+        _th('开方','开方','px-2 py-1 text-right text-xs'),
+        _th('支付','支付','px-2 py-1 text-right text-xs'),
+        _th('支付转化率','支付转化率','px-2 py-1 text-right text-xs text-blue-700')
+      ].join('');
+      var dayRows=dates.map(function(d,idx){
+        var aiScale=0.9+idx*0.02;
+        var asstScale=0.85+idx*0.025;
+        var aiCounts=AI_FUNNEL_STEPS.map(function(s){return Math.round(s.count*aiScale);});
+        var asstCounts=ASSISTANT_FUNNEL_STEPS.map(function(s){return Math.round(s.count*asstScale);});
+        var commonWx=aiCounts[4];
+        asstCounts[0]=commonWx;
+        var aiReportToWxRate=aiCounts[2]>0?((aiCounts[4]/aiCounts[2])*100).toFixed(1)+'%':'—';
+        var aiPvToReportRate=aiCounts[0]>0?((aiCounts[2]/aiCounts[0])*100).toFixed(1)+'%':'—';
+        var aiPvToWxRate=aiCounts[0]>0?((aiCounts[4]/aiCounts[0])*100).toFixed(1)+'%':'—';
+        var asstPayRate=asstCounts[0]>0?((asstCounts[4]/asstCounts[0])*100).toFixed(1)+'%':'—';
+        var aiRow=aiCounts.slice(0,4).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-brand-700">'+aiPvToReportRate+'</td><td class="px-2 py-1 text-right text-xs">'+fmt(aiCounts[4])+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+aiReportToWxRate+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+aiPvToWxRate+'</td>';
+        var asstRow=asstCounts.slice(1).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-blue-700">'+asstPayRate+'</td>';
+        var ymd=_mmddToYmd(d);
+        var ops=_opsCell(_opsLink(_detailLink('add',ymd,ymd),'加粉明细')+' '+_opsLink(_detailLink('pay',ymd,ymd),'支付明细'));
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+aiRow+asstRow+ops+'</tr>';
+      }).join('');
+      
+      return '<div class="daily-panel space-y-4 req-marker-wrapper"><span class="req-marker" data-id="4">4</span>'+
+        '<div class="aux-charts-row cols-2">'+
+          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">统计从用户访问AI工具首页到加粉的转化链路</p><div class="space-y-2 funnel-bar-track">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">首页-报告转化率PV: '+aiPvToReportRate+'</span> | <span class="font-medium text-brand-700">报告-加微转化率PV: '+aiReportToWxRate+'</span> | <span class="font-medium text-brand-700">首页-加微转化率PV: '+aiPvToWxRate+'</span></div></div>'+
+          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">仅统计初诊流程转化，从加粉到支付的完整链路</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2 sticky left-0 bg-white" rowspan="2">'+_thLabel('日期','日期')+'</th>'+aiHeader+asstHeader+'<th class="px-3 py-2 text-center" rowspan="2">操作</th></tr><tr class="text-left text-xs text-slate-500 border-b bg-slate-50">'+aiSubHeaders+asstSubHeaders+'</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+      '</div>';
+    }
+
+    function renderDailyOrder(){
+      var O=DAILY_ORDERS;
+      var dayRows=O.trend.map(function(t){
+        var b=_orderDaySplit(t);
+        var ymd=_mmddToYmd(t.d);
+        var ops=_opsCell(_opsLink(_detailLink('pay',ymd,ymd),'数据明细'));
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(t.d)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-first-sub">'+fmt(b.fdDeco)+'</td><td class="px-3 py-1.5 text-right th-first-sub">¥'+fmt(b.fdDecoG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-first-sub">'+fmt(b.fdPill)+'</td><td class="px-3 py-1.5 text-right th-first-sub">¥'+fmt(b.fdPillG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right td-first-sum">'+fmt(b.firstOrd)+'</td><td class="px-3 py-1.5 text-right td-first-sum">¥'+fmt(b.firstGmv)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-revisit-sub">'+fmt(b.rdDeco)+'</td><td class="px-3 py-1.5 text-right th-revisit-sub">¥'+fmt(b.rdDecoG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-revisit-sub">'+fmt(b.rdPill)+'</td><td class="px-3 py-1.5 text-right th-revisit-sub">¥'+fmt(b.rdPillG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right td-revisit-sum">'+fmt(b.revisitOrd)+'</td><td class="px-3 py-1.5 text-right td-revisit-sum">¥'+fmt(b.revisitGmv)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-total-sub">'+fmt(b.totalDeco)+'</td><td class="px-3 py-1.5 text-right th-total-sub">¥'+fmt(b.totalDecoG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right th-total-sub">'+fmt(b.totalPill)+'</td><td class="px-3 py-1.5 text-right th-total-sub">¥'+fmt(b.totalPillG)+'</td>'+
+          '<td class="px-3 py-1.5 text-right font-semibold td-total-sum">'+fmt(b.totalOrd)+'</td><td class="px-3 py-1.5 text-right font-semibold td-total-sum">¥'+fmt(b.totalGmv)+'</td>'+ops+'</tr>';
+      }).join('');
+      var trendMode=funnelState.orderTrendMode;
+      var trendToggle='<div class="order-trend-toggle">'+
+        '<button type="button" data-order-trend="gmv" class="'+(trendMode==='gmv'?'active':'')+'">订单金额</button>'+
+        '<button type="button" data-order-trend="cnt" class="'+(trendMode==='cnt'?'active':'')+'">订单数</button>'+
+        '</div>';
+      return '<div class="daily-panel space-y-4 req-marker-wrapper"><span class="req-marker" data-id="5-order">5</span>'+
+        '<div class="aux-charts-row order-charts">'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 订单数 · 初复诊汇总（汤剂/丸剂堆叠）</p><div class="h-[150px] w-full"><canvas id="orderChartVisit"></canvas></div></div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 订单金额 · 初复诊汇总（汤剂/丸剂堆叠）</p><div class="h-[150px] w-full"><canvas id="orderChartGmv"></canvas></div></div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 趋势折线图</p>'+trendToggle+'<div class="h-[180px] w-full"><canvas id="orderChartTrend"></canvas></div></div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3>'+
+        '<table class="w-full text-sm order-core-table"><thead>'+
+          '<tr class="text-left text-xs text-slate-500 border-b bg-slate-50">'+
+            '<th class="px-3 py-2 sticky left-0 bg-slate-50 z-10" rowspan="3">'+_thLabel('日期','日期')+'</th>'+
+            '<th class="px-3 py-2 text-center th-first font-semibold" colspan="6">初诊</th>'+
+            '<th class="px-3 py-2 text-center th-revisit font-semibold" colspan="6">复诊</th>'+
+            '<th class="px-3 py-2 text-center bg-slate-100 font-semibold" colspan="6">总订单</th>'+
+            '<th class="px-3 py-2 text-center" rowspan="3">操作</th>'+
+          '</tr>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b">'+
+            '<th class="px-2 py-1.5 text-center th-first-sub" colspan="2">汤剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-first-sub" colspan="2">丸剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-first-sub font-medium" colspan="2">合计</th>'+
+            '<th class="px-2 py-1.5 text-center th-revisit-sub" colspan="2">汤剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-revisit-sub" colspan="2">丸剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-revisit-sub font-medium" colspan="2">合计</th>'+
+            '<th class="px-2 py-1.5 text-center th-total-sub" colspan="2">汤剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-total-sub" colspan="2">丸剂</th>'+
+            '<th class="px-2 py-1.5 text-center th-total-sub font-medium" colspan="2">合计</th>'+
+          '</tr>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b">'+
+            _th('订单数','初诊汤剂订单数','px-2 py-1 text-right th-first-sub')+
+            _th('金额','初诊汤剂金额','px-2 py-1 text-right th-first-sub')+
+            _th('订单数','初诊丸剂订单数','px-2 py-1 text-right th-first-sub')+
+            _th('金额','初诊丸剂金额','px-2 py-1 text-right th-first-sub')+
+            _th('订单数','初诊订单数','px-2 py-1 text-right th-first-sub')+
+            _th('金额','初诊金额','px-2 py-1 text-right th-first-sub')+
+            _th('订单数','复诊汤剂订单数','px-2 py-1 text-right th-revisit-sub')+
+            _th('金额','复诊汤剂金额','px-2 py-1 text-right th-revisit-sub')+
+            _th('订单数','复诊丸剂订单数','px-2 py-1 text-right th-revisit-sub')+
+            _th('金额','复诊丸剂金额','px-2 py-1 text-right th-revisit-sub')+
+            _th('订单数','复诊订单数','px-2 py-1 text-right th-revisit-sub')+
+            _th('金额','复诊金额','px-2 py-1 text-right th-revisit-sub')+
+            _th('订单数','总汤剂订单数','px-2 py-1 text-right th-total-sub')+
+            _th('金额','总汤剂订单金额','px-2 py-1 text-right th-total-sub')+
+            _th('订单数','总丸剂订单数','px-2 py-1 text-right th-total-sub')+
+            _th('金额','总丸剂订单金额','px-2 py-1 text-right th-total-sub')+
+            _th('订单数','总订单数','px-2 py-1 text-right th-total-sub')+
+            _th('金额','总订单金额','px-2 py-1 text-right th-total-sub')+
+          '</tr>'+
+        '</thead><tbody>'+dayRows+'</tbody></table></div>'+
+      '</div>';
+    }
+
+    function _dualRankBars(rowsHtml){
+      var left=rowsHtml.slice(0,5).join('');
+      var right=rowsHtml.slice(5,10).join('');
+      return '<div class="grid grid-cols-2 gap-4"><div class="space-y-1.5">'+left+'</div><div class="space-y-1.5">'+right+'</div></div>';
+    }
+
+    function renderAsstEfficiency(){
+      var sk=funnelState.asstEffSortKey,sd=funnelState.asstEffSortDir;
+      var sortedPayRank=_sortList(ASSISTANTS,'conv','desc',_asstEffVal);
+      var payTopRows=sortedPayRank.slice(0,10).map(function(a){var conv=((a.f05/a.f01)*100).toFixed(1);var w=Math.round((a.f05/a.f01)*100/15*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
+      var sortedRxRank=_sortList(ASSISTANTS,'convRx','desc',_asstEffVal);
+      var rxTopRows=sortedRxRank.slice(0,10).map(function(a){var conv=((a.f04/a.f01)*100).toFixed(1);var w=Math.round((a.f04/a.f01)*100/40*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-emerald-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
+      var tableList=_sortList(ASSISTANTS,sk,sd,_asstEffVal);
+      var dr=_funnelDateRange();
+      var aRows=tableList.map(function(a){
+        var convRx=((a.f04/a.f01)*100).toFixed(1);
+        var conv=((a.f05/a.f01)*100).toFixed(1);
+        var ops=_opsCell(
+          _opsLink(_detailLink('add',dr.start,dr.end,{doctorId:a.wecomId}),'加粉明细')+' '+
+          _opsLink(_detailLink('pay',dr.start,dr.end,{doctorId:a.wecomId}),'支付明细')
+        );
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f01)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right font-semibold text-emerald-700">'+convRx+'%</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td>'+ops+'</tr>';
+      }).join('');
+      return '<div class="space-y-4">'+
+        '<div class="aux-charts-row cols-2 req-marker-wrapper"><span class="req-marker" data-id="5">5</span>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-开方转化率 Top 排行</p>'+_dualRankBars(rxTopRows)+'</div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-支付转化率 Top 排行</p>'+_dualRankBars(payTopRows)+'</div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_sortableTh('曝光数','曝光数','exposure',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉数','加粉数@医助','f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-开方转化率','加粉-开方转化率','convRx',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数@医助','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'<th class="px-3 py-2 text-center">操作</th></tr></thead><tbody>'+aRows+'</tbody></table></div>'+
+      '</div>';
+    }
+
+    function renderAsstTrade(){
+      var sk=funnelState.asstTradeSortKey,sd=funnelState.asstTradeSortDir;
+      var sortedOrd=_sortList(ASSISTANTS,'totalOrd','desc',_asstTradeVal);
+      var sortedGmv=_sortList(ASSISTANTS,'totalGmv','desc',_asstTradeVal);
+      var maxOrd=sortedOrd[0]?sortedOrd[0].firstOrd+sortedOrd[0].revOrd:1;
+      var maxGmv=sortedGmv[0]?sortedGmv[0].firstGmv+sortedGmv[0].revGmv:1;
+      var ordTop=_dualRankBars(sortedOrd.slice(0,10).map(function(a){
+        var total=a.firstOrd+a.revOrd;
+        var w=Math.round(total/maxOrd*100);
+        return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium truncate shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+w+'%"></div></div><span class="w-10 text-xs text-right font-semibold shrink-0">'+fmt(total)+'</span></div>';
+      }));
+      var gmvTop=_dualRankBars(sortedGmv.slice(0,10).map(function(a){
+        var total=a.firstGmv+a.revGmv;
+        var w=Math.round(total/maxGmv*100);
+        return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium truncate shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-emerald-500" style="width:'+w+'%"></div></div><span class="w-16 text-xs text-right font-semibold shrink-0">¥'+fmt(total)+'</span></div>';
+      }));
+      var tableList=_sortList(ASSISTANTS,sk,sd,_asstTradeVal);
+      var dr=_funnelDateRange();
+      var tRows=tableList.map(function(a){
+        var total=a.firstOrd+a.revOrd;var totalGmv=a.firstGmv+a.revGmv;
+        var ops=_opsCell(_opsLink(_detailLink('pay',dr.start,dr.end,{doctorId:a.wecomId}),'数据明细'));
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.firstOrd)+'</td><td class="px-3 py-2 text-right">¥'+fmt(a.firstGmv)+'</td><td class="px-3 py-2 text-right">'+fmt(a.revOrd)+'</td><td class="px-3 py-2 text-right">¥'+fmt(a.revGmv)+'</td><td class="px-3 py-2 text-right font-semibold">'+fmt(total)+'</td><td class="px-3 py-2 text-right font-semibold">¥'+fmt(totalGmv)+'</td>'+ops+'</tr>';
+      }).join('');
+      return '<div class="space-y-4">'+
+        '<div class="aux-charts-row cols-2">'+
+          '<div class="card req-marker-wrapper min-w-0"><span class="req-marker" data-id="6">6</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 总订单数 Top 排行</p>'+ordTop+'</div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 总订单金额 Top 排行</p>'+gmvTop+'</div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_sortableTh('初诊订单数','初诊订单数@医助','firstOrd',sk,sd,'trade','px-3 py-2 text-right')+_sortableTh('初诊金额','初诊金额@医助','firstGmv',sk,sd,'trade','px-3 py-2 text-right')+_sortableTh('复诊订单数','复诊订单数@医助','revOrd',sk,sd,'trade','px-3 py-2 text-right')+_sortableTh('复诊金额','复诊金额@医助','revGmv',sk,sd,'trade','px-3 py-2 text-right')+_sortableTh('总订单数','总订单数@医助','totalOrd',sk,sd,'trade','px-3 py-2 text-right')+_sortableTh('总订单金额','总订单金额@医助','totalGmv',sk,sd,'trade','px-3 py-2 text-right')+'<th class="px-3 py-2 text-center">操作</th></tr></thead><tbody>'+tRows+'</tbody></table></div>'+
+      '</div>';
+    }
+
+    function renderChOverview(){
+      var grouped={};CHANNELS.forEach(function(c){if(!grouped[c.ch])grouped[c.ch]=[];grouped[c.ch].push(c);});
+      var allPv=CHANNELS.reduce(function(s,c){return s+c.pv;},0);var allUv=CHANNELS.reduce(function(s,c){return s+c.uv;},0);var allWx=CHANNELS.reduce(function(s,c){return s+c.addWx;},0);var allPay=CHANNELS.reduce(function(s,c){return s+c.payCnt;},0);
+      
+      // 辅助图表1：各渠道加粉分布
+      var chBars=Object.keys(grouped).map(function(ch){var wx=grouped[ch].reduce(function(s,i){return s+i.addWx;},0);var w=Math.round(wx/allWx*100);return '<div class="flex items-center gap-2"><span class="w-32 text-xs font-medium truncate">'+h(ch)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-brand-500" style="width:'+w+'%"></div></div><span class="w-12 text-xs text-right font-semibold">'+fmt(wx)+'</span></div>';}).join('');
+      
+      // 辅助图表2：各渠道初诊支付分布
+      var payBars=Object.keys(grouped).map(function(ch){var pay=grouped[ch].reduce(function(s,i){return s+i.payCnt;},0);var w=Math.round(pay/allPay*100);return '<div class="flex items-center gap-2"><span class="w-32 text-xs font-medium truncate">'+h(ch)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-blue-500" style="width:'+w+'%"></div></div><span class="w-12 text-xs text-right font-semibold">'+fmt(pay)+'</span></div>';}).join('');
+      
+      var chTable='';
+      var dr=_funnelDateRange();
+      Object.keys(grouped).forEach(function(ch){
+        var items=grouped[ch];
+        var totalPv=items.reduce(function(s,i){return s+i.pv;},0);
+        var totalUv=items.reduce(function(s,i){return s+i.uv;},0);
+        var totalReportCnt=items.reduce(function(s,i){return s+i.reportCnt;},0);
+        var totalReportUser=items.reduce(function(s,i){return s+i.reportUser;},0);
+        var totalWx=items.reduce(function(s,i){return s+i.addWx;},0);
+        var totalPay=items.reduce(function(s,i){return s+i.payCnt;},0);
+        var reportToWxRate=totalWx>0?((totalWx/totalReportCnt)*100).toFixed(1)+'%':'—';
+        var pvToWxRate=totalPv>0?((totalWx/totalPv)*100).toFixed(1)+'%':'—';
+        var wxToPayRate=totalWx>0?((totalPay/totalWx)*100).toFixed(1)+'%':'—';
+        var pvToPayRate=totalPv>0?((totalPay/totalPv)*100).toFixed(1)+'%':'—';
+        
+        chTable+='<tr class="bg-slate-50 font-semibold border-t"><td class="px-2 py-2">'+h(ch)+'</td><td class="px-2 py-2">—</td><td class="px-2 py-2">—</td><td class="px-2 py-2 text-right">'+fmt(totalPv)+'</td><td class="px-2 py-2 text-right">'+fmt(totalUv)+'</td><td class="px-2 py-2 text-right">'+fmt(totalReportCnt)+'</td><td class="px-2 py-2 text-right">'+fmt(totalReportUser)+'</td><td class="px-2 py-2 text-right">'+fmt(totalWx)+'</td><td class="px-2 py-2 text-right">'+reportToWxRate+'</td><td class="px-2 py-2 text-right">'+pvToWxRate+'</td><td class="px-2 py-2 text-right">'+fmt(totalPay)+'</td><td class="px-2 py-2 text-right">'+wxToPayRate+'</td><td class="px-2 py-2 text-right">'+pvToPayRate+'</td><td class="px-2 py-2"></td></tr>';
+        
+        items.forEach(function(i,idx){
+          var iReportToWxRate=i.reportCnt>0?((i.addWx/i.reportCnt)*100).toFixed(1)+'%':'—';
+          var iPvToWxRate=i.pv>0?((i.addWx/i.pv)*100).toFixed(1)+'%':'—';
+          var iWxToPayRate=i.addWx>0?((i.payCnt/i.addWx)*100).toFixed(1)+'%':'—';
+          var iPvToPayRate=i.pv>0?((i.payCnt/i.pv)*100).toFixed(1)+'%':'—';
+          var dims={channel:i.ch,subChannel:i.sub,app:i.product,appVersion:i.version};
+          var ops=_opsCell(
+            '<button data-ch-detail="'+h(i.ch+'|'+i.sub+'|'+i.product+'|'+i.version)+'" class="text-xs text-brand-600 hover:underline mx-0.5">转化详细</button> '+
+            _opsLink(_detailLink('add',dr.start,dr.end,dims),'加粉明细')+' '+
+            _opsLink(_detailLink('pay',dr.start,dr.end,dims),'支付明细')
+          );
+          chTable+='<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-2 py-1.5 pl-8 text-slate-500 text-xs">└ '+h(i.sub)+'</td><td class="px-2 py-1.5 text-sm">'+h(i.product)+'</td><td class="px-2 py-1.5 text-xs text-slate-400">'+h(i.version)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.pv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.uv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportUser)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.addWx)+'</td><td class="px-2 py-1.5 text-right">'+iReportToWxRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToWxRate+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.payCnt)+'</td><td class="px-2 py-1.5 text-right">'+iWxToPayRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToPayRate+'</td>'+ops+'</tr>';
+        });
+      });
+      
+      return '<div class="space-y-4">'+
+        '<div class="aux-charts-row cols-2">'+
+          '<div class="card req-marker-wrapper min-w-0"><span class="req-marker" data-id="7">7</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道加粉分布</p><div class="space-y-1.5 w-full">'+chBars+'</div></div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道初诊支付分布</p><div class="space-y-1.5 w-full">'+payBars+'</div></div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead>'+
+          '<tr class="text-left text-xs text-slate-500 border-b bg-slate-50"><th class="px-2 py-2" rowspan="2">'+_thLabel('渠道','渠道')+'</th><th class="px-2 py-2" rowspan="2">'+_thLabel('产品','产品')+'</th><th class="px-2 py-2" rowspan="2">'+_thLabel('版本','版本')+'</th><th class="px-2 py-2 text-center" colspan="7">AI工具转化</th><th class="px-2 py-2 text-center" colspan="3">医助转化</th><th class="px-2 py-2 text-center" rowspan="2">操作</th></tr>'+
+          '<tr class="text-left text-xs text-slate-500 border-b">'+
+            _th('首页PV','首页PV','px-2 py-2 text-right')+
+            _th('首页UV','首页UV','px-2 py-2 text-right')+
+            _th('报告数','报告数','px-2 py-2 text-right')+
+            _th('报告人次','报告人次','px-2 py-2 text-right')+
+            _th('加粉数','加粉数','px-2 py-2 text-right')+
+            _th('报告-加微转化率PV','报告-加微转化率PV','px-2 py-2 text-right')+
+            _th('首页-加微转化率PV','首页-加微转化率PV','px-2 py-2 text-right')+
+            _th('支付数','支付数@渠道','px-2 py-2 text-right')+
+            _th('加粉-支付转化率','加粉-支付转化率','px-2 py-2 text-right')+
+            _th('首页-支付转化率','首页-支付转化率@渠道','px-2 py-2 text-right')+
+          '</tr>'+
+        '</thead><tbody>'+chTable+'</tbody></table></div>'+
+      '</div>';
+    }
+
+    function _aggAcrossDates(dates,pfn){
+      return dates.reduce(function(sum,_,idx){
+        var scale=0.9+idx*0.02;
+        return sum+Math.round(pfn(scale));
+      },0);
+    }
+    function _fmtTurns(n){return Number(n).toFixed(1)+'轮';}
+    function _buildHfunnel(steps,color,fmtFn,opts){
+      if(!steps.length) return '';
+      opts=opts||{};
+      fmtFn=fmtFn||fmt;
+      var max=opts.wideBar?Math.max.apply(null,steps.map(function(s){return s.value||0})):(steps[0].value||1);
+      if(!max) max=1;
+      return '<div class="space-y-1.5">'+steps.map(function(s,i){
+        var w=Math.max(10,Math.round(s.value/max*100));
+        var rate=i>0&&steps[i-1].value>0?((s.value/steps[i-1].value)*100).toFixed(1)+'%':'—';
+        return '<div class="flex items-center gap-2"><div class="w-28 text-xs text-right font-medium shrink-0">'+h(s.label)+'</div><div class="flex-1 min-w-0"><div class="funnel-bar '+color+'" style="width:'+w+'%">'+fmtFn(s.value)+'</div></div><div class="w-14 text-xs text-slate-500 text-right shrink-0">'+rate+'</div></div>';
+      }).join('')+'</div>';
+    }
+
+    function renderChDetailPage(){
+      var meta=getChDetailMeta();
+      var dCh=meta.ch,dSub=meta.sub,dProd=meta.product,dVer=meta.version;
+      var isQuick=isQuickTestProduct(dProd);
+      var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
+      var typeBadge=isQuick?'<span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 ml-2">快测类型产品</span>':'<span class="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 ml-2">舌诊类产品</span>';
+      var detailFilterBar='<div class="card p-3 flex items-center gap-3 text-sm flex-wrap req-marker-wrapper"><span class="req-marker" data-id="8">8</span>'+
+        '<span class="text-slate-500 text-xs font-medium">渠道：</span><span class="border rounded px-2 py-1 text-xs font-mono">'+h(dCh)+'</span>'+
+        '<span class="text-slate-500 text-xs font-medium ml-2">子渠道：</span><span class="border rounded px-2 py-1 text-xs">'+h(dSub)+'</span>'+
+        '<span class="text-slate-500 text-xs font-medium ml-2">产品：</span><span class="border rounded px-2 py-1 text-xs">'+h(dProd)+'</span>'+
+        '<span class="text-slate-500 text-xs font-medium ml-2">版本：</span><span class="border rounded px-2 py-1 text-xs">'+h(dVer)+'</span>'+
+        '<span class="border-l border-slate-200 h-5 mx-2"></span>'+
+        '<span class="text-slate-500 text-xs font-medium">时间：</span><input type="date" value="2026-05-10" class="border rounded px-2 py-1 text-xs w-28"/>—<input type="date" value="2026-05-16" class="border rounded px-2 py-1 text-xs w-28"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-2"></span>'+
+        '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-export>📎 导出Excel</button>'+
+      '</div>';
+
+      if(isQuick){
+        var pf=PRODUCT_FUNNEL_QUICK;
+        var dayRows=dates.map(function(d,idx){
+          var scale=0.9+idx*0.02;
+          var pagePv=Math.round(pf.pagePv*scale/7);var pageUv=Math.round(pf.pageUv*scale/7);
+          var sessionCnt=Math.round(pf.sessionCnt*scale/7);
+          var openSession=Math.round(pf.openSession*scale/7);
+          var openRate=sessionCnt>0?((openSession/sessionCnt)*100).toFixed(1)+'%':'—';
+          var createReportCnt=Math.round(pf.createReportCnt*scale/7);
+          var reportCnt=Math.round(pf.reportCnt*scale/7);var reportUser=Math.round(pf.reportUser*scale/7);
+          var avgReport=reportUser>0?(reportCnt/reportUser).toFixed(2):'—';
+          var createSummaryConv=createReportCnt>0?((reportCnt/createReportCnt)*100).toFixed(1)+'%':'—';
+          var reportConv=pagePv>0?((reportCnt/pagePv)*100).toFixed(1)+'%':'—';
+          var addFans=Math.round(pf.addFans*scale/7);
+          var payCnt=Math.round(pf.payCnt*scale/7);
+          var reportToFan=reportCnt>0?((addFans/reportCnt)*100).toFixed(1)+'%':'—';
+          var createToFan=createReportCnt>0?((addFans/createReportCnt)*100).toFixed(1)+'%':'—';
+          var pvToFan=pagePv>0?((addFans/pagePv)*100).toFixed(1)+'%':'—';
+          var fanToPay=addFans>0?((payCnt/addFans)*100).toFixed(1)+'%':'—';
+          var pvToPay=pagePv>0?((payCnt/pagePv)*100).toFixed(1)+'%':'—';
+          return '<tr class="border-t border-slate-100 hover:bg-slate-50">'+
+            '<td class="px-2 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(pagePv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(pageUv)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(sessionCnt)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(openSession)+'</td>'+
+            '<td class="px-2 py-1.5 text-right text-brand-700">'+openRate+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+pf.avgTurns+'</td><td class="px-2 py-1.5 text-right">'+pf.avgReportTurns+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(createReportCnt)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(reportUser)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+avgReport+'</td>'+
+            '<td class="px-2 py-1.5 text-right text-brand-700">'+createSummaryConv+'</td>'+
+            '<td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(addFans)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+reportToFan+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+createToFan+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+pvToFan+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fmt(payCnt)+'</td>'+
+            '<td class="px-2 py-1.5 text-right">'+fanToPay+'</td><td class="px-2 py-1.5 text-right">'+pvToPay+'</td>'+
+          '</tr>';
+        }).join('');
+        var aggPv=_aggAcrossDates(dates,function(sc){return pf.pagePv*sc/7;});
+        var aggOpen=_aggAcrossDates(dates,function(sc){return pf.openSession*sc/7;});
+        var aggReport=_aggAcrossDates(dates,function(sc){return pf.reportCnt*sc/7;});
+        var aggFans=_aggAcrossDates(dates,function(sc){return pf.addFans*sc/7;});
+        var coreFunnel=_buildHfunnel([
+          {label:'首页PV',value:aggPv},
+          {label:'开口会话数',value:aggOpen},
+          {label:'报告数（成功）',value:aggReport},
+          {label:'加粉数',value:aggFans}
+        ],'bg-brand-600');
+        var turnsFunnel=_buildHfunnel([
+          {label:'平均出报告轮次',value:pf.avgReportTurns},
+          {label:'平均对话轮次',value:pf.avgTurns}
+        ],'bg-violet-600',_fmtTurns,{wideBar:true});
+        return '<div class="space-y-4">'+
+          '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2>'+typeBadge+'</div>'+
+          detailFilterBar+
+          '<div class="aux-charts-row cols-2">'+
+            '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 核心转化漏斗（汇总，快测类）</p>'+coreFunnel+'</div>'+
+            '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话轮次漏斗（汇总）</p>'+turnsFunnel+'</div>'+
+          '</div>'+
+          '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
+          '<table class="min-w-[1680px] text-xs"><thead>'+
+            '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="13">会话</th><th class="px-2 py-2 text-center" colspan="4">留资</th><th class="px-2 py-2 text-center" colspan="3">支付转化</th></tr>'+
+            '<tr class="text-left text-[10px] text-slate-500 border-b">'+
+            _th('首页PV','快测_首页PV','px-2 py-2 text-right')+
+            _th('首页UV','快测_首页UV','px-2 py-2 text-right')+
+            _th('会话数','会话数','px-2 py-2 text-right')+
+            _th('开口会话数','开口会话数','px-2 py-2 text-right')+
+            _th('会话开口率','会话开口率','px-2 py-2 text-right')+
+            _th('平均对话轮次','快测_平均对话轮次','px-2 py-2 text-right')+
+            _th('平均出报告轮次','平均出报告轮次','px-2 py-2 text-right')+
+            _th('报告总数','报告总数','px-2 py-2 text-right')+
+            _th('报告数（成功）','报告数（成功）','px-2 py-2 text-right')+
+            _th('报告人次','快测_报告人次','px-2 py-2 text-right')+
+            _th('人均报告数','人均报告数','px-2 py-2 text-right')+
+            _th('报告总数-小结转化率','报告总数-小结转化率','px-2 py-2 text-right')+
+            _th('首页-报告转化率','快测_首页-报告转化率','px-2 py-2 text-right')+
+            _th('加粉数','加粉数','px-2 py-2 text-right')+
+            _th('报告-加粉转化率','报告-加粉转化率','px-2 py-2 text-right')+
+            _th('报告总数-加粉转化率','报告总数-加粉转化率','px-2 py-2 text-right')+
+            _th('首页-加粉转化率','快测_首页-加粉转化率','px-2 py-2 text-right')+
+            _th('支付数','支付数@快测','px-2 py-2 text-right')+
+            _th('加粉-支付转化率','加粉-支付转化率','px-2 py-2 text-right')+
+            _th('首页-支付转化率','首页-支付转化率@产品','px-2 py-2 text-right')+
+          '</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+        '</div>';
+      }
+
+      var pf=PRODUCT_FUNNEL_TONGUE;
+      var dayRows=dates.map(function(d,idx){
+        var scale=0.9+idx*0.02;
+        var pagePv=Math.round(pf.pagePv*scale/7);var pageUv=Math.round(pf.pageUv*scale/7);
+        var shootPagePv=Math.round(pf.shootPagePv*scale/7);
+        var uploadPv=Math.round(pf.uploadPv*scale/7);
+        var reportCnt=Math.round(pf.reportCnt*scale/7);var reportUser=Math.round(pf.reportUser*scale/7);
+        var uploadLoss=uploadPv>0?((1-reportCnt/uploadPv)*100).toFixed(1):'—';
+        var reportConv=pagePv>0?((reportCnt/pagePv)*100).toFixed(1)+'%':'—';
+        var avgReport=reportUser>0?(reportCnt/reportUser).toFixed(2):'—';
+        var dialogCnt=Math.round(pf.dialogCnt*scale/7);var validDialog=Math.round(pf.validDialog*scale/7);
+        var validRate=dialogCnt>0?((validDialog/dialogCnt)*100).toFixed(1)+'%':'—';
+        var summaryCnt=Math.round(pf.summaryCnt*scale/7);var summaryUser=Math.round(pf.summaryUser*scale/7);
+        var sumRatePv=reportCnt>0?((summaryCnt/reportCnt)*100).toFixed(1)+'%':'—';
+        var sumRateHome=pagePv>0?((summaryCnt/pagePv)*100).toFixed(1)+'%':'—';
+        var leadCnt=Math.round(pf.leadCnt*scale/7);
+        var addFans=Math.round(pf.addFans*scale/7);
+        var payCnt=Math.round(pf.payCnt*scale/7);
+        var leadR1=summaryCnt>0?((leadCnt/summaryCnt)*100).toFixed(1)+'%':'—';
+        var leadR2=reportCnt>0?((leadCnt/reportCnt)*100).toFixed(1)+'%':'—';
+        var leadR2uv=reportUser>0?((leadCnt/reportUser)*100).toFixed(1)+'%':'—';
+        var leadR3=pagePv>0?((leadCnt/pagePv)*100).toFixed(1)+'%':'—';
+        var shootLeadConv=shootPagePv>0?((leadCnt/shootPagePv)*100).toFixed(1)+'%':'—';
+        var fanToPay=addFans>0?((payCnt/addFans)*100).toFixed(1)+'%':'—';
+        var pvToPay=pagePv>0?((payCnt/pagePv)*100).toFixed(1)+'%':'—';
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50">'+
+          '<td class="px-2 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(pagePv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(pageUv)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(shootPagePv)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(uploadPv)+'</td><td class="px-2 py-1.5 text-right text-red-600">'+uploadLoss+'%</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(reportUser)+'</td>'+
+          '<td class="px-2 py-1.5 text-right text-brand-700">'+reportConv+'</td><td class="px-2 py-1.5 text-right">'+avgReport+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(dialogCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(validDialog)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+validRate+'</td><td class="px-2 py-1.5 text-right">'+pf.avgTurns+'</td><td class="px-2 py-1.5 text-right">'+pf.avgSummaryTurns+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(summaryCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(summaryUser)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+sumRatePv+'</td><td class="px-2 py-1.5 text-right">'+sumRateHome+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(leadCnt)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+leadR1+'</td><td class="px-2 py-1.5 text-right">'+leadR2+'</td><td class="px-2 py-1.5 text-right">'+leadR2uv+'</td><td class="px-2 py-1.5 text-right">'+leadR3+'</td><td class="px-2 py-1.5 text-right">'+shootLeadConv+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fmt(payCnt)+'</td>'+
+          '<td class="px-2 py-1.5 text-right">'+fanToPay+'</td><td class="px-2 py-1.5 text-right">'+pvToPay+'</td>'+
+        '</tr>';
+      }).join('');
+      var aggPv=_aggAcrossDates(dates,function(sc){return pf.pagePv*sc/7;});
+      var aggReport=_aggAcrossDates(dates,function(sc){return pf.reportCnt*sc/7;});
+      var aggSummary=_aggAcrossDates(dates,function(sc){return pf.summaryCnt*sc/7;});
+      var aggLead=_aggAcrossDates(dates,function(sc){return pf.leadCnt*sc/7;});
+      var aggDialog=_aggAcrossDates(dates,function(sc){return pf.dialogCnt*sc/7;});
+      var aggOpenDialog=_aggAcrossDates(dates,function(sc){return pf.validDialog*sc/7;});
+      var coreFunnel=_buildHfunnel([
+        {label:'首页PV',value:aggPv},
+        {label:'舌诊报告数',value:aggReport},
+        {label:'小结数',value:aggSummary},
+        {label:'留资数',value:aggLead}
+      ],'bg-brand-600');
+      var dialogFunnel=_buildHfunnel([
+        {label:'对话数',value:aggDialog},
+        {label:'开口对话数',value:aggOpenDialog}
+      ],'bg-emerald-600');
+      var turnsFunnel=_buildHfunnel([
+        {label:'平均出小结轮次',value:pf.avgSummaryTurns},
+        {label:'平均对话轮次',value:pf.avgTurns}
+      ],'bg-violet-600',_fmtTurns,{wideBar:true});
+      return '<div class="space-y-4">'+
+        '<div class="flex items-center gap-3"><button id="btn-back-overview" class="btn-outline text-xs px-3 py-1">← 返回概览</button><h2 class="text-lg font-bold">产品详细转化数据</h2>'+typeBadge+'</div>'+
+        detailFilterBar+
+        '<div class="aux-charts-row cols-3">'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 核心转化漏斗（汇总，舌诊类）</p>'+coreFunnel+'</div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话转化漏斗（汇总）</p>'+dialogFunnel+'</div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-3">辅助图表 · 对话轮次漏斗（汇总）</p>'+turnsFunnel+'</div>'+
+        '</div>'+
+        '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表（纵坐标=日期，横坐标=指标）</h3>'+
+        '<table class="min-w-[1920px] text-xs"><thead>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b bg-slate-50"><th class="px-2 py-2 sticky left-0 bg-slate-50" rowspan="2">'+_thLabel('日期','日期')+'</th><th class="px-2 py-2 text-center" colspan="9">首页与舌象</th><th class="px-2 py-2 text-center" colspan="8">对话与小结</th><th class="px-2 py-2 text-center" colspan="6">留资</th><th class="px-2 py-2 text-center" colspan="3">支付转化</th></tr>'+
+          '<tr class="text-left text-[10px] text-slate-500 border-b">'+
+            _th('首页PV','舌诊_首页PV','px-2 py-2 text-right')+
+            _th('首页UV','舌诊_首页UV','px-2 py-2 text-right')+
+            _th('舌诊拍摄页PV','舌诊拍摄页PV','px-2 py-2 text-right')+
+            _th('舌象上传PV','舌象上传PV','px-2 py-2 text-right')+
+            _th('舌象上传折损率','舌象上传折损率','px-2 py-2 text-right')+
+            _th('舌诊报告数','舌诊报告数','px-2 py-2 text-right')+
+            _th('舌诊报告人次','舌诊报告人次','px-2 py-2 text-right')+
+            _th('首页-报告转化率','舌诊_首页-报告转化率','px-2 py-2 text-right')+
+            _th('人均舌诊报告数','人均舌诊报告数','px-2 py-2 text-right')+
+            _th('对话数','舌诊_对话数','px-2 py-2 text-right')+
+            _th('开口对话数','舌诊_开口对话数','px-2 py-2 text-right')+
+            _th('开口对话率','开口对话率','px-2 py-2 text-right')+
+            _th('平均对话轮次','舌诊_平均对话轮次','px-2 py-2 text-right')+
+            _th('平均出小结轮次','舌诊_平均出小结轮次','px-2 py-2 text-right')+
+            _th('小结数','小结数','px-2 py-2 text-right')+
+            _th('小结人次','小结人次','px-2 py-2 text-right')+
+            _th('报告-小结率PV','报告-小结率PV','px-2 py-2 text-right')+
+            _th('首页-小结率PV','首页-小结率PV','px-2 py-2 text-right')+
+            _th('留资数','留资数','px-2 py-2 text-right')+
+            _th('小结-留资率PV','小结-留资率PV','px-2 py-2 text-right')+
+            _th('舌诊报告-留资率PV','舌诊报告-留资率PV','px-2 py-2 text-right')+
+            _th('舌诊报告-留资率UV','舌诊报告-留资率UV','px-2 py-2 text-right')+
+            _th('首页-留资率PV','首页-留资率PV','px-2 py-2 text-right')+
+            _th('舌诊拍摄页PV-留资转化','舌诊拍摄页PV-留资转化','px-2 py-2 text-right')+
+            _th('支付数','支付数@产品','px-2 py-2 text-right')+
+            _th('加粉-支付转化率','加粉-支付转化率','px-2 py-2 text-right')+
+            _th('首页-支付转化率','首页-支付转化率@产品','px-2 py-2 text-right')+
+          '</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
+      '</div>';
+    }
+
+    function initOrderCharts(){
+      if(funnelState.tab!=='daily'||funnelState.dailySub!=='order') return;
+      var O=DAILY_ORDERS;
+      var labels=O.trend.map(function(t){return t.d;});
+      var split=_orderSummarySplit();
+      var daySplits=O.trend.map(_orderDaySplit);
+      var mk=function(id,cfg){var el=document.getElementById(id);if(!el||typeof Chart==='undefined') return;funnelChartInstances.push(new Chart(el.getContext('2d'),cfg));};
+      var barOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:8,font:{size:9},padding:8}}},scales:{x:{stacked:true,ticks:{font:{size:9}}},y:{stacked:true,beginAtZero:true,ticks:{font:{size:9},maxTicksLimit:5}}}};
+      mk('orderChartVisit',{type:'bar',data:{labels:['初诊','复诊'],datasets:[{label:'汤剂',data:[split.fdDeco,split.rdDeco],backgroundColor:'#14b8a6',stack:'s'},{label:'丸剂',data:[split.fdPill,split.rdPill],backgroundColor:'#38bdf8',stack:'s'}]},options:barOpts});
+      mk('orderChartGmv',{type:'bar',data:{labels:['初诊','复诊'],datasets:[{label:'汤剂',data:[split.fdDecoG,split.rdDecoG],backgroundColor:'#0f766e',stack:'s'},{label:'丸剂',data:[split.fdPillG,split.rdPillG],backgroundColor:'#6366f1',stack:'s'}]},options:barOpts});
+      var isGmv=funnelState.orderTrendMode==='gmv';
+      var trendDs=isGmv?[
+        {label:'总金额',data:daySplits.map(function(b){return b.totalGmv;}),borderColor:'#0f766e',backgroundColor:'rgba(15,118,110,0.08)',tension:0.3,fill:true},
+        {label:'初诊汤剂',data:daySplits.map(function(b){return b.fdDecoG;}),borderColor:'#14b8a6',tension:0.3},
+        {label:'初诊丸剂',data:daySplits.map(function(b){return b.fdPillG;}),borderColor:'#2dd4bf',tension:0.3},
+        {label:'复诊汤剂',data:daySplits.map(function(b){return b.rdDecoG;}),borderColor:'#3b82f6',tension:0.3},
+        {label:'复诊丸剂',data:daySplits.map(function(b){return b.rdPillG;}),borderColor:'#818cf8',tension:0.3}
+      ]:[
+        {label:'总订单',data:daySplits.map(function(b){return b.totalOrd;}),borderColor:'#0f766e',backgroundColor:'rgba(15,118,110,0.08)',tension:0.3,fill:true},
+        {label:'初诊汤剂',data:daySplits.map(function(b){return b.fdDeco;}),borderColor:'#14b8a6',tension:0.3},
+        {label:'初诊丸剂',data:daySplits.map(function(b){return b.fdPill;}),borderColor:'#2dd4bf',tension:0.3},
+        {label:'复诊汤剂',data:daySplits.map(function(b){return b.rdDeco;}),borderColor:'#3b82f6',tension:0.3},
+        {label:'复诊丸剂',data:daySplits.map(function(b){return b.rdPill;}),borderColor:'#818cf8',tension:0.3}
+      ];
+      mk('orderChartTrend',{type:'line',data:{labels:labels,datasets:trendDs},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:9}}}},scales:{y:{beginAtZero:true,ticks:{font:{size:9},callback:isGmv?function(v){return '¥'+v.toLocaleString('zh-CN');}:undefined}},x:{ticks:{font:{size:9}}}}}});
+    }
+
+    function handleFunnelExport(){
+      var ts=new Date().toISOString().slice(0,10);
+      if(funnelState.chDetailRow){
+        var meta=getChDetailMeta();
+        exportFunnelTableMock('产品详细转化_'+meta.product+'_'+ts+'.xlsx','产品转化',['日期','指标示例'],['05-16','导出示例数据']);
+        return;
+      }
+      if(funnelState.tab==='daily'){
+        if(funnelState.dailySub==='conversion'){
+          exportFunnelTableMock('每日转化数据_'+ts+'.xlsx','每日转化',['日期','首页PV','加粉数','开口','支付','支付转化率'],['05-16',fmt(AI_FUNNEL_STEPS[0].count),fmt(AI_FUNNEL_STEPS[4].count),fmt(ASSISTANT_FUNNEL_STEPS[1].count),fmt(ASSISTANT_FUNNEL_STEPS[4].count),'19.8%']);
+        }else{
+          exportFunnelTableMock('每日订单金额_'+ts+'.xlsx','订单金额',['日期','汤剂订单数','丸剂订单数','总订单金额'],['05-16','52','31','85770']);
+        }
+      }else if(funnelState.tab==='assistant'){
+        var name=funnelState.assistantSub==='efficiency'?'医助人效':'医助成交';
+        exportFunnelTableMock(name+'_'+ts+'.xlsx',name,['医助','示例指标'],[ASSISTANTS[0].name,'示例值']);
+      }else{
+        exportFunnelTableMock('渠道维度统计_'+ts+'.xlsx','渠道统计',['渠道','产品','首页PV','加粉数'],[CHANNELS[0].ch,CHANNELS[0].product,CHANNELS[0].pv,CHANNELS[0].addWx]);
+      }
+    }
+
+    function renderFunnelPage(){
+      destroyFunnelCharts();
+      document.getElementById('funnel-content').innerHTML=renderFunnel();
+      bindFunnelEvents();
+      initOrderCharts();
+    }
+
+    function bindFunnelEvents(){
+      document.querySelectorAll('[data-funnel-tab]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.tab=el.getAttribute('data-funnel-tab');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-daily-sub]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.dailySub=el.getAttribute('data-daily-sub');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-asst-sub]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.assistantSub=el.getAttribute('data-asst-sub');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-fdim]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.fDim=el.getAttribute('data-fdim');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-ftime]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.fTimeQuick=el.getAttribute('data-ftime');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-ch-detail]').forEach(function(el){
+        el.addEventListener('click',function(){funnelState.chDetailRow=el.getAttribute('data-ch-detail');renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-asst-sort]').forEach(function(el){
+        el.addEventListener('click',function(){
+          var scope=el.getAttribute('data-asst-sort');
+          var key=el.getAttribute('data-sort-key');
+          var sk=scope==='eff'?'asstEffSortKey':'asstTradeSortKey';
+          var sd=scope==='eff'?'asstEffSortDir':'asstTradeSortDir';
+          if(funnelState[sk]===key){funnelState[sd]=funnelState[sd]==='desc'?'asc':'desc';}
+          else{funnelState[sk]=key;funnelState[sd]='desc';}
+          renderFunnelPage();
+        });
+      });
+      var backBtn=document.getElementById('btn-back-overview');
+      if(backBtn) backBtn.addEventListener('click',function(){funnelState.chDetailRow=null;renderFunnelPage();});
+      document.querySelectorAll('[data-order-trend]').forEach(function(el){
+        el.addEventListener('click',function(){
+          funnelState.orderTrendMode=el.getAttribute('data-order-trend');
+          renderFunnelPage();
+        });
+      });
+      document.querySelectorAll('[data-funnel-export]').forEach(function(el){
+        el.addEventListener('click',handleFunnelExport);
+      });
+      document.querySelectorAll('.detail-drill-btn').forEach(function(el){
+        el.addEventListener('click', function(){
+          var raw = el.getAttribute('data-detail-nav') || '{}';
+          var opts = {};
+          try { opts = JSON.parse(raw); } catch (e) { opts = {}; }
+          if (typeof window.navigateToDetail === 'function') window.navigateToDetail(opts);
+        });
+      });
+    }
+
+    // Navigation
+    function switchAppPage(page){
+      document.querySelectorAll('.nav-item').forEach(function(i){
+        i.classList.toggle('active', i.getAttribute('data-page') === page);
+      });
+      document.querySelectorAll('.funnel-page').forEach(function(p){p.classList.remove('active');});
+      var target = document.getElementById('page-'+page);
+      if (target) target.classList.add('active');
+      if(page==='funnel') renderFunnelPage();
+    }
+    function bindNavigation(){
+      document.querySelectorAll('.nav-item').forEach(function(el){
+        el.addEventListener('click',function(){
+          switchAppPage(el.getAttribute('data-page'));
+        });
+      });
+    }
+    window.switchAppPage = switchAppPage;
+    window.navigateToDetail = function(opts){
+      switchAppPage('detail');
+      if (typeof window.applyDetailDrillParams === 'function') {
+        window.applyDetailDrillParams(opts || {});
+      }
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+    };
+    bindNavigation();
+    // 默认进入全链路漏斗，便于演示下钻到明细
+    switchAppPage('funnel');
+
+
+    // Annotation System
+    const annotationData = {
+        '1': {
+            title: '7.2.1 每日数据统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">二级 Tab</div>
+  <p><strong>每日转化数据</strong> | <strong>每日订单金额数据</strong></p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间筛选</strong>：日期范围，默认 2026-01-01 → 2026-05-16，支持选择具体时间段（日维度）</li>
+    <li><strong>维度筛选</strong>：按时、按日（默认）</li>
+    <li><strong>渠道筛选</strong>：全部、baidu_doctor_h5、douyin_info、weixin_mp</li>
+    <li><strong>子渠道筛选</strong>：全部、baidu_doctor_h501、baidu_doctor_h502</li>
+    <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
+    <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
+    <li><strong>团队筛选</strong>：按团队筛选；筛选团队后首页 PV/UV 灰置</li>
+    <li><strong>医助筛选</strong>：标签「医助」+ 系统用户名或企微 id 输入框；筛选医助后首页 PV/UV 灰置</li>
+    <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">业务规则</div>
+  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。</p>
+</div>
+`
+        },
+        '2': {
+            title: '7.2.2 医助服务统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">二级 Tab</div>
+  <p><strong>医助服务人效统计</strong> | <strong>医助成交数据</strong></p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间筛选（快捷）</strong>：今日、昨日、近7天、近30天</li>
+    <li><strong>时间筛选（自定义）</strong>：日期时间范围，支持到时分维度</li>
+    <li><strong>渠道筛选</strong>：全部、baidu_doctor_h5、douyin_info、weixin_mp</li>
+    <li><strong>子渠道筛选</strong>：全部、baidu_doctor_h501、baidu_doctor_h502</li>
+    <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
+    <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
+    <li><strong>团队筛选</strong>：按团队筛选</li>
+    <li><strong>医助筛选</strong>：标签「医助」+ 系统用户名/企微 id 输入框</li>
+    <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">业务规则</div>
+  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。</p>
+</div>
+`
+        },
+        '3': {
+            title: '7.2.3 渠道维度统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">二级 Tab</div>
+  <p><strong>渠道核心数据概览</strong>（产品详细转化数据通过操作列「查看详情」进入独立页面）</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间筛选（快捷）</strong>：今日、昨日、近7天、近30天</li>
+    <li><strong>时间筛选（自定义）</strong>：日期时间范围，支持到时分维度</li>
+    <li><strong>渠道筛选</strong>：全部、baidu_doctor_h5、douyin_info、weixin_mp</li>
+    <li><strong>子渠道筛选</strong>：全部、SEM投放、信息流、公众号</li>
+    <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
+    <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
+    <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">业务规则</div>
+  <p>上述筛选栏控制渠道核心数据概览；产品详细转化数据页继承本模块筛选条件。</p>
+</div>
+`
+        },
+        '4': {
+            title: '7.2.1.1 每日转化数据统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计口径</div>
+  <p>全链路漏斗分为两大类：<strong>AI工具转化</strong>和<strong>医助转化</strong>。</p>
+  <ul>
+    <li><strong>AI工具转化</strong>：统计从用户访问 AI 工具首页到加粉的转化链路</li>
+    <li><strong>医助转化</strong>：仅统计初诊流程转化，从加粉到支付的完整链路</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">AI工具转化（A01～A08）</div>
+  <ul>
+    <li><strong>A01 首页PV</strong>：AI 工具首页页面浏览量或工具新建量，如舌诊首页浏览量、快测对话页数量</li>
+    <li><strong>A02 首页UV</strong>：AI 工具首页独立访客数</li>
+    <li><strong>A03 报告数</strong>：用户生成的舌诊/体质报告数</li>
+    <li><strong>A04 报告人次</strong>：生成报告的去重用户数</li>
+    <li><strong>A05 加粉数</strong>：通过 AI 工具新增企微好友去重人数</li>
+    <li><strong>A06 首页-报告转化率PV</strong>：报告数 / 首页PV</li>
+    <li><strong>A07 报告-加微转化率PV</strong>：加粉数 / 报告数</li>
+    <li><strong>A08 首页-加微转化率PV</strong>：加粉数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">医助转化（F01～F06）</div>
+  <ul>
+    <li><strong>F01 加粉数</strong>：当日通过各渠道新增企微好友去重人数</li>
+    <li><strong>F02 开口数</strong>：用户主动发送首条消息的去重人数</li>
+    <li><strong>F03 舌象上传数</strong>：用户提交舌象图片的去重人数（本期可实现为用户上传图片即算）</li>
+    <li><strong>F04 开方数</strong>：完成病例总结和开方的去重人数</li>
+    <li><strong>F05 支付数</strong>：支付成功的去重人数（R01）</li>
+    <li><strong>F06 支付转化率</strong>：支付数 / 加粉数</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>AI工具转化漏斗图</strong>：A01 首页PV → A02 首页UV → A03 报告数 → A04 报告人次 → A05 加粉数；显示各步人数与环节转化率；底部显示首页-报告转化率 PV、报告-加微转化率 PV、首页-加微转化率 PV。格式：漏斗条形图，与医助转化并列展示</li>
+    <li><strong>医助转化漏斗图</strong>：F01 加粉数 → F02 开口 → F03 舌象上传 → F04 开方 → F05 支付；显示各步人数与环节转化率；底部显示支付转化率。格式：漏斗条形图，与 AI 工具转化并列展示</li>
+    <li><strong>数据表</strong>：纵坐标=日期；横坐标=AI 工具转化（首页PV、首页UV、报告数、报告人次、首页-报告转化率PV、加粉数、报告-加微转化率PV、首页-加微转化率PV）+ 医助转化（开口、舌象上传、开方、支付、支付转化率）。格式：宽表格，支持横向滚动、排序、导出</li>
+  </ul>
+</div>
+`
+        },
+        '5-order': {
+            title: '4.1.2.2 每日订单金额数据',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计口径</div>
+  <p>按业务日统计订单与金额，按<strong>初复诊 × 汤剂/丸剂</strong>交叉维度拆分。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义（初复诊 × 汤丸剂）</div>
+  <ul>
+    <li><strong>初诊汤剂订单数 / 金额</strong>：当日初诊且药物类型为汤剂的订单数与实付金额</li>
+    <li><strong>初诊丸剂订单数 / 金额</strong>：当日初诊且药物类型为丸剂的订单数与实付金额</li>
+    <li><strong>复诊汤剂订单数 / 金额</strong>：当日复诊且药物类型为汤剂的订单数与实付金额</li>
+    <li><strong>复诊丸剂订单数 / 金额</strong>：当日复诊且药物类型为丸剂的订单数与实付金额</li>
+    <li><strong>总订单数 / 总订单金额</strong>：当日全部支付成功订单数与实付金额合计</li>
+    <li><strong>总汤剂订单数 / 总汤剂订单金额</strong>：当日汤剂订单数与金额合计（初诊汤剂+复诊汤剂）</li>
+    <li><strong>总丸剂订单数 / 总丸剂订单金额</strong>：当日丸剂订单数与金额合计（初诊丸剂+复诊丸剂）</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>辅助图表1（左）</strong>：订单数统计 · 初复诊汇总堆叠柱图（汤剂+丸剂）</li>
+    <li><strong>辅助图表2（中）</strong>：订单金额统计 · 初复诊汇总堆叠柱图（汤剂+丸剂）</li>
+    <li><strong>辅助图表3（右，占一半宽度）</strong>：趋势折线图，支持<strong>订单金额 / 订单数</strong>开关切换；金额维度含总金额、初诊汤剂、初诊丸剂、复诊汤剂、复诊丸剂；订单数维度含总订单、初诊汤剂、初诊丸剂、复诊汤剂、复诊丸剂</li>
+    <li><strong>明细表</strong>：三级表头上下结构——初诊/复诊/总订单 → 汤剂/丸剂/合计 → 订单数/金额；总订单区块与初复诊结构一致，含总汤剂、总丸剂及合计列</li>
+  </ul>
+</div>
+`
+        },
+        '5': {
+            title: '7.2.2.1 医助服务人效统计',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计维度</div>
+  <p>以医助（assistant_id）为主维度，在筛选的时间段内汇总每个医助的转化数据。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义</div>
+  <ul>
+    <li><strong>曝光数</strong>：企微分配曝光的数量</li>
+    <li><strong>加粉数</strong>：该医助在筛选时段内分配到的新加粉好友去重人数</li>
+    <li><strong>开口数</strong>：该医助服务的用户主动开口去重人数</li>
+    <li><strong>舌象上传数</strong>：该医助服务的用户提交舌象去重人数</li>
+    <li><strong>开方数</strong>：该医助服务的用户完成病例总结和开方的去重人数</li>
+    <li><strong>加粉-开方转化率</strong>：开方数 / 加粉数</li>
+    <li><strong>支付数</strong>：该医助服务的用户支付成功去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>数据表</strong>：支持点击表头指标排序（正序/倒序切换），默认人效按加粉数倒序、成交按总订单金额倒序</li>
+    <li><strong>排行榜</strong>：医助按加粉-开方转化率、加粉-支付转化率分别排序 Top10，各左 5 右 5 分列展示，辅助图表一行两列并排（左开方、右支付）</li>
+    <li><strong>明细表</strong>：每行一个医助，列出曝光数、加粉数、开口数、舌象上传数、开方数、加粉-开方转化率、支付数、加粉-支付转化率；支持按列排序、搜索医助</li>
+  </ul>
+</div>
+`
+        },
+        '6': {
+            title: '7.2.2.2 医助成交数据',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计维度</div>
+  <p>以医助（assistant_id）为主维度，在筛选时段内汇总每个医助的订单与金额数据。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义</div>
+  <ul>
+    <li><strong>初诊订单数</strong>：该医助服务的初诊用户支付成功订单数</li>
+    <li><strong>初诊金额</strong>：该医助服务的初诊订单实付金额合计</li>
+    <li><strong>复诊订单数</strong>：该医助服务的复诊用户支付成功订单数</li>
+    <li><strong>复诊金额</strong>：该医助服务的复诊订单实付金额合计</li>
+    <li><strong>总订单数</strong>：初诊订单数 + 复诊订单数</li>
+    <li><strong>总订单金额</strong>：初诊金额 + 复诊金额</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>排行榜</strong>：医助按总订单数、总订单金额分别排序 Top10，各左 5 右 5 分列展示，辅助图表纵向排列横向撑满</li>
+    <li><strong>数据表</strong>：支持点击表头指标排序（正序/倒序切换）</li>
+    <li><strong>明细表</strong>：每行一个医助，列出初诊订单数、初诊金额、复诊订单数、复诊金额、总订单数、总订单金额；支持排序、导出</li>
+  </ul>
+</div>
+`
+        },
+        '7': {
+            title: '7.2.3.1 渠道核心数据概览',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计维度</div>
+  <p>以渠道（channel）→ 子渠道（sub_channel）→ 投放产品（product）→ 产品版本（product_version）为层级，在所选时间段内汇总核心指标。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">指标定义</div>
+  <ul>
+    <li><strong>首页PV</strong>：AI 工具首页页面浏览量或工具新建量，如舌诊首页浏览量、快测对话页数量</li>
+    <li><strong>首页UV</strong>：该渠道/产品的落地页独立访客数</li>
+    <li><strong>报告数</strong>：用户生成的舌诊报告/快测结论报告数</li>
+    <li><strong>报告人次</strong>：生成报告的去重用户数</li>
+    <li><strong>加粉数</strong>：通过该渠道/产品最终加粉的去重人数</li>
+    <li><strong>报告-加微转化率PV</strong>：加粉数 / 报告数</li>
+    <li><strong>首页-加微转化率PV</strong>：加粉数 / 首页PV</li>
+    <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>辅助图表1</strong>：各渠道加粉分布（水平条形图，显示各渠道加粉数占比）</li>
+    <li><strong>辅助图表2</strong>：各渠道初诊支付分布（水平条形图，显示各渠道支付数占比）</li>
+    <li><strong>层级钻取表</strong>：行=渠道→子渠道→产品→版本；列分 AI 工具转化（首页PV～首页-加微转化率PV）与医助转化（支付数～首页-支付转化率）；操作列含「查看详情」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">操作说明</div>
+  <p>点击「查看详情」进入产品详细转化数据页，默认选中当前行对应的渠道、子渠道、产品和版本。</p>
+</div>
+`
+        },
+        '8': {
+            title: '4.1.4.2 产品详细转化数据页',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">入口与上下文</div>
+  <p><strong>入口</strong>：渠道核心数据概览表 → 操作列「查看详情」</p>
+  <p><strong>上下文</strong>：默认继承上一级已选的渠道、子渠道、产品、产品版本；时间范围继承全局筛选栏设置。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项（页面顶部）</div>
+  <ul>
+    <li><strong>渠道 / 子渠道 / 产品 / 产品版本</strong>：展示继承值</li>
+    <li><strong>时间范围</strong>：日期范围，支持时分维度</li>
+    <li><strong>操作</strong>：「查询」「重置」「返回概览」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">数据表结构</div>
+  <p>纵坐标=日期（按天排列）；横坐标根据产品类型自动切换指标列（见下方分类型说明）。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">舌诊类产品 · 指标定义</div>
+  <p>表头分四阶段：<strong>首页与舌象</strong>｜<strong>对话与小结</strong>｜<strong>留资</strong>｜<strong>支付转化</strong></p>
+  <ul>
+    <li><strong>首页PV</strong>：AI 工具首页页面浏览量</li>
+    <li><strong>首页UV</strong>：落地页独立访客数</li>
+    <li><strong>舌诊拍摄页PV</strong>：舌诊拍摄页页面浏览量</li>
+    <li><strong>舌象上传PV</strong>：用户提交舌象图片的次数</li>
+    <li><strong>舌象上传折损率</strong>：1 - 舌诊报告数 / 舌象上传PV</li>
+    <li><strong>舌诊报告数</strong>：用户生成的舌诊报告数</li>
+    <li><strong>舌诊报告人次</strong>：生成舌诊报告的去重用户数</li>
+    <li><strong>首页-报告转化率</strong>：舌诊报告数 / 首页PV</li>
+    <li><strong>人均舌诊报告数</strong>：舌诊报告数 / 舌诊报告人次</li>
+    <li><strong>对话数</strong>：对话页新建会话数</li>
+    <li><strong>开口对话数</strong>：用户主动发送首条消息的会话数</li>
+    <li><strong>开口对话率</strong>：开口对话数 / 对话数</li>
+    <li><strong>平均对话轮次</strong>：总对话轮次 / 开口对话数</li>
+    <li><strong>平均出小结轮次</strong>：出小结的总轮次 / 成功小结数</li>
+    <li><strong>小结数</strong>：生成小结的数量</li>
+    <li><strong>小结人次</strong>：生成小结的去重用户数</li>
+    <li><strong>报告-小结率PV</strong>：小结数 / 舌诊报告数</li>
+    <li><strong>首页-小结率PV</strong>：小结数 / 首页PV</li>
+    <li><strong>留资数</strong>：完成留资的去重人数</li>
+    <li><strong>小结-留资率PV</strong>：留资数 / 小结数</li>
+    <li><strong>舌诊报告-留资率PV</strong>：留资数 / 舌诊报告数</li>
+    <li><strong>舌诊报告-留资率UV</strong>：留资数 / 舌诊报告人次</li>
+    <li><strong>首页-留资率PV</strong>：留资数 / 首页PV</li>
+    <li><strong>舌诊拍摄页PV-留资转化</strong>：留资数 / 舌诊拍摄页PV</li>
+    <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">快测类型产品 · 指标定义</div>
+  <p>表头分三阶段：<strong>会话</strong>｜<strong>留资</strong>｜<strong>支付转化</strong></p>
+  <ul>
+    <li><strong>首页PV</strong>：快测落地页页面浏览量</li>
+    <li><strong>首页UV</strong>：快测落地页独立访客数</li>
+    <li><strong>会话数</strong>：快测对话页新建会话数</li>
+    <li><strong>开口会话数</strong>：用户主动发送首条消息的会话数</li>
+    <li><strong>会话开口率</strong>：开口会话数 / 会话数</li>
+    <li><strong>平均对话轮次</strong>：总对话轮次 / 会话数</li>
+    <li><strong>平均出报告轮次</strong>：出报告的总轮次 / 成功报告数量</li>
+    <li><strong>报告总数</strong>：用户触发生成快测报告的次数（create 事件）</li>
+    <li><strong>报告数（成功）</strong>：用户生成的快测结论报告数</li>
+    <li><strong>报告人次</strong>：生成报告的去重用户数</li>
+    <li><strong>人均报告数</strong>：报告数（成功） / 报告人次</li>
+    <li><strong>报告总数-小结转化率</strong>：报告数（成功） / 报告总数</li>
+    <li><strong>首页-报告转化率</strong>：报告数（成功） / 首页PV</li>
+    <li><strong>加粉数</strong>：通过快测产品新增企微好友去重人数</li>
+    <li><strong>报告-加粉转化率</strong>：加粉数 / 报告数（成功）</li>
+    <li><strong>报告总数-加粉转化率</strong>：加粉数 / 报告总数</li>
+    <li><strong>首页-加粉转化率</strong>：加粉数 / 首页PV（会话数）</li>
+    <li><strong>支付数</strong>：首诊支付成功的去重人数</li>
+    <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>首页-支付转化率</strong>：支付数 / 首页PV</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">展示内容</div>
+  <ul>
+    <li><strong>辅助图表（舌诊类）</strong>：汇总日期范围内全部数据，横向漏斗柱状图三组——①核心转化（首页PV→舌诊报告数→小结数→留资数）②对话转化（对话数→开口对话数）③对话轮次（平均出小结轮次→平均对话轮次）；一行三列并排</li>
+    <li><strong>辅助图表（快测类）</strong>：汇总日期范围内全部数据——①核心转化漏斗（首页PV→开口会话数→报告数（成功）→加粉数）②对话轮次漏斗（平均出报告轮次→平均对话轮次）；一行两列并排，不含对话转化漏斗</li>
+    <li><strong>核心数据表</strong>：宽表格，表头按阶段分组，支持横向滚动、排序、导出；列头「?」展示指标口径</li>
+  </ul>
+</div>
+`
+        }
+    };
+
+    let activeTooltip = null;
+    let activeMarker = null;
+    let isDragging = false;
+    let dragOffset = { x: 0, y: 0 };
+
+    function createTooltip(markerId, data) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'req-tooltip';
+        tooltip.id = 'tooltip-' + markerId;
+        tooltip.innerHTML = `
+            <div class="req-tooltip-header">
+                <span>${markerId} ${data.title}</span>
+                <span class="req-tooltip-close" onclick="closeTooltip('${markerId}')">×</span>
+            </div>
+            <div class="req-tooltip-content">
+                ${data.content}
+            </div>
+        `;
+        
+        // Position tooltip
+        const marker = document.querySelector('.req-marker[data-id="' + markerId + '"]');
+        if (marker) {
+            const markerRect = marker.getBoundingClientRect();
+            let tooltipLeft = markerRect.left - 8;
+            let tooltipTop = markerRect.bottom + 8;
+            
+            // Boundary check
+            if (tooltipLeft + 450 > window.innerWidth) {
+                tooltipLeft = window.innerWidth - 450 - 16;
+            }
+            if (tooltipTop + 400 > window.innerHeight) {
+                tooltipTop = markerRect.top - 400 - 8;
+            }
+            
+            tooltip.style.left = tooltipLeft + 'px';
+            tooltip.style.top = tooltipTop + 'px';
+        }
+        
+        // Drag functionality
+        tooltip.addEventListener('mousedown', function(e) {
+            if (e.target.classList.contains('req-tooltip-close')) return;
+            isDragging = true;
+            activeTooltip = tooltip;
+            dragOffset.x = e.clientX - tooltip.offsetLeft;
+            dragOffset.y = e.clientY - tooltip.offsetTop;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging && activeTooltip === tooltip) {
+                tooltip.style.left = (e.clientX - dragOffset.x) + 'px';
+                tooltip.style.top = (e.clientY - dragOffset.y) + 'px';
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+        
+        // Prevent event bubbling
+        tooltip.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        return tooltip;
+    }
+
+    function showTooltip(markerId) {
+        // Close existing tooltip with same ID
+        closeTooltip(markerId);
+        
+        const data = annotationData[markerId];
+        if (!data) return;
+        
+        const tooltip = createTooltip(markerId, data);
+        document.body.appendChild(tooltip);
+        activeTooltip = tooltip;
+    }
+
+    function closeTooltip(markerId) {
+        const tooltip = document.getElementById('tooltip-' + markerId);
+        if (tooltip) {
+            tooltip.remove();
+        }
+        if (activeTooltip && activeTooltip.id === 'tooltip-' + markerId) {
+            activeTooltip = null;
+        }
+    }
+
+    // Initialize markers using event delegation for dynamically added elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Use event delegation to handle hover on dynamically added markers
+        document.body.addEventListener('mouseenter', function(e) {
+            if (e.target.classList.contains('req-marker')) {
+                const markerId = e.target.getAttribute('data-id');
+                showTooltip(markerId);
+            }
+        }, true);
+    });
+
+</script>
+
+<script>
+// ===== 用户转化明细 V2 =====
+
+(function(){
+    var TIME_DIMS = {
+        add: { label: '加粉时间', datePrefix: '加粉日期', field: '加粉时间' },
+        pay: { label: '支付时间', datePrefix: '支付日期', field: '支付时间' }
+    };
+    var APP_LIST = ['舌诊', '体质测试', '问诊H5'];
+    var APP_VERSION_MAP = {
+        '舌诊': ['v3.2', 'v2.1'],
+        '体质测试': ['v3.2', 'v1.0'],
+        '问诊H5': ['v2.1', 'v1.0']
+    };
+    var TABLE_COLS = 20;
+    var exporting = false;
+    var exportPollTimer = null;
+
+    function formatLocalDate(d) {
+        var y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+    }
+    function formatDateTime(dateStr, h, m, s) {
+        return dateStr + ' ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+    function addMinutesToTime(timeStr, minutes) {
+        var parts = timeStr.split(' ');
+        var d = new Date(parts[0] + 'T' + parts[1]);
+        d.setMinutes(d.getMinutes() + minutes);
+        return formatLocalDate(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+    }
+    function escapeHtml(s) {
+        if (!s) return '';
+        return String(s).replace(/[&<>]/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]); });
+    }
+    function getTimeDim() { return document.getElementById('timeDimSelect').value; }
+    function getTimeField() { return TIME_DIMS[getTimeDim()].field; }
+
+    function showToast(msg, type) {
+        var container = document.getElementById('toastContainer');
+        var el = document.createElement('div');
+        el.className = 'toast toast-' + (type || 'info');
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(function() { el.remove(); }, 4000);
+    }
+
+    function updateTimeDimLabels() {
+        var dim = TIME_DIMS[getTimeDim()];
+        var isAdd = getTimeDim() === 'add';
+        document.getElementById('quickDateLabel').textContent = '📅 时间快捷(' + dim.label + ')';
+        document.getElementById('startDateLabel').textContent = '📅 ' + dim.datePrefix + '起';
+        document.getElementById('endDateLabel').textContent = '➡️ ' + dim.datePrefix + '止';
+        document.getElementById('pageSub').textContent = '线索 → 沟通 → 开方 → 成交 · 全链路转化监控（当前时间筛选：' + dim.label + '）';
+        document.getElementById('footerNote').textContent = '当前时间筛选基于「' + dim.label + '」；点击左侧卡片切换趋势图；支持开启对比功能。';
+        document.querySelectorAll('.filter-add-only').forEach(function(el) {
+            el.classList.toggle('hidden', !isAdd);
+        });
+        var cardsWrap = document.getElementById('statsCards');
+        cardsWrap.classList.toggle('mode-pay', !isAdd);
+        document.querySelectorAll('.stat-add-only').forEach(function(el) {
+            el.classList.toggle('hidden', !isAdd);
+        });
+        var active = document.querySelector('.stat-card.active');
+        if (active && active.classList.contains('hidden')) {
+            document.querySelectorAll('.stat-card').forEach(function(c) { c.classList.remove('active'); });
+            var firstVisible = document.querySelector('.stat-card:not(.hidden)');
+            if (firstVisible) {
+                firstVisible.classList.add('active');
+                currentStatType = firstVisible.getAttribute('data-stat');
+            }
+        }
+    }
+
+    function rowMatchesPayDate(row, start, end) {
+        var hits = [];
+        if (row.支付时间) hits.push(row.支付时间.split(' ')[0]);
+        if (row.复诊支付记录 && row.复诊支付记录.length) {
+            row.复诊支付记录.forEach(function(r) { if (r.time) hits.push(r.time.split(' ')[0]); });
+        }
+        if (!hits.length) return false;
+        return hits.some(function(d) {
+            if (start && d < start) return false;
+            if (end && d > end) return false;
+            return true;
+        });
+    }
+
+    function getResponseStatus(first, last) {
+        if (first <= 60 && last <= 60) return '优';
+        if (first <= 300 && last <= 300) return '良';
+        return '差';
+    }
+    function getAddFriendStatus(isDel, isDup) {
+        if (isDel === '是' && isDup !== '是') return '已删除';
+        if (isDup === '是') return '重复添加';
+        return '正常';
+    }
+    function getPayStatus(hasOrder, hasPay) {
+        if (!hasOrder) return '未开方';
+        return hasPay ? '已支付' : '未支付';
+    }
+    function payStatusClass(status) {
+        if (status === '已支付') return 'pay-yes';
+        if (status === '未支付') return 'pay-no';
+        return 'pay-na';
+    }
+
+    var DETAIL_ROW_TEMPLATES = [
+        {患者微信名:'邓31313',医助名:'丁莞月100yym',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1014:百度信息流推广',是否删除:'否',重复添加:'是',客户对话数:1,医助对话数:1,客户图片数:0,首轮间隔_秒:10,末次间隔_秒:10,首单编号:'PRES26052615260641389474',开单医生:'胡蕾蕾',首单金额:100,进线成交天数:7,paid:true,revisitCnt:2},
+        {患者微信名:'赵志民',医助名:'钟云飞100yym',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'是',客户对话数:2,医助对话数:2,客户图片数:0,首轮间隔_秒:11,末次间隔_秒:11,首单编号:'PRES26052615260641389475',开单医生:'胡蕾蕾',首单金额:101,进线成交天数:7,paid:true,revisitCnt:1},
+        {患者微信名:'天天开心💓',医助名:'小秋100lfy',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:3,医助对话数:3,客户图片数:0,首轮间隔_秒:12,末次间隔_秒:12,首单编号:'PRES26052615260641389476',开单医生:'胡蕾蕾',首单金额:102,进线成交天数:7,paid:true,revisitCnt:0},
+        {患者微信名:'海阔天空',医助名:'小秋100lfy',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:4,医助对话数:4,客户图片数:1,首轮间隔_秒:13,末次间隔_秒:13,首单编号:'PRES26052615260641389477',开单医生:'胡蕾蕾',首单金额:103,进线成交天数:7,paid:true,revisitCnt:3},
+        {患者微信名:'卓伦.中科',医助名:'小秋100lfy',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:5,医助对话数:5,客户图片数:1,首轮间隔_秒:14,末次间隔_秒:14,首单编号:'',开单医生:'',首单金额:0,进线成交天数:null,paid:false,revisitCnt:0},
+        {患者微信名:'青山绿水',医助名:'小秋100lfy',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:6,医助对话数:6,客户图片数:1,首轮间隔_秒:15,末次间隔_秒:15,首单编号:'PRES26052615260641389478',开单医生:'胡蕾蕾',首单金额:105,进线成交天数:7,paid:false,revisitCnt:0},
+        {患者微信名:'王玉侠',医助名:'熊国庆100lfy',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:7,医助对话数:7,客户图片数:0,首轮间隔_秒:16,末次间隔_秒:16,首单编号:'PRES26052615260641389479',开单医生:'胡蕾蕾',首单金额:106,进线成交天数:7,paid:true,revisitCnt:1},
+        {患者微信名:'李昌高',医助名:'倪康宽yym',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:8,医助对话数:8,客户图片数:0,首轮间隔_秒:17,末次间隔_秒:17,首单编号:'PRES26052615260641389480',开单医生:'胡蕾蕾',首单金额:107,进线成交天数:7,paid:true,revisitCnt:2},
+        {患者微信名:'慢响应测试',医助名:'丁莞月100yym',医助账号:'SuiYu',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'1032767:百度搜索推广',是否删除:'否',重复添加:'否',客户对话数:2,医助对话数:1,客户图片数:0,首轮间隔_秒:480,末次间隔_秒:480,首单编号:'',开单医生:'',首单金额:0,进线成交天数:null,paid:false,revisitCnt:0},
+        {患者微信名:'已删除用户',医助名:'测试医助',医助账号:'test001',所属业务组:'B组',所属渠道:'百度巧舱',子渠道:'测试渠道',是否删除:'是',重复添加:'否',客户对话数:0,医助对话数:0,客户图片数:0,首轮间隔_秒:0,末次间隔_秒:0,首单编号:'',开单医生:'',首单金额:0,进线成交天数:null,paid:false,revisitCnt:0}
+    ];
+
+    function buildRevisitData(payTime, count, firstDrug) {
+        var records = [], totalAmt = 0;
+        var drugTypes = ['汤剂', '丸剂'];
+        for (var i = 0; i < count; i++) {
+            var t = addMinutesToTime(payTime, 60 * 24 * (i + 1) + 30);
+            var amt = 80 + i * 15;
+            var drug = drugTypes[(i + (firstDrug === '丸剂' ? 1 : 0)) % 2];
+            records.push({ time: t, amount: amt, drug: drug });
+            totalAmt += amt;
+        }
+        return {
+            复诊次数: count,
+            复诊支付记录: records,
+            最近复诊支付时间: count > 0 ? records[records.length - 1].time : '',
+            复诊金额: totalAmt
+        };
+    }
+
+    function generateMockDetailData(daysBack) {
+        daysBack = daysBack || 60;
+        var records = [], today = new Date();
+        today.setHours(0, 0, 0, 0);
+        for (var dayOffset = 0; dayOffset <= daysBack; dayOffset++) {
+            var date = new Date(today);
+            date.setDate(today.getDate() - dayOffset);
+            var dateStr = formatLocalDate(date);
+            var perDay = Math.max(4, 10 - (dayOffset % 4));
+            for (var i = 0; i < perDay; i++) {
+                var tmpl = DETAIL_ROW_TEMPLATES[(dayOffset * 3 + i) % DETAIL_ROW_TEMPLATES.length];
+                var hour = 6 + Math.floor((i / perDay) * 14), min = (i * 13 + dayOffset * 7) % 60, sec = (i * 11) % 60;
+                var reportTime = formatDateTime(dateStr, hour, min, sec);
+                var addTime = addMinutesToTime(reportTime, 3);
+                var hasOrder = !!(tmpl.首单编号 && tmpl.首单编号 !== '');
+                var payTime = hasOrder && tmpl.paid ? addMinutesToTime(addTime, 5) : '';
+                var firstDrug = (dayOffset + i) % 2 === 0 ? '汤剂' : '丸剂';
+                var revisit = (hasOrder && tmpl.paid) ? buildRevisitData(payTime, tmpl.revisitCnt || 0, firstDrug) : buildRevisitData('', 0, firstDrug);
+                var app = APP_LIST[(dayOffset + i) % APP_LIST.length];
+                var versions = APP_VERSION_MAP[app];
+                var appVersion = versions[(dayOffset + i) % versions.length];
+                records.push({
+                    患者微信编号: 'mock' + String(dayOffset).padStart(2, '0') + String(i).padStart(2, '0') + String(tmpl.患者微信名.length),
+                    患者微信名: tmpl.患者微信名 + (dayOffset > 0 ? '·' + dateStr.slice(5) : ''),
+                    医助名: tmpl.医助名, 医助账号: tmpl.医助账号, 所属业务组: tmpl.所属业务组,
+                    所属渠道: tmpl.所属渠道, 子渠道: tmpl.子渠道,
+                    应用: app, 应用版本: appVersion,
+                    报告时间: reportTime, 加粉时间: addTime,
+                    是否删除: tmpl.是否删除, 重复添加: tmpl.重复添加,
+                    客户对话数: tmpl.客户对话数, 医助对话数: tmpl.医助对话数, 客户图片数: tmpl.客户图片数,
+                    客户首次对话时间: reportTime, 医助首次对话时间: reportTime,
+                    首轮间隔_秒: tmpl.首轮间隔_秒,
+                    客户末次对话时间: addTime, 医助末次对话时间: addTime,
+                    末次间隔_秒: tmpl.末次间隔_秒,
+                    首单编号: hasOrder ? tmpl.首单编号 : '', 开单医生: hasOrder ? tmpl.开单医生 : '',
+                    首单金额: hasOrder ? tmpl.首单金额 : 0,
+                    剂型: hasOrder ? firstDrug : '',
+                    首单创建时间: hasOrder ? addMinutesToTime(addTime, 2) : '',
+                    首单支付时间: payTime,
+                    物流发货时间: '', 进线成交天数: tmpl.进线成交天数,
+                    复诊次数: revisit.复诊次数,
+                    复诊支付记录: revisit.复诊支付记录,
+                    最近复诊支付时间: revisit.最近复诊支付时间,
+                    复诊金额: revisit.复诊金额
+                });
+            }
+        }
+        return records;
+    }
+
+    function buildDetailDataset(rows) {
+        return rows.map(function(item) {
+            var hasOrder = !!(item.首单编号 && item.首单编号 !== '');
+            var hasPay = hasOrder && item.首单支付时间 && item.首单支付时间 !== '';
+            var payStatus = getPayStatus(hasOrder, hasPay);
+            return Object.assign({}, item, {
+                响应状态: getResponseStatus(item.首轮间隔_秒, item.末次间隔_秒),
+                开方状态: hasOrder ? '已开方' : '未开方',
+                开方时间: hasOrder ? item.首单创建时间 : '',
+                支付状态: payStatus,
+                支付时间: hasPay ? item.首单支付时间 : '',
+                加粉状态: getAddFriendStatus(item.是否删除, item.重复添加),
+                成交状态: hasPay ? '已成交' : (hasOrder ? '未支付' : '未开方')
+            });
+        });
+    }
+
+    var fullDataset = buildDetailDataset(generateMockDetailData(60));
+    var filteredData = [], currentPage = 1, pageSize = 10, detailQueried = false;
+    var trendChart = null, currentStatType = 'total';
+
+    function rowTimeValue(row) {
+        var field = getTimeField();
+        return row[field] || '';
+    }
+    function rowDatePart(row) {
+        var t = rowTimeValue(row);
+        return t ? t.split(' ')[0] : '';
+    }
+
+    function getTrendDataFromDataset(dataSet, statType) {
+        if (!dataSet.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        var timeField = getTimeField();
+        var dated = dataSet.filter(function(d) { return d[timeField]; });
+        if (!dated.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        var dates = dated.map(function(d) { return d[timeField].split(' ')[0]; });
+        var uniqueDates = Array.from(new Set(dates)).sort();
+        var isSingleDay = uniqueDates.length === 1;
+        var labels = [], values = [];
+        if (isSingleDay) {
+            var hourMap = new Array(24).fill(0);
+            dated.forEach(function(d) {
+                var hour = parseInt(d[timeField].split(' ')[1].split(':')[0], 10);
+                hourMap[hour]++;
+            });
+            labels = Array.from({ length: 24 }, function(_, i) { return i + ':00'; });
+            values = hourMap;
+        } else {
+            var dayMap = new Map();
+            dated.forEach(function(d) {
+                var date = d[timeField].split(' ')[0];
+                dayMap.set(date, (dayMap.get(date) || 0) + 1);
+            });
+            var sortedDays = Array.from(dayMap.keys()).sort();
+            labels = sortedDays.map(function(d) { return d.slice(5); });
+            values = sortedDays.map(function(d) { return dayMap.get(d); });
+        }
+        if (statType === 'amount') {
+            if (isSingleDay) {
+                var hourAmount = new Array(24).fill(0);
+                dated.forEach(function(d) {
+                    var hour = parseInt(d[timeField].split(' ')[1].split(':')[0], 10);
+                    var amt = (parseFloat(d.首单金额) || 0) + (parseFloat(d.复诊金额) || 0);
+                    hourAmount[hour] += amt;
+                });
+                values = hourAmount;
+            } else {
+                var dayAmount = new Map();
+                dated.forEach(function(d) {
+                    var date = d[timeField].split(' ')[0];
+                    var amt = (parseFloat(d.首单金额) || 0) + (parseFloat(d.复诊金额) || 0);
+                    dayAmount.set(date, (dayAmount.get(date) || 0) + amt);
+                });
+                var sortedAmtDays = Array.from(dayAmount.keys()).sort();
+                labels = sortedAmtDays.map(function(d) { return d.slice(5); });
+                values = sortedAmtDays.map(function(d) { return dayAmount.get(d); });
+            }
+        }
+        var total = values.reduce(function(a, b) { return a + b; }, 0);
+        return { labels: labels, values: values, isHourly: isSingleDay, total: total };
+    }
+
+    function getCompareDataset() {
+        if (!document.getElementById('compareCheckbox').checked) return null;
+        var compareDate = document.getElementById('compareDate').value;
+        if (!compareDate) return null;
+        var timeField = getTimeField();
+        var baseDates = filteredData.map(function(d) { return rowDatePart(d); }).filter(Boolean);
+        var uniqueBaseDates = Array.from(new Set(baseDates)).sort();
+        var isSingleDay = uniqueBaseDates.length === 1;
+        var compareDataSet = [];
+        if (isSingleDay) {
+            compareDataSet = fullDataset.filter(function(d) {
+                return d[timeField] && d[timeField].split(' ')[0] === compareDate;
+            });
+        } else {
+            var compareEnd = new Date(uniqueBaseDates[0]);
+            var compareStart = new Date(compareEnd);
+            compareStart.setDate(compareStart.getDate() - uniqueBaseDates.length);
+            compareDataSet = fullDataset.filter(function(d) {
+                if (!d[timeField]) return false;
+                var date = d[timeField].split(' ')[0];
+                return date >= formatLocalDate(compareStart) && date < uniqueBaseDates[0];
+            });
+        }
+        var targetStat = currentStatType;
+        var dataSetForCompare = compareDataSet;
+        if (targetStat === 'communicated') dataSetForCompare = compareDataSet.filter(function(u) { return u.客户对话数 > 0; });
+        else if (targetStat === 'firstOrd' || targetStat === 'firstAmt') dataSetForCompare = compareDataSet.filter(function(u) { return u.支付状态 === '已支付'; });
+        else if (targetStat === 'revOrd' || targetStat === 'revAmt') dataSetForCompare = compareDataSet.filter(function(u) { return u.复诊次数 > 0; });
+        return getTrendDataFromDataset(dataSetForCompare, (targetStat === 'firstAmt' || targetStat === 'revAmt') ? 'amount' : 'count');
+    }
+
+    function updateTrendChart() {
+        var dataSet = filteredData;
+        var title = '', statType = currentStatType;
+        var timeFieldOverride = null;
+        if (statType === 'total') { title = '添加用户趋势'; timeFieldOverride = '加粉时间'; }
+        else if (statType === 'communicated') {
+            title = '已开口用户趋势';
+            dataSet = filteredData.filter(function(u) { return u.客户对话数 > 0; });
+            timeFieldOverride = '加粉时间';
+        } else if (statType === 'firstOrd' || statType === 'firstAmt') {
+            title = statType === 'firstOrd' ? '初诊成交单数趋势' : '初诊成交金额趋势(元)';
+            dataSet = filteredData.filter(function(u) { return u.支付状态 === '已支付' && u.支付时间; });
+            timeFieldOverride = '支付时间';
+        } else if (statType === 'revOrd' || statType === 'revAmt') {
+            title = statType === 'revOrd' ? '复诊成交单数趋势' : '复诊成交金额趋势(元)';
+            dataSet = filteredData.filter(function(u) { return u.复诊次数 > 0 && u.最近复诊支付时间; });
+            timeFieldOverride = '最近复诊支付时间';
+        } else {
+            title = '趋势';
+        }
+
+        var prevField = TIME_DIMS[getTimeDim()].field;
+        if (timeFieldOverride) TIME_DIMS[getTimeDim()].field = timeFieldOverride;
+        var trendData = getTrendDataFromDataset(dataSet, (statType === 'firstAmt' || statType === 'revAmt') ? 'amount' : 'count');
+        if (statType === 'firstAmt') {
+            trendData = getAmountTrend(dataSet, '支付时间', '首单金额');
+        } else if (statType === 'revAmt') {
+            trendData = getRevisitAmtTrend(dataSet);
+        } else if (statType === 'revOrd') {
+            trendData = getRevisitCntTrend(dataSet);
+        }
+        TIME_DIMS[getTimeDim()].field = prevField;
+
+        document.getElementById('trendTitle').textContent = title;
+        var dimLabel = TIME_DIMS[getTimeDim()].label;
+        document.getElementById('trendSubtitle').textContent = trendData.isHourly
+            ? '按' + dimLabel + '小时统计 · 共 ' + trendData.total + ' 条'
+            : '按' + dimLabel + '天统计 · 共 ' + trendData.total + ' 条';
+
+        var datasets = [{
+            label: title, data: trendData.values, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)',
+            borderWidth: 2, pointRadius: 2, tension: 0.3, fill: true
+        }];
+        var compareData = getCompareDataset();
+        if (compareData && compareData.values && compareData.values.length === trendData.values.length) {
+            datasets.push({
+                label: '对比数据', data: compareData.values, borderColor: '#f97316',
+                backgroundColor: 'rgba(249,115,22,0.08)', borderWidth: 2, tension: 0.3, fill: false, borderDash: [5, 5]
+            });
+        }
+        var ctx = document.getElementById('trendChart').getContext('2d');
+        if (trendChart) trendChart.destroy();
+        trendChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: trendData.labels, datasets: datasets },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+            }
+        });
+    }
+
+    function getAmountTrend(dataSet, timeField, amtField) {
+        var dated = dataSet.filter(function(d) { return d[timeField]; });
+        if (!dated.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        var dates = dated.map(function(d) { return d[timeField].split(' ')[0]; });
+        var uniqueDates = Array.from(new Set(dates)).sort();
+        var isSingleDay = uniqueDates.length === 1;
+        if (isSingleDay) {
+            var hourAmount = new Array(24).fill(0);
+            dated.forEach(function(d) {
+                var hour = parseInt(d[timeField].split(' ')[1].split(':')[0], 10);
+                hourAmount[hour] += parseFloat(d[amtField]) || 0;
+            });
+            return { labels: Array.from({ length: 24 }, function(_, i) { return i + ':00'; }), values: hourAmount, isHourly: true, total: hourAmount.reduce(function(a, b) { return a + b; }, 0) };
+        }
+        var dayAmount = new Map();
+        dated.forEach(function(d) {
+            var date = d[timeField].split(' ')[0];
+            dayAmount.set(date, (dayAmount.get(date) || 0) + (parseFloat(d[amtField]) || 0));
+        });
+        var sorted = Array.from(dayAmount.keys()).sort();
+        return { labels: sorted.map(function(d) { return d.slice(5); }), values: sorted.map(function(d) { return dayAmount.get(d); }), isHourly: false, total: sorted.reduce(function(s, d) { return s + dayAmount.get(d); }, 0) };
+    }
+
+    function getRevisitCntTrend(dataSet) {
+        var points = [];
+        dataSet.forEach(function(d) {
+            (d.复诊支付记录 || []).forEach(function(r) { if (r.time) points.push(r.time); });
+        });
+        return aggregateTimePoints(points, false);
+    }
+    function getRevisitAmtTrend(dataSet) {
+        var points = [];
+        dataSet.forEach(function(d) {
+            (d.复诊支付记录 || []).forEach(function(r) { if (r.time) points.push({ t: r.time, v: r.amount || 0 }); });
+        });
+        return aggregateTimePoints(points.map(function(p) { return p.t; }), true, points);
+    }
+    function aggregateTimePoints(timeStrs, isAmt, amtPoints) {
+        if (!timeStrs.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        var dates = timeStrs.map(function(t) { return t.split(' ')[0]; });
+        var uniqueDates = Array.from(new Set(dates)).sort();
+        var isSingleDay = uniqueDates.length === 1;
+        if (isSingleDay) {
+            var hourMap = new Array(24).fill(0);
+            if (isAmt && amtPoints) {
+                amtPoints.forEach(function(p) {
+                    var hour = parseInt(p.t.split(' ')[1].split(':')[0], 10);
+                    hourMap[hour] += p.v;
+                });
+            } else {
+                timeStrs.forEach(function(t) {
+                    var hour = parseInt(t.split(' ')[1].split(':')[0], 10);
+                    hourMap[hour]++;
+                });
+            }
+            return { labels: Array.from({ length: 24 }, function(_, i) { return i + ':00'; }), values: hourMap, isHourly: true, total: hourMap.reduce(function(a, b) { return a + b; }, 0) };
+        }
+        var dayMap = new Map();
+        if (isAmt && amtPoints) {
+            amtPoints.forEach(function(p) {
+                var date = p.t.split(' ')[0];
+                dayMap.set(date, (dayMap.get(date) || 0) + p.v);
+            });
+        } else {
+            timeStrs.forEach(function(t) {
+                var date = t.split(' ')[0];
+                dayMap.set(date, (dayMap.get(date) || 0) + 1);
+            });
+        }
+        var sorted = Array.from(dayMap.keys()).sort();
+        return { labels: sorted.map(function(d) { return d.slice(5); }), values: sorted.map(function(d) { return dayMap.get(d); }), isHourly: false, total: sorted.reduce(function(s, d) { return s + dayMap.get(d); }, 0) };
+    }
+
+    function refreshTrend() { updateTrendChart(); }
+
+    function renderTableRows() {
+        var tbody = document.getElementById('tableBody');
+        var start = (currentPage - 1) * pageSize;
+        var pageData = filteredData.slice(start, start + pageSize);
+        if (!pageData.length) {
+            tbody.innerHTML = '<tr><td colspan="' + TABLE_COLS + '" style="text-align:center;color:#64748b;padding:24px;">' +
+                (detailQueried ? '暂无符合条件的数据' : '请选择时间范围，点击「筛选」或时间快捷按钮查询') + '</td></tr>';
+            document.getElementById('pageInfo').textContent = '第0页';
+            return;
+        }
+        tbody.innerHTML = '';
+        pageData.forEach(function(row, idx) {
+            var responseClass = row.响应状态 === '优' ? 'response-excellent' : (row.响应状态 === '良' ? 'response-good' : 'response-poor');
+            var prescribeClass = row.开方状态 === '已开方' ? 'prescribed-yes' : 'prescribed-no';
+            var hasOrder = row.开方状态 === '已开方';
+            var hasPay = row.支付状态 === '已支付';
+            var statusColor = row.加粉状态 === '正常' ? 'status-normal' : (row.加粉状态 === '已删除' ? 'status-deleted' : 'status-duplicate');
+            var detailRowId = 'detail-' + Date.now() + '-' + idx;
+            var mainRow = document.createElement('tr');
+            mainRow.innerHTML =
+                '<td><div><strong>' + escapeHtml(row.患者微信名) + '</strong><br><span class="sub-text">' + escapeHtml(row.患者微信编号) + '</span></div></td>' +
+                '<td><div><strong>' + escapeHtml(row.医助名) + '</strong><br><span class="sub-text">' + escapeHtml(row.医助账号) + '</span></div></td>' +
+                '<td>' + escapeHtml(row.所属业务组) + '</td>' +
+                '<td>' + escapeHtml(row.所属渠道) + '</td>' +
+                '<td>' + escapeHtml(row.子渠道) + '</td>' +
+                '<td>' + escapeHtml(row.应用) + '</td>' +
+                '<td>' + escapeHtml(row.应用版本) + '</td>' +
+                '<td>' + escapeHtml(row.报告时间) + '</td>' +
+                '<td>' + escapeHtml(row.加粉时间) + '</td>' +
+                '<td class="' + statusColor + '" style="text-align:center;">' + row.加粉状态 + '</td>' +
+                '<td>' + row.客户对话数 + '</td>' +
+                '<td>' + row.医助对话数 + '</td>' +
+                '<td>' + row.客户图片数 + '</td>' +
+                '<td><span class="' + responseClass + '">' + row.响应状态 + '</span></td>' +
+                '<td><span class="status-badge ' + prescribeClass + '">' + row.开方状态 + '</span></td>' +
+                '<td><span class="status-badge ' + payStatusClass(row.支付状态) + '">' + row.支付状态 + '</span></td>' +
+                '<td>' + (row.支付时间 || '—') + '</td>' +
+                '<td style="text-align:center;">' + (row.复诊次数 || 0) + '</td>' +
+                '<td>' + (row.最近复诊支付时间 || '—') + '</td>' +
+                '<td><button class="action-btn" data-detail="' + detailRowId + '">📋 更多详情</button> <button class="action-btn" data-chat="' + escapeHtml(row.患者微信编号) + '" data-name="' + escapeHtml(row.患者微信名) + '">💬 对话</button></td>';
+
+            var detailRow = document.createElement('tr');
+            detailRow.className = 'sub-details';
+            detailRow.id = detailRowId;
+            detailRow.style.display = 'none';
+            var commHtml = '<div class="detail-section"><div class="detail-section-title">📞 沟通详情</div><div class="detail-flex">' +
+                '<div class="detail-item">📨 客户首次: ' + escapeHtml(row.客户首次对话时间 || '—') + '</div>' +
+                '<div class="detail-item">💬 医助首次: ' + escapeHtml(row.医助首次对话时间 || '—') + '</div>' +
+                '<div class="detail-item">⏱️ 首轮间隔: ' + (row.首轮间隔_秒 ?? '—') + '秒</div>' +
+                '<div class="detail-item">📤 客户末次: ' + escapeHtml(row.客户末次对话时间 || '—') + '</div>' +
+                '<div class="detail-item">🤝 医助末次: ' + escapeHtml(row.医助末次对话时间 || '—') + '</div>' +
+                '<div class="detail-item">⏱️ 末次间隔: ' + (row.末次间隔_秒 ?? '—') + '秒</div></div></div>';
+            var firstDealHtml = hasOrder ? '<div class="detail-section"><div class="detail-section-title">💰 初诊成交详情</div><div class="detail-flex">' +
+                '<div class="detail-item">🗓️ 开方时间: ' + escapeHtml(row.开方时间 || '—') + '</div>' +
+                '<div class="detail-item">📄 首单编号: ' + escapeHtml(row.首单编号) + '</div>' +
+                '<div class="detail-item">👨‍⚕️ 开单医生: ' + escapeHtml(row.开单医生) + '</div>' +
+                '<div class="detail-item">💊 剂型: ' + escapeHtml(row.剂型 || '—') + '</div>' +
+                '<div class="detail-item">💰 首单金额: ' + row.首单金额 + '元</div>' +
+                '<div class="detail-item">🚚 发货时间: ' + escapeHtml(row.物流发货时间 || '—') + '</div>' +
+                '<div class="detail-item">⏱️ 成交周期: ' + (row.进线成交天数 ?? '—') + '天</div></div></div>' : '';
+            var revisitHtml = '';
+            if (row.复诊次数 > 0 && row.复诊支付记录 && row.复诊支付记录.length) {
+                revisitHtml = '<div class="detail-section"><div class="detail-section-title">🔄 复诊成交详情（共 ' + row.复诊次数 + ' 次）</div><div class="detail-flex">' +
+                    row.复诊支付记录.map(function(r, i) {
+                        return '<div class="detail-item">第' + (i + 1) + '次: ' + r.time + ' · ' + (r.drug || '') + ' · ¥' + r.amount + '</div>';
+                    }).join('') + '</div></div>';
+            }
+            detailRow.innerHTML = '<td colspan="' + TABLE_COLS + '">' + commHtml + firstDealHtml + revisitHtml + '</td>';
+            tbody.appendChild(mainRow);
+            tbody.appendChild(detailRow);
+        });
+
+        tbody.querySelectorAll('[data-detail]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var row = document.getElementById(btn.getAttribute('data-detail'));
+                row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+            });
+        });
+        tbody.querySelectorAll('[data-chat]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                openChatModal(btn.getAttribute('data-chat'), btn.getAttribute('data-name'));
+            });
+        });
+
+        var totalPages = Math.ceil(filteredData.length / pageSize);
+        document.getElementById('pageInfo').textContent = '第' + currentPage + '页 / 共' + totalPages + '页';
+        document.getElementById('prevPageBtn').disabled = currentPage === 1;
+        document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+    }
+
+    function calcOrderStats(dataSet, start, end, timeDim) {
+        var firstDeco = 0, firstPill = 0, firstDecoAmt = 0, firstPillAmt = 0;
+        var revDeco = 0, revPill = 0, revDecoAmt = 0, revPillAmt = 0;
+        dataSet.forEach(function(u) {
+            if (u.支付状态 === '已支付' && u.支付时间) {
+                var fd = u.支付时间.split(' ')[0];
+                var inRange = (!start || fd >= start) && (!end || fd <= end);
+                if (timeDim === 'add' || inRange) {
+                    if (u.剂型 === '丸剂') { firstPill++; firstPillAmt += parseFloat(u.首单金额) || 0; }
+                    else { firstDeco++; firstDecoAmt += parseFloat(u.首单金额) || 0; }
+                }
+            }
+            if (u.复诊支付记录 && u.复诊支付记录.length) {
+                u.复诊支付记录.forEach(function(r) {
+                    var rd = r.time ? r.time.split(' ')[0] : '';
+                    var inR = (!start || rd >= start) && (!end || rd <= end);
+                    if (timeDim === 'add' || inR) {
+                        if (r.drug === '丸剂') { revPill++; revPillAmt += r.amount || 0; }
+                        else { revDeco++; revDecoAmt += r.amount || 0; }
+                    }
+                });
+            }
+        });
+        return {
+            firstOrd: firstDeco + firstPill,
+            firstAmt: firstDecoAmt + firstPillAmt,
+            firstDeco: firstDeco, firstPill: firstPill,
+            firstDecoAmt: firstDecoAmt, firstPillAmt: firstPillAmt,
+            revOrd: revDeco + revPill,
+            revAmt: revDecoAmt + revPillAmt,
+            revDeco: revDeco, revPill: revPill,
+            revDecoAmt: revDecoAmt, revPillAmt: revPillAmt
+        };
+    }
+
+    function fmtDrugCnt(deco, pill) {
+        return '汤剂 ' + deco + ' 单 · 丸剂 ' + pill + ' 单';
+    }
+    function fmtDrugAmt(deco, pill) {
+        return '汤剂 ¥' + deco.toFixed(0) + ' · 丸剂 ¥' + pill.toFixed(0);
+    }
+
+    function renderStatsAndTable() {
+        var emptyIds = ['totalUsers', 'communicatedUsers', 'firstOrdCnt', 'firstAmtVal', 'revOrdCnt', 'revAmtVal'];
+        if (!detailQueried) {
+            emptyIds.forEach(function(id) { document.getElementById(id).textContent = '-'; });
+            ['firstOrdDesc', 'firstAmtDesc', 'revOrdDesc', 'revAmtDesc'].forEach(function(id) {
+                document.getElementById(id).textContent = '汤剂 — · 丸剂 —';
+            });
+            renderTableRows();
+            if (trendChart) { trendChart.destroy(); trendChart = null; }
+            document.getElementById('trendSubtitle').textContent = '请选择时间范围后查询';
+            return;
+        }
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        var timeDim = getTimeDim();
+        var stats = calcOrderStats(filteredData, start, end, timeDim);
+        document.getElementById('totalUsers').textContent = filteredData.length;
+        document.getElementById('communicatedUsers').textContent = filteredData.filter(function(u) { return u.客户对话数 > 0; }).length;
+        document.getElementById('firstOrdCnt').textContent = stats.firstOrd;
+        document.getElementById('firstOrdDesc').textContent = fmtDrugCnt(stats.firstDeco, stats.firstPill);
+        document.getElementById('firstAmtVal').textContent = '¥' + stats.firstAmt.toFixed(0);
+        document.getElementById('firstAmtDesc').textContent = fmtDrugAmt(stats.firstDecoAmt, stats.firstPillAmt);
+        document.getElementById('revOrdCnt').textContent = stats.revOrd;
+        document.getElementById('revOrdDesc').textContent = fmtDrugCnt(stats.revDeco, stats.revPill);
+        document.getElementById('revAmtVal').textContent = '¥' + stats.revAmt.toFixed(0);
+        document.getElementById('revAmtDesc').textContent = fmtDrugAmt(stats.revDecoAmt, stats.revPillAmt);
+        renderTableRows();
+        refreshTrend();
+    }
+
+    function applyFilters() {
+        detailQueried = true;
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        var channel = document.getElementById('channelSelect').value;
+        var sub = document.getElementById('subChannelSelect').value;
+        var app = document.getElementById('appSelect').value;
+        var appVersion = document.getElementById('appVersionSelect').value;
+        var group = document.getElementById('groupSelect').value;
+        var doctorKw = document.getElementById('doctorSearch').value.trim().toLowerCase();
+        var addStatus = document.getElementById('addStatusSelect').value;
+        var resp = document.getElementById('responseSelect').value;
+        var prescribe = document.getElementById('prescribeSelect').value;
+        var deal = document.getElementById('dealSelect').value;
+        var revisitDeal = document.getElementById('revisitDealSelect').value;
+        var kw = document.getElementById('searchKeyword').value.trim().toLowerCase();
+        var timeDim = getTimeDim();
+        var isAdd = timeDim === 'add';
+
+        filteredData = fullDataset.filter(function(row) {
+            if (timeDim === 'pay') {
+                if (!rowMatchesPayDate(row, start, end)) return false;
+            } else {
+                var timeVal = row.加粉时间 || '';
+                var datePart = timeVal ? timeVal.split(' ')[0] : '';
+                if (start && datePart < start) return false;
+                if (end && datePart > end) return false;
+            }
+            if (channel !== 'all' && row.所属渠道 !== channel) return false;
+            if (sub !== 'all' && row.子渠道 !== sub) return false;
+            if (app !== 'all' && row.应用 !== app) return false;
+            if (appVersion !== 'all' && row.应用版本 !== appVersion) return false;
+            if (group !== 'all' && row.所属业务组 !== group) return false;
+            if (doctorKw && !row.医助名.toLowerCase().includes(doctorKw) && !row.医助账号.toLowerCase().includes(doctorKw)) return false;
+            if (isAdd) {
+                if (addStatus !== 'all' && row.加粉状态 !== addStatus) return false;
+                if (resp !== 'all' && row.响应状态 !== resp) return false;
+                if (prescribe === 'yes' && row.开方状态 !== '已开方') return false;
+                if (prescribe === 'no' && row.开方状态 === '已开方') return false;
+                if (deal === 'yes' && row.支付状态 !== '已支付') return false;
+                if (deal === 'no' && row.支付状态 === '已支付') return false;
+                if (revisitDeal === 'yes' && !(row.复诊次数 > 0)) return false;
+                if (revisitDeal === 'no' && row.复诊次数 > 0) return false;
+            }
+            if (kw && !row.患者微信名.toLowerCase().includes(kw) && !row.患者微信编号.toLowerCase().includes(kw)) return false;
+            return true;
+        });
+        currentPage = 1;
+        renderStatsAndTable();
+    }
+
+    function setQuickDate(range) {
+        var today = new Date(), start = new Date(), end = new Date();
+        if (range === 'today') { start = new Date(); end = new Date(); }
+        else if (range === 'yesterday') { start.setDate(today.getDate() - 1); end = new Date(start); }
+        else if (range === 'last7') { start.setDate(today.getDate() - 6); end = new Date(); }
+        else if (range === 'last30') { start.setDate(today.getDate() - 29); end = new Date(); }
+        document.getElementById('startDate').value = formatLocalDate(start);
+        document.getElementById('endDate').value = formatLocalDate(end);
+        Array.from(document.querySelectorAll('.quick-btn')).forEach(function(btn) { btn.classList.remove('active'); });
+        var activeBtn = document.querySelector('.quick-btn[data-range="' + range + '"]');
+        if (activeBtn) activeBtn.classList.add('active');
+        applyFilters();
+    }
+
+    function buildExportSheet() {
+        var header = [
+            '患者编号', '患者昵称', '医助名', '医助账号', '所属团队', '渠道', '子渠道', '应用', '应用版本', '报告时间', '加粉时间', '加粉状态',
+            '患者对话数', '医助回复数', '患者图片数', '响应状态',
+            '开方状态', '支付状态', '支付时间',
+            '复诊次数', '复诊支付时间',
+            '开方时间', '首单编号', '开单医生', '首单金额', '剂型', '物流发货时间', '成交周期'
+        ];
+        var sheet = [header];
+        filteredData.forEach(function(r) {
+            sheet.push([
+                r.患者微信编号, r.患者微信名, r.医助名, r.医助账号, r.所属业务组, r.所属渠道, r.子渠道, r.应用, r.应用版本,
+                r.报告时间, r.加粉时间, r.加粉状态,
+                r.客户对话数, r.医助对话数, r.客户图片数, r.响应状态,
+                r.开方状态, r.支付状态, r.支付时间 || '',
+                r.复诊次数 || 0, r.最近复诊支付时间 || '',
+                r.开方时间 || '', r.首单编号 || '', r.开单医生 || '', r.首单金额, r.剂型 || '', r.物流发货时间 || '', r.进线成交天数 ?? ''
+            ]);
+        });
+        return sheet;
+    }
+
+    function doExportExcel() {
+        if (typeof XLSX === 'undefined') throw new Error('导出组件未加载');
+        var dim = TIME_DIMS[getTimeDim()];
+        var start = document.getElementById('startDate').value;
+        var end = document.getElementById('endDate').value;
+        var ts = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        var filename = '用户转化追踪明细_' + dim.label + '_' + start + '_' + end + '_' + ts + '.xlsx';
+        var ws = XLSX.utils.aoa_to_sheet(buildExportSheet());
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '用户转化追踪明细');
+        XLSX.writeFile(wb, filename);
+    }
+
+    function simulateAsyncExport() {
+        if (!detailQueried) {
+            showToast('请先筛选数据后再导出', 'warn');
+            return;
+        }
+        if (exporting) return;
+        exporting = true;
+        var btn = document.getElementById('exportBtn');
+        var bar = document.getElementById('exportBar');
+        btn.disabled = true;
+        btn.textContent = '导出中...';
+        bar.classList.add('show');
+        bar.querySelector('#exportBarText').textContent = '正在导出 ' + filteredData.length + ' 条数据，请稍候...';
+        showToast('正在导出，请稍候...', 'info');
+
+        var taskId = 'task_' + Date.now();
+        var pollCount = 0;
+        var maxPoll = 5;
+        if (exportPollTimer) clearInterval(exportPollTimer);
+
+        exportPollTimer = setInterval(function() {
+            pollCount++;
+            var status = pollCount < 2 ? 'PENDING' : (pollCount < 4 ? 'PROCESSING' : 'SUCCESS');
+            bar.querySelector('#exportBarText').textContent = '导出任务 ' + taskId.slice(-6) + ' · 状态: ' + status + '（' + pollCount + '/' + maxPoll + '）';
+
+            if (pollCount >= maxPoll) {
+                clearInterval(exportPollTimer);
+                exportPollTimer = null;
+                exporting = false;
+                btn.disabled = false;
+                btn.textContent = '📎 导出 Excel';
+                bar.classList.remove('show');
+                try {
+                    if (filteredData.length > 800 && Math.random() < 0.08) {
+                        throw new Error('数据量超限，请缩小筛选范围');
+                    }
+                    doExportExcel();
+                    showToast('导出成功', 'success');
+                } catch (e) {
+                    showToast('导出失败：' + e.message, 'error');
+                }
+            }
+        }, 1200);
+    }
+
+    function updateSubChannels() {
+        var sel = document.getElementById('channelSelect').value;
+        var subSet = new Set();
+        if (sel === 'all') fullDataset.forEach(function(d) { subSet.add(d.子渠道); });
+        else fullDataset.filter(function(d) { return d.所属渠道 === sel; }).forEach(function(d) { subSet.add(d.子渠道); });
+        var subSel = document.getElementById('subChannelSelect');
+        subSel.innerHTML = '<option value="all">全部</option>';
+        Array.from(subSet).sort().forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s;
+            opt.textContent = s;
+            subSel.appendChild(opt);
+        });
+    }
+
+    function updateAppVersions() {
+        var app = document.getElementById('appSelect').value;
+        var versionSel = document.getElementById('appVersionSelect');
+        versionSel.innerHTML = '<option value="all">全部</option>';
+        var versions = [];
+        if (app === 'all') {
+            var versionSet = new Set();
+            fullDataset.forEach(function(d) { versionSet.add(d.应用版本); });
+            versions = Array.from(versionSet).sort();
+        } else {
+            versions = APP_VERSION_MAP[app] || [];
+        }
+        versions.forEach(function(v) {
+            var opt = document.createElement('option');
+            opt.value = v;
+            opt.textContent = v;
+            versionSel.appendChild(opt);
+        });
+    }
+
+    function initAppFilters() {
+        var appSel = document.getElementById('appSelect');
+        appSel.innerHTML = '<option value="all">全部</option>';
+        APP_LIST.forEach(function(app) {
+            var opt = document.createElement('option');
+            opt.value = app;
+            opt.textContent = app;
+            appSel.appendChild(opt);
+        });
+        updateAppVersions();
+        appSel.addEventListener('change', function() {
+            updateAppVersions();
+            document.getElementById('appVersionSelect').value = 'all';
+        });
+    }
+
+    var mockChats = {
+        mock00010: [
+            { sender: 'customer', content: '医生您好，我想咨询一下', time: '09:12' },
+            { sender: 'doctor', content: '您好，请描述一下症状', time: '09:13' }
+        ]
+    };
+    function getMockChat(patientId) {
+        return mockChats[patientId] || [{ sender: 'customer', content: '暂无对话记录', time: '-' }];
+    }
+    window.openChatModal = function(patientId, patientName) {
+        var chats = getMockChat(patientId);
+        document.querySelector('#chatModal .modal-title').innerHTML = '💬 与 ' + patientName + ' 的对话记录';
+        document.getElementById('chatContent').innerHTML = chats.map(function(c) {
+            return '<div class="chat-message ' + (c.sender === 'customer' ? 'customer' : 'doctor') + '">' +
+                '<div class="chat-sender">' + (c.sender === 'customer' ? '患者' : '医助') + '</div>' +
+                '<div>' + c.content + '</div><div style="font-size:0.6rem;color:#888;">' + c.time + '</div></div>';
+        }).join('');
+        document.getElementById('chatModal').style.display = 'flex';
+    };
+    window.closeChatModal = function() { document.getElementById('chatModal').style.display = 'none'; };
+    window.onclick = function(e) { if (e.target === document.getElementById('chatModal')) closeChatModal(); };
+
+    document.getElementById('timeDimSelect').addEventListener('change', function() {
+        updateTimeDimLabels();
+        if (detailQueried) applyFilters();
+    });
+    document.querySelectorAll('.quick-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() { setQuickDate(btn.dataset.range); });
+    });
+    document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
+    document.getElementById('resetFilterBtn').addEventListener('click', function() {
+        document.getElementById('timeDimSelect').value = 'add';
+        updateTimeDimLabels();
+        document.getElementById('channelSelect').value = 'all';
+        updateSubChannels();
+        document.getElementById('appSelect').value = 'all';
+        updateAppVersions();
+        document.getElementById('appVersionSelect').value = 'all';
+        document.getElementById('groupSelect').value = 'all';
+        document.getElementById('doctorSearch').value = '';
+        document.getElementById('addStatusSelect').value = 'all';
+        document.getElementById('responseSelect').value = 'all';
+        document.getElementById('prescribeSelect').value = 'all';
+        document.getElementById('dealSelect').value = 'all';
+        document.getElementById('revisitDealSelect').value = 'all';
+        document.getElementById('searchKeyword').value = '';
+        setQuickDate('today');
+    });
+    document.getElementById('prevPageBtn').addEventListener('click', function() {
+        if (currentPage > 1) { currentPage--; renderStatsAndTable(); }
+    });
+    document.getElementById('nextPageBtn').addEventListener('click', function() {
+        var max = Math.ceil(filteredData.length / pageSize);
+        if (currentPage < max) { currentPage++; renderStatsAndTable(); }
+    });
+    document.getElementById('exportBtn').addEventListener('click', simulateAsyncExport);
+    document.querySelectorAll('.stat-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+            if (card.classList.contains('hidden')) return;
+            document.querySelectorAll('.stat-card').forEach(function(c) { c.classList.remove('active'); });
+            card.classList.add('active');
+            currentStatType = card.getAttribute('data-stat');
+            refreshTrend();
+        });
+    });
+    document.getElementById('compareCheckbox').addEventListener('change', function(e) {
+        var picker = document.getElementById('compareDatePicker');
+        if (e.target.checked) {
+            picker.classList.add('show');
+            var baseDates = filteredData.map(function(d) { return rowDatePart(d); }).filter(Boolean);
+            var uniqueBaseDates = Array.from(new Set(baseDates)).sort();
+            if (uniqueBaseDates.length === 1) {
+                var compareDate = new Date(uniqueBaseDates[0]);
+                compareDate.setDate(compareDate.getDate() - 1);
+                document.getElementById('compareDate').value = formatLocalDate(compareDate);
+            } else if (uniqueBaseDates.length) {
+                var compareStart = new Date(uniqueBaseDates[0]);
+                compareStart.setDate(compareStart.getDate() - uniqueBaseDates.length);
+                document.getElementById('compareDate').value = formatLocalDate(compareStart);
+            }
+        } else {
+            picker.classList.remove('show');
+        }
+        refreshTrend();
+    });
+    document.getElementById('compareDate').addEventListener('change', refreshTrend);
+
+    var channelSel = document.getElementById('channelSelect');
+    channelSel.innerHTML = '<option value="all">全部</option>';
+    Array.from(new Set(fullDataset.map(function(d) { return d.所属渠道; }))).forEach(function(c) {
+        var opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        channelSel.appendChild(opt);
+    });
+    updateSubChannels();
+    channelSel.addEventListener('change', updateSubChannels);
+    initAppFilters();
+
+    updateTimeDimLabels();
+    var today = new Date();
+    document.getElementById('startDate').value = formatLocalDate(today);
+    document.getElementById('endDate').value = formatLocalDate(today);
+
+
+    window.applyDetailDrillParams = function(opts) {
+        opts = opts || {};
+        if (opts.timeDim === 'pay' || opts.timeDim === 'add') {
+            document.getElementById('timeDimSelect').value = opts.timeDim;
+        }
+        if (opts.start) document.getElementById('startDate').value = opts.start;
+        if (opts.end) document.getElementById('endDate').value = opts.end;
+        if (opts.channel) {
+            var ch = document.getElementById('channelSelect');
+            if ([].some.call(ch.options, function(o){ return o.value === opts.channel; })) ch.value = opts.channel;
+        }
+        updateSubChannels();
+        if (opts.subChannel) {
+            var sub = document.getElementById('subChannelSelect');
+            if ([].some.call(sub.options, function(o){ return o.value === opts.subChannel; })) sub.value = opts.subChannel;
+        }
+        if (opts.app) {
+            document.getElementById('appSelect').value = opts.app;
+            updateAppVersions();
+        }
+        if (opts.appVersion) {
+            var ver = document.getElementById('appVersionSelect');
+            if ([].some.call(ver.options, function(o){ return o.value === opts.appVersion; })) ver.value = opts.appVersion;
+        }
+        if (opts.doctorId) document.getElementById('doctorSearch').value = opts.doctorId;
+        updateTimeDimLabels();
+        Array.from(document.querySelectorAll('.quick-btn')).forEach(function(btn){ btn.classList.remove('active'); });
+        applyFilters();
+    };
+
+    (function applyUrlParams() {
+        var params = new URLSearchParams(window.location.search);
+        if (!params.toString()) return;
+        if (params.get('timeDim') === 'pay' || params.get('timeDim') === 'add') {
+            document.getElementById('timeDimSelect').value = params.get('timeDim');
+        }
+        if (params.get('start')) document.getElementById('startDate').value = params.get('start');
+        if (params.get('end')) document.getElementById('endDate').value = params.get('end');
+        if (params.get('channel')) document.getElementById('channelSelect').value = params.get('channel');
+        updateSubChannels();
+        if (params.get('subChannel')) document.getElementById('subChannelSelect').value = params.get('subChannel');
+        if (params.get('app')) {
+            document.getElementById('appSelect').value = params.get('app');
+            updateAppVersions();
+        }
+        if (params.get('appVersion')) document.getElementById('appVersionSelect').value = params.get('appVersion');
+        if (params.get('doctorId') || params.get('doctor')) {
+            document.getElementById('doctorSearch').value = params.get('doctorId') || params.get('doctor');
+        }
+        updateTimeDimLabels();
+        if (params.get('autoQuery') === '1') applyFilters();
+    })();
+
+    renderStatsAndTable();
+})();
+
+</script>
+</body>
+</html>

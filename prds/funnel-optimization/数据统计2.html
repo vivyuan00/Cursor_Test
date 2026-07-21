@@ -885,8 +885,8 @@
 <script>
 // ===== 全链路漏斗 =====
     // ===== Funnel Mock Data =====
-    const AI_FUNNEL_STEPS=[{label:'A01 首页PV',count:12800},{label:'A02 首页UV',count:9600},{label:'A03 报告数',count:6720},{label:'A04 报告人次',count:5890},{label:'A05 加粉数',count:4500}];
-    const ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数',count:4500},{label:'F02 开口',count:3720},{label:'F03 舌象上传',count:2790},{label:'F04 开方',count:1860},{label:'F05 支付',count:893}];
+    const AI_FUNNEL_STEPS=[{label:'A01 首页PV',count:12800},{label:'A02 首页UV',count:9600},{label:'A03 报告数',count:6720},{label:'A04 报告人次',count:5890},{label:'A05 加粉数（工具转化）',count:4500}];
+    const ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数（全量）',count:5200},{label:'F02 开口',count:3720},{label:'F03 舌象上传',count:2790},{label:'F04 开方',count:1860},{label:'F05 支付',count:893}];
     const DAILY_ORDERS={
       byDrug:[{type:'汤剂',orderCnt:52,gmv:38960},{type:'丸剂',orderCnt:31,gmv:46810}],
       byVisit:[{type:'初诊',orderCnt:45,gmv:33480},{type:'复诊',orderCnt:38,gmv:52290}],
@@ -945,15 +945,17 @@
       '报告数':'用户生成（成功状态）的报告数，比如舌诊报告、快测报告',
       '报告人次':'生成报告的去重用户数',
       '首页-报告转化率PV':'报告数 / 首页PV',
-      '加粉数':'通过 AI 工具新增企微好友人数',
-      '报告-加微转化率PV':'加粉数 / 报告数',
-      '首页-加微转化率PV':'加粉数 / 首页PV',
+      '加粉数':'通过 AI 工具新增企微好友人数；默认按加粉事件计，勾选「过滤重复添加用户」后按用户去重（删除再加粉计 1）',
+      '加粉数（工具转化）':'通过 AI 工具新增企微好友人数；默认按加粉事件计，勾选「过滤重复添加用户」后按用户去重（删除再加粉计 1）',
+      '加粉数（全量）':'全部渠道新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；默认按加粉事件计，勾选「过滤重复添加用户」后按用户去重（删除再加粉计 1）',
+      '报告-加微转化率PV':'加粉数（工具转化） / 报告数',
+      '首页-加微转化率PV':'加粉数（工具转化） / 首页PV',
       // 4.1.2.1 每日转化 · 医助转化
       '开口':'用户有发送消息的去重人数，不包含首次添加的系统招呼',
       '舌象上传':'用户有上传图片即算',
       '开方':'完成初诊病例总结和开方的数量',
       '支付':'初诊支付成功的订单数量',
-      '支付转化率':'支付数 / 加粉数',
+      '支付转化率':'支付数 / 加粉数（全量或工具转化，随筛选口径）',
       // 4.1.2.2 每日订单金额
       '初诊汤剂订单数':'当日初诊且药物类型为汤剂的支付成功订单数',
       '初诊汤剂金额':'当日初诊汤剂订单实付金额合计',
@@ -975,13 +977,15 @@
       '总订单金额':'当日全部实付金额合计',
       // 4.1.3.1 医助服务人效
       '曝光数':'AI智能体报告中分配企微曝光的数量',
-      '加粉数@医助':'该医助在筛选时段内加粉好友人数',
+      '加粉数@医助':'该医助在筛选时段内加粉好友人数；勾选「过滤重复添加用户」后按用户去重',
+      '加粉数（全量）@医助':'该医助在筛选时段内全部渠道加粉好友人数（含非工具来源）；勾选「过滤重复添加用户」后按用户去重（删除再加粉计 1）',
+      '加粉数（工具转化）@医助':'该医助在筛选时段内通过 AI 工具加粉好友人数；勾选「过滤重复添加用户」后按用户去重（删除再加粉计 1）',
       '开口数':'该医助服务的用户有发送消息的人数',
       '舌象上传数':'该医助服务的用户提交图片的人数',
-      '开方数':'该医助服务的用户完成病例总结和开方的人数',
-      '加粉-开方转化率':'开方数 / 加粉数',
-      '支付数@医助':'该医助服务的用户支付成功订单数',
-      '加粉-支付转化率':'支付数 / 加粉数',
+      '开方数':'该医助服务的用户完成初诊病例总结和开方的人数',
+      '加粉-开方转化率':'开方数 / 加粉数（全量或工具转化，随筛选口径）',
+      '支付数@医助':'该医助服务的用户初诊支付成功订单数',
+      '加粉-支付转化率':'支付数 / 加粉数（全量或工具转化，随筛选口径）',
       // 4.1.3.2 医助成交
       '初诊订单数@医助':'该医助服务的初诊用户支付成功订单数',
       '初诊金额@医助':'该医助服务的初诊订单实付金额合计',
@@ -1066,9 +1070,11 @@
       return '<th class="'+(className||'')+' sort-th" data-asst-sort="'+scope+'" data-sort-key="'+sortDataKey+'" title="点击切换排序">'+_thLabel(label,metricKey)+'<span class="text-brand-600">'+icon+'</span></th>';
     }
     function _asstEffVal(a,key){
+      var fans=dedupeFansCnt(a.f01);
       if(key==='exposure') return a.exposure;
-      if(key==='conv') return a.f01?a.f05/a.f01:0;
-      if(key==='convRx') return a.f01?a.f04/a.f01:0;
+      if(key==='f01') return fans;
+      if(key==='conv') return fans?a.f05/fans:0;
+      if(key==='convRx') return fans?a.f04/fans:0;
       return a[key]!=null?a[key]:0;
     }
     function _asstTradeVal(a,key){
@@ -1089,12 +1095,36 @@
       chDetailRow:null,
       fTimeQuick:'today',
       fDim:'day',
+      fChannel:'全部',
+      fSubChannel:'全部',
+      fProduct:'全部',
+      fVersion:'全部',
+      fDedupeAdd:false,
       asstEffSortKey:'f01',
       asstEffSortDir:'desc',
       asstTradeSortKey:'totalGmv',
       asstTradeSortDir:'desc',
       orderTrendMode:'gmv'
     };
+    function isDimScoped(){
+      return [funnelState.fChannel,funnelState.fSubChannel,funnelState.fProduct,funnelState.fVersion].some(function(v){return v&&v!=='全部';});
+    }
+    function addFansColLabel(){
+      return isDimScoped()?'加粉数（工具转化）':'加粉数（全量）';
+    }
+    function addFansAsstTipKey(){
+      return addFansColLabel()+'@医助';
+    }
+    /** 勾选「过滤重复添加用户」后，加粉数按用户去重（同一用户删粉再加粉计 1）；原型用约 8% 重复率模拟 */
+    function dedupeFansCnt(n){
+      if(!funnelState.fDedupeAdd||n==null) return n;
+      return Math.max(0,Math.round(Number(n)*0.92));
+    }
+    function _dedupeChkHtml(){
+      return '<label class="inline-flex items-center gap-1 text-[11px] text-slate-400 cursor-pointer select-none shrink-0" title="勾选后：加粉数（工具转化）/加粉数（全量）均按用户去重，同一用户删除后再添加仅计 1">'+
+        '<input type="checkbox" data-ffilter="dedupeAdd" class="w-3 h-3 rounded border-slate-300 text-slate-400 accent-slate-400"'+(funnelState.fDedupeAdd?' checked':'')+'/>'+
+        '<span>过滤重复添加用户</span></label>';
+    }
 
     function _orderDecoRatio(){
       var O=DAILY_ORDERS;
@@ -1138,7 +1168,7 @@
     function _quickTime(){var items=[{k:'today',l:'今日'},{k:'yesterday',l:'昨日'},{k:'7d',l:'近7天'},{k:'30d',l:'近30天'}];return items.map(function(i){return _chip(i.l,funnelState.fTimeQuick===i.k,'data-ftime="'+i.k+'"');}).join('');}
     function _dimChips(){var items=[{k:'hour',l:'按时'},{k:'day',l:'按日'}];return items.map(function(i){return _chip(i.l,funnelState.fDim===i.k,'data-fdim="'+i.k+'"');}).join('');}
     function _selectOpts(opts,sel){return opts.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+h(o)+'</option>';}).join('');}
-    function _queryReset(){return '<button class="btn-primary text-xs px-4 py-1.5">查询</button><button class="btn-outline text-xs px-4 py-1.5">重置</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-export>📎 导出Excel</button>';}
+    function _queryReset(){return '<button class="btn-primary text-xs px-4 py-1.5" data-funnel-query>查询</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-reset>重置</button><button class="btn-outline text-xs px-4 py-1.5" data-funnel-export>📎 导出Excel</button>';}
     function getChDetailMeta(){
       var parts=(funnelState.chDetailRow||'').split('|');
       if(parts.length>=4) return {ch:parts[0],sub:parts[1],product:parts[2],version:parts[3]};
@@ -1163,17 +1193,19 @@
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">维度：</span>'+_dimChips()+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select data-ffilter="channel" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp','线下转介绍等'],funnelState.fChannel)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select data-ffilter="subChannel" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],funnelState.fSubChannel)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select data-ffilter="product" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],funnelState.fProduct)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select data-ffilter="version" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],funnelState.fVersion)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">团队：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>团队A</option><option>团队B</option></select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">医助：</span><input type="text" placeholder="系统用户名/企微id" class="border rounded px-2 py-1 text-xs w-32" title="筛选医助后首页PV/UV灰置"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        _dedupeChkHtml()+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         _queryReset()+
       '</div>';
@@ -1184,17 +1216,19 @@
         '<span class="text-slate-500 text-xs font-medium shrink-0">时间：</span>'+_quickTime()+
         '<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36 ml-1"/>—<input type="datetime-local" class="border rounded px-2 py-1 text-xs w-36"/>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">渠道：</span><select data-ffilter="channel" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h5','douyin_info','weixin_mp','线下转介绍等'],funnelState.fChannel)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">子渠道：</span><select data-ffilter="subChannel" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','baidu_doctor_h501','baidu_doctor_h502'],funnelState.fSubChannel)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select data-ffilter="product" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','舌诊','体质测试','问诊H5'],funnelState.fProduct)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
-        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],'全部')+'</select>'+
+        '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select data-ffilter="version" class="border rounded px-2 py-1 text-xs">'+_selectOpts(['全部','v3.2','v2.1','v1.0'],funnelState.fVersion)+'</select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">团队：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>团队A</option><option>团队B</option></select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">医助：</span><input type="text" placeholder="系统用户名/企微id" class="border rounded px-2 py-1 text-xs w-32"/>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        _dedupeChkHtml()+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         _queryReset()+
       '</div>';
@@ -1212,6 +1246,8 @@
         '<span class="text-slate-500 text-xs font-medium shrink-0">产品：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>舌诊</option><option>体质测试</option><option>问诊H5</option></select>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         '<span class="text-slate-500 text-xs font-medium shrink-0">产品版本：</span><select class="border rounded px-2 py-1 text-xs"><option>全部</option><option>v3.2</option><option>v2.1</option><option>v1.0</option></select>'+
+        '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
+        _dedupeChkHtml()+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>'+
         _queryReset()+
       '</div>';
@@ -1285,41 +1321,57 @@
     }
 
     function renderDailyConversion(){
-      // AI工具转化漏斗
-      var aiMaxCount=AI_FUNNEL_STEPS[0].count;
-      var aiBars=AI_FUNNEL_STEPS.map(function(s,i){
+      var fansLabel=addFansColLabel();
+      var scoped=isDimScoped();
+      // AI工具转化漏斗（加粉数支持过滤重复添加）
+      var aiToolFans=dedupeFansCnt(AI_FUNNEL_STEPS[4].count);
+      var aiSteps=AI_FUNNEL_STEPS.map(function(s,idx){
+        if(idx===4) return {label:'A05 加粉数（工具转化）',count:aiToolFans};
+        return s;
+      });
+      var aiMaxCount=aiSteps[0].count;
+      var aiBars=aiSteps.map(function(s,i){
         var w=Math.round(s.count/aiMaxCount*100);
-        var convRate=i>0?((s.count/AI_FUNNEL_STEPS[i-1].count)*100).toFixed(1)+'%':'—';
-        return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-28 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-600" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
+        var convRate=i>0?((s.count/aiSteps[i-1].count)*100).toFixed(1)+'%':'—';
+        return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-36 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-600" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
       }).join('');
-      var aiReportToWxRate=((AI_FUNNEL_STEPS[4].count/AI_FUNNEL_STEPS[2].count)*100).toFixed(1)+'%';
-      var aiPvToReportRate=((AI_FUNNEL_STEPS[2].count/AI_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
-      var aiPvToWxRate=((AI_FUNNEL_STEPS[4].count/AI_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
+      var aiReportToWxRate=((aiSteps[4].count/aiSteps[2].count)*100).toFixed(1)+'%';
+      var aiPvToReportRate=((aiSteps[2].count/aiSteps[0].count)*100).toFixed(1)+'%';
+      var aiPvToWxRate=((aiSteps[4].count/aiSteps[0].count)*100).toFixed(1)+'%';
       
-      // 医助转化漏斗
-      var asstMaxCount=ASSISTANT_FUNNEL_STEPS[0].count;
-      var asstBars=ASSISTANT_FUNNEL_STEPS.map(function(s,i){
+      // 医助转化漏斗：加粉数口径随筛选切换，并支持去重
+      var asstFullBase=dedupeFansCnt(ASSISTANT_FUNNEL_STEPS[0].count);
+      var asstToolBase=aiToolFans;
+      var asstFansBase=scoped?asstToolBase:asstFullBase;
+      var asstSteps=ASSISTANT_FUNNEL_STEPS.map(function(s,idx){
+        if(idx===0) return {label:'F01 '+fansLabel,count:asstFansBase};
+        return s;
+      });
+      var asstMaxCount=asstSteps[0].count;
+      var asstBars=asstSteps.map(function(s,i){
         var w=Math.round(s.count/asstMaxCount*100);
-        var convRate=i>0?((s.count/ASSISTANT_FUNNEL_STEPS[i-1].count)*100).toFixed(1)+'%':'—';
-        return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-28 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-500" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
+        var convRate=i>0?((s.count/asstSteps[i-1].count)*100).toFixed(1)+'%':'—';
+        return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-36 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-500" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
       }).join('');
-      var asstPayRate=((ASSISTANT_FUNNEL_STEPS[4].count/ASSISTANT_FUNNEL_STEPS[0].count)*100).toFixed(1)+'%';
+      var asstPayRate=((asstSteps[4].count/asstSteps[0].count)*100).toFixed(1)+'%';
+      var dedupeHint=funnelState.fDedupeAdd?' · 已过滤重复添加':'';
       
-      // 数据表格 — 医助转化去掉与 AI 重复的「加粉数」列
+      // 数据表格 — 医助转化在开口左侧增加加粉数（全量/工具转化）
       var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
       var aiHeader='<th colspan="8" class="px-3 py-2 text-center bg-brand-50 text-brand-700 font-semibold">AI工具转化</th>';
-      var asstHeader='<th colspan="5" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
+      var asstHeader='<th colspan="6" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
       var aiSubHeaders=[
         _th('首页PV','首页PV','px-2 py-1 text-right text-xs'),
         _th('首页UV','首页UV','px-2 py-1 text-right text-xs'),
         _th('报告数','报告数','px-2 py-1 text-right text-xs'),
         _th('报告人次','报告人次','px-2 py-1 text-right text-xs'),
         _th('首页-报告转化率PV','首页-报告转化率PV','px-2 py-1 text-right text-xs text-brand-700'),
-        _th('加粉数','加粉数','px-2 py-1 text-right text-xs'),
+        _th('加粉数（工具转化）','加粉数（工具转化）','px-2 py-1 text-right text-xs'),
         _th('报告-加微转化率PV','报告-加微转化率PV','px-2 py-1 text-right text-xs text-brand-700'),
         _th('首页-加微转化率PV','首页-加微转化率PV','px-2 py-1 text-right text-xs text-brand-700')
       ].join('');
       var asstSubHeaders=[
+        _th(fansLabel,fansLabel,'px-2 py-1 text-right text-xs'),
         _th('开口','开口','px-2 py-1 text-right text-xs'),
         _th('舌象上传','舌象上传','px-2 py-1 text-right text-xs'),
         _th('开方','开方','px-2 py-1 text-right text-xs'),
@@ -1331,14 +1383,17 @@
         var asstScale=0.85+idx*0.025;
         var aiCounts=AI_FUNNEL_STEPS.map(function(s){return Math.round(s.count*aiScale);});
         var asstCounts=ASSISTANT_FUNNEL_STEPS.map(function(s){return Math.round(s.count*asstScale);});
-        var commonWx=aiCounts[4];
-        asstCounts[0]=commonWx;
+        var toolWx=dedupeFansCnt(aiCounts[4]);
+        var fullWx=dedupeFansCnt(Math.round(ASSISTANT_FUNNEL_STEPS[0].count*asstScale));
+        var asstFans=scoped?toolWx:fullWx;
+        aiCounts[4]=toolWx;
+        asstCounts[0]=asstFans;
         var aiReportToWxRate=aiCounts[2]>0?((aiCounts[4]/aiCounts[2])*100).toFixed(1)+'%':'—';
         var aiPvToReportRate=aiCounts[0]>0?((aiCounts[2]/aiCounts[0])*100).toFixed(1)+'%':'—';
         var aiPvToWxRate=aiCounts[0]>0?((aiCounts[4]/aiCounts[0])*100).toFixed(1)+'%':'—';
         var asstPayRate=asstCounts[0]>0?((asstCounts[4]/asstCounts[0])*100).toFixed(1)+'%':'—';
         var aiRow=aiCounts.slice(0,4).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-brand-700">'+aiPvToReportRate+'</td><td class="px-2 py-1 text-right text-xs">'+fmt(aiCounts[4])+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+aiReportToWxRate+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+aiPvToWxRate+'</td>';
-        var asstRow=asstCounts.slice(1).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-blue-700">'+asstPayRate+'</td>';
+        var asstRow='<td class="px-2 py-1 text-right text-xs">'+fmt(asstFans)+'</td>'+asstCounts.slice(1).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-blue-700">'+asstPayRate+'</td>';
         var ymd=_mmddToYmd(d);
         var ops=_opsCell(_opsLink(_detailLink('add',ymd,ymd),'加粉明细')+' '+_opsLink(_detailLink('pay',ymd,ymd),'支付明细'));
         return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+aiRow+asstRow+ops+'</tr>';
@@ -1346,8 +1401,8 @@
       
       return '<div class="daily-panel space-y-4 req-marker-wrapper"><span class="req-marker" data-id="4">4</span>'+
         '<div class="aux-charts-row cols-2">'+
-          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">统计从用户访问AI工具首页到加粉的转化链路</p><div class="space-y-2 funnel-bar-track">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">首页-报告转化率PV: '+aiPvToReportRate+'</span> | <span class="font-medium text-brand-700">报告-加微转化率PV: '+aiReportToWxRate+'</span> | <span class="font-medium text-brand-700">首页-加微转化率PV: '+aiPvToWxRate+'</span></div></div>'+
-          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">仅统计初诊流程转化，从加粉到支付的完整链路</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div>'+
+          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">统计从用户访问AI工具首页到加粉的转化链路'+dedupeHint+'</p><div class="space-y-2 funnel-bar-track">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">首页-报告转化率PV: '+aiPvToReportRate+'</span> | <span class="font-medium text-brand-700">报告-加微转化率PV: '+aiReportToWxRate+'</span> | <span class="font-medium text-brand-700">首页-加微转化率PV: '+aiPvToWxRate+'</span></div></div>'+
+          '<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">仅统计初诊流程转化，从加粉到支付的完整链路（当前加粉口径：'+h(fansLabel)+dedupeHint+'）</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div>'+
         '</div>'+
         '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b"><th class="px-3 py-2 sticky left-0 bg-white" rowspan="2">'+_thLabel('日期','日期')+'</th>'+aiHeader+asstHeader+'<th class="px-3 py-2 text-center" rowspan="2">操作</th></tr><tr class="text-left text-xs text-slate-500 border-b bg-slate-50">'+aiSubHeaders+asstSubHeaders+'</tr></thead><tbody>'+dayRows+'</tbody></table></div>'+
       '</div>';
@@ -1434,26 +1489,27 @@
     function renderAsstEfficiency(){
       var sk=funnelState.asstEffSortKey,sd=funnelState.asstEffSortDir;
       var sortedPayRank=_sortList(ASSISTANTS,'conv','desc',_asstEffVal);
-      var payTopRows=sortedPayRank.slice(0,10).map(function(a){var conv=((a.f05/a.f01)*100).toFixed(1);var w=Math.round((a.f05/a.f01)*100/15*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
+      var payTopRows=sortedPayRank.slice(0,10).map(function(a){var fans=dedupeFansCnt(a.f01);var conv=fans?((a.f05/fans)*100).toFixed(1):'0.0';var w=Math.round((fans?a.f05/fans:0)*100/15*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
       var sortedRxRank=_sortList(ASSISTANTS,'convRx','desc',_asstEffVal);
-      var rxTopRows=sortedRxRank.slice(0,10).map(function(a){var conv=((a.f04/a.f01)*100).toFixed(1);var w=Math.round((a.f04/a.f01)*100/40*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-emerald-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
+      var rxTopRows=sortedRxRank.slice(0,10).map(function(a){var fans=dedupeFansCnt(a.f01);var conv=fans?((a.f04/fans)*100).toFixed(1):'0.0';var w=Math.round((fans?a.f04/fans:0)*100/40*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-emerald-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
       var tableList=_sortList(ASSISTANTS,sk,sd,_asstEffVal);
       var dr=_funnelDateRange();
       var aRows=tableList.map(function(a){
-        var convRx=((a.f04/a.f01)*100).toFixed(1);
-        var conv=((a.f05/a.f01)*100).toFixed(1);
+        var fans=dedupeFansCnt(a.f01);
+        var convRx=fans?((a.f04/fans)*100).toFixed(1):'0.0';
+        var conv=fans?((a.f05/fans)*100).toFixed(1):'0.0';
         var ops=_opsCell(
           _opsLink(_detailLink('add',dr.start,dr.end,{doctorId:a.wecomId}),'加粉明细')+' '+
           _opsLink(_detailLink('pay',dr.start,dr.end,{doctorId:a.wecomId}),'支付明细')
         );
-        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f01)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right font-semibold text-emerald-700">'+convRx+'%</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td>'+ops+'</tr>';
+        return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-2 font-medium">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(fans)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f04)+'</td><td class="px-3 py-2 text-right font-semibold text-emerald-700">'+convRx+'%</td><td class="px-3 py-2 text-right">'+fmt(a.f05)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td>'+ops+'</tr>';
       }).join('');
       return '<div class="space-y-4">'+
         '<div class="aux-charts-row cols-2 req-marker-wrapper"><span class="req-marker" data-id="5">5</span>'+
           '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-开方转化率 Top 排行</p>'+_dualRankBars(rxTopRows)+'</div>'+
           '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-支付转化率 Top 排行</p>'+_dualRankBars(payTopRows)+'</div>'+
         '</div>'+
-        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_sortableTh('曝光数','曝光数','exposure',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉数','加粉数@医助','f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-开方转化率','加粉-开方转化率','convRx',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数@医助','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'<th class="px-3 py-2 text-center">操作</th></tr></thead><tbody>'+aRows+'</tbody></table></div>'+
+        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('医助','医助','px-3 py-2')+_sortableTh('曝光数','曝光数','exposure',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh(addFansColLabel(),addFansAsstTipKey(),'f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-开方转化率','加粉-开方转化率','convRx',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数@医助','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'<th class="px-3 py-2 text-center">操作</th></tr></thead><tbody>'+aRows+'</tbody></table></div>'+
       '</div>';
     }
 
@@ -1491,10 +1547,10 @@
 
     function renderChOverview(){
       var grouped={};CHANNELS.forEach(function(c){if(!grouped[c.ch])grouped[c.ch]=[];grouped[c.ch].push(c);});
-      var allPv=CHANNELS.reduce(function(s,c){return s+c.pv;},0);var allUv=CHANNELS.reduce(function(s,c){return s+c.uv;},0);var allWx=CHANNELS.reduce(function(s,c){return s+c.addWx;},0);var allPay=CHANNELS.reduce(function(s,c){return s+c.payCnt;},0);
+      var allPv=CHANNELS.reduce(function(s,c){return s+c.pv;},0);var allUv=CHANNELS.reduce(function(s,c){return s+c.uv;},0);var allWx=CHANNELS.reduce(function(s,c){return s+dedupeFansCnt(c.addWx);},0);var allPay=CHANNELS.reduce(function(s,c){return s+c.payCnt;},0);
       
       // 辅助图表1：各渠道加粉分布
-      var chBars=Object.keys(grouped).map(function(ch){var wx=grouped[ch].reduce(function(s,i){return s+i.addWx;},0);var w=Math.round(wx/allWx*100);return '<div class="flex items-center gap-2"><span class="w-32 text-xs font-medium truncate">'+h(ch)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-brand-500" style="width:'+w+'%"></div></div><span class="w-12 text-xs text-right font-semibold">'+fmt(wx)+'</span></div>';}).join('');
+      var chBars=Object.keys(grouped).map(function(ch){var wx=grouped[ch].reduce(function(s,i){return s+dedupeFansCnt(i.addWx);},0);var w=allWx?Math.round(wx/allWx*100):0;return '<div class="flex items-center gap-2"><span class="w-32 text-xs font-medium truncate">'+h(ch)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-brand-500" style="width:'+w+'%"></div></div><span class="w-12 text-xs text-right font-semibold">'+fmt(wx)+'</span></div>';}).join('');
       
       // 辅助图表2：各渠道初诊支付分布
       var payBars=Object.keys(grouped).map(function(ch){var pay=grouped[ch].reduce(function(s,i){return s+i.payCnt;},0);var w=Math.round(pay/allPay*100);return '<div class="flex items-center gap-2"><span class="w-32 text-xs font-medium truncate">'+h(ch)+'</span><div class="flex-1 bg-slate-100 rounded h-5"><div class="h-5 rounded bg-blue-500" style="width:'+w+'%"></div></div><span class="w-12 text-xs text-right font-semibold">'+fmt(pay)+'</span></div>';}).join('');
@@ -1507,9 +1563,9 @@
         var totalUv=items.reduce(function(s,i){return s+i.uv;},0);
         var totalReportCnt=items.reduce(function(s,i){return s+i.reportCnt;},0);
         var totalReportUser=items.reduce(function(s,i){return s+i.reportUser;},0);
-        var totalWx=items.reduce(function(s,i){return s+i.addWx;},0);
+        var totalWx=items.reduce(function(s,i){return s+dedupeFansCnt(i.addWx);},0);
         var totalPay=items.reduce(function(s,i){return s+i.payCnt;},0);
-        var reportToWxRate=totalWx>0?((totalWx/totalReportCnt)*100).toFixed(1)+'%':'—';
+        var reportToWxRate=totalReportCnt>0?((totalWx/totalReportCnt)*100).toFixed(1)+'%':'—';
         var pvToWxRate=totalPv>0?((totalWx/totalPv)*100).toFixed(1)+'%':'—';
         var wxToPayRate=totalWx>0?((totalPay/totalWx)*100).toFixed(1)+'%':'—';
         var pvToPayRate=totalPv>0?((totalPay/totalPv)*100).toFixed(1)+'%':'—';
@@ -1517,9 +1573,10 @@
         chTable+='<tr class="bg-slate-50 font-semibold border-t"><td class="px-2 py-2">'+h(ch)+'</td><td class="px-2 py-2">—</td><td class="px-2 py-2">—</td><td class="px-2 py-2 text-right">'+fmt(totalPv)+'</td><td class="px-2 py-2 text-right">'+fmt(totalUv)+'</td><td class="px-2 py-2 text-right">'+fmt(totalReportCnt)+'</td><td class="px-2 py-2 text-right">'+fmt(totalReportUser)+'</td><td class="px-2 py-2 text-right">'+fmt(totalWx)+'</td><td class="px-2 py-2 text-right">'+reportToWxRate+'</td><td class="px-2 py-2 text-right">'+pvToWxRate+'</td><td class="px-2 py-2 text-right">'+fmt(totalPay)+'</td><td class="px-2 py-2 text-right">'+wxToPayRate+'</td><td class="px-2 py-2 text-right">'+pvToPayRate+'</td><td class="px-2 py-2"></td></tr>';
         
         items.forEach(function(i,idx){
-          var iReportToWxRate=i.reportCnt>0?((i.addWx/i.reportCnt)*100).toFixed(1)+'%':'—';
-          var iPvToWxRate=i.pv>0?((i.addWx/i.pv)*100).toFixed(1)+'%':'—';
-          var iWxToPayRate=i.addWx>0?((i.payCnt/i.addWx)*100).toFixed(1)+'%':'—';
+          var iWx=dedupeFansCnt(i.addWx);
+          var iReportToWxRate=i.reportCnt>0?((iWx/i.reportCnt)*100).toFixed(1)+'%':'—';
+          var iPvToWxRate=i.pv>0?((iWx/i.pv)*100).toFixed(1)+'%':'—';
+          var iWxToPayRate=iWx>0?((i.payCnt/iWx)*100).toFixed(1)+'%':'—';
           var iPvToPayRate=i.pv>0?((i.payCnt/i.pv)*100).toFixed(1)+'%':'—';
           var dims={channel:i.ch,subChannel:i.sub,app:i.product,appVersion:i.version};
           var ops=_opsCell(
@@ -1527,13 +1584,13 @@
             _opsLink(_detailLink('add',dr.start,dr.end,dims),'加粉明细')+' '+
             _opsLink(_detailLink('pay',dr.start,dr.end,dims),'支付明细')
           );
-          chTable+='<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-2 py-1.5 pl-8 text-slate-500 text-xs">└ '+h(i.sub)+'</td><td class="px-2 py-1.5 text-sm">'+h(i.product)+'</td><td class="px-2 py-1.5 text-xs text-slate-400">'+h(i.version)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.pv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.uv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportUser)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.addWx)+'</td><td class="px-2 py-1.5 text-right">'+iReportToWxRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToWxRate+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.payCnt)+'</td><td class="px-2 py-1.5 text-right">'+iWxToPayRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToPayRate+'</td>'+ops+'</tr>';
+          chTable+='<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-2 py-1.5 pl-8 text-slate-500 text-xs">└ '+h(i.sub)+'</td><td class="px-2 py-1.5 text-sm">'+h(i.product)+'</td><td class="px-2 py-1.5 text-xs text-slate-400">'+h(i.version)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.pv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.uv)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportCnt)+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.reportUser)+'</td><td class="px-2 py-1.5 text-right">'+fmt(iWx)+'</td><td class="px-2 py-1.5 text-right">'+iReportToWxRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToWxRate+'</td><td class="px-2 py-1.5 text-right">'+fmt(i.payCnt)+'</td><td class="px-2 py-1.5 text-right">'+iWxToPayRate+'</td><td class="px-2 py-1.5 text-right">'+iPvToPayRate+'</td>'+ops+'</tr>';
         });
       });
       
       return '<div class="space-y-4">'+
         '<div class="aux-charts-row cols-2">'+
-          '<div class="card req-marker-wrapper min-w-0"><span class="req-marker" data-id="7">7</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道加粉分布</p><div class="space-y-1.5 w-full">'+chBars+'</div></div>'+
+          '<div class="card req-marker-wrapper min-w-0"><span class="req-marker" data-id="7">7</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道加粉分布'+(funnelState.fDedupeAdd?'（已过滤重复添加）':'')+'</p><div class="space-y-1.5 w-full">'+chBars+'</div></div>'+
           '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 各渠道初诊支付分布</p><div class="space-y-1.5 w-full">'+payBars+'</div></div>'+
         '</div>'+
         '<div class="card overflow-x-auto"><h3 class="font-semibold mb-3 text-sm">📋 数据表</h3><table class="min-w-full text-sm"><thead>'+
@@ -1880,6 +1937,29 @@
       });
       document.querySelectorAll('[data-funnel-export]').forEach(function(el){
         el.addEventListener('click',handleFunnelExport);
+      });
+      document.querySelectorAll('[data-ffilter]').forEach(function(el){
+        el.addEventListener('change',function(){
+          var k=el.getAttribute('data-ffilter');
+          if(k==='channel') funnelState.fChannel=el.value;
+          else if(k==='subChannel') funnelState.fSubChannel=el.value;
+          else if(k==='product') funnelState.fProduct=el.value;
+          else if(k==='version') funnelState.fVersion=el.value;
+          else if(k==='dedupeAdd') funnelState.fDedupeAdd=!!el.checked;
+        });
+      });
+      document.querySelectorAll('[data-funnel-query]').forEach(function(el){
+        el.addEventListener('click',function(){renderFunnelPage();});
+      });
+      document.querySelectorAll('[data-funnel-reset]').forEach(function(el){
+        el.addEventListener('click',function(){
+          funnelState.fChannel='全部';
+          funnelState.fSubChannel='全部';
+          funnelState.fProduct='全部';
+          funnelState.fVersion='全部';
+          funnelState.fDedupeAdd=false;
+          renderFunnelPage();
+        });
       });
       document.querySelectorAll('.detail-drill-btn').forEach(function(el){
         el.addEventListener('click', function(){

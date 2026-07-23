@@ -1895,9 +1895,9 @@
     function renderFunnelPage(){
       destroyFunnelCharts();
       document.getElementById('funnel-content').innerHTML=renderFunnel();
-      bindFunnelEvents();
-      initOrderCharts();
-      try{initCacTrendChart();}catch(e){}
+      try{bindFunnelEvents();}catch(e){console.error('bindFunnelEvents',e);}
+      try{initOrderCharts();}catch(e){console.error('initOrderCharts',e);}
+      try{initCacTrendChart();}catch(e){console.error('initCacTrendChart',e);}
     }
 
     function initCacTrendChart(){
@@ -1955,7 +1955,7 @@
         el.addEventListener('click',handleFunnelExport);
       });
       document.querySelectorAll('[data-ffilter]').forEach(function(el){
-        el.addEventListener('change',function(){
+        var apply=function(){
           var k=el.getAttribute('data-ffilter');
           if(k==='channel') funnelState.fChannel=el.value;
           else if(k==='subChannel') funnelState.fSubChannel=el.value;
@@ -1964,7 +1964,8 @@
           else if(k==='team') funnelState.fTeam=el.value;
           else if(k==='assistant') funnelState.fAssistant=el.value;
           else if(k==='dedupeAdd') funnelState.fDedupeAdd=!!el.checked;
-        });
+        };
+        el.addEventListener('change',apply);
         if(el.getAttribute('data-ffilter')==='assistant') el.addEventListener('input',apply);
       });
       // 来源：外观与其它下拉一致，面板内多选

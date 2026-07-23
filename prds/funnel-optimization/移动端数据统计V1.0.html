@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+<title>素灵CRM数据看板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f4f6f8; --card:#fff; --line:#e6ebf0; --text:#152033; --muted:#708090;
+  --brand:#1f6feb; --brand-soft:#e8f1ff; --up:#0f9d6a; --down:#d94848;
+  --deco:#52c41a; --pill:#1890ff; --amber:#c47a1a;
+  --safe-t:env(safe-area-inset-top,0px);
+  --radius:14px; --shadow:0 6px 18px rgba(21,32,51,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:Manrope,"PingFang SC","Hiragino Sans GB",sans-serif;}
+body{max-width:480px;margin:0 auto;}
+button,input,select{font:inherit;color:inherit;}
+button{border:0;background:none;cursor:pointer;}
+.app{min-height:100vh;padding-bottom:28px;}
+.sticky{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-top:var(--safe-t);}
+.tabs{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 8px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tabs button{flex:0 0 auto;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;}
+.tabs button.on{background:var(--brand);color:#fff;}
+.page{display:none;padding:12px 12px 8px;animation:fade .2s ease;}
+.page.on{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.sec{margin-bottom:14px;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;}
+.sec-h h2{font-size:14px;font-weight:700;}
+.sec-h .link{font-size:12px;color:var(--brand);font-weight:600;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.kpi{display:block;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
+.kpi .lab{font-size:12px;color:var(--muted);font-weight:600;}
+.kpi .val{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:24px;font-weight:700;margin:8px 0 6px;letter-spacing:-.03em;}
+.kpi .go{font-size:11px;color:var(--brand);font-weight:700;margin-top:8px;}
+.delta{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;}
+.delta.up{color:var(--up);background:rgba(15,157,106,.1);}
+.delta.down{color:var(--down);background:rgba(217,72,72,.1);}
+.delta.flat{color:var(--muted);background:#f0f3f6;}
+.filters{display:grid;gap:8px;margin-bottom:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.filters .fg{display:flex;align-items:center;gap:8px;min-width:0;}
+.filters .fg>label{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--muted);width:28px;}
+.filters .fg.fg-grow>label{width:28px;}
+.filters .fg-row{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;min-width:0;padding-bottom:1px;scrollbar-width:none;}
+.filters .fg-row::-webkit-scrollbar{display:none;}
+.filters .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.filters .fg-grid .fg>label{width:28px;}
+.chip{padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:11px;color:var(--muted);font-weight:600;flex:0 0 auto;white-space:nowrap;}
+.chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);}
+.select,.search,.daterange{appearance:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 8px;font-size:11px;width:100%;flex:1;min-width:0;}
+.select{padding-right:22px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23708090' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;}
+.daterange{display:flex;align-items:center;gap:4px;cursor:pointer;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;}
+.daterange .ico{font-size:12px;flex-shrink:0;}
+.daterange .txt{overflow:hidden;text-overflow:ellipsis;}
+.chip-date{display:inline-flex;align-items:center;gap:3px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:11px;color:var(--muted);font-weight:600;flex:0 0 auto;white-space:nowrap;max-width:148px;}
+.chip-date.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);}
+.chip-date .txt{overflow:hidden;text-overflow:ellipsis;}
+.date-modal{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:80;display:none;align-items:flex-end;justify-content:center;}
+.date-modal.on{display:flex;}
+.date-sheet{width:100%;max-width:480px;background:#fff;border-radius:16px 16px 0 0;padding:16px;box-shadow:0 -8px 30px rgba(0,0,0,.12);}
+.date-sheet h3{font-size:15px;margin-bottom:12px;}
+.date-sheet .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.date-sheet label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;}
+.date-sheet input[type=date]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:13px;}
+.date-actions{display:flex;gap:8px;}
+.date-actions button{flex:1;padding:11px;border-radius:10px;font-weight:700;font-size:13px;}
+.date-actions .cancel{background:#f3f5f7;color:var(--muted);}
+.date-actions .ok{background:var(--brand);color:#fff;}
+.row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:0;}
+.badge{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:800;background:var(--brand-soft);color:var(--brand);flex-shrink:0;}
+.badge.g{background:#fff4e5;color:var(--amber);}
+.main{flex:1;min-width:0;}
+.main .n{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nums{text-align:right;flex-shrink:0;}
+.nums .v{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;}
+.dual{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+.dual .cell{background:#f7f9fb;border-radius:10px;padding:8px;}
+.dual .cell .k{font-size:10px;color:var(--muted);}
+.dual .cell .x{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:700;margin-top:2px;}
+.bar{height:6px;border-radius:99px;background:#edf1f5;overflow:hidden;margin-top:6px;}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#6aa4ff);}
+.bar.warm>i{background:linear-gradient(90deg,#d97706,#f5b567);}
+.chart-title{font-size:12px;font-weight:700;margin-bottom:8px;}
+.mini-rank{max-height:210px;overflow:auto;}
+.polyline-wrap{height:168px;position:relative;padding:4px 0 0;}
+.polyline-wrap svg{width:100%;height:100%;display:block;overflow:visible;}
+.polyline-wrap .hit{cursor:pointer;}
+.polyline-wrap .tip{position:absolute;z-index:5;pointer-events:none;background:rgba(21,32,51,.92);color:#fff;font-size:11px;font-weight:700;padding:6px 8px;border-radius:8px;transform:translate(-50%,-120%);white-space:nowrap;opacity:0;transition:opacity .12s;left:50%;top:20%;}
+.polyline-wrap .tip.on{opacity:1;}
+.poly-x{display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:var(--muted);padding-left:36px;}
+.h-scroll{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:4px;margin:0 -12px;padding-left:12px;padding-right:12px;scrollbar-width:none;}
+.h-scroll::-webkit-scrollbar{display:none;}
+.h-scroll>.card{flex:0 0 calc(25% - 8px);min-width:200px;scroll-snap-align:start;}
+.vbar-wrap{height:170px;display:flex;align-items:flex-end;justify-content:space-around;gap:8px;padding:8px 4px 0;border-bottom:1px solid var(--line);}
+.vbar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:72px;}
+.vbar-pile{width:100%;max-width:42px;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden;min-height:4px;}
+.vbar-pile .seg{width:100%;position:relative;min-height:4px;}
+.vbar-pile .seg .lbl{position:absolute;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;white-space:nowrap;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.25);}
+.vbar-pile .seg.deco{background:var(--deco);}
+.vbar-pile .seg.pill{background:var(--pill);}
+.vbar-col .xlab{font-size:10px;color:var(--muted);font-weight:600;}
+.legend{display:flex;gap:12px;font-size:11px;color:var(--muted);margin-top:8px;justify-content:center;}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;}
+.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:#fff;}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:640px;}
+th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+th{background:#f7f9fc;color:var(--muted);font-weight:700;position:sticky;top:0;z-index:1;}
+td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:2;padding-left:10px;}
+th:first-child{background:#f7f9fc;z-index:3;}
+tr:last-child td{border-bottom:0;}
+.hint{font-size:11px;color:var(--muted);margin:6px 2px 0;line-height:1.45;}
+.order-soft{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.order-item{padding:12px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);margin-bottom:8px;}
+.order-item:last-child{margin-bottom:0;}
+.order-item .t{display:flex;justify-content:space-between;font-size:13px;font-weight:700;}
+/* login & profile */
+.auth-gate{min-height:100vh;display:none;padding:calc(28px + var(--safe-t)) 20px 32px;background:linear-gradient(165deg,#f7faff 0%,#eef3f8 45%,#f4f6f8 100%);}
+.auth-gate.on{display:flex;flex-direction:column;justify-content:center;}
+.auth-brand{text-align:center;margin-bottom:28px;}
+.auth-brand .mark{width:56px;height:56px;margin:0 auto 14px;border-radius:16px;background:linear-gradient(145deg,#1f6feb,#4b8fff);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:800;box-shadow:0 10px 24px rgba(31,111,235,.28);}
+.auth-brand h1{font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.auth-brand p{font-size:12px;color:var(--muted);margin-top:6px;}
+.auth-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:var(--shadow);}
+.auth-field{margin-bottom:12px;}
+.auth-field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.auth-field input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;font-size:14px;background:#fafbfc;}
+.auth-field input:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(31,111,235,.12);}
+.auth-row{display:flex;align-items:center;justify-content:space-between;margin:4px 0 16px;}
+.auth-check{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600;cursor:pointer;}
+.auth-check input{width:14px;height:14px;accent-color:var(--brand);}
+.auth-err{display:none;font-size:12px;color:var(--down);margin:-6px 0 10px;font-weight:600;}
+.auth-err.on{display:block;}
+.auth-submit{width:100%;padding:13px;border-radius:12px;background:var(--brand);color:#fff;font-size:15px;font-weight:800;}
+.auth-hint{margin-top:12px;font-size:11px;color:var(--muted);text-align:center;line-height:1.5;}
+.app.hidden{display:none;}
+.sticky-bar{display:flex;align-items:center;gap:6px;padding-right:10px;}
+.sticky-bar .tabs{flex:1;min-width:0;padding-right:0;}
+.user-entry{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#1f6feb,#6aa4ff);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;margin:8px 4px 8px 0;}
+.profile-head{display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(145deg,#1f6feb,#4b8fff);border-radius:16px;color:#fff;margin-bottom:14px;box-shadow:0 10px 24px rgba(31,111,235,.22);}
+.profile-head .avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:18px;font-weight:800;}
+.profile-head .name{font-size:18px;font-weight:800;}
+.profile-head .sub{font-size:12px;opacity:.85;margin-top:4px;}
+.profile-list{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.profile-item{display:flex;justify-content:space-between;align-items:center;padding:14px 14px;border-bottom:1px solid var(--line);font-size:13px;}
+.profile-item:last-child{border-bottom:0;}
+.profile-item .k{color:var(--muted);font-weight:600;}
+.profile-item .v{font-weight:700;text-align:right;}
+.logout-btn{width:100%;margin-top:16px;padding:13px;border-radius:12px;background:#fff;border:1px solid #f0c9c9;color:var(--down);font-size:14px;font-weight:800;}
+.profile-back{font-size:12px;color:var(--brand);font-weight:700;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="auth-gate on" id="loginView">
+  <div class="auth-brand">
+    <div class="mark">素</div>
+    <h1>素灵CRM数据看板</h1>
+    <p>经营数据一站式查看</p>
+  </div>
+  <form class="auth-card" id="loginForm" autocomplete="on">
+    <div class="auth-field">
+      <label for="loginAccount">账号</label>
+      <input id="loginAccount" name="username" type="text" placeholder="请输入账号" autocomplete="username"/>
+    </div>
+    <div class="auth-field">
+      <label for="loginPwd">密码</label>
+      <input id="loginPwd" name="password" type="password" placeholder="请输入密码" autocomplete="current-password"/>
+    </div>
+    <div class="auth-err" id="loginErr">账号或密码不能为空</div>
+    <div class="auth-row">
+      <label class="auth-check"><input type="checkbox" id="rememberMe"/>记住我</label>
+    </div>
+    <button class="auth-submit" type="submit">登录</button>
+    <div class="auth-hint">演示账号：admin / 123456</div>
+  </form>
+</div>
+
+<div class="app hidden" id="appView">
+  <div class="sticky">
+    <div class="sticky-bar">
+      <nav class="tabs" id="tabs">
+        <button class="on" data-go="home">首页</button>
+        <button data-go="fans">加粉</button>
+        <button data-go="deal">成交</button>
+        <button data-go="channel">渠道</button>
+        <button data-go="eff">医助人效</button>
+        <button data-go="trade">医助成交</button>
+      </nav>
+      <button type="button" class="user-entry" id="userEntry" title="个人中心">管</button>
+    </div>
+  </div>
+
+  <section class="page on" data-page="home">
+    <div class="sec">
+      <div class="sec-h"><h2>今日实时</h2></div>
+      <div class="grid2">
+        <button class="kpi" data-go="fans">
+          <div class="lab">今日加粉数（全量）</div>
+          <div class="val" id="hFans">—</div>
+          <span id="hFansD"></span>
+          <div class="go">进入加粉 ›</div>
+        </button>
+        <button class="kpi" data-go="deal">
+          <div class="lab">今日成交订单数</div>
+          <div class="val" id="hOrd">—</div>
+          <span id="hOrdD"></span>
+          <div class="go">进入成交 ›</div>
+        </button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>今日分渠道核心数据</h2><button class="link" data-go="channel">渠道 ›</button></div>
+      <div class="card" id="hCh"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>今日订单核心数据</h2><button class="link" data-go="deal">成交 ›</button></div>
+      <div class="card" id="hOrders"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>近7天医助成交 Top</h2><button class="link" data-go="trade">医助成交 ›</button></div>
+      <div class="grid2">
+        <div class="card"><div class="chart-title">总订单数 Top5</div><div class="mini-rank" id="hAsstOrd"></div></div>
+        <div class="card"><div class="chart-title">总订单金额 Top5</div><div class="mini-rank" id="hAsstGmv"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-page="fans">
+    <div class="filters" id="fFans"></div>
+    <div class="sec card">
+      <div class="chart-title">平均获客成本趋势</div>
+      <div class="polyline-wrap" id="cacTrend">
+        <div class="tip" id="cacTip"></div>
+      </div>
+      <div class="poly-x" id="cacX"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="fansTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="deal">
+    <div class="filters" id="fDeal"></div>
+    <div class="grid2 sec">
+      <div class="card">
+        <div class="chart-title">订单数</div>
+        <div class="vbar-wrap" id="ordStack"></div>
+        <div class="legend"><span><i style="background:var(--deco)"></i>汤剂</span><span><i style="background:var(--pill)"></i>丸剂</span></div>
+      </div>
+      <div class="card">
+        <div class="chart-title">订单金额</div>
+        <div class="vbar-wrap" id="gmvStack"></div>
+        <div class="legend"><span><i style="background:var(--deco)"></i>汤剂</span><span><i style="background:var(--pill)"></i>丸剂</span></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="dealTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="channel">
+    <div class="filters" id="fCh"></div>
+    <div class="sec h-scroll">
+      <div class="card"><div class="chart-title">渠道加粉 Top</div><div class="mini-rank" id="chFansTop"></div></div>
+      <div class="card"><div class="chart-title">初诊成交 Top</div><div class="mini-rank" id="chPayTop"></div></div>
+      <div class="card"><div class="chart-title">点击-加粉转化率</div><div class="mini-rank" id="chRateTop"></div></div>
+      <div class="card"><div class="chart-title">获客成本 Top</div><div class="mini-rank" id="chCacTop"></div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="chTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="eff">
+    <div class="filters" id="fEff"></div>
+    <div class="grid2 sec">
+      <div class="card"><div class="chart-title">加粉-开方转化率</div><div class="mini-rank" id="effRx"></div></div>
+      <div class="card"><div class="chart-title">加粉-支付转化率</div><div class="mini-rank" id="effPay"></div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="effTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="trade">
+    <div class="filters" id="fTrade"></div>
+    <div class="grid2 sec">
+      <div class="card"><div class="chart-title">总订单数 Top</div><div class="mini-rank" id="trOrd"></div></div>
+      <div class="card"><div class="chart-title">总订单金额 Top</div><div class="mini-rank" id="trGmv"></div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="trTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="profile">
+    <button type="button" class="profile-back" data-go="home">‹ 返回首页</button>
+    <div class="profile-head">
+      <div class="avatar" id="pfAvatar">管</div>
+      <div>
+        <div class="name" id="pfName">—</div>
+        <div class="sub">素灵CRM数据看板</div>
+      </div>
+    </div>
+    <div class="profile-list">
+      <div class="profile-item"><span class="k">用户名</span><span class="v" id="pfUser">—</span></div>
+      <div class="profile-item"><span class="k">手机号</span><span class="v" id="pfPhone">—</span></div>
+      <div class="profile-item"><span class="k">所属部门</span><span class="v" id="pfDept">—</span></div>
+      <div class="profile-item"><span class="k">所属角色</span><span class="v" id="pfRole">—</span></div>
+    </div>
+    <button type="button" class="logout-btn" id="logoutBtn">退出登录</button>
+  </section>
+</div>
+
+<div class="date-modal" id="dateModal">
+  <div class="date-sheet">
+    <h3>选择日期范围</h3>
+    <div class="row2">
+      <div><label>开始日期</label><input type="date" id="dateStart"/></div>
+      <div><label>结束日期</label><input type="date" id="dateEnd"/></div>
+    </div>
+    <div class="date-actions">
+      <button class="cancel" type="button" id="dateCancel">取消</button>
+      <button class="ok" type="button" id="dateOk">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const AUTH_KEY='suling_crm_auth_v1';
+  const REMEMBER_KEY='suling_crm_remember_v1';
+  const DEMO_USER={
+    account:'admin',
+    password:'123456',
+    name:'王管理',
+    phone:'138****6688',
+    dept:'经营分析部',
+    role:'老板看板管理员'
+  };
+
+  function loadSession(){
+    try{
+      const raw=sessionStorage.getItem(AUTH_KEY)||localStorage.getItem(AUTH_KEY);
+      return raw?JSON.parse(raw):null;
+    }catch(e){return null;}
+  }
+  function saveSession(user,remember){
+    const payload=JSON.stringify(user);
+    sessionStorage.setItem(AUTH_KEY,payload);
+    if(remember) localStorage.setItem(AUTH_KEY,payload);
+    else localStorage.removeItem(AUTH_KEY);
+  }
+  function clearSession(){
+    sessionStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(AUTH_KEY);
+  }
+  function loadRemember(){
+    try{return JSON.parse(localStorage.getItem(REMEMBER_KEY)||'null');}catch(e){return null;}
+  }
+  function saveRemember(account,password,on){
+    if(on) localStorage.setItem(REMEMBER_KEY,JSON.stringify({account,password}));
+    else localStorage.removeItem(REMEMBER_KEY);
+  }
+
+  const loginView=document.getElementById('loginView');
+  const appView=document.getElementById('appView');
+  let currentUser=loadSession();
+
+  function showApp(){
+    loginView.classList.remove('on');
+    appView.classList.remove('hidden');
+    const short=(currentUser.name||currentUser.account||'用').slice(0,1);
+    document.getElementById('userEntry').textContent=short;
+  }
+  function showLogin(){
+    appView.classList.add('hidden');
+    loginView.classList.add('on');
+    const rem=loadRemember();
+    if(rem){
+      document.getElementById('loginAccount').value=rem.account||'';
+      document.getElementById('loginPwd').value=rem.password||'';
+      document.getElementById('rememberMe').checked=true;
+    }
+  }
+  function doLogin(account,password,remember){
+    const err=document.getElementById('loginErr');
+    if(!account||!password){
+      err.textContent='账号或密码不能为空';
+      err.classList.add('on');
+      return false;
+    }
+    // 原型：admin/123456；其它非空账号也可登录演示
+    if(account===DEMO_USER.account && password!==DEMO_USER.password){
+      err.textContent='账号或密码错误';
+      err.classList.add('on');
+      return false;
+    }
+    err.classList.remove('on');
+    currentUser={
+      account,
+      name:account===DEMO_USER.account?DEMO_USER.name:account,
+      phone:account===DEMO_USER.account?DEMO_USER.phone:'139****0000',
+      dept:account===DEMO_USER.account?DEMO_USER.dept:'未分配部门',
+      role:account===DEMO_USER.account?DEMO_USER.role:'数据查看员'
+    };
+    saveSession(currentUser,remember);
+    saveRemember(account,password,remember);
+    showApp();
+    go('home');
+    return true;
+  }
+  function doLogout(){
+    clearSession();
+    currentUser=null;
+    showLogin();
+  }
+
+  document.getElementById('loginForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    doLogin(
+      document.getElementById('loginAccount').value.trim(),
+      document.getElementById('loginPwd').value,
+      document.getElementById('rememberMe').checked
+    );
+  });
+  document.getElementById('userEntry').addEventListener('click',()=>go('profile'));
+  document.getElementById('logoutBtn').addEventListener('click',()=>{
+    if(confirm('确认退出登录？')) doLogout();
+  });
+
+  function ymd(d){const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());}
+  function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+  const today=new Date(); today.setHours(0,0,0,0);
+  const defaultStart=ymd(addDays(today,-29));
+  const defaultEnd=ymd(today);
+
+  const FANS_TODAY=520, FANS_YDAY=478, ORD_TODAY=83, ORD_YDAY=76;
+  const CHANNELS=[
+    {ch:'douyin_info',plat:'抖音',add:1510,ydAdd:1380,pay:245,ydPay:220,spend:68200,clicks:55100},
+    {ch:'baidu_doctor_h5',plat:'百度',add:1330,ydAdd:1410,pay:205,ydPay:198,spend:52800,clicks:42600},
+    {ch:'weixin_mp',plat:'微信',add:730,ydAdd:690,pay:115,ydPay:108,spend:18600,clicks:15200},
+    {ch:'kuaishou_info',plat:'快手',add:420,ydAdd:455,pay:62,ydPay:70,spend:12400,clicks:9800},
+    {ch:'offline_intro',plat:'线下',add:310,ydAdd:280,pay:48,ydPay:41,spend:0,clicks:0},
+    {ch:'xiaohongshu',plat:'小红书',add:260,ydAdd:250,pay:36,ydPay:33,spend:8900,clicks:7200}
+  ].map(c=>{
+    const rate=c.clicks?c.add/c.clicks:0, cac=c.add?c.spend/c.add:0, payRate=c.add?c.pay/c.add:0;
+    return Object.assign(c,{rate,cac,payRate});
+  });
+  const DATES=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
+  // 获客成本故意做高低起伏，便于看趋势
+  const CAC_WAVE=[28.6, 34.2, 25.8, 31.5, 22.4, 36.8, 27.1];
+  const DAILY_FANS=DATES.map((d,i)=>{
+    const s=0.9+i*0.02;
+    const spend=Math.round(139600*s/7), clicks=Math.round(32000*s/7), add=Math.round(4900*s/7);
+    const cac=CAC_WAVE[i];
+    return {d,spend,clicks,add,rate:clicks?add/clicks:0,cac};
+  });
+  const DEAL_SUMMARY={
+    first:{deco:45*0.62|0, pill:45-(45*0.62|0), decoG:16800, pillG:16680},
+    rev:{deco:38*0.55|0, pill:38-(38*0.55|0), decoG:19800, pillG:32490}
+  };
+  DEAL_SUMMARY.first.cnt=DEAL_SUMMARY.first.deco+DEAL_SUMMARY.first.pill;
+  DEAL_SUMMARY.rev.cnt=DEAL_SUMMARY.rev.deco+DEAL_SUMMARY.rev.pill;
+  DEAL_SUMMARY.total={
+    deco:DEAL_SUMMARY.first.deco+DEAL_SUMMARY.rev.deco,
+    pill:DEAL_SUMMARY.first.pill+DEAL_SUMMARY.rev.pill,
+    decoG:DEAL_SUMMARY.first.decoG+DEAL_SUMMARY.rev.decoG,
+    pillG:DEAL_SUMMARY.first.pillG+DEAL_SUMMARY.rev.pillG
+  };
+  const DAILY_ORD=DATES.map((d,i)=>{
+    const first=32+i*2, rev=26+i;
+    const firstDeco=Math.round(first*0.62), firstPill=first-firstDeco;
+    const revDeco=Math.round(rev*0.55), revPill=rev-revDeco;
+    const firstG=28000+i*800, revG=40000+i*1200;
+    const firstDecoG=Math.round(firstG*0.5), firstPillG=firstG-firstDecoG;
+    const revDecoG=Math.round(revG*0.38), revPillG=revG-revDecoG;
+    return {d,first,rev,total:first+rev,firstG,revG,totalG:firstG+revG,
+      deco:firstDeco+revDeco,pill:firstPill+revPill,decoG:firstDecoG+revDecoG,pillG:firstPillG+revPillG};
+  });
+  const ASSISTANTS=[
+    {name:'张医助',team:'A组',f01:820,f02:552,f03:414,f04:276,f05:133,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080},
+    {name:'李医助',team:'A组',f01:760,f02:496,f03:372,f04:248,f05:119,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560},
+    {name:'王医助',team:'B组',f01:680,f02:440,f03:330,f04:220,f05:106,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570},
+    {name:'赵医助',team:'B组',f01:620,f02:400,f03:300,f04:200,f05:96,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060},
+    {name:'刘医助',team:'A组',f01:580,f02:376,f03:282,f04:188,f05:90,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550},
+    {name:'陈医助',team:'C组',f01:540,f02:350,f03:262,f04:175,f05:84,firstOrd:6,firstGmv:4680,revOrd:5,revGmv:6820},
+    {name:'杨医助',team:'C组',f01:510,f02:331,f03:248,f04:166,f05:80,firstOrd:6,firstGmv:4420,revOrd:4,revGmv:6180},
+    {name:'周医助',team:'B组',f01:480,f02:312,f03:234,f04:156,f05:75,firstOrd:5,firstGmv:3950,revOrd:4,revGmv:5720}
+  ].map(a=>({...a,totalOrd:a.firstOrd+a.revOrd,totalGmv:a.firstGmv+a.revGmv,convRx:a.f01?a.f04/a.f01:0,conv:a.f01?a.f05/a.f01:0}));
+
+  const state={
+    page:'home',
+    fans:{start:defaultStart,end:defaultEnd,plat:'全部',ch:'全部',team:'全部'},
+    deal:{start:defaultStart,end:defaultEnd,plat:'全部',ch:'全部',team:'全部'},
+    channel:{quick:'today',plat:'全部',ch:'全部',start:defaultStart,end:defaultEnd},
+    eff:{quick:'today',team:'全部',q:'',start:defaultStart,end:defaultEnd},
+    trade:{quick:'today',team:'全部',q:'',start:defaultStart,end:defaultEnd},
+    dateTarget:null
+  };
+
+  const fmt=n=>Number(n).toLocaleString('zh-CN');
+  const fmtY=n=>'¥'+fmt(Math.round(n));
+  const pct=n=>(n*100).toFixed(1)+'%';
+  function deltaEl(cur,prev){
+    if(!prev) return '<span class="delta flat">—</span>';
+    const r=(cur-prev)/prev*100;
+    const cls=Math.abs(r)<0.05?'flat':(r>0?'up':'down');
+    const a=r>0?'↑':(r<0?'↓':'→');
+    return '<span class="delta '+cls+'">'+a+' '+Math.abs(r).toFixed(1)+'%</span>';
+  }
+  function setDelta(id,cur,prev){
+    const el=document.getElementById(id); if(!el) return;
+    const w=document.createElement('div'); w.innerHTML=deltaEl(cur,prev);
+    const n=w.firstChild; n.id=id; el.replaceWith(n);
+  }
+  function rankRows(list,labelFn,pctFn,warm){
+    return list.map((a,i)=>'<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+a.name+'</div><div class="bar'+(warm?' warm':'')+'"><i style="width:'+Math.round(pctFn(a)*100)+'%"></i></div></div><div class="nums"><div class="v">'+labelFn(a)+'</div></div></div>').join('');
+  }
+  function rangeLabel(st){
+    const short=s=>s&&s.length>=10?s.slice(5): (s||'—');
+    return short(st.start)+' ~ '+short(st.end);
+  }
+
+  function go(page){
+    if(!currentUser && page!=='login'){showLogin();return;}
+    state.page=page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.dataset.page===page));
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.go===page));
+    render(); window.scrollTo(0,0);
+  }
+
+  function openDateRange(key){
+    state.dateTarget=key;
+    const st=state[key];
+    document.getElementById('dateStart').value=st.start||defaultStart;
+    document.getElementById('dateEnd').value=st.end||defaultEnd;
+    document.getElementById('dateModal').classList.add('on');
+  }
+  document.getElementById('dateCancel').onclick=()=>document.getElementById('dateModal').classList.remove('on');
+  document.getElementById('dateOk').onclick=()=>{
+    const s=document.getElementById('dateStart').value;
+    const e=document.getElementById('dateEnd').value;
+    if(s&&e&&s>e){alert('开始日期不能晚于结束日期');return;}
+    if(state.dateTarget){
+      const st=state[state.dateTarget];
+      st.start=s; st.end=e;
+      if('quick' in st) st.quick='custom';
+    }
+    document.getElementById('dateModal').classList.remove('on');
+    render();
+  };
+  document.getElementById('dateModal').addEventListener('click',e=>{
+    if(e.target.id==='dateModal') e.currentTarget.classList.remove('on');
+  });
+
+  function filterRange(el,key){
+    const st=state[key];
+    el.innerHTML=
+      '<div class="fg-grid">'+
+      '<div class="fg"><label>时间</label><button type="button" class="daterange" data-open-range="'+key+'"><span class="ico">📅</span><span class="txt">'+rangeLabel(st)+'</span></button></div>'+
+      '<div class="fg"><label>平台</label><select class="select" data-k="plat"><option>全部</option><option>抖音</option><option>百度</option><option>微信</option><option>快手</option><option>小红书</option></select></div>'+
+      '<div class="fg"><label>渠道</label><select class="select" data-k="ch"><option>全部</option>'+CHANNELS.map(c=>'<option>'+c.ch+'</option>').join('')+'</select></div>'+
+      '<div class="fg"><label>团队</label><select class="select" data-k="team"><option>全部</option><option>A组</option><option>B组</option><option>C组</option></select></div>'+
+      '</div>';
+    el.querySelector('[data-open-range]').onclick=()=>openDateRange(key);
+    el.querySelectorAll('select[data-k]').forEach(s=>{s.value=st[s.dataset.k]||'全部';s.onchange=()=>{st[s.dataset.k]=s.value;render();};});
+  }
+
+  function customDateLabel(st){
+    return st.quick==='custom' ? rangeLabel(st) : '自定义';
+  }
+
+  function filterQuick(el,key,opts){
+    const st=state[key];
+    let html='<div class="fg fg-grow"><label>时间</label><div class="fg-row">';
+    [['today','今日'],['yest','昨日'],['d7','近7天'],['d30','近30天']].forEach(([k,l])=>{
+      html+='<button type="button" class="chip'+(st.quick===k?' on':'')+'" data-k="quick" data-v="'+k+'">'+l+'</button>';
+    });
+    html+='<button type="button" class="chip-date'+(st.quick==='custom'?' on':'')+'" data-open-range="'+key+'"><span>📅</span><span class="txt">'+customDateLabel(st)+'</span></button></div></div>';
+    const extras=[];
+    if(opts.platform) extras.push('<div class="fg"><label>平台</label><select class="select" data-k="plat"><option>全部</option><option>抖音</option><option>百度</option><option>微信</option><option>快手</option><option>小红书</option></select></div>');
+    if(opts.channel) extras.push('<div class="fg"><label>渠道</label><select class="select" data-k="ch"><option>全部</option>'+CHANNELS.map(c=>'<option>'+c.ch+'</option>').join('')+'</select></div>');
+    if(opts.team) extras.push('<div class="fg"><label>团队</label><select class="select" data-k="team"><option>全部</option><option>A组</option><option>B组</option><option>C组</option></select></div>');
+    if(opts.search) extras.push('<div class="fg"><label>医助</label><input class="search" data-k="q" placeholder="搜索医助" value="'+(st.q||'')+'"/></div>');
+    if(extras.length) html+='<div class="fg-grid">'+extras.join('')+'</div>';
+    el.innerHTML=html;
+    el.querySelectorAll('.chip[data-k]').forEach(b=>b.onclick=()=>{st.quick=b.dataset.v;render();});
+    el.querySelector('[data-open-range]').onclick=()=>openDateRange(key);
+    el.querySelectorAll('select[data-k]').forEach(s=>{s.value=st[s.dataset.k]||'全部';s.onchange=()=>{st[s.dataset.k]=s.value;render();};});
+    const q=el.querySelector('input.search'); if(q) q.oninput=()=>{st.q=q.value.trim();render();};
+  }
+
+  function renderHome(){
+    document.getElementById('hFans').textContent=fmt(FANS_TODAY);
+    setDelta('hFansD',FANS_TODAY,FANS_YDAY);
+    document.getElementById('hOrd').textContent=fmt(ORD_TODAY);
+    setDelta('hOrdD',ORD_TODAY,ORD_YDAY);
+    const top=CHANNELS.slice().sort((a,b)=>b.add-a.add).slice(0,5);
+    document.getElementById('hCh').innerHTML=top.map((c,i)=>
+      '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+c.ch+'</div>'+
+      '<div class="dual"><div class="cell"><div class="k">今日加粉</div><div class="x">'+fmt(c.add)+'</div>'+deltaEl(c.add,c.ydAdd)+'</div>'+
+      '<div class="cell"><div class="k">今日初诊成交</div><div class="x">'+fmt(c.pay)+'</div>'+deltaEl(c.pay,c.ydPay)+'</div></div></div></div>'
+    ).join('');
+    document.getElementById('hOrders').innerHTML=
+      '<div class="order-item"><div class="t"><span>初诊 45 单</span><span>'+fmtY(33480)+'</span></div><div class="order-soft">汤剂 28 单 / '+fmtY(16800)+'　·　丸剂 17 单 / '+fmtY(16680)+'</div></div>'+
+      '<div class="order-item"><div class="t"><span>复诊 38 单</span><span>'+fmtY(52290)+'</span></div><div class="order-soft">汤剂 22 单 / '+fmtY(19800)+'　·　丸剂 16 单 / '+fmtY(32490)+'</div></div>';
+    const byO=ASSISTANTS.slice().sort((a,b)=>b.totalOrd-a.totalOrd).slice(0,5);
+    const byG=ASSISTANTS.slice().sort((a,b)=>b.totalGmv-a.totalGmv).slice(0,5);
+    const mo=byO[0].totalOrd, mg=byG[0].totalGmv;
+    document.getElementById('hAsstOrd').innerHTML=rankRows(byO,a=>fmt(a.totalOrd),a=>a.totalOrd/mo);
+    document.getElementById('hAsstGmv').innerHTML=rankRows(byG,a=>fmtY(a.totalGmv),a=>a.totalGmv/mg,true);
+  }
+
+  function lineChart(el, tipEl, points){
+    // points: [{label, value}]
+    const values=points.map(p=>p.value);
+    const w=360, h=150;
+    const padL=36, padR=10, padT=14, padB=10;
+    const max=Math.max(...values)*1.12;
+    const min=Math.min(0, Math.min(...values)*0.92);
+    const span=max-min||1;
+    const plotW=w-padL-padR, plotH=h-padT-padB;
+    const xy=values.map((v,i)=>{
+      const x=padL+(values.length===1?plotW/2:(i/(values.length-1))*plotW);
+      const y=padT+plotH-((v-min)/span)*plotH;
+      return {x,y,v,label:points[i].label};
+    });
+    const ticks=4;
+    let grid='';
+    for(let i=0;i<=ticks;i++){
+      const t=min+(span*i/ticks);
+      const y=padT+plotH-((t-min)/span)*plotH;
+      grid+='<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'" stroke="#edf1f5" stroke-width="1"/>';
+      grid+='<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="9" fill="#708090">'+Math.round(t)+'</text>';
+    }
+    const line=xy.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+    const area=line+' L'+xy[xy.length-1].x.toFixed(1)+','+(padT+plotH)+' L'+xy[0].x.toFixed(1)+','+(padT+plotH)+' Z';
+    const dots=xy.map((p,i)=>
+      '<g class="hit" data-i="'+i+'">'+
+      '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="14" fill="transparent"/>'+
+      '<circle class="dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.5" fill="#1f6feb" stroke="#fff" stroke-width="1.5"/>'+
+      '</g>'
+    ).join('');
+    // tip 保留在容器内，避免被 svg 覆盖
+    el.querySelectorAll('svg').forEach(s=>s.remove());
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+    svg.innerHTML=grid+
+      '<path d="'+area+'" fill="rgba(31,111,235,.08)"/>'+
+      '<path d="'+line+'" fill="none" stroke="#1f6feb" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'+
+      dots;
+    el.appendChild(svg);
+
+    function showTip(i){
+      const p=xy[i];
+      tipEl.textContent=p.label+'　¥'+p.v.toFixed(1);
+      tipEl.style.left=((p.x/w)*100)+'%';
+      tipEl.style.top=((p.y/h)*100)+'%';
+      tipEl.classList.add('on');
+      svg.querySelectorAll('.dot').forEach((c,j)=>{
+        c.setAttribute('r', j===i?'5.5':'3.5');
+        c.setAttribute('fill', j===i?'#0b4db8':'#1f6feb');
+      });
+    }
+    tipEl.classList.remove('on');
+    svg.querySelectorAll('.hit').forEach(g=>{
+      g.addEventListener('click',e=>{e.stopPropagation();showTip(+g.dataset.i);});
+    });
+  }
+
+  function renderFans(){
+    filterRange(document.getElementById('fFans'),'fans');
+    lineChart(
+      document.getElementById('cacTrend'),
+      document.getElementById('cacTip'),
+      DAILY_FANS.map(x=>({label:x.d, value:x.cac}))
+    );
+    document.getElementById('cacX').innerHTML=DAILY_FANS.map(x=>'<span>'+x.d.slice(3)+'</span>').join('');
+    let t='<table><thead><tr><th>日期</th><th>投流消耗</th><th>行为点击</th><th>加粉数（渠道汇总）</th><th>行为点击-加粉转化率</th><th>平均获客成本</th></tr></thead><tbody>';
+    DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>'+fmtY(x.cac)+'</td></tr>';});
+    document.getElementById('fansTable').innerHTML=t+'</tbody></table>';
+  }
+
+  function stackCols(mode){
+    // mode: cnt | gmv — categories 初诊/复诊/总计, 汤剂 green + 丸剂 blue
+    const S=DEAL_SUMMARY;
+    const cats=[
+      {lab:'初诊', deco:mode==='cnt'?S.first.deco:S.first.decoG, pill:mode==='cnt'?S.first.pill:S.first.pillG},
+      {lab:'复诊', deco:mode==='cnt'?S.rev.deco:S.rev.decoG, pill:mode==='cnt'?S.rev.pill:S.rev.pillG},
+      {lab:'总计', deco:mode==='cnt'?S.total.deco:S.total.decoG, pill:mode==='cnt'?S.total.pill:S.total.pillG}
+    ];
+    const max=Math.max(...cats.map(c=>c.deco+c.pill),1);
+    return cats.map(c=>{
+      const total=c.deco+c.pill;
+      const h=Math.max(16,Math.round(total/max*140));
+      const dPct=total?c.deco/total:0;
+      const pPct=1-dPct;
+      const fmtSeg=mode==='cnt'?fmt:v=>fmtY(v);
+      return '<div class="vbar-col"><div class="vbar-pile" style="height:'+h+'px">'+
+        '<div class="seg pill" style="flex:'+pPct+'"><span class="lbl" style="top:2px">'+(c.pill?fmtSeg(c.pill):'')+'</span></div>'+
+        '<div class="seg deco" style="flex:'+dPct+'"><span class="lbl" style="bottom:2px;top:auto">'+(c.deco?fmtSeg(c.deco):'')+'</span></div>'+
+        '</div><div class="xlab">'+c.lab+'</div></div>';
+    }).join('');
+  }
+
+  function renderDeal(){
+    filterRange(document.getElementById('fDeal'),'deal');
+    document.getElementById('ordStack').innerHTML=stackCols('cnt');
+    document.getElementById('gmvStack').innerHTML=stackCols('gmv');
+    let t='<table><thead><tr><th>日期</th><th>合计单</th><th>合计额</th><th>初诊单</th><th>初诊额</th><th>复诊单</th><th>复诊额</th><th>汤剂单</th><th>汤剂额</th><th>丸剂单</th><th>丸剂额</th></tr></thead><tbody>';
+    DAILY_ORD.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+x.total+'</td><td>'+fmtY(x.totalG)+'</td><td>'+x.first+'</td><td>'+fmtY(x.firstG)+'</td><td>'+x.rev+'</td><td>'+fmtY(x.revG)+'</td><td>'+x.deco+'</td><td>'+fmtY(x.decoG)+'</td><td>'+x.pill+'</td><td>'+fmtY(x.pillG)+'</td></tr>';});
+    document.getElementById('dealTable').innerHTML=t+'</tbody></table>';
+  }
+
+  function filteredChannels(){
+    let list=CHANNELS.slice();
+    const st=state.channel;
+    if(st.plat&&st.plat!=='全部') list=list.filter(c=>c.plat===st.plat);
+    if(st.ch&&st.ch!=='全部') list=list.filter(c=>c.ch===st.ch);
+    return list;
+  }
+  function renderChannel(){
+    filterQuick(document.getElementById('fCh'),'channel',{platform:1,channel:1});
+    const list=filteredChannels();
+    const byAdd=list.slice().sort((a,b)=>b.add-a.add).slice(0,5);
+    const byPay=list.slice().sort((a,b)=>b.pay-a.pay).slice(0,5);
+    const byRate=list.filter(c=>c.clicks>0).sort((a,b)=>b.rate-a.rate).slice(0,5);
+    const byCac=list.filter(c=>c.cac>0).sort((a,b)=>a.cac-b.cac).slice(0,5);
+    const ma=byAdd[0]?byAdd[0].add:1, mp=byPay[0]?byPay[0].pay:1, mr=byRate[0]?byRate[0].rate:1;
+    const mc=byCac.length?Math.max(...byCac.map(c=>c.cac)):1;
+    const asName=a=>({name:a.ch,...a});
+    document.getElementById('chFansTop').innerHTML=rankRows(byAdd.map(asName),a=>fmt(a.add),a=>a.add/ma);
+    document.getElementById('chPayTop').innerHTML=rankRows(byPay.map(asName),a=>fmt(a.pay),a=>a.pay/mp);
+    document.getElementById('chRateTop').innerHTML=rankRows(byRate.map(asName),a=>pct(a.rate),a=>a.rate/mr);
+    document.getElementById('chCacTop').innerHTML=rankRows(byCac.map(asName),a=>fmtY(a.cac),a=>1-a.cac/mc*0.75+0.2,true);
+    let t='<table><thead><tr><th>渠道</th><th>投流消耗</th><th>行为点击</th><th>加粉数（渠道汇总）</th><th>行为点击-加粉转化率</th><th>平均获客成本</th><th>初诊成交订单</th><th>加粉-初诊成交转化率</th></tr></thead><tbody>';
+    list.slice().sort((a,b)=>b.add-a.add).forEach(c=>{
+      t+='<tr><td>'+c.ch+'</td><td>'+(c.spend?fmtY(c.spend):'—')+'</td><td>'+(c.clicks?fmt(c.clicks):'—')+'</td><td>'+fmt(c.add)+'</td><td>'+(c.clicks?pct(c.rate):'—')+'</td><td>'+(c.cac?fmtY(c.cac):'—')+'</td><td>'+fmt(c.pay)+'</td><td>'+pct(c.payRate)+'</td></tr>';
+    });
+    document.getElementById('chTable').innerHTML=t+'</tbody></table>';
+  }
+
+  function filteredAsst(key){
+    const st=state[key]; let list=ASSISTANTS.slice();
+    if(st.team&&st.team!=='全部') list=list.filter(a=>a.team===st.team);
+    if(st.q) list=list.filter(a=>a.name.indexOf(st.q)>=0);
+    return list;
+  }
+  function renderEff(){
+    filterQuick(document.getElementById('fEff'),'eff',{team:1,search:1});
+    const list=filteredAsst('eff');
+    const byRx=list.slice().sort((a,b)=>b.convRx-a.convRx).slice(0,6);
+    const byPay=list.slice().sort((a,b)=>b.conv-a.conv).slice(0,6);
+    const mr=byRx[0]?byRx[0].convRx:1, mp=byPay[0]?byPay[0].conv:1;
+    document.getElementById('effRx').innerHTML=rankRows(byRx,a=>pct(a.convRx),a=>a.convRx/mr);
+    document.getElementById('effPay').innerHTML=rankRows(byPay,a=>pct(a.conv),a=>a.conv/mp,true);
+    let t='<table><thead><tr><th>医助</th><th>加粉</th><th>开口</th><th>舌象上传</th><th>开方</th><th>加粉-开方转化率</th><th>支付数</th><th>加粉-支付转化率</th></tr></thead><tbody>';
+    list.slice().sort((a,b)=>b.f01-a.f01).forEach(a=>{t+='<tr><td>'+a.name+'</td><td>'+fmt(a.f01)+'</td><td>'+fmt(a.f02)+'</td><td>'+fmt(a.f03)+'</td><td>'+fmt(a.f04)+'</td><td>'+pct(a.convRx)+'</td><td>'+fmt(a.f05)+'</td><td>'+pct(a.conv)+'</td></tr>';});
+    document.getElementById('effTable').innerHTML=t+'</tbody></table>';
+  }
+  function renderTrade(){
+    filterQuick(document.getElementById('fTrade'),'trade',{team:1,search:1});
+    const list=filteredAsst('trade');
+    const byO=list.slice().sort((a,b)=>b.totalOrd-a.totalOrd).slice(0,6);
+    const byG=list.slice().sort((a,b)=>b.totalGmv-a.totalGmv).slice(0,6);
+    const mo=byO[0]?byO[0].totalOrd:1, mg=byG[0]?byG[0].totalGmv:1;
+    document.getElementById('trOrd').innerHTML=rankRows(byO,a=>fmt(a.totalOrd),a=>a.totalOrd/mo);
+    document.getElementById('trGmv').innerHTML=rankRows(byG,a=>fmtY(a.totalGmv),a=>a.totalGmv/mg,true);
+    let t='<table><thead><tr><th>医助</th><th>初诊单</th><th>初诊额</th><th>复诊单</th><th>复诊额</th><th>总单</th><th>总额</th></tr></thead><tbody>';
+    list.slice().sort((a,b)=>b.totalGmv-a.totalGmv).forEach(a=>{t+='<tr><td>'+a.name+'</td><td>'+a.firstOrd+'</td><td>'+fmtY(a.firstGmv)+'</td><td>'+a.revOrd+'</td><td>'+fmtY(a.revGmv)+'</td><td>'+a.totalOrd+'</td><td>'+fmtY(a.totalGmv)+'</td></tr>';});
+    document.getElementById('trTable').innerHTML=t+'</tbody></table>';
+  }
+
+  function renderProfile(){
+    if(!currentUser) return;
+    const short=(currentUser.name||currentUser.account||'用').slice(0,1);
+    document.getElementById('pfAvatar').textContent=short;
+    document.getElementById('pfName').textContent=currentUser.name||currentUser.account;
+    document.getElementById('pfUser').textContent=currentUser.account;
+    document.getElementById('pfPhone').textContent=currentUser.phone||'—';
+    document.getElementById('pfDept').textContent=currentUser.dept||'—';
+    document.getElementById('pfRole').textContent=currentUser.role||'—';
+  }
+
+  function render(){
+    if(state.page==='home') renderHome();
+    else if(state.page==='fans') renderFans();
+    else if(state.page==='deal') renderDeal();
+    else if(state.page==='channel') renderChannel();
+    else if(state.page==='eff') renderEff();
+    else if(state.page==='trade') renderTrade();
+    else if(state.page==='profile') renderProfile();
+  }
+
+  document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
+  if(currentUser){showApp();render();}
+  else showLogin();
+})();
+</script>
+</body>
+</html>

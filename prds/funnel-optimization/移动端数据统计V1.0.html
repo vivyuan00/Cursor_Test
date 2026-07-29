@@ -175,6 +175,16 @@ tr:last-child td{border-bottom:0;}
 .profile-item .v{font-weight:700;text-align:right;}
 .logout-btn{width:100%;margin-top:16px;padding:13px;border-radius:12px;background:#fff;border:1px solid #f0c9c9;color:var(--down);font-size:14px;font-weight:800;}
 .profile-back{font-size:12px;color:var(--brand);font-weight:700;margin-bottom:10px;}
+.th-inner{display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;white-space:nowrap;}
+th:first-child .th-inner{justify-content:flex-start;}
+.th-help{width:16px;height:16px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:10px;font-weight:800;line-height:16px;text-align:center;padding:0;flex-shrink:0;cursor:pointer;}
+.th-help:active{background:var(--brand);color:#fff;}
+.tip-modal{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:90;display:none;align-items:flex-end;justify-content:center;}
+.tip-modal.on{display:flex;}
+.tip-sheet{width:100%;max-width:480px;background:#fff;border-radius:16px 16px 0 0;padding:18px 16px 20px;box-shadow:0 -8px 30px rgba(0,0,0,.12);}
+.tip-sheet h3{font-size:15px;font-weight:800;margin-bottom:10px;color:var(--text);}
+.tip-sheet p{font-size:12px;color:var(--muted);line-height:1.6;white-space:pre-wrap;}
+.tip-sheet .ok{width:100%;margin-top:16px;padding:11px;border-radius:10px;background:var(--brand);color:#fff;font-weight:700;font-size:12px;}
 </style>
 </head>
 <body>
@@ -255,7 +265,7 @@ tr:last-child td{border-bottom:0;}
   <section class="page" data-page="fans">
     <div class="filters" id="fFans"></div>
     <div class="sec card">
-      <div class="chart-title">加粉数趋势</div>
+      <div class="chart-title">加粉数趋势 <span style="font-weight:600;color:var(--muted);font-size:11px;">（加粉数·全量）</span></div>
       <div class="polyline-wrap" id="fansTrend">
         <div class="tip" id="fansTip"></div>
       </div>
@@ -372,6 +382,14 @@ tr:last-child td{border-bottom:0;}
       <button class="cancel" type="button" id="dateCancel">取消</button>
       <button class="ok" type="button" id="dateOk">确定</button>
     </div>
+  </div>
+</div>
+
+<div class="tip-modal" id="tipModal">
+  <div class="tip-sheet">
+    <h3 id="tipTitle">字段说明</h3>
+    <p id="tipBody"></p>
+    <button type="button" class="ok" id="tipClose">知道了</button>
   </div>
 </div>
 
@@ -510,9 +528,63 @@ tr:last-child td{border-bottom:0;}
     const spend=Math.round(19800*(1+wave*0.35));
     const clicks=Math.round(4600*(1+wave*0.28));
     const add=Math.round(680*(1+wave*0.42)+(i%4===2?90:-30));
+    const addFull=Math.round(add*1.15+(i%3)*8);
     const cac=add?Number((spend/add).toFixed(1)):0;
-    return {d,spend,clicks,add,rate:clicks?add/clicks:0,cac};
+    return {d,spend,clicks,add,addFull,rate:clicks?add/clicks:0,cac};
   });
+
+  const METRIC_TIPS={
+    '日期':'业务日，按自然日统计。',
+    '投流消耗':'当日/该渠道在筛选时段内的投放消耗金额（元）；无投流时展示「—」。',
+    '行为点击':'当日/该渠道在筛选时段内的投放行为点击次数；无投流时展示「—」。',
+    '加粉数（渠道汇总）':'各投放/该渠道新增加企微好友人数（含 AI 工具添加及投放企微卡等）；用于计算投流转化与获客成本。',
+    '加粉数（全量）':'全部渠道新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；按加粉事件计；与加粉数趋势图口径一致。',
+    '行为点击-加粉转化率':'加粉数（渠道汇总）÷ 行为点击；行为点击为 0 时展示「—」。',
+    '平均获客成本':'投流消耗 ÷ 加粉数（渠道汇总）；无投流或加粉为 0 时展示「—」。',
+    '合计单':'当日全部支付成功订单数（初诊 + 复诊）。',
+    '合计额':'当日全部支付成功订单实付金额合计（元）。',
+    '初诊单':'当日/该医助初诊支付成功订单数。',
+    '初诊额':'当日/该医助初诊订单实付金额合计（元）。',
+    '复诊单':'当日/该医助复诊支付成功订单数。',
+    '复诊额':'当日/该医助复诊订单实付金额合计（元）。',
+    '汤剂单':'当日药物类型为汤剂的支付成功订单数。',
+    '汤剂额':'当日汤剂订单实付金额合计（元）。',
+    '丸剂单':'当日药物类型为丸剂的支付成功订单数。',
+    '丸剂额':'当日丸剂订单实付金额合计（元）。',
+    '渠道':'渠道中文名称。',
+    '初诊成交订单':'该渠道/初诊支付成功订单数。',
+    '加粉-初诊成交转化率':'初诊成交订单 ÷ 加粉数（渠道汇总）；加粉为 0 时展示「—」。',
+    '医助':'医助姓名。',
+    '加粉':'该医助在筛选时段内加粉好友人数（与权限及筛选范围一致）。',
+    '开口':'该医助服务的用户中，有发送消息的去重人数。',
+    '舌象上传':'该医助服务的用户中，有上传舌象图片的人数。',
+    '开方':'该医助服务的用户中，完成初诊病例总结和开方的人数。',
+    '加粉-开方转化率':'开方数 ÷ 加粉数；加粉为 0 时展示「—」。',
+    '支付数':'该医助服务的用户初诊支付成功订单数。',
+    '加粉-支付转化率':'支付数 ÷ 加粉数；加粉为 0 时展示「—」。',
+    '总单':'初诊单 + 复诊单。',
+    '总额':'初诊额 + 复诊额。'
+  };
+
+  function thHelp(label, tipKey){
+    const key=tipKey||label;
+    return '<th><span class="th-inner">'+label+'<button type="button" class="th-help" data-tip-key="'+key+'" aria-label="'+label+'说明">?</button></span></th>';
+  }
+  function buildThead(cols){
+    return '<thead><tr>'+cols.map(function(c){
+      return Array.isArray(c)?thHelp(c[0],c[1]):thHelp(c,c);
+    }).join('')+'</tr></thead>';
+  }
+  function openTipModal(key){
+    const title=document.getElementById('tipTitle');
+    const body=document.getElementById('tipBody');
+    title.textContent=key;
+    body.textContent=METRIC_TIPS[key]||'暂无说明';
+    document.getElementById('tipModal').classList.add('on');
+  }
+  function closeTipModal(){
+    document.getElementById('tipModal').classList.remove('on');
+  }
   const DEAL_SUMMARY={
     first:{deco:45*0.62|0, pill:45-(45*0.62|0), decoG:16800, pillG:16680},
     rev:{deco:38*0.55|0, pill:38-(38*0.55|0), decoG:19800, pillG:32490}
@@ -751,7 +823,8 @@ tr:last-child td{border-bottom:0;}
     }
     function showTip(i){
       const p=xy[i];
-      tipEl.textContent=p.label+'　'+fmtVal(p.v);
+      const prefix=opts.seriesName?opts.seriesName+' ':'';
+      tipEl.textContent=p.label+'　'+prefix+fmtVal(p.v);
       tipEl.style.left=((p.x/w)*100)+'%';
       tipEl.style.top=((p.y/h)*100)+'%';
       tipEl.classList.add('on');
@@ -847,19 +920,23 @@ tr:last-child td{border-bottom:0;}
     lineChart(
       document.getElementById('fansTrend'),
       document.getElementById('fansTip'),
-      DAILY_FANS.map(x=>({label:x.d, value:x.add})),
-      {color:'#1f6feb'}
+      DAILY_FANS.map(x=>({label:x.d, value:x.addFull})),
+      {color:'#1f6feb', seriesName:'加粉数（全量）'}
     );
     document.getElementById('fansX').innerHTML=sparseX(DAILY_FANS.map(x=>x.d));
     lineChart(
       document.getElementById('cacTrend'),
       document.getElementById('cacTip'),
       DAILY_FANS.map(x=>({label:x.d, value:x.cac})),
-      {money:true, color:'#0d9488'}
+      {money:true, color:'#0d9488', seriesName:'平均获客成本'}
     );
     document.getElementById('cacX').innerHTML=sparseX(DAILY_FANS.map(x=>x.d));
-    let t='<table><thead><tr><th>日期</th><th>投流消耗</th><th>行为点击</th><th>加粉数（渠道汇总）</th><th>行为点击-加粉转化率</th><th>平均获客成本</th></tr></thead><tbody>';
-    DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>¥'+x.cac.toFixed(1)+'</td></tr>';});
+    let t='<table>'+buildThead([
+      ['日期','日期'],['投流消耗','投流消耗'],['行为点击','行为点击'],
+      ['加粉数（渠道汇总）','加粉数（渠道汇总）'],['行为点击-加粉转化率','行为点击-加粉转化率'],
+      ['平均获客成本','平均获客成本'],['加粉数（全量）','加粉数（全量）']
+    ])+'<tbody>';
+    DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>¥'+x.cac.toFixed(1)+'</td><td>'+fmt(x.addFull)+'</td></tr>';});
     document.getElementById('fansTable').innerHTML=t+'</tbody></table>';
   }
 
@@ -918,7 +995,10 @@ tr:last-child td{border-bottom:0;}
     document.getElementById('ordStack').innerHTML=stackCols('cnt');
     document.getElementById('gmvStack').innerHTML=stackCols('gmv');
     renderDealTrend();
-    let t='<table><thead><tr><th>日期</th><th>合计单</th><th>合计额</th><th>初诊单</th><th>初诊额</th><th>复诊单</th><th>复诊额</th><th>汤剂单</th><th>汤剂额</th><th>丸剂单</th><th>丸剂额</th></tr></thead><tbody>';
+    let t='<table>'+buildThead([
+      ['日期','日期'],['合计单','合计单'],['合计额','合计额'],['初诊单','初诊单'],['初诊额','初诊额'],
+      ['复诊单','复诊单'],['复诊额','复诊额'],['汤剂单','汤剂单'],['汤剂额','汤剂额'],['丸剂单','丸剂单'],['丸剂额','丸剂额']
+    ])+'<tbody>';
     DAILY_ORD.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+x.total+'</td><td>'+fmtY(x.totalG)+'</td><td>'+x.first+'</td><td>'+fmtY(x.firstG)+'</td><td>'+x.rev+'</td><td>'+fmtY(x.revG)+'</td><td>'+x.deco+'</td><td>'+fmtY(x.decoG)+'</td><td>'+x.pill+'</td><td>'+fmtY(x.pillG)+'</td></tr>';});
     document.getElementById('dealTable').innerHTML=t+'</tbody></table>';
   }
@@ -939,7 +1019,11 @@ tr:last-child td{border-bottom:0;}
     barChart(document.getElementById('chFansTop'), byAdd.map(c=>({name:c.name,value:c.add,label:fmt(c.add)})));
     barChart(document.getElementById('chPayTop'), byPay.map(c=>({name:c.name,value:c.pay,label:fmt(c.pay)})), {tone:'teal'});
     barChart(document.getElementById('chCacTop'), byCac.map(c=>({name:c.name,value:c.cac,label:fmtY(c.cac)})), {tone:'warm'});
-    let t='<table><thead><tr><th>渠道</th><th>投流消耗</th><th>行为点击</th><th>加粉数（渠道汇总）</th><th>行为点击-加粉转化率</th><th>平均获客成本</th><th>初诊成交订单</th><th>加粉-初诊成交转化率</th></tr></thead><tbody>';
+    let t='<table>'+buildThead([
+      ['渠道','渠道'],['投流消耗','投流消耗'],['行为点击','行为点击'],['加粉数（渠道汇总）','加粉数（渠道汇总）'],
+      ['行为点击-加粉转化率','行为点击-加粉转化率'],['平均获客成本','平均获客成本'],
+      ['初诊成交订单','初诊成交订单'],['加粉-初诊成交转化率','加粉-初诊成交转化率']
+    ])+'<tbody>';
     list.slice().sort((a,b)=>b.add-a.add).forEach(c=>{
       t+='<tr><td>'+c.name+'</td><td>'+(c.spend?fmtY(c.spend):'—')+'</td><td>'+(c.clicks?fmt(c.clicks):'—')+'</td><td>'+fmt(c.add)+'</td><td>'+(c.clicks?pct(c.rate):'—')+'</td><td>'+(c.cac?fmtY(c.cac):'—')+'</td><td>'+fmt(c.pay)+'</td><td>'+pct(c.payRate)+'</td></tr>';
     });
@@ -957,7 +1041,10 @@ tr:last-child td{border-bottom:0;}
     const list=filteredAsst('eff');
     const byPay=list.slice().sort((a,b)=>b.conv-a.conv).slice(0,5);
     barChart(document.getElementById('effPay'), byPay.map(a=>({name:a.name,value:a.conv,label:pct(a.conv)})), {tone:'teal'});
-    let t='<table><thead><tr><th>医助</th><th>加粉</th><th>开口</th><th>舌象上传</th><th>开方</th><th>加粉-开方转化率</th><th>支付数</th><th>加粉-支付转化率</th></tr></thead><tbody>';
+    let t='<table>'+buildThead([
+      ['医助','医助'],['加粉','加粉'],['开口','开口'],['舌象上传','舌象上传'],['开方','开方'],
+      ['加粉-开方转化率','加粉-开方转化率'],['支付数','支付数'],['加粉-支付转化率','加粉-支付转化率']
+    ])+'<tbody>';
     list.slice().sort((a,b)=>b.f01-a.f01).forEach(a=>{t+='<tr><td>'+a.name+'</td><td>'+fmt(a.f01)+'</td><td>'+fmt(a.f02)+'</td><td>'+fmt(a.f03)+'</td><td>'+fmt(a.f04)+'</td><td>'+pct(a.convRx)+'</td><td>'+fmt(a.f05)+'</td><td>'+pct(a.conv)+'</td></tr>';});
     document.getElementById('effTable').innerHTML=t+'</tbody></table>';
   }
@@ -968,7 +1055,9 @@ tr:last-child td{border-bottom:0;}
     const byG=list.slice().sort((a,b)=>b.totalGmv-a.totalGmv).slice(0,5);
     barChart(document.getElementById('trOrd'), byO.map(a=>({name:a.name,value:a.totalOrd,label:fmt(a.totalOrd)})));
     barChart(document.getElementById('trGmv'), byG.map(a=>({name:a.name,value:a.totalGmv,label:fmtY(a.totalGmv)})), {tone:'warm'});
-    let t='<table><thead><tr><th>医助</th><th>初诊单</th><th>初诊额</th><th>复诊单</th><th>复诊额</th><th>总单</th><th>总额</th></tr></thead><tbody>';
+    let t='<table>'+buildThead([
+      ['医助','医助'],['初诊单','初诊单'],['初诊额','初诊额'],['复诊单','复诊单'],['复诊额','复诊额'],['总单','总单'],['总额','总额']
+    ])+'<tbody>';
     list.slice().sort((a,b)=>b.totalGmv-a.totalGmv).forEach(a=>{t+='<tr><td>'+a.name+'</td><td>'+a.firstOrd+'</td><td>'+fmtY(a.firstGmv)+'</td><td>'+a.revOrd+'</td><td>'+fmtY(a.revGmv)+'</td><td>'+a.totalOrd+'</td><td>'+fmtY(a.totalGmv)+'</td></tr>';});
     document.getElementById('trTable').innerHTML=t+'</tbody></table>';
   }
@@ -999,6 +1088,19 @@ tr:last-child td{border-bottom:0;}
     if(!btn) return;
     state.orderTrendMode=btn.dataset.mode;
     if(state.page==='deal') renderDealTrend();
+  });
+  document.getElementById('appView').addEventListener('click',e=>{
+    const help=e.target.closest('.th-help');
+    if(help){
+      e.preventDefault();
+      e.stopPropagation();
+      openTipModal(help.dataset.tipKey);
+      return;
+    }
+  });
+  document.getElementById('tipClose').onclick=closeTipModal;
+  document.getElementById('tipModal').addEventListener('click',e=>{
+    if(e.target.id==='tipModal') closeTipModal();
   });
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   if(currentUser){showApp();render();}

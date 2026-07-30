@@ -44,6 +44,8 @@ button{border:0;background:none;cursor:pointer;}
 .delta.up{color:var(--up);background:rgba(15,157,106,.1);}
 .delta.down{color:var(--down);background:rgba(217,72,72,.1);}
 .delta.flat{color:var(--muted);background:#f0f3f6;}
+.yest{display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--muted);margin-top:2px;}
+.yest b{font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--text);margin-left:4px;}
 .filters{display:grid;gap:8px;margin-bottom:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
 .filters .fg{display:flex;align-items:center;gap:8px;min-width:0;}
 .filters .fg>label{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--muted);width:28px;}
@@ -84,7 +86,7 @@ button{border:0;background:none;cursor:pointer;}
 .dual{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
 .dual .cell{background:#f7f9fb;border-radius:10px;padding:8px;}
 .dual .cell .k{font-size:12px;color:var(--muted);}
-.dual .cell .x{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;margin-top:2px;}
+.dual .cell .x{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:700;margin-top:4px;letter-spacing:-.02em;}
 .bar{height:6px;border-radius:99px;background:#edf1f5;overflow:hidden;margin-top:6px;}
 .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#6aa4ff);}
 .bar.warm>i{background:linear-gradient(90deg,#d97706,#f5b567);}
@@ -640,16 +642,13 @@ th:first-child .th-inner{justify-content:flex-start;}
   const fmt=n=>Number(n).toLocaleString('zh-CN');
   const fmtY=n=>'¥'+fmt(Math.round(n));
   const pct=n=>(n*100).toFixed(1)+'%';
-  function deltaEl(cur,prev){
-    if(!prev) return '<span class="delta flat">—</span>';
-    const r=(cur-prev)/prev*100;
-    const cls=Math.abs(r)<0.05?'flat':(r>0?'up':'down');
-    const a=r>0?'↑':(r<0?'↓':'→');
-    return '<span class="delta '+cls+'">'+a+' '+Math.abs(r).toFixed(1)+'%</span>';
+  function yestEl(prev){
+    if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
+    return '<span class="yest">昨日 <b>'+fmt(prev)+'</b></span>';
   }
-  function setDelta(id,cur,prev){
+  function setYest(id,prev){
     const el=document.getElementById(id); if(!el) return;
-    const w=document.createElement('div'); w.innerHTML=deltaEl(cur,prev);
+    const w=document.createElement('div'); w.innerHTML=yestEl(prev);
     const n=w.firstChild; n.id=id; el.replaceWith(n);
   }
   function rankRows(list,labelFn,pctFn,warm){
@@ -746,14 +745,14 @@ th:first-child .th-inner{justify-content:flex-start;}
 
   function renderHome(){
     document.getElementById('hFans').textContent=fmt(FANS_TODAY);
-    setDelta('hFansD',FANS_TODAY,FANS_YDAY);
+    setYest('hFansD',FANS_YDAY);
     document.getElementById('hOrd').textContent=fmt(ORD_TODAY);
-    setDelta('hOrdD',ORD_TODAY,ORD_YDAY);
+    setYest('hOrdD',ORD_YDAY);
     const top=CHANNELS.slice().sort((a,b)=>b.add-a.add).slice(0,5);
     document.getElementById('hCh').innerHTML=top.map((c,i)=>
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+c.name+'</div>'+
-      '<div class="dual"><div class="cell"><div class="k">今日加粉</div><div class="x">'+fmt(c.add)+'</div>'+deltaEl(c.add,c.ydAdd)+'</div>'+
-      '<div class="cell"><div class="k">今日初诊成交</div><div class="x">'+fmt(c.pay)+'</div>'+deltaEl(c.pay,c.ydPay)+'</div></div></div></div>'
+      '<div class="dual"><div class="cell"><div class="k">今日加粉</div><div class="x">'+fmt(c.add)+'</div>'+yestEl(c.ydAdd)+'</div>'+
+      '<div class="cell"><div class="k">今日初诊成交</div><div class="x">'+fmt(c.pay)+'</div>'+yestEl(c.ydPay)+'</div></div></div></div>'
     ).join('');
     document.getElementById('hOrders').innerHTML=
       '<div class="order-item"><div class="t"><span>初诊 45 单</span><span>'+fmtY(33480)+'</span></div><div class="order-soft">汤剂 28 单 / '+fmtY(16800)+'　·　丸剂 17 单 / '+fmtY(16680)+'</div></div>'+

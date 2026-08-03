@@ -60,7 +60,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
     </div>
     <div class="toc-title">目录</div>
     <ul class="toc">
-<li class="lv1"><a href="#用户转化明细产品需求文档-PRD">用户转化明细产品需求文档（PRD）</a></li>
+<li class="lv1"><a href="#用户转化明细产品需求文档-prd">用户转化明细产品需求文档（PRD）</a></li>
 <li class="lv2"><a href="#1-需求背景与目标">1. 需求背景与目标</a></li>
 <li class="lv3"><a href="#1-1-业务背景">1.1 业务背景</a></li>
 <li class="lv3"><a href="#1-2-需求目标">1.2 需求目标</a></li>
@@ -71,14 +71,14 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <li class="lv3"><a href="#3-2-1-时间维度切换规则">3.2.1 时间维度切换规则</a></li>
 <li class="lv3"><a href="#3-2-2-应用与应用版本筛选规则">3.2.2 应用与应用版本筛选规则</a></li>
 <li class="lv3"><a href="#3-2-3-状态筛选规则">3.2.3 状态筛选规则</a></li>
-<li class="lv3"><a href="#3-3-漏斗汇总表下钻明细-U05">3.3 漏斗汇总表下钻明细（U05）</a></li>
-<li class="lv3"><a href="#3-4-异步导出-Excel-U01">3.4 异步导出 Excel（U01）</a></li>
+<li class="lv3"><a href="#3-3-漏斗汇总表下钻明细-u05">3.3 漏斗汇总表下钻明细（U05）</a></li>
+<li class="lv3"><a href="#3-4-异步导出-excel-u01">3.4 异步导出 Excel（U01）</a></li>
 <li class="lv3"><a href="#3-4-1-交互流程">3.4.1 交互流程</a></li>
 <li class="lv3"><a href="#3-4-2-导出字段">3.4.2 导出字段</a></li>
 <li class="lv3"><a href="#3-5-统计卡片与趋势图">3.5 统计卡片与趋势图</a></li>
 <li class="lv3"><a href="#3-5-1-时间维度-加粉时间">3.5.1 时间维度 = 加粉时间</a></li>
 <li class="lv3"><a href="#3-5-2-时间维度-支付时间">3.5.2 时间维度 = 支付时间</a></li>
-<li class="lv3"><a href="#3-6-核心数据列表-U04">3.6 核心数据列表（U04）</a></li>
+<li class="lv3"><a href="#3-6-核心数据列表-u04">3.6 核心数据列表（U04）</a></li>
 <li class="lv3"><a href="#3-6-2-字段定义">3.6.2 字段定义</a></li>
 <li class="lv3"><a href="#3-6-3-更多详情">3.6.3 「更多详情」</a></li>
 <li class="lv3"><a href="#3-6-4-字段说明">3.6.4 字段说明</a></li>
@@ -96,7 +96,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
       </div>
     </div>
     <article class="doc">
-<h1 id="用户转化明细产品需求文档-PRD">用户转化明细产品需求文档（PRD）</h1>
+<h1>用户转化明细产品需求文档（PRD）</h1>
 <ul>
 <li><strong>文档类型</strong>：PRD</li>
 <li><strong>模块</strong>：数据明细</li>
@@ -223,7 +223,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 </tr>
 </tbody></table></div>
 <h2 id="2-角色与权限">2. 角色与权限</h2>
-<p>沿用 <a href="./多维度数据统计prd.html" target="_blank" rel="noopener">全链路漏斗优化 PRD</a> 权限体系：</p>
+<p>沿用 <a href="./多维度数据统计prd.html">全链路漏斗优化 PRD</a> 权限体系：</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -356,10 +356,28 @@ tbody tr:nth-child(even){background:#fbfcff;}
 </tr>
 </tbody></table></div>
 <h4 id="3-2-1-时间维度切换规则">3.2.1 时间维度切换规则</h4>
-<p>| 时间维度 | 列表命中逻辑 | 筛选项 | 统计卡片 |
-|----------|----------|--------------|--------|----------|
-| 加粉时间（默认） | 加粉时间落在日期范围内 | 展示加粉状态、响应状态、初诊开方/初诊成交/复诊成交状态 | 见 3.5「加粉时间」卡片集 |
-| 支付时间 | 初诊支付或任一复诊支付时间落在日期范围内即命中；两端均无支付则不命中 | <strong>隐藏</strong>加粉状态、响应状态、初诊开方状态、初诊成交状态、复诊成交状态 | 见 3.5「支付时间」卡片集 |</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>时间维度</th>
+<th>列表命中逻辑</th>
+<th>筛选项</th>
+<th>统计卡片</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>加粉时间（默认）</td>
+<td>加粉时间落在日期范围内</td>
+<td>展示加粉状态、响应状态、初诊开方/初诊成交/复诊成交状态</td>
+<td>见 3.5「加粉时间」卡片集</td>
+</tr>
+<tr>
+<td>支付时间</td>
+<td>初诊支付或任一复诊支付时间落在日期范围内即命中；两端均无支付则不命中</td>
+<td><strong>隐藏</strong>加粉状态、响应状态、初诊开方状态、初诊成交状态、复诊成交状态</td>
+<td>见 3.5「支付时间」卡片集</td>
+</tr>
+</tbody></table></div>
 <p><strong>交互说明</strong>：</p>
 <ol>
 <li>切换时间维度后，快捷文案、日期标签、筛选项显隐、统计卡片布局同步更新；已选日期范围<strong>保留不清空</strong>。</li>
@@ -413,7 +431,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <p><strong>初诊开方状态</strong>：已开方 = 存在初诊处方；未开方 = 无。</p>
 <p><strong>初诊成交状态</strong>：已成交 = 初诊支付成功；未成交 = 未支付（含未开方）。</p>
 <p><strong>复诊成交状态</strong>：已成交 = 复诊次数 &gt; 0；未成交 = 复诊次数 = 0。</p>
-<h3 id="3-3-漏斗汇总表下钻明细-U05">3.3 漏斗汇总表下钻明细（U05）</h3>
+<h3 id="3-3-漏斗汇总表下钻明细-u05">3.3 漏斗汇总表下钻明细（U05）</h3>
 <p>在全链路漏斗各汇总表<strong>最右侧新增（或调整）操作列</strong>，链接至用户转化明细页，并通过页内跳转带入时间维度与筛选项；明细页落地后自动按带入条件执行一次筛选。</p>
 <div class="table-wrap"><table>
 <thead>
@@ -469,7 +487,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <td>时间维度=支付时间；带入同上渠道维度字段；日期=当前查询范围</td>
 </tr>
 </tbody></table></div>
-<h3 id="3-4-异步导出-Excel-U01">3.4 异步导出 Excel（U01）</h3>
+<h3 id="3-4-异步导出-excel-u01">3.4 异步导出 Excel（U01）</h3>
 <h4 id="3-4-1-交互流程">3.4.1 交互流程</h4>
 <pre><code>用户点击「导出 Excel」
     ↓
@@ -517,61 +535,45 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <tr>
 <th>统计卡片</th>
 <th>统计口径</th>
+<th>副文案</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>添加用户数</td>
 <td>用户添加医助的数量，1个用户加不同医助算多条，1个用户加同一个医助删了再加算1条</td>
+<td>去重用户数 x 人</td>
 </tr>
 <tr>
 <td>已开口用户数</td>
 <td>客户对话数 &gt; 0 的加粉记录数，不算系统欢迎语</td>
+<td>—</td>
 </tr>
 <tr>
 <td>初诊成交单数</td>
-<td>初诊支付成功订单数；副文案：汤剂 x 单、丸剂 x 单</td>
+<td>初诊支付成功订单数，如有多名就诊人均成交即多条</td>
+<td>副文案：汤剂 x 单、丸剂 x 单</td>
 </tr>
 <tr>
 <td>初诊成交金额</td>
-<td>初诊实付金额合计；副文案：汤剂 / 丸剂金额</td>
+<td>初诊实付金额合计</td>
+<td>副文案：汤剂 / 丸剂金额</td>
 </tr>
 <tr>
 <td>复诊成交单数</td>
-<td>复诊支付成功订单数；副文案：汤剂 x 单、丸剂 x 单</td>
+<td>复诊支付成功订单数，多名就诊人多次复诊次数累加</td>
+<td>副文案：汤剂 x 单、丸剂 x 单</td>
 </tr>
 <tr>
 <td>复诊成交金额</td>
-<td>复诊实付金额合计；副文案：汤剂 / 丸剂金额</td>
+<td>复诊实付金额合计</td>
+<td>副文案：汤剂 / 丸剂金额</td>
 </tr>
 </tbody></table></div>
 <h4 id="3-5-2-时间维度-支付时间">3.5.2 时间维度 = 支付时间</h4>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>统计卡片</th>
-<th>统计口径</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>初诊成交单数</td>
-<td>支付日期落在筛选范围内的初诊订单数；副文案：汤剂 / 丸剂</td>
-</tr>
-<tr>
-<td>初诊成交金额</td>
-<td>同上口径金额；副文案：汤剂 / 丸剂</td>
-</tr>
-<tr>
-<td>复诊成交单数</td>
-<td>支付日期落在筛选范围内的复诊订单数；副文案：汤剂 / 丸剂</td>
-</tr>
-<tr>
-<td>复诊成交金额</td>
-<td>同上口径金额；副文案：汤剂 / 丸剂</td>
-</tr>
-</tbody></table></div>
+<p>相比加粉时间筛选，仅保留 4 个成交数据卡片（初诊/复诊成交单数与金额）。</p>
 <p>点击卡片切换右侧趋势图聚合指标；对比功能沿用现状，对比基准日期随当前时间维度计算。</p>
 <p>趋势图 X 轴：单日按小时、多日按天，时间字段与当前时间维度一致。</p>
-<h3 id="3-6-核心数据列表-U04">3.6 核心数据列表（U04）</h3>
+<h3 id="3-6-核心数据列表-u04">3.6 核心数据列表（U04）</h3>
 <h4 id="3-6-2-字段定义">3.6.2 字段定义</h4>
 <p><strong>成交信息</strong></p>
 <div class="table-wrap"><table>
@@ -594,7 +596,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 </tr>
 <tr>
 <td>初诊次数</td>
-<td>初诊支付成功订单数</td>
+<td>初诊支付成功订单数，如有多名就诊人均成交即多条</td>
 <td>整数，无为 <code>0</code></td>
 </tr>
 <tr>
@@ -604,7 +606,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 </tr>
 <tr>
 <td>复诊次数</td>
-<td>复诊支付成功订单数</td>
+<td>复诊支付成功订单数，多名就诊人多次复诊次数累加</td>
 <td>整数，无为 <code>0</code></td>
 </tr>
 <tr>

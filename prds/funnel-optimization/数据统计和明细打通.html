@@ -360,7 +360,19 @@
             font-size: 0.65rem;
             color: #5b6e8c;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
+        .stat-label .field-help-wrap { font-size: inherit; font-weight: inherit; color: inherit; }
+        .stat-dedupe {
+            font-size: 0.55rem;
+            color: #64748b;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+        }
+        .stat-dedupe .field-help-wrap { font-size: inherit; color: inherit; }
         .stat-number {
             font-size: 1.3rem;
             font-weight: 700;
@@ -850,32 +862,31 @@
     <div class="stats-trend-wrapper">
         <div class="stats-cards" id="statsCards">
             <div class="stat-card active stat-add-only" data-stat="total">
-                <div class="stat-label">添加用户数</div>
+                <div class="stat-label"><span class="field-help-wrap">添加用户数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">添加用户数</div><div>用户添加医助的数量，1个用户加不同医助算多条，1个用户加同一个医助删了再加算1条</div></div></span></div>
                 <div class="stat-number" id="totalUsers">-</div>
-                <div class="stat-desc">用户添加医助的数量</div>
+                <div class="stat-dedupe"><span class="field-help-wrap">去重用户数：<span id="dedupeUsers">-</span><span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">去重用户数</div><div>根据用户微信 ID 去重统计；同一微信用户添加多个医助仅计 1 人</div></div></span></div>
             </div>
             <div class="stat-card stat-add-only" data-stat="communicated">
-                <div class="stat-label">已开口用户数</div>
+                <div class="stat-label"><span class="field-help-wrap">已开口用户数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">已开口用户数</div><div>客户对话数 &gt; 0 的加粉记录数，不算系统欢迎语</div></div></span></div>
                 <div class="stat-number" id="communicatedUsers">-</div>
-                <div class="stat-desc">产生对话</div>
             </div>
             <div class="stat-card" data-stat="firstOrd">
-                <div class="stat-label">初诊成交单数</div>
+                <div class="stat-label"><span class="field-help-wrap">初诊成交单数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">初诊成交单数</div><div>初诊支付成功订单数，如有多名就诊人均成交即多条；副文案：汤剂 x 单、丸剂 x 单</div></div></span></div>
                 <div class="stat-number" id="firstOrdCnt">-</div>
                 <div class="stat-desc" id="firstOrdDesc">汤剂 — · 丸剂 —</div>
             </div>
             <div class="stat-card" data-stat="firstAmt">
-                <div class="stat-label">初诊成交金额</div>
+                <div class="stat-label"><span class="field-help-wrap">初诊成交金额<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">初诊成交金额</div><div>初诊实付金额合计；副文案：汤剂 / 丸剂金额</div></div></span></div>
                 <div class="stat-number" id="firstAmtVal">-</div>
                 <div class="stat-desc" id="firstAmtDesc">汤剂 — · 丸剂 —</div>
             </div>
             <div class="stat-card" data-stat="revOrd">
-                <div class="stat-label">复诊成交单数</div>
+                <div class="stat-label"><span class="field-help-wrap">复诊成交单数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">复诊成交单数</div><div>复诊支付成功订单数，多名就诊人多次复诊次数累加；副文案：汤剂 x 单、丸剂 x 单</div></div></span></div>
                 <div class="stat-number" id="revOrdCnt">-</div>
                 <div class="stat-desc" id="revOrdDesc">汤剂 — · 丸剂 —</div>
             </div>
             <div class="stat-card" data-stat="revAmt">
-                <div class="stat-label">复诊成交金额</div>
+                <div class="stat-label"><span class="field-help-wrap">复诊成交金额<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">复诊成交金额</div><div>复诊实付金额合计；副文案：汤剂 / 丸剂金额</div></div></span></div>
                 <div class="stat-number" id="revAmtVal">-</div>
                 <div class="stat-desc" id="revAmtDesc">汤剂 — · 丸剂 —</div>
             </div>
@@ -909,7 +920,7 @@
                     <th>患者(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>报告时间</th><th>加粉时间</th><th>加粉状态</th>
                     <th>患者对话数</th><th>医助回复数</th><th>患者图片数</th>
                     <th><span class="field-help-wrap">响应状态<span class="field-help-icon">?</span><div class="field-help-popover" id="responseStatusHelpTable"></div></span></th>
-                    <th>初诊开方状态</th><th>初诊支付状态</th><th>初诊次数</th><th>初诊支付时间</th><th>复诊次数</th><th>复诊支付时间</th><th>总成交次数</th>
+                    <th>初诊开方状态</th><th>初诊支付状态</th><th><span class="field-help-wrap">初诊次数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">初诊次数</div><div>初诊支付成功订单数，如有多名就诊人均成交即多条</div></div></span></th><th>初诊支付时间</th><th><span class="field-help-wrap">复诊次数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">复诊次数</div><div>复诊支付成功订单数，多名就诊人多次复诊次数累加</div></div></span></th><th>复诊支付时间</th><th>总成交次数</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -3121,7 +3132,7 @@
                 '<td style="text-align:center;">' + (row.初诊次数 || 0) + '</td>' +
                 '<td>' + formatPayTimes(row.初诊支付记录, '—') + '</td>' +
                 '<td style="text-align:center;">' + (row.复诊次数 || 0) + '</td>' +
-                '<td>' + (row.最近复诊支付时间 || '—') + '</td>' +
+                '<td>' + formatPayTimes(row.复诊支付记录, '—') + '</td>' +
                 '<td style="text-align:center;font-weight:600;">' + (row.总成交次数 || 0) + '</td>' +
                 '<td><button class="action-btn" data-detail="' + detailRowId + '">📋 更多详情</button> <button class="action-btn" data-chat="' + escapeHtml(row.患者微信编号) + '" data-name="' + escapeHtml(row.患者微信名) + '">💬 对话</button></td>';
 
@@ -3230,8 +3241,17 @@
         return '汤剂 ¥' + deco.toFixed(0) + ' · 丸剂 ¥' + pill.toFixed(0);
     }
 
+    function countDedupeUsers(data) {
+        var seen = {};
+        data.forEach(function(row) {
+            var id = row.患者微信编号 || row.患者微信名;
+            if (id) seen[id] = true;
+        });
+        return Object.keys(seen).length;
+    }
+
     function renderStatsAndTable() {
-        var emptyIds = ['totalUsers', 'communicatedUsers', 'firstOrdCnt', 'firstAmtVal', 'revOrdCnt', 'revAmtVal'];
+        var emptyIds = ['totalUsers', 'dedupeUsers', 'communicatedUsers', 'firstOrdCnt', 'firstAmtVal', 'revOrdCnt', 'revAmtVal'];
         if (!detailQueried) {
             emptyIds.forEach(function(id) { document.getElementById(id).textContent = '-'; });
             ['firstOrdDesc', 'firstAmtDesc', 'revOrdDesc', 'revAmtDesc'].forEach(function(id) {
@@ -3247,6 +3267,7 @@
         var timeDim = getTimeDim();
         var stats = calcOrderStats(filteredData, start, end, timeDim);
         document.getElementById('totalUsers').textContent = filteredData.length;
+        document.getElementById('dedupeUsers').textContent = countDedupeUsers(filteredData);
         document.getElementById('communicatedUsers').textContent = filteredData.filter(function(u) { return u.客户对话数 > 0; }).length;
         document.getElementById('firstOrdCnt').textContent = stats.firstOrd;
         document.getElementById('firstOrdDesc').textContent = fmtDrugCnt(stats.firstDeco, stats.firstPill);
@@ -3340,7 +3361,7 @@
                 r.报告时间, r.加粉时间, r.加粉状态,
                 r.客户对话数, r.医助对话数, r.客户图片数, r.响应状态,
                 r.初诊开方状态, r.初诊支付状态, r.初诊次数 || 0, r.初诊支付时间 || '',
-                r.复诊次数 || 0, r.最近复诊支付时间 || '', r.总成交次数 || 0,
+                r.复诊次数 || 0, formatPayTimesPlain(r.复诊支付记录, r.最近复诊支付时间 || ''), r.总成交次数 || 0,
                 r.开方时间 || '', r.首单编号 || '', r.开单医生 || '', r.首单金额, r.剂型 || '', r.物流发货时间 || '', r.成交周期 || ''
             ]);
         });

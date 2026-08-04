@@ -105,7 +105,6 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <li class="lv3"><a href="#6-10-渠道编码与中文名映射-展示">6.10 渠道编码与中文名映射（展示）</a></li>
 <li class="lv3"><a href="#6-11-数据表字段说明-通用">6.11 数据表字段说明（通用）</a></li>
 <li class="lv2"><a href="#7-异常处理">7. 异常处理</a></li>
-<li class="lv2"><a href="#8-非功能需求">8. 非功能需求</a></li>
     </ul>
   </aside>
   <main class="main">
@@ -116,7 +115,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
       <div class="links">
         <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html" target="_blank" rel="noopener">交互原型 · 移动端数据统计 V1.0</a>
         <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1prd.html" target="_blank" rel="noopener">关联 · 多维度数据统计 PRD</a>
-        <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html" target="_blank" rel="noopener">关联 · 多维数据统计 V1.1</a>
+        <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html" target="_blank" rel="noopener">关联 · 多维数据统计 V1.1</a>
       </div>
     </div>
     <article class="doc">
@@ -324,7 +323,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 </tr>
 <tr>
 <td>导出</td>
-<td>❌（V1.0 不做）</td>
+<td>❌</td>
 <td>❌</td>
 <td>❌</td>
 </tr>
@@ -400,7 +399,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 </tbody></table></div>
 <p>入口：顶栏右侧头像；支持返回首页。</p>
 <h3 id="6-4-首页">6.4 首页</h3>
-<p><strong>昨日数值展示规则</strong>：首页各指标主值展示今日数据；副行展示<strong>昨日该字段的实际数值</strong>（非涨跌幅、非百分比），口径与主值一致；昨日无数据时展示「—」。</p>
+<p><strong>昨日数值展示规则</strong>：首页各指标主值展示今日数据；副行展示<strong>昨日该字段的实际数值</strong>，口径与主值一致；昨日无数据时展示「—」。</p>
 <h4 id="6-4-1-今日实时">6.4.1 今日实时</h4>
 <div class="table-wrap"><table>
 <thead>
@@ -999,37 +998,6 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <td>确认退出登录？</td>
 </tr>
 </tbody></table></div>
-<hr>
-<h2 id="8-非功能需求">8. 非功能需求</h2>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>类别</th>
-<th>要求</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>时效</td>
-<td>与 Web 端一致：默认近实时/小时级更新（如 10 点可看 9 点前数据），具体以数据平台 SLA 为准</td>
-</tr>
-<tr>
-<td>终端</td>
-<td>适配主流 iOS / Android 手机浏览器或内嵌 WebView；设计宽度以约 375～430 逻辑像素为基准</td>
-</tr>
-<tr>
-<td>安全</td>
-<td>HTTPS；会话超时；记住我不得明文长期存储密码（落地时按账号体系改造原型方案）</td>
-</tr>
-<tr>
-<td>口径一致</td>
-<td>与《多维度数据统计》核心指标对账；初复诊、加粉数（渠道汇总）、获客成本不得私自改公式</td>
-</tr>
-<tr>
-<td>体验</td>
-<td>正文字号 12；Top 图最多 5 条不滚动；趋势图可点选；渠道中文名；数据表头「?」可点击查看字段说明</td>
-</tr>
-</tbody></table></div>
-<hr>
 
 
     </article>

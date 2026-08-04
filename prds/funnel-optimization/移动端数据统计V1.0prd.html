@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>素灵CRM数据看板（移动端）产品需求文档（PRD）</title>
+<style>
+
+:root{--brand:#2563eb;--ink:#172033;--line:#e7ebf3;--bg:#f3f5f9;--card:#fff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:15px;}
+body{background:var(--bg);color:var(--ink);font:14px/1.72 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+a{color:var(--brand);text-decoration:none;} a:hover{text-decoration:underline;}
+.layout{display:grid;grid-template-columns:292px minmax(0,1fr);min-height:100vh;}
+.side{position:sticky;top:0;height:100vh;overflow:auto;background:#111827;color:#d6deee;border-right:1px solid #1f2937;padding:24px 18px;}
+.side-brand{padding:4px 8px 18px;border-bottom:1px solid rgba(226,232,240,.14);margin-bottom:16px;}
+.side-brand h1{font-size:1rem;line-height:1.35;color:#fff;margin-bottom:8px;font-weight:700;}
+.side-brand p{font-size:.78rem;color:#9aa6bd;line-height:1.5;}
+.toc-title{font-size:.78rem;margin:0 0 10px;padding:0 8px;color:#8fa0bd;letter-spacing:.08em;font-weight:700;}
+.toc{list-style:none;} .toc li{margin:2px 0;}
+.toc a{display:block;color:#d6deee;border-radius:8px;padding:7px 8px;line-height:1.35;}
+.toc a:hover,.toc a.active{background:#1f2a3f;color:#fff;text-decoration:none;}
+.toc .lv1{font-weight:700;} .toc .lv1 a{color:#fff;}
+.toc .lv2 a{padding-left:18px;font-size:.88rem;color:#b8c3d8;}
+.toc .lv3 a{padding-left:30px;font-size:.82rem;color:#9aa6bd;}
+.main{width:100%;max-width:1080px;margin:0 auto;padding:32px 34px 80px;}
+.hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:34px;border-radius:16px;box-shadow:0 18px 40px rgba(37,99,235,.22);margin-bottom:24px;}
+.hero h1{font-size:1.7rem;line-height:1.3;margin-bottom:10px;}
+.hero p{color:#eff6ff;max-width:880px;}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.meta span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 10px;font-size:.75rem;}
+.links{margin-top:14px;font-size:.85rem;} .links a{color:#dbeafe;margin-right:14px;}
+.doc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 8px 24px rgba(18,26,43,.05);}
+.doc > h1:first-of-type{display:none;}
+h2{font-size:1.4rem;margin:34px 0 14px;padding-top:8px;color:#1d4ed8;scroll-margin-top:24px;}
+h3{font-size:1.1rem;margin:24px 0 10px;scroll-margin-top:24px;}
+h4{font-size:1rem;margin:18px 0 8px;color:#344054;scroll-margin-top:24px;}
+p{margin:8px 0 14px;} ul,ol{margin:8px 0 18px 22px;} li{margin:4px 0;}
+blockquote{background:#f8fafc;border-left:3px solid #93c5fd;padding:10px 14px;margin:12px 0 18px;color:#334155;border-radius:0 8px 8px 0;}
+blockquote p{margin:6px 0;} blockquote ul,blockquote ol{margin:6px 0 6px 18px;}
+strong{color:#101828;} hr{border:0;border-top:1px solid var(--line);margin:28px 0;}
+code{background:#f0f3f8;border:1px solid #dfe5ef;border-radius:5px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em;}
+pre{background:#111827;color:#dbe7ff;overflow:auto;padding:16px;border-radius:10px;margin:12px 0 20px;}
+pre code{background:transparent;border:0;color:inherit;padding:0;}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin:12px 0 22px;}
+table{width:100%;border-collapse:collapse;min-width:680px;background:#fff;}
+th,td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;}
+th:last-child,td:last-child{border-right:0;} tr:last-child td{border-bottom:0;}
+th{background:#eff6ff;color:#1d4ed8;font-weight:700;white-space:nowrap;}
+tbody tr:nth-child(even){background:#fbfcff;}
+.top{position:fixed;right:22px;bottom:22px;width:40px;height:40px;border:0;border-radius:50%;background:var(--brand);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.16);opacity:.78;}
+.top:hover{opacity:1;}
+@media(max-width:900px){.layout{display:block;}.side{position:relative;height:auto;max-height:42vh;}.main{padding:18px 14px 70px;}.hero{padding:26px 20px;}.doc{padding:20px;}}
+@media print{body{background:#fff;}.layout{display:block;}.side,.top{display:none;}}
+
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="side-brand">
+      <h1>移动端数据统计 PRD</h1>
+      <p>素灵CRM数据看板 · V1.0 · HTML 阅读版</p>
+    </div>
+    <div class="toc-title">目录</div>
+    <ul class="toc">
+<li class="lv1"><a href="#素灵crm数据看板-移动端-产品需求文档-prd">素灵CRM数据看板（移动端）PRD</a></li>
+<li class="lv2"><a href="#a-修订记录">A. 修订记录</a></li>
+<li class="lv2"><a href="#1-需求背景与目标">1. 需求背景与目标</a></li>
+<li class="lv3"><a href="#1-1-业务背景">1.1 业务背景</a></li>
+<li class="lv3"><a href="#1-2-需求目标">1.2 需求目标</a></li>
+<li class="lv3"><a href="#1-3-需求范围">1.3 需求范围</a></li>
+<li class="lv2"><a href="#2-角色与权限">2. 角色与权限</a></li>
+<li class="lv3"><a href="#2-1-角色定义">2.1 角色定义</a></li>
+<li class="lv3"><a href="#2-2-权限矩阵">2.2 权限矩阵</a></li>
+<li class="lv2"><a href="#6-页面与交互">6. 页面与交互</a></li>
+<li class="lv3"><a href="#6-1-页面结构">6.1 页面结构</a></li>
+<li class="lv3"><a href="#6-2-登录页">6.2 登录页</a></li>
+<li class="lv3"><a href="#6-3-个人中心">6.3 个人中心</a></li>
+<li class="lv3"><a href="#6-4-首页">6.4 首页</a></li>
+<li class="lv3"><a href="#6-4-1-今日实时">6.4.1 今日实时</a></li>
+<li class="lv3"><a href="#6-4-2-今日分渠道核心数据">6.4.2 今日分渠道核心数据</a></li>
+<li class="lv3"><a href="#6-4-3-今日订单核心数据">6.4.3 今日订单核心数据</a></li>
+<li class="lv3"><a href="#6-4-4-近-7-天医助成交-top">6.4.4 近 7 天医助成交 Top</a></li>
+<li class="lv3"><a href="#6-5-加粉">6.5 加粉</a></li>
+<li class="lv3"><a href="#6-5-1-筛选项">6.5.1 筛选项</a></li>
+<li class="lv3"><a href="#6-5-2-图表">6.5.2 图表</a></li>
+<li class="lv3"><a href="#6-5-3-数据表">6.5.3 数据表</a></li>
+<li class="lv3"><a href="#6-6-成交">6.6 成交</a></li>
+<li class="lv3"><a href="#6-6-1-筛选项">6.6.1 筛选项</a></li>
+<li class="lv3"><a href="#6-6-2-图表">6.6.2 图表</a></li>
+<li class="lv3"><a href="#6-6-3-数据表">6.6.3 数据表</a></li>
+<li class="lv3"><a href="#6-7-渠道">6.7 渠道</a></li>
+<li class="lv3"><a href="#6-7-1-筛选项">6.7.1 筛选项</a></li>
+<li class="lv3"><a href="#6-7-2-图表-纵向依次">6.7.2 图表（纵向依次）</a></li>
+<li class="lv3"><a href="#6-7-3-数据表">6.7.3 数据表</a></li>
+<li class="lv3"><a href="#6-8-医助人效">6.8 医助人效</a></li>
+<li class="lv3"><a href="#6-8-1-筛选项">6.8.1 筛选项</a></li>
+<li class="lv3"><a href="#6-8-2-图表">6.8.2 图表</a></li>
+<li class="lv3"><a href="#6-8-3-数据表">6.8.3 数据表</a></li>
+<li class="lv3"><a href="#6-9-医助成交">6.9 医助成交</a></li>
+<li class="lv3"><a href="#6-9-1-筛选项">6.9.1 筛选项</a></li>
+<li class="lv3"><a href="#6-9-2-图表-上下结构">6.9.2 图表（上下结构）</a></li>
+<li class="lv3"><a href="#6-9-3-数据表">6.9.3 数据表</a></li>
+<li class="lv3"><a href="#6-10-渠道编码与中文名映射-展示">6.10 渠道编码与中文名映射（展示）</a></li>
+<li class="lv3"><a href="#6-11-数据表字段说明-通用">6.11 数据表字段说明（通用）</a></li>
+<li class="lv2"><a href="#7-异常处理">7. 异常处理</a></li>
+<li class="lv2"><a href="#8-非功能需求">8. 非功能需求</a></li>
+    </ul>
+  </aside>
+  <main class="main">
+    <div class="hero">
+      <h1>素灵CRM数据看板（移动端）</h1>
+      <p>面向老板与管理层的移动端经营看板需求说明，口径对齐 Web 端多维度数据统计 V1.1。</p>
+      <div class="meta"><span>版本 V1.0</span><span>修订 2026-07-29</span><span>模块 funnel-optimization</span></div>
+      <div class="links">
+        <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html" target="_blank" rel="noopener">交互原型 · 移动端数据统计 V1.0</a>
+        <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1prd.html" target="_blank" rel="noopener">关联 · 多维度数据统计 PRD</a>
+        <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html" target="_blank" rel="noopener">关联 · 多维数据统计 V1.1</a>
+      </div>
+    </div>
+    <article class="doc">
+<h1>素灵CRM数据看板（移动端）产品需求文档（PRD）</h1>
+<blockquote>
+<p><strong>文档类型</strong>：PRD（产品需求文档）<br><strong>版本</strong>：V1.0<br><strong>创建日期</strong>：2026-07-27<br><strong>最后更新</strong>：2026-07-29<br><strong>作者</strong>：产品<br><strong>关联文档</strong>：  </p>
+<ul>
+<li>交互原型：<a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html">移动端数据统计 V1.0</a>  </li>
+<li>关联 Web 端 PRD：<a href="./%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1.md">多维度数据统计.md</a>  </li>
+<li>关联 Web 端原型：<a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html">多维数据统计 V1.1</a></li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="a-修订记录">A. 修订记录</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>修订内容</th>
+<th>修订人</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V1.0</td>
+<td>2026-07-27</td>
+<td>初始版本：基于移动端原型沉淀老板看板需求，口径对齐多维度数据统计 V1.1</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>V1.0</td>
+<td>2026-07-29</td>
+<td>首页副行由「较昨日涨跌幅」改为展示昨日同字段数值</td>
+<td>产品</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="1-需求背景与目标">1. 需求背景与目标</h2>
+<h3 id="1-1-业务背景">1.1 业务背景</h3>
+<p>平台已建设 Web 端「全链路漏斗 / 多维度数据统计」能力，覆盖每日转化、订单金额、医助人效、医助成交与渠道维度分析。老板与管理层在移动场景下仍缺少<strong>轻量、可读、可下钻</strong>的经营看板：无法在手机上快速查看今日加粉/成交、分渠道表现、获客成本趋势与医助 Top。</p>
+<p>本需求在<strong>复用 Web 端既有数据口径与汇总模型</strong>的前提下，面向移动端交付「素灵CRM数据看板」，优先服务老板侧看数决策。</p>
+<h3 id="1-2-需求目标">1.2 需求目标</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>目标编号</th>
+<th>目标描述</th>
+<th>衡量方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>G01</td>
+<td>提供移动端登录与个人中心，保障老板看板可安全访问</td>
+<td>登录 / 记住我 / 退出流程 UAT 通过</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>首页可一览今日加粉、成交、分渠道与医助成交 Top，并跳转详情 Tab</td>
+<td>首页模块齐全，入口跳转正确</td>
+</tr>
+<tr>
+<td>G03</td>
+<td>加粉 / 成交 / 渠道 / 医助人效 / 医助成交五类详情页可筛选、看图、看表</td>
+<td>与 Web 端核心指标口径抽样对账通过</td>
+</tr>
+</tbody></table></div>
+<h3 id="1-3-需求范围">1.3 需求范围</h3>
+<p><strong>包含</strong>：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>编号</th>
+<th>功能名称</th>
+<th>功能描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>F01</td>
+<td>登录与会话</td>
+<td>账号密码登录、记住我、会话保持</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F02</td>
+<td>个人中心</td>
+<td>展示用户名、手机号、所属部门、所属角色；退出登录</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F03</td>
+<td>首页经营总览</td>
+<td>今日实时 KPI、分渠道核心、订单核心、近 7 天医助成交 Top5</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F04</td>
+<td>加粉</td>
+<td>近一个月默认范围；加粉数趋势 + 平均获客成本趋势；明细表</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F05</td>
+<td>成交</td>
+<td>近一个月默认范围；初复诊×汤丸剂堆叠图 + 多系列趋势折线；明细表</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F06</td>
+<td>渠道</td>
+<td>快捷/自定义时间；渠道加粉 / 初诊成交 / 获客成本 Top5 条形图；明细表</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F07</td>
+<td>医助人效</td>
+<td>默认今日；加粉-支付转化率 Top5；明细表</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>F08</td>
+<td>医助成交</td>
+<td>默认今日；总订单数 / 总订单金额 Top5（上下结构）；明细表</td>
+<td>P0</td>
+</tr>
+</tbody></table></div>
+<p><strong>不包含</strong>（V1.0）：</p>
+<ul>
+<li>Web 端完整漏斗条形图（AI 工具转化 / 医助转化漏斗全链路）</li>
+<li>渠道→子渠道→产品→版本树形钻取与「产品详细转化」页</li>
+<li>来源多选、过滤重复添加、子渠道/产品/版本级投流隐藏规则的完整实现（移动端 V1.0 简化筛选）</li>
+<li>导出 Excel、查询/重置按钮组（移动端以即时筛选刷新为主）</li>
+<li>医助开方转化率排行（移动端仅保留支付转化率 Top）</li>
+<li>渠道「点击-加粉转化率」排行图</li>
+</ul>
+<blockquote>
+<p><strong>口径原则</strong>：未在本文单独改写的指标定义，一律以《多维度数据统计》PRD 为准；本文仅描述移动端展示裁剪与交互差异。</p>
+</blockquote>
+<hr>
+<h2 id="2-角色与权限">2. 角色与权限</h2>
+<h3 id="2-1-角色定义">2.1 角色定义</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>说明</th>
+<th>本页权限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>老板看板管理员</td>
+<td>经营决策查看方（原型演示角色）</td>
+<td>登录后查看全部数据看板；个人中心；退出</td>
+</tr>
+<tr>
+<td>运营管理员</td>
+<td>对齐 Web 端运营管理员</td>
+<td>按数据权限查看加粉/成交/渠道/医助相关页</td>
+</tr>
+<tr>
+<td>流量组长</td>
+<td>对齐 Web 端流量组长</td>
+<td>查看本团队及以下医助人效、医助成交与对应每日数据</td>
+</tr>
+</tbody></table></div>
+<h3 id="2-2-权限矩阵">2.2 权限矩阵</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>老板看板管理员</th>
+<th>运营管理员</th>
+<th>流量组长</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录 / 退出</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>查看首页</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>查看加粉 / 成交</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅（团队范围）</td>
+</tr>
+<tr>
+<td>查看渠道</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌ ）</td>
+</tr>
+<tr>
+<td>查看医助人效 / 医助成交</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅（本团队及以下）</td>
+</tr>
+<tr>
+<td>导出</td>
+<td>❌（V1.0 不做）</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="6-页面与交互">6. 页面与交互</h2>
+<h3 id="6-1-页面结构">6.1 页面结构</h3>
+<p><strong>系统名称</strong>：素灵CRM数据看板  </p>
+<p><strong>整体结构</strong>：</p>
+<pre><code>登录页
+  ↓ 登录成功
+顶栏 Tab：首页 | 加粉 | 成交 | 渠道 | 医助人效 | 医助成交  + 头像入口（个人中心）
+  ↓
+各业务页：筛选区（如有）→ 图表区 → 数据表
+</code></pre>
+<h3 id="6-2-登录页">6.2 登录页</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>元素</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>系统名</td>
+<td>素灵CRM数据看板</td>
+</tr>
+<tr>
+<td>账号</td>
+<td>必填输入</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>必填输入</td>
+</tr>
+<tr>
+<td>记住我</td>
+<td>勾选后下次带出账号（及现网策略允许的记住项）</td>
+</tr>
+<tr>
+<td>登录</td>
+<td>提交校验；失败提示「账号或密码不能为空 / 错误」</td>
+</tr>
+</tbody></table></div>
+<h3 id="6-3-个人中心">6.3 个人中心</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户名</td>
+<td>登录账号或展示名</td>
+</tr>
+<tr>
+<td>手机号</td>
+<td>脱敏展示（如 138****6688）</td>
+</tr>
+<tr>
+<td>所属部门</td>
+<td>组织架构部门名</td>
+</tr>
+<tr>
+<td>所属角色</td>
+<td>如老板看板管理员</td>
+</tr>
+<tr>
+<td>退出登录</td>
+<td>二次确认后退出</td>
+</tr>
+</tbody></table></div>
+<p>入口：顶栏右侧头像；支持返回首页。</p>
+<h3 id="6-4-首页">6.4 首页</h3>
+<p><strong>昨日数值展示规则</strong>：首页各指标主值展示今日数据；副行展示<strong>昨日该字段的实际数值</strong>（非涨跌幅、非百分比），口径与主值一致；昨日无数据时展示「—」。</p>
+<h4 id="6-4-1-今日实时">6.4.1 今日实时</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>卡片</th>
+<th>指标</th>
+<th>口径说明</th>
+<th>交互</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>今日加粉数（全量）</td>
+<td>当日加粉总量；副行展示昨日加粉数</td>
+<td>全部渠道新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；按加粉事件计</td>
+<td>点击进入「加粉」</td>
+</tr>
+<tr>
+<td>今日成交订单数</td>
+<td>当日支付成功订单数；副行展示昨日成交订单数</td>
+<td>当日全部支付成功订单数（初诊 + 复诊）</td>
+<td>点击进入「成交」</td>
+</tr>
+</tbody></table></div>
+<h4 id="6-4-2-今日分渠道核心数据">6.4.2 今日分渠道核心数据</h4>
+<ul>
+<li>按渠道汇总加粉倒序列出渠道（中文名）</li>
+<li>每渠道展示：今日加粉、今日初诊成交；各指标下方展示昨日同字段数值</li>
+<li>入口：「渠道 ›」</li>
+</ul>
+<h4 id="6-4-3-今日订单核心数据">6.4.3 今日订单核心数据</h4>
+<ul>
+<li>初诊：订单数 / 金额，拆分汤剂、丸剂</li>
+<li>复诊：订单数 / 金额，拆分汤剂、丸剂</li>
+<li>入口：「成交 ›」</li>
+</ul>
+<h4 id="6-4-4-近-7-天医助成交-top">6.4.4 近 7 天医助成交 Top</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>图表</th>
+<th>内容</th>
+<th>格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>总订单数 Top5</td>
+<td>近 7 天医助总订单数 Top5，带序号</td>
+<td>横向条形图，上下布局之一</td>
+</tr>
+<tr>
+<td>总订单金额 Top5</td>
+<td>近 7 天医助总订单金额 Top5，带序号</td>
+<td>横向条形图，上下布局之二</td>
+</tr>
+</tbody></table></div>
+<p>约束：最多 5 条、不滚动、左右留白、条长受控。入口：「医助成交 ›」。</p>
+<h3 id="6-5-加粉">6.5 加粉</h3>
+<h4 id="6-5-1-筛选项">6.5.1 筛选项</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>筛选项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>时间</td>
+<td>日期范围（半宽）</td>
+<td>近一个月</td>
+<td>点击弹出开始/结束日期；标题「时间」</td>
+</tr>
+<tr>
+<td>平台</td>
+<td>下拉</td>
+<td>全部</td>
+<td>抖音 / 百度 / 微信 / 快手 / 小红书 等</td>
+</tr>
+<tr>
+<td>渠道</td>
+<td>下拉</td>
+<td>全部</td>
+<td>选项展示中文名，值映射渠道编码</td>
+</tr>
+<tr>
+<td>团队</td>
+<td>下拉</td>
+<td>全部</td>
+<td>A 组 / B 组 / C 组 等</td>
+</tr>
+</tbody></table></div>
+<p>筛选项两列紧凑布局；筛选变更后即时刷新图表与表（V1.0）。</p>
+<h4 id="6-5-2-图表">6.5.2 图表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>图表</th>
+<th>内容</th>
+<th>交互</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>加粉数趋势</td>
+<td>按日 <strong>加粉数（全量）</strong> 折线，含纵轴</td>
+<td>点击数据点展示当日数值</td>
+</tr>
+<tr>
+<td>平均获客成本趋势</td>
+<td>按日平均获客成本折线，含纵轴</td>
+<td>点击数据点展示当日数值</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p>加粉数趋势与首页「今日加粉数（全量）」口径一致；表中仍保留加粉数（渠道汇总）用于投流转化与获客成本计算。</p>
+</blockquote>
+<h4 id="6-5-3-数据表">6.5.3 数据表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>列名</th>
+<th>口径说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>日期</td>
+<td>业务日，按自然日统计</td>
+</tr>
+<tr>
+<td>投流消耗</td>
+<td>当日投放消耗金额合计（元）</td>
+</tr>
+<tr>
+<td>行为点击</td>
+<td>当日投放行为点击次数</td>
+</tr>
+<tr>
+<td>加粉数（渠道汇总）</td>
+<td>各投放渠道新增加企微好友人数（含 AI 工具添加及投放企微卡等）；用于计算投流转化与获客成本</td>
+</tr>
+<tr>
+<td>行为点击-加粉转化率</td>
+<td>加粉数（渠道汇总）÷ 行为点击</td>
+</tr>
+<tr>
+<td>平均获客成本</td>
+<td>投流消耗 ÷ 加粉数（渠道汇总）；加粉数为 0 时展示「—」</td>
+</tr>
+<tr>
+<td>加粉数（全量）</td>
+<td>全部渠道新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；按加粉事件计；置于末列；与加粉数趋势图口径一致</td>
+</tr>
+</tbody></table></div>
+<p>表支持横向滚动查看完整列。</p>
+<h3 id="6-6-成交">6.6 成交</h3>
+<h4 id="6-6-1-筛选项">6.6.1 筛选项</h4>
+<p>与「加粉」一致：时间（默认近一个月）、平台、渠道、团队；两列布局，时间占半宽。</p>
+<h4 id="6-6-2-图表">6.6.2 图表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>图表</th>
+<th>内容</th>
+<th>格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>订单数</td>
+<td>初诊 / 复诊 / 总计，汤剂+丸剂堆叠</td>
+<td>左右双卡堆叠柱</td>
+</tr>
+<tr>
+<td>订单金额</td>
+<td>同上，金额维度</td>
+<td>左右双卡堆叠柱</td>
+</tr>
+<tr>
+<td>趋势折线图</td>
+<td>可切换「订单金额 / 订单数」；系列：总计 + 初诊汤剂/丸剂 + 复诊汤剂/丸剂</td>
+<td>全宽折线；点击展示当日各系列数值</td>
+</tr>
+</tbody></table></div>
+<p>图例：汤剂、丸剂颜色区分；趋势图系列图例展示在图下方。</p>
+<h4 id="6-6-3-数据表">6.6.3 数据表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>列名</th>
+<th>口径说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>日期</td>
+<td>业务日，按自然日统计</td>
+</tr>
+<tr>
+<td>合计单</td>
+<td>当日全部支付成功订单数（初诊 + 复诊）</td>
+</tr>
+<tr>
+<td>合计额</td>
+<td>当日全部支付成功订单实付金额合计（元）</td>
+</tr>
+<tr>
+<td>初诊单</td>
+<td>当日初诊支付成功订单数</td>
+</tr>
+<tr>
+<td>初诊额</td>
+<td>当日初诊订单实付金额合计（元）</td>
+</tr>
+<tr>
+<td>复诊单</td>
+<td>当日复诊支付成功订单数</td>
+</tr>
+<tr>
+<td>复诊额</td>
+<td>当日复诊订单实付金额合计（元）</td>
+</tr>
+<tr>
+<td>汤剂单</td>
+<td>当日药物类型为汤剂的支付成功订单数</td>
+</tr>
+<tr>
+<td>汤剂额</td>
+<td>当日汤剂订单实付金额合计（元）</td>
+</tr>
+<tr>
+<td>丸剂单</td>
+<td>当日药物类型为丸剂的支付成功订单数</td>
+</tr>
+<tr>
+<td>丸剂额</td>
+<td>当日丸剂订单实付金额合计（元）</td>
+</tr>
+</tbody></table></div>
+<h3 id="6-7-渠道">6.7 渠道</h3>
+<h4 id="6-7-1-筛选项">6.7.1 筛选项</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>筛选项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>时间</td>
+<td>快捷标签 + 自定义</td>
+<td>今日</td>
+<td>今日 / 昨日 / 近7天 / 近30天；自定义为按钮+文案，点击选开始/结束日期</td>
+</tr>
+<tr>
+<td>平台</td>
+<td>下拉</td>
+<td>全部</td>
+<td>同加粉</td>
+</tr>
+<tr>
+<td>渠道</td>
+<td>下拉</td>
+<td>全部</td>
+<td>中文名展示</td>
+</tr>
+</tbody></table></div>
+<h4 id="6-7-2-图表-纵向依次">6.7.2 图表（纵向依次）</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>图表</th>
+<th>排序规则</th>
+<th>格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>渠道加粉 Top5</td>
+<td>加粉数倒序</td>
+<td>横向条形图 + Top 序号</td>
+</tr>
+<tr>
+<td>初诊成交 Top5</td>
+<td>初诊成交订单倒序</td>
+<td>横向条形图 + Top 序号</td>
+</tr>
+<tr>
+<td>获客成本 Top5</td>
+<td>平均获客成本升序（越低越好）</td>
+<td>横向条形图 + Top 序号</td>
+</tr>
+</tbody></table></div>
+<p>约束：最多 5 条、不滚动、条长受控、左右留白。</p>
+<h4 id="6-7-3-数据表">6.7.3 数据表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>列名</th>
+<th>口径说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>渠道</td>
+<td>渠道中文名称</td>
+</tr>
+<tr>
+<td>投流消耗</td>
+<td>该渠道在筛选时段内的投放消耗金额（元）；无投流时展示「—」</td>
+</tr>
+<tr>
+<td>行为点击</td>
+<td>该渠道在筛选时段内的投放行为点击次数；无投流时展示「—」</td>
+</tr>
+<tr>
+<td>加粉数（渠道汇总）</td>
+<td>该渠道新增加企微好友人数（含 AI 工具添加及投放企微卡等）</td>
+</tr>
+<tr>
+<td>行为点击-加粉转化率</td>
+<td>加粉数（渠道汇总）÷ 行为点击；行为点击为 0 时展示「—」</td>
+</tr>
+<tr>
+<td>平均获客成本</td>
+<td>投流消耗 ÷ 加粉数（渠道汇总）；无投流或加粉为 0 时展示「—」</td>
+</tr>
+<tr>
+<td>初诊成交订单</td>
+<td>该渠道初诊支付成功订单数</td>
+</tr>
+<tr>
+<td>加粉-初诊成交转化率</td>
+<td>初诊成交订单 ÷ 加粉数（渠道汇总）；加粉为 0 时展示「—」</td>
+</tr>
+</tbody></table></div>
+<h3 id="6-8-医助人效">6.8 医助人效</h3>
+<h4 id="6-8-1-筛选项">6.8.1 筛选项</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>筛选项</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>时间</td>
+<td>快捷 + 自定义范围</td>
+<td>今日</td>
+<td>同渠道时间交互</td>
+</tr>
+<tr>
+<td>团队</td>
+<td>下拉</td>
+<td>全部</td>
+<td>—</td>
+</tr>
+<tr>
+<td>医助</td>
+<td>搜索框</td>
+<td>—</td>
+<td>按医助姓名模糊搜索</td>
+</tr>
+</tbody></table></div>
+<h4 id="6-8-2-图表">6.8.2 图表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>图表</th>
+<th>内容</th>
+<th>格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>加粉-支付转化率 Top5</td>
+<td>医助按支付转化率倒序 Top5</td>
+<td>横向条形图 + Top 序号，单图撑满</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p>V1.0 不展示「加粉-开方转化率」排行（相对 Web 端裁剪）。</p>
+</blockquote>
+<h4 id="6-8-3-数据表">6.8.3 数据表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>列名</th>
+<th>口径说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>医助</td>
+<td>医助姓名</td>
+</tr>
+<tr>
+<td>加粉</td>
+<td>该医助在筛选时段内加粉好友人数（当前加粉口径，与权限及筛选范围一致）</td>
+</tr>
+<tr>
+<td>开口</td>
+<td>该医助服务的用户中，有发送消息的去重人数</td>
+</tr>
+<tr>
+<td>舌象上传</td>
+<td>该医助服务的用户中，有上传舌象图片的人数</td>
+</tr>
+<tr>
+<td>开方</td>
+<td>该医助服务的用户中，完成初诊病例总结和开方的人数</td>
+</tr>
+<tr>
+<td>加粉-开方转化率</td>
+<td>开方数 ÷ 加粉数；加粉为 0 时展示「—」</td>
+</tr>
+<tr>
+<td>支付数</td>
+<td>该医助服务的用户初诊支付成功订单数</td>
+</tr>
+<tr>
+<td>加粉-支付转化率</td>
+<td>支付数 ÷ 加粉数；加粉为 0 时展示「—」</td>
+</tr>
+</tbody></table></div>
+<h3 id="6-9-医助成交">6.9 医助成交</h3>
+<h4 id="6-9-1-筛选项">6.9.1 筛选项</h4>
+<p>与医助人效一致：时间默认今日、团队、医助搜索。</p>
+<h4 id="6-9-2-图表-上下结构">6.9.2 图表（上下结构）</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>图表</th>
+<th>内容</th>
+<th>格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>总订单数 Top5</td>
+<td>医助总订单数倒序</td>
+<td>横向条形图 + Top 序号</td>
+</tr>
+<tr>
+<td>总订单金额 Top5</td>
+<td>医助总订单金额倒序</td>
+<td>横向条形图 + Top 序号</td>
+</tr>
+</tbody></table></div>
+<h4 id="6-9-3-数据表">6.9.3 数据表</h4>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>列名</th>
+<th>口径说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>医助</td>
+<td>医助姓名</td>
+</tr>
+<tr>
+<td>初诊单</td>
+<td>该医助服务的初诊支付成功订单数</td>
+</tr>
+<tr>
+<td>初诊额</td>
+<td>该医助服务的初诊订单实付金额合计（元）</td>
+</tr>
+<tr>
+<td>复诊单</td>
+<td>该医助服务的复诊支付成功订单数</td>
+</tr>
+<tr>
+<td>复诊额</td>
+<td>该医助服务的复诊订单实付金额合计（元）</td>
+</tr>
+<tr>
+<td>总单</td>
+<td>初诊单 + 复诊单</td>
+</tr>
+<tr>
+<td>总额</td>
+<td>初诊额 + 复诊额</td>
+</tr>
+</tbody></table></div>
+<p>默认按总订单金额倒序展示（表）。</p>
+<h3 id="6-10-渠道编码与中文名映射-展示">6.10 渠道编码与中文名映射（展示）</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>渠道编码（示例）</th>
+<th>中文名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>douyin_info</td>
+<td>抖音信息流</td>
+</tr>
+<tr>
+<td>baidu_doctor_h5</td>
+<td>百度医生H5</td>
+</tr>
+<tr>
+<td>weixin_mp</td>
+<td>微信公众号</td>
+</tr>
+<tr>
+<td>kuaishou_info</td>
+<td>快手信息流</td>
+</tr>
+<tr>
+<td>offline_intro</td>
+<td>线下转介绍</td>
+</tr>
+<tr>
+<td>xiaohongshu</td>
+<td>小红书</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p>实际选项以现网渠道主数据为准；前端禁止直接暴露无映射的英文编码给老板用户。</p>
+</blockquote>
+<h3 id="6-11-数据表字段说明-通用">6.11 数据表字段说明（通用）</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>规则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>适用范围</td>
+<td>加粉、成交、渠道、医助人效、医助成交五类业务页的<strong>数据表</strong></td>
+</tr>
+<tr>
+<td>入口</td>
+<td>表头列名旁展示 <strong>「?」</strong> 图标</td>
+</tr>
+<tr>
+<td>交互</td>
+<td><strong>点击「?」</strong> 自底部弹出说明面板，展示该字段口径；点击遮罩或「知道了」关闭</td>
+</tr>
+<tr>
+<td>内容</td>
+<td>与各页 <strong>6.x.3 数据表</strong> 中「口径说明」列文案一致，不得再引用已删除的业务规则编号</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="7-异常处理">7. 异常处理</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>异常场景</th>
+<th>触发条件</th>
+<th>处理规则</th>
+<th>提示信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录校验失败</td>
+<td>账号或密码为空</td>
+<td>阻止登录</td>
+<td>账号或密码不能为空</td>
+</tr>
+<tr>
+<td>登录鉴权失败</td>
+<td>账号密码错误</td>
+<td>阻止登录</td>
+<td>账号或密码错误</td>
+</tr>
+<tr>
+<td>未登录访问</td>
+<td>会话失效仍打开业务页</td>
+<td>跳转登录页</td>
+<td>—</td>
+</tr>
+<tr>
+<td>时间范围非法</td>
+<td>开始日期晚于结束日期</td>
+<td>阻止确认</td>
+<td>开始日期不能晚于结束日期</td>
+</tr>
+<tr>
+<td>无数据</td>
+<td>筛选后结果为空</td>
+<td>图表展示「暂无数据」，表为空态</td>
+<td>暂无数据</td>
+</tr>
+<tr>
+<td>无投流渠道</td>
+<td>消耗/点击为 0</td>
+<td>获客成本、转化率展示「—」</td>
+<td>—</td>
+</tr>
+<tr>
+<td>退出确认</td>
+<td>点击退出登录</td>
+<td>二次确认</td>
+<td>确认退出登录？</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2 id="8-非功能需求">8. 非功能需求</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>时效</td>
+<td>与 Web 端一致：默认近实时/小时级更新（如 10 点可看 9 点前数据），具体以数据平台 SLA 为准</td>
+</tr>
+<tr>
+<td>终端</td>
+<td>适配主流 iOS / Android 手机浏览器或内嵌 WebView；设计宽度以约 375～430 逻辑像素为基准</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>HTTPS；会话超时；记住我不得明文长期存储密码（落地时按账号体系改造原型方案）</td>
+</tr>
+<tr>
+<td>口径一致</td>
+<td>与《多维度数据统计》核心指标对账；初复诊、加粉数（渠道汇总）、获客成本不得私自改公式</td>
+</tr>
+<tr>
+<td>体验</td>
+<td>正文字号 12；Top 图最多 5 条不滚动；趋势图可点选；渠道中文名；数据表头「?」可点击查看字段说明</td>
+</tr>
+</tbody></table></div>
+<hr>
+
+
+    </article>
+  </main>
+</div>
+<button class="top" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+</body>
+</html>

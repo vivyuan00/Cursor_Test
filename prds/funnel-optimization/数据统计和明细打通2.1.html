@@ -3046,7 +3046,104 @@
         });
     }
 
-    var fullDataset = buildDetailDataset(generateMockDetailData(60));
+    function generateAddDemoRawRecords() {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var todayStr = formatLocalDate(today);
+        var yest = new Date(today);
+        yest.setDate(yest.getDate() - 1);
+        var yestStr = formatLocalDate(yest);
+
+        function makeRecord(cfg) {
+            var addTime = cfg.addTime;
+            var updateTime = cfg.updateTime || addTime;
+            var firstSource = {
+                所属渠道: cfg.channel || '百度巧舱',
+                子渠道: cfg.sub || '1032767:百度搜索推广',
+                应用: cfg.app || '舌诊',
+                应用版本: cfg.ver || 'v3.2',
+                Query: cfg.query || '演示query-' + cfg.id.slice(-2),
+                报告编号: 'RPT-DEMO-' + cfg.id.slice(-3),
+                加粉时间: addTime
+            };
+            var latestSource = cfg.latestSource ? Object.assign({}, cfg.latestSource, { 加粉时间: updateTime }) : firstSource;
+            var hasOrder = cfg.hasOrder !== false && cfg.paid;
+            var payTime = cfg.paid ? addMinutesToTime(addTime, 8) : '';
+            var drug = cfg.drug || '汤剂';
+            var firstCnt = cfg.paid ? (cfg.firstCnt || 1) : 0;
+            var firstVisit = buildFirstVisitData(payTime, firstCnt, drug, cfg.amount || 100);
+            var revisit = buildRevisitData(firstVisit.最近初诊支付时间 || payTime, cfg.revisitCnt || 0, drug);
+            return {
+                患者微信编号: cfg.id,
+                患者微信名: cfg.name,
+                首次添加时间: addTime,
+                最新更新添加时间: updateTime,
+                首次来源: firstSource,
+                最新来源: latestSource,
+                所属渠道: firstSource.所属渠道,
+                子渠道: firstSource.子渠道,
+                应用: firstSource.应用,
+                应用版本: firstSource.应用版本,
+                Query: firstSource.Query,
+                报告编号: firstSource.报告编号,
+                加粉时间: firstSource.加粉时间,
+                医助名: cfg.doctor || '丁莞月100yym',
+                医助账号: 'SuiYu',
+                所属业务组: 'B组',
+                是否删除: cfg.deleted ? '是' : '否',
+                重复添加: cfg.repeat ? '是' : '否',
+                客户对话数: cfg.dialogs || 3,
+                医助对话数: cfg.replies || 3,
+                客户图片数: cfg.images || 0,
+                客户首次对话时间: addTime,
+                医助首次对话时间: addTime,
+                首轮间隔_秒: cfg.firstGap != null ? cfg.firstGap : 12,
+                客户末次对话时间: addTime,
+                医助末次对话时间: addTime,
+                末次间隔_秒: cfg.lastGap != null ? cfg.lastGap : 12,
+                首单编号: hasOrder ? ('PRES-DEMO-' + cfg.id.slice(-3)) : '',
+                开单医生: hasOrder ? '胡蕾蕾' : '',
+                首单金额: hasOrder ? (cfg.amount || 100) : 0,
+                剂型: hasOrder ? drug : '',
+                首单创建时间: hasOrder ? addMinutesToTime(addTime, 2) : '',
+                首单支付时间: payTime,
+                物流发货时间: '',
+                进线成交天数: cfg.paid ? 3 : null,
+                初诊次数: firstVisit.初诊次数,
+                初诊支付记录: firstVisit.初诊支付记录,
+                最近初诊支付时间: firstVisit.最近初诊支付时间,
+                复诊次数: revisit.复诊次数,
+                复诊支付记录: revisit.复诊支付记录,
+                最近复诊支付时间: revisit.最近复诊支付时间,
+                复诊金额: revisit.复诊金额
+            };
+        }
+
+        return [
+            makeRecord({ id: 'demoAdd001', name: '演示·初诊成交', addTime: todayStr + ' 09:15:00', paid: true, firstCnt: 1, revisitCnt: 0, amount: 128 }),
+            makeRecord({
+                id: 'demoAdd002', name: '演示·更新来源', addTime: yestStr + ' 10:00:00', updateTime: todayStr + ' 14:20:00',
+                paid: true, firstCnt: 1, revisitCnt: 1, amount: 105, drug: '丸剂',
+                latestSource: { 所属渠道: '抖音信息流', 子渠道: '更新子渠道-演示', 应用: '体质测试', 应用版本: 'v3.2', Query: '更新query-演示', 报告编号: 'RPT-U-DEMO-002' }
+            }),
+            makeRecord({ id: 'demoAdd003', name: '演示·复诊用户', addTime: todayStr + ' 11:40:00', paid: true, firstCnt: 1, revisitCnt: 2, amount: 106, doctor: '熊国庆100lfy' }),
+            makeRecord({ id: 'demoAdd004', name: '演示·重复添加', addTime: todayStr + ' 08:30:00', repeat: true, paid: true, firstCnt: 1, revisitCnt: 0, amount: 101 }),
+            makeRecord({ id: 'demoAdd005', name: '演示·慢响应', addTime: todayStr + ' 13:05:00', firstGap: 720, lastGap: 720, paid: false, hasOrder: false, dialogs: 2, replies: 1 }),
+            makeRecord({ id: 'demoAdd006', name: '演示·未开方', addTime: todayStr + ' 15:20:00', paid: false, hasOrder: false, dialogs: 1, replies: 1 }),
+            makeRecord({ id: 'demoAdd007', name: '演示·多初诊', addTime: todayStr + ' 10:50:00', paid: true, firstCnt: 2, revisitCnt: 1, amount: 107, doctor: '钟云飞100yym' })
+        ];
+    }
+
+    function mergeAddDemoRecords(baseRows) {
+        var demoRows = buildDetailDataset(generateAddDemoRawRecords());
+        var existingIds = new Set(baseRows.map(function(r) { return r.患者微信编号; }));
+        demoRows.forEach(function(r) {
+            if (!existingIds.has(r.患者微信编号)) baseRows.push(r);
+        });
+        return baseRows;
+    }
+
+    var fullDataset = mergeAddDemoRecords(buildDetailDataset(generateMockDetailData(60)));
     var filteredData = [], currentPage = 1, pageSize = 10, detailQueried = false;
     var trendChart = null, currentStatType = 'total';
 
@@ -3766,10 +3863,6 @@
     updateTimeDimLabels();
     initFieldHelpPopovers();
     initFieldHelpTooltips();
-    var today = new Date();
-    document.getElementById('startDate').value = formatLocalDate(today);
-    document.getElementById('endDate').value = formatLocalDate(today);
-
 
     window.applyDetailDrillParams = function(opts) {
         opts = opts || {};
@@ -3799,6 +3892,13 @@
     };
 
     window.getAddDetailDataset = function() { return fullDataset; };
+    window.detailShared = {
+        addMinutesToTime: addMinutesToTime,
+        getFirstSource: getFirstSource,
+        getLatestSource: getLatestSource,
+        formatLocalDate: formatLocalDate,
+        formatDateTime: formatDateTime
+    };
 
     (function applyUrlParams() {
         var params = new URLSearchParams(window.location.search);
@@ -3826,7 +3926,7 @@
     });
     document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
 
-    renderStatsAndTable();
+    setQuickDate('last7');
 })();
 
 // ===== 成交明细 V2.1 =====
@@ -3839,6 +3939,22 @@
         '问诊H5': ['v2.1', 'v1.0']
     };
     var CHIEF_COMPLAINTS = ['失眠多梦', '舌苔厚腻', '乏力畏寒', '月经不调', '消化不良', '头痛眩晕'];
+    var shared = window.detailShared || {};
+    var addMinutesToTime = shared.addMinutesToTime || function(timeStr, minutes) {
+        var parts = timeStr.split(' ');
+        var d = new Date(parts[0] + 'T' + parts[1]);
+        d.setMinutes(d.getMinutes() + minutes);
+        return formatLocalDate(d) + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+    };
+    var getLatestSource = shared.getLatestSource || function(row) {
+        return row.最新来源 || {
+            所属渠道: row.所属渠道 || '百度巧舱',
+            子渠道: row.子渠道 || '1032767:百度搜索推广',
+            应用: row.应用 || '舌诊',
+            应用版本: row.应用版本 || 'v3.2',
+            加粉时间: row.最新更新添加时间 || row.首次添加时间 || row.加粉时间 || ''
+        };
+    };
     var dealFullDataset = [];
     var dealFiltered = [];
     var dealPage = 1, dealPageSize = 10, dealQueried = false, dealExporting = false, dealExportTimer = null;
@@ -3911,6 +4027,61 @@
         return n + '诊';
     }
 
+    function generateDealDemoOrders() {
+        var scenarios = [
+            { id: '01', dayOffset: 0, hour: 9, min: 20, userId: 'demoUserA', nick: '演示用户·初诊', doctor: '丁莞月100yym', visitNum: 1, drug: '汤剂', amount: 128, channel: '百度巧舱', sub: '1014:百度信息流推广', app: '舌诊', ver: 'v3.2', addDayOffset: 2 },
+            { id: '02', dayOffset: 0, hour: 10, min: 45, userId: 'demoUserA', nick: '演示用户·初诊', doctor: '丁莞月100yym', visitNum: 2, drug: '丸剂', amount: 168, channel: '抖音信息流', sub: '更新子渠道-01', app: '体质测试', ver: 'v3.2', addDayOffset: 1 },
+            { id: '03', dayOffset: 0, hour: 14, min: 10, userId: 'demoUserB', nick: '演示用户·多诊', doctor: '钟云飞100yym', visitNum: 1, drug: '汤剂', amount: 105, channel: '百度巧舱', sub: '1032767:百度搜索推广', app: '问诊H5', ver: 'v2.1', addDayOffset: 5 },
+            { id: '04', dayOffset: 1, hour: 11, min: 30, userId: 'demoUserB', nick: '演示用户·多诊', doctor: '钟云飞100yym', visitNum: 2, drug: '汤剂', amount: 95, channel: '百度巧舱', sub: '1032767:百度搜索推广', app: '问诊H5', ver: 'v2.1', addDayOffset: 5 },
+            { id: '05', dayOffset: 2, hour: 16, min: 5, userId: 'demoUserB', nick: '演示用户·多诊', doctor: '钟云飞100yym', visitNum: 3, drug: '丸剂', amount: 118, channel: '百度巧舱', sub: '1032767:百度搜索推广', app: '问诊H5', ver: 'v2.1', addDayOffset: 5 },
+            { id: '06', dayOffset: 3, hour: 9, min: 50, userId: 'demoUserC', nick: '演示用户·四诊', doctor: '小秋100lfy', visitNum: 4, drug: '丸剂', amount: 142, channel: '抖音信息流', sub: '更新子渠道-02', app: '舌诊', ver: 'v2.1', addDayOffset: 10 },
+            { id: '07', dayOffset: 4, hour: 13, min: 15, userId: 'demoUserD', nick: '演示用户·王玉侠', doctor: '熊国庆100lfy', visitNum: 1, drug: '汤剂', amount: 106, channel: '百度巧舱', sub: '1032767:百度搜索推广', app: '舌诊', ver: 'v3.2', addDayOffset: 7 },
+            { id: '08', dayOffset: 5, hour: 10, min: 0, userId: 'demoUserD', nick: '演示用户·王玉侠', doctor: '熊国庆100lfy', visitNum: 2, drug: '丸剂', amount: 88, channel: '抖音信息流', sub: '更新子渠道-03', app: '体质测试', ver: 'v1.0', addDayOffset: 6 },
+            { id: '09', dayOffset: 6, hour: 15, min: 40, userId: 'demoUserE', nick: '演示用户·李昌高', doctor: '倪康宽yym', visitNum: 1, drug: '汤剂', amount: 107, channel: '百度巧舱', sub: '1032767:百度搜索推广', app: '问诊H5', ver: 'v2.1', addDayOffset: 8 },
+            { id: '10', dayOffset: 6, hour: 17, min: 20, userId: 'demoUserE', nick: '演示用户·李昌高', doctor: '倪康宽yym', visitNum: 2, drug: '汤剂', amount: 92, channel: '百度巧舱', sub: '1032767:百度搜索推广', app: '问诊H5', ver: 'v2.1', addDayOffset: 8 }
+        ];
+        return scenarios.map(function(cfg, idx) {
+            var payDate = new Date();
+            payDate.setHours(0, 0, 0, 0);
+            payDate.setDate(payDate.getDate() - cfg.dayOffset);
+            var payTime = formatLocalDate(payDate) + ' ' + String(cfg.hour).padStart(2, '0') + ':' + String(cfg.min).padStart(2, '0') + ':00';
+            var addDate = new Date(payDate);
+            addDate.setDate(addDate.getDate() - cfg.addDayOffset);
+            var addTime = formatLocalDate(addDate) + ' 08:30:00';
+            var drugFee = Math.round(cfg.amount * 0.82);
+            var decoctionFee = cfg.drug === '汤剂' ? Math.round(cfg.amount * 0.08) : 0;
+            return {
+                订单编号: 'DEMOORD' + cfg.id,
+                处方编号: 'DEMOPRES' + cfg.id,
+                订单创建时间: addMinutesToTime(payTime, -18),
+                支付时间: payTime,
+                用户编号: cfg.userId,
+                用户昵称: cfg.nick,
+                医助名称: cfg.doctor,
+                医助账号: 'SuiYu',
+                所属团队: 'B组',
+                医生名: '胡蕾蕾',
+                诊次序号: cfg.visitNum,
+                诊次: visitNumToLabel(cfg.visitNum),
+                剂型: cfg.drug,
+                病历主诉: CHIEF_COMPLAINTS[idx % CHIEF_COMPLAINTS.length],
+                药费: drugFee,
+                待煎费: decoctionFee,
+                运费: 15,
+                折扣率: '95%',
+                实付金额: cfg.amount,
+                年龄: (30 + idx) + '岁',
+                性别: idx % 2 === 0 ? '女' : '男',
+                收货地址: '浙江省杭州市西湖区演示路' + (100 + idx) + '号',
+                渠道: cfg.channel,
+                子渠道: cfg.sub,
+                应用: cfg.app,
+                应用版本: cfg.ver,
+                加粉时间: addTime
+            };
+        });
+    }
+
     function buildDealDatasetFromUsers(users) {
         var orders = [], idx = 0;
         users.forEach(function(u) {
@@ -3927,7 +4098,13 @@
 
     function initDealDataset() {
         var users = typeof window.getAddDetailDataset === 'function' ? window.getAddDetailDataset() : [];
-        dealFullDataset = buildDealDatasetFromUsers(users);
+        var fromUsers = buildDealDatasetFromUsers(users);
+        var demoOrders = generateDealDemoOrders();
+        var existingIds = new Set(fromUsers.map(function(o) { return o.订单编号; }));
+        demoOrders.forEach(function(o) {
+            if (!existingIds.has(o.订单编号)) fromUsers.push(o);
+        });
+        dealFullDataset = fromUsers;
     }
 
     function renderDealTable() {
@@ -4326,10 +4503,6 @@
     dealChannelSel.addEventListener('change', updateDealSubChannels);
     initDealAppFilters();
 
-    var dealToday = new Date();
-    document.getElementById('dealStartDate').value = formatLocalDate(dealToday);
-    document.getElementById('dealEndDate').value = formatLocalDate(dealToday);
-
     document.querySelectorAll('.deal-quick-btn').forEach(function(btn) {
         btn.addEventListener('click', function() { setDealQuickDate(btn.dataset.range); });
     });
@@ -4366,7 +4539,7 @@
         document.getElementById('dealCompareDatePicker').classList.toggle('show', e.target.checked);
     });
 
-    renderDealStatsAndTable();
+    setDealQuickDate('last7');
 })();
 
 </script>

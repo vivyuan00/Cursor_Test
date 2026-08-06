@@ -53,7 +53,7 @@
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .stats-trend-wrapper { display: flex; gap: 16px; margin: 0 24px 20px; flex-wrap: wrap; }
         .stats-cards { flex: 0 0 300px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
-        .stats-cards.mode-pay { flex: 0 0 280px; }
+        .stats-cards.mode-pay { flex: 0 0 320px; }
         .stat-card {
             background: #fff; border-radius: 14px; padding: 10px 12px; border: 1px solid #edf2f7;
             cursor: pointer; transition: all 0.2s;
@@ -805,20 +805,20 @@
             <div id="page-add-detail" class="funnel-page">
 <div class="page-header">
         <div class="page-title">👥 加粉明细 <span class="version-tag">V2.1 · PRD 原型</span></div>
-        <div class="page-sub" id="pageSub">线索 → 沟通 → 成交摘要 · 用户维度转化监控（时间筛选：最初添加时间）</div>
+        <div class="page-sub" id="pageSub">线索 → 沟通 → 成交摘要 · 用户维度转化监控（时间筛选：更新添加时间）</div>
     </div>
 
     <div class="filter-card">
         <div class="filter-row">
             <div class="filter-group">
-                <label id="timeTypeLabel">时间类型</label>
+                <label id="timeTypeLabel"><span class="field-help-wrap">时间类型<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpFilter"><div class="field-help-title">时间类型说明</div><div><strong>更新添加</strong>：根据用户删除医助后又添加的时间和来源信息进行统计。</div><div style="margin-top:6px;"><strong>首次添加</strong>：根据首次添加信息展示。</div></div></span></label>
                 <select id="timeTypeSelect">
-                    <option value="initial" selected>最初添加时间</option>
-                    <option value="update">更新添加时间</option>
+                    <option value="initial">首次添加时间</option>
+                    <option value="update" selected>更新添加时间</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label id="quickDateLabel">📅 时间快捷(最初添加时间)</label>
+                <label id="quickDateLabel">📅 时间快捷(更新添加时间)</label>
                 <div class="quick-btns" id="quickDateBtns">
                     <button data-range="today" class="quick-btn active">今日</button>
                     <button data-range="yesterday" class="quick-btn">昨日</button>
@@ -926,7 +926,7 @@
         <span id="pageInfo">第1页</span>
         <button class="btn" id="nextPageBtn">下一页 ▶</button>
     </div>
-    <div class="footer-note" id="footerNote">当前时间筛选基于「最初添加时间」；来源字段展示随时间类型切换；点击左侧卡片切换趋势图；支持开启对比功能。</div>
+    <div class="footer-note" id="footerNote">当前时间筛选基于「更新添加时间」；来源字段展示随时间类型切换；点击左侧卡片切换趋势图；支持开启对比功能。</div>
             </div>
             <div id="page-deal-detail" class="funnel-page">
 <div class="page-header">
@@ -952,7 +952,7 @@
             <div class="filter-group"><label>应用版本</label><select id="dealAppVersionSelect"><option value="all">全部</option></select></div>
             <div class="filter-group"><label>所属团队</label><select id="dealGroupSelect"><option value="all">全部</option><option value="B组">B组</option></select></div>
             <div class="filter-group"><label>医助名(搜索)</label><input type="text" id="dealDoctorSearch" class="search-input-sm" placeholder="输入医助姓名"></div>
-            <div class="filter-group"><label>初复诊</label><select id="dealVisitSelect"><option value="all">全部</option><option value="初诊">初诊</option><option value="复诊">复诊</option></select></div>
+            <div class="filter-group"><label>诊次</label><select id="dealVisitSelect"><option value="all">全部</option><option value="1">初诊</option><option value="2">二诊</option><option value="2plus">二诊及以上</option></select></div>
             <div class="filter-group"><label>🔍 昵称/编号</label><input type="text" id="dealSearchKeyword" placeholder="用户昵称/编号"></div>
             <div class="btn-group">
                 <button class="btn btn-primary" id="dealApplyFilterBtn">筛选</button>
@@ -975,14 +975,22 @@
                 <div class="stat-desc" id="dealFirstAmtDesc">汤剂 — · 丸剂 —</div>
             </div>
             <div class="stat-card" data-deal-stat="revOrd">
-                <div class="stat-label">复诊成交单数</div>
+                <div class="stat-label"><span class="field-help-wrap">复诊成交单数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">复诊成交单数</div><div>统计<strong>二诊及二诊以上</strong>支付成功订单数。</div></div></span></div>
                 <div class="stat-number" id="dealRevOrdCnt">-</div>
                 <div class="stat-desc" id="dealRevOrdDesc">汤剂 — · 丸剂 —</div>
             </div>
             <div class="stat-card" data-deal-stat="revAmt">
-                <div class="stat-label">复诊成交金额</div>
+                <div class="stat-label"><span class="field-help-wrap">复诊成交金额<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">复诊成交金额</div><div>统计<strong>二诊及二诊以上</strong>订单实付金额合计。</div></div></span></div>
                 <div class="stat-number" id="dealRevAmtVal">-</div>
                 <div class="stat-desc" id="dealRevAmtDesc">汤剂 — · 丸剂 —</div>
+            </div>
+            <div class="stat-card" data-deal-stat="secondConv">
+                <div class="stat-label"><span class="field-help-wrap">二诊转化率<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">二诊转化率</div><div>二诊成交单数 / 初诊成交单数</div></div></span></div>
+                <div class="stat-number" id="dealSecondConvRate">-</div>
+            </div>
+            <div class="stat-card" data-deal-stat="aboveSecondConv">
+                <div class="stat-label"><span class="field-help-wrap">二诊以上转化率<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">二诊以上转化率</div><div>三诊及以上成交单数 / 二诊成交单数</div></div></span></div>
+                <div class="stat-number" id="dealAboveSecondConvRate">-</div>
             </div>
         </div>
         <div class="trend-panel">
@@ -1006,14 +1014,14 @@
                 <tr class="group-header">
                     <th colspan="10">📦 订单基础信息</th>
                     <th colspan="8" class="th-first">💊 订单详细</th>
-                    <th colspan="4" class="th-revisit">👤 患者信息</th>
+                    <th colspan="3" class="th-revisit">👤 患者信息</th>
                     <th colspan="5">🔗 用户来源</th>
                 </tr>
                 <tr>
                     <th>订单编号</th><th>处方编号</th><th>订单创建时间</th><th>支付时间</th>
                     <th>用户编号</th><th>用户昵称</th><th>医助名称</th><th>医助账号</th><th>所属团队</th><th>医生名</th>
-                    <th>初复诊</th><th>剂型</th><th>病历主诉</th><th>药费</th><th>待煎费</th><th>运费</th><th>折扣率</th><th>实付金额</th>
-                    <th>年龄</th><th>性别</th><th>收货地址</th><th>手机操作系统</th>
+                    <th>诊次</th><th>剂型</th><th>病历主诉</th><th>药费</th><th>待煎费</th><th>运费</th><th>折扣率</th><th>实付金额</th>
+                    <th>年龄</th><th>性别</th><th>收货地址</th>
                     <th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>加粉时间</th>
                 </tr>
             </thead>
@@ -1025,7 +1033,7 @@
         <span id="dealPageInfo">第1页</span>
         <button class="btn" id="dealNextPageBtn">下一页 ▶</button>
     </div>
-    <div class="footer-note" id="dealFooterNote">当前时间筛选基于「支付时间」；支持从加粉明细「成交详情」带入用户编号筛选。</div>
+    <div class="footer-note" id="dealFooterNote">当前时间筛选基于「支付时间」；用户来源（渠道、子渠道、应用、应用版本、加粉时间）取<strong>最新一次更新添加</strong>时快照；支持从加粉明细「成交详情」带入用户编号筛选。</div>
             </div>
             <div id="page-funnel" class="funnel-page active">
                 <div id="funnel-content"></div>
@@ -2619,7 +2627,7 @@
 
 (function(){
     var TIME_DIMS = {
-        initial: { label: '最初添加时间', datePrefix: '添加日期', field: '最初添加时间' },
+        initial: { label: '首次添加时间', datePrefix: '添加日期', field: '首次添加时间' },
         update: { label: '更新添加时间', datePrefix: '添加日期', field: '最新更新添加时间' }
     };
     var QUERY_SAMPLES = ['失眠怎么调理', '舌苔发白', '中医体质测试', '湿气重怎么办', '舌诊报告解读', ''];
@@ -2681,8 +2689,7 @@
 
     function initFieldHelpTooltips() {
         var layer = document.getElementById('fieldHelpLayer');
-        var pageDetail = document.getElementById('page-add-detail');
-        if (!layer || !pageDetail) return;
+        if (!layer) return;
 
         function hideFieldHelpLayer() {
             layer.style.display = 'none';
@@ -2712,17 +2719,23 @@
             layer.style.top = top + 'px';
         }
 
-        pageDetail.addEventListener('mouseover', function(e) {
-            var wrap = e.target.closest('.field-help-wrap');
-            if (!wrap || !pageDetail.contains(wrap)) return;
-            showFieldHelpLayer(wrap);
-        });
-        pageDetail.addEventListener('mouseout', function(e) {
-            var wrap = e.target.closest('.field-help-wrap');
-            if (!wrap) return;
-            var related = e.relatedTarget;
-            if (!related || !wrap.contains(related)) hideFieldHelpLayer();
-        });
+        function bindFieldHelpPage(pageEl) {
+            if (!pageEl) return;
+            pageEl.addEventListener('mouseover', function(e) {
+                var wrap = e.target.closest('.field-help-wrap');
+                if (!wrap || !pageEl.contains(wrap)) return;
+                showFieldHelpLayer(wrap);
+            });
+            pageEl.addEventListener('mouseout', function(e) {
+                var wrap = e.target.closest('.field-help-wrap');
+                if (!wrap) return;
+                var related = e.relatedTarget;
+                if (!related || !wrap.contains(related)) hideFieldHelpLayer();
+            });
+        }
+
+        bindFieldHelpPage(document.getElementById('page-add-detail'));
+        bindFieldHelpPage(document.getElementById('page-deal-detail'));
         window.addEventListener('scroll', hideFieldHelpLayer, true);
         window.addEventListener('resize', hideFieldHelpLayer);
     }
@@ -2746,23 +2759,23 @@
     }
     function getTimeDim() {
         var sel = document.getElementById('timeTypeSelect');
-        return sel && sel.value === 'update' ? 'update' : 'initial';
+        return sel && sel.value === 'initial' ? 'initial' : 'update';
     }
     function getTimeField() {
         return TIME_DIMS[getTimeDim()].field;
     }
-    function getInitialSource(row) {
-        return row.最初来源 || {
+    function getFirstSource(row) {
+        return row.首次来源 || {
             所属渠道: row.所属渠道, 子渠道: row.子渠道, 应用: row.应用, 应用版本: row.应用版本,
-            Query: row.Query, 报告编号: row.报告编号, 加粉时间: row.加粉时间 || row.最初添加时间
+            Query: row.Query, 报告编号: row.报告编号, 加粉时间: row.加粉时间 || row.首次添加时间
         };
     }
     function getLatestSource(row) {
-        return row.最新来源 || getInitialSource(row);
+        return row.最新来源 || getFirstSource(row);
     }
     function resolveAddDetailView(row, timeDim) {
         timeDim = timeDim || getTimeDim();
-        var snap = timeDim === 'update' ? getLatestSource(row) : getInitialSource(row);
+        var snap = timeDim === 'update' ? getLatestSource(row) : getFirstSource(row);
         return {
             所属渠道: snap.所属渠道,
             子渠道: snap.子渠道,
@@ -2777,7 +2790,7 @@
     function collectSnapshotValues(dataset, field) {
         var set = new Set();
         dataset.forEach(function(row) {
-            [getInitialSource(row), getLatestSource(row)].forEach(function(snap) {
+            [getFirstSource(row), getLatestSource(row)].forEach(function(snap) {
                 if (snap && snap[field]) set.add(snap[field]);
             });
         });
@@ -2969,9 +2982,9 @@
                 records.push({
                     患者微信编号: 'mock' + String(dayOffset).padStart(2, '0') + String(i).padStart(2, '0') + String(tmpl.患者微信名.length),
                     患者微信名: tmpl.患者微信名 + (dayOffset > 0 ? '·' + dateStr.slice(5) : ''),
-                    最初添加时间: addTime,
+                    首次添加时间: addTime,
                     最新更新添加时间: latestUpdateTime,
-                    最初来源: initialSource,
+                    首次来源: initialSource,
                     最新来源: latestSource,
                     所属渠道: initialSource.所属渠道,
                     子渠道: initialSource.子渠道,
@@ -3014,7 +3027,7 @@
             var firstCnt = item.初诊次数 || 0;
             var revisitCnt = item.复诊次数 || 0;
             var payTimeForCycle = hasPay ? (item.最近初诊支付时间 || item.首单支付时间) : '';
-            var initialAddTime = getInitialSource(item).加粉时间;
+            var initialAddTime = getFirstSource(item).加粉时间;
             var dealCycleText = formatDealCycleText(initialAddTime, payTimeForCycle);
             return Object.assign({}, item, {
                 响应状态: getResponseStatus(item.首轮间隔_秒, item.末次间隔_秒),
@@ -3604,7 +3617,7 @@
         if (sel !== 'all') {
             subSet = new Set();
             fullDataset.forEach(function(d) {
-                [getInitialSource(d), getLatestSource(d)].forEach(function(snap) {
+                [getFirstSource(d), getLatestSource(d)].forEach(function(snap) {
                     if (snap && snap.所属渠道 === sel && snap.子渠道) subSet.add(snap.子渠道);
                 });
             });
@@ -3678,7 +3691,7 @@
     window.onclick = function(e) { if (e.target === document.getElementById('chatModal')) closeChatModal(); };
 
     document.getElementById('resetFilterBtn').addEventListener('click', function() {
-        document.getElementById('timeTypeSelect').value = 'initial';
+        document.getElementById('timeTypeSelect').value = 'update';
         updateTimeDimLabels();
         document.getElementById('channelSelect').value = 'all';
         updateSubChannels();
@@ -3818,7 +3831,7 @@
 
 // ===== 成交明细 V2.1 =====
 (function(){
-    var DEAL_COLS = 27;
+    var DEAL_COLS = 26;
     var APP_LIST = ['舌诊', '体质测试', '问诊H5'];
     var APP_VERSION_MAP = {
         '舌诊': ['v3.2', 'v2.1'],
@@ -3826,7 +3839,6 @@
         '问诊H5': ['v2.1', 'v1.0']
     };
     var CHIEF_COMPLAINTS = ['失眠多梦', '舌苔厚腻', '乏力畏寒', '月经不调', '消化不良', '头痛眩晕'];
-    var OS_LIST = ['iOS', 'Android'];
     var dealFullDataset = [];
     var dealFiltered = [];
     var dealPage = 1, dealPageSize = 10, dealQueried = false, dealExporting = false, dealExportTimer = null;
@@ -3849,7 +3861,7 @@
         setTimeout(function() { el.remove(); }, 4000);
     }
 
-    function buildOrderRow(userRow, visitType, payRecord, idx) {
+    function buildOrderRow(userRow, visitNum, payRecord, idx) {
         var drug = payRecord.drug || userRow.剂型 || '汤剂';
         var drugFee = Math.round((payRecord.amount || 100) * 0.82);
         var decoctionFee = drug === '汤剂' ? Math.round((payRecord.amount || 100) * 0.08) : 0;
@@ -3860,10 +3872,10 @@
         var age = 28 + idx % 20;
         var gender = idx % 2 === 0 ? '女' : '男';
         var address = '浙江省杭州市西湖区文三路' + (100 + idx) + '号';
-        var src = getInitialSource(userRow);
+        var src = getLatestSource(userRow);
         return {
             订单编号: 'ORD' + String(Date.now()).slice(-8) + idx,
-            处方编号: userRow.首单编号 ? userRow.首单编号 + (visitType === '复诊' ? 'R' + idx : '') : 'PRES' + idx,
+            处方编号: userRow.首单编号 ? userRow.首单编号 + (visitNum > 1 ? 'R' + idx : '') : 'PRES' + idx,
             订单创建时间: createTime,
             支付时间: payRecord.time,
             用户编号: userRow.患者微信编号,
@@ -3872,7 +3884,8 @@
             医助账号: userRow.医助账号,
             所属团队: userRow.所属业务组,
             医生名: userRow.开单医生 || '胡蕾蕾',
-            初复诊: visitType,
+            诊次序号: visitNum,
+            诊次: visitNumToLabel(visitNum),
             剂型: drug,
             病历主诉: CHIEF_COMPLAINTS[idx % CHIEF_COMPLAINTS.length],
             药费: drugFee,
@@ -3883,7 +3896,6 @@
             年龄: age + '岁',
             性别: gender,
             收货地址: address,
-            手机操作系统: OS_LIST[idx % 2],
             渠道: src.所属渠道,
             子渠道: src.子渠道,
             应用: src.应用,
@@ -3892,14 +3904,22 @@
         };
     }
 
+    function visitNumToLabel(n) {
+        if (n <= 1) return '初诊';
+        if (n === 2) return '二诊';
+        if (n === 3) return '三诊';
+        return n + '诊';
+    }
+
     function buildDealDatasetFromUsers(users) {
         var orders = [], idx = 0;
         users.forEach(function(u) {
+            var seq = 0;
             (u.初诊支付记录 || []).forEach(function(r) {
-                if (r.time) { orders.push(buildOrderRow(u, '初诊', r, idx++)); }
+                if (r.time) { seq++; orders.push(buildOrderRow(u, seq, r, idx++)); }
             });
             (u.复诊支付记录 || []).forEach(function(r) {
-                if (r.time) { orders.push(buildOrderRow(u, '复诊', r, idx++)); }
+                if (r.time) { seq++; orders.push(buildOrderRow(u, seq, r, idx++)); }
             });
         });
         return orders;
@@ -3932,7 +3952,7 @@
                 '<td>' + escapeHtml(r.医助账号) + '</td>' +
                 '<td>' + escapeHtml(r.所属团队) + '</td>' +
                 '<td>' + escapeHtml(r.医生名) + '</td>' +
-                '<td>' + escapeHtml(r.初复诊) + '</td>' +
+                '<td>' + escapeHtml(r.诊次) + '</td>' +
                 '<td>' + escapeHtml(r.剂型) + '</td>' +
                 '<td>' + escapeHtml(r.病历主诉) + '</td>' +
                 '<td>¥' + r.药费 + '</td>' +
@@ -3943,7 +3963,6 @@
                 '<td>' + escapeHtml(r.年龄) + '</td>' +
                 '<td>' + escapeHtml(r.性别) + '</td>' +
                 '<td>' + escapeHtml(r.收货地址) + '</td>' +
-                '<td>' + escapeHtml(r.手机操作系统) + '</td>' +
                 '<td>' + escapeHtml(r.渠道) + '</td>' +
                 '<td>' + escapeHtml(r.子渠道) + '</td>' +
                 '<td>' + escapeHtml(r.应用) + '</td>' +
@@ -3980,7 +3999,9 @@
             if (appVersion !== 'all' && row.应用版本 !== appVersion) return false;
             if (group !== 'all' && row.所属团队 !== group) return false;
             if (doctorKw && !row.医助名称.toLowerCase().includes(doctorKw) && !row.医助账号.toLowerCase().includes(doctorKw)) return false;
-            if (visit !== 'all' && row.初复诊 !== visit) return false;
+            if (visit === '1' && row.诊次序号 !== 1) return false;
+            if (visit === '2' && row.诊次序号 !== 2) return false;
+            if (visit === '2plus' && (row.诊次序号 || 0) < 2) return false;
             if (kw && !row.用户昵称.toLowerCase().includes(kw) && !row.用户编号.toLowerCase().includes(kw)) return false;
             return true;
         });
@@ -3990,25 +4011,78 @@
 
     function calcDealStats(dataSet) {
         var firstOrd = 0, firstAmt = 0, revOrd = 0, revAmt = 0;
+        var secondOrd = 0, aboveSecondOrd = 0;
         var firstDeco = 0, firstPill = 0, firstDecoAmt = 0, firstPillAmt = 0;
         var revDeco = 0, revPill = 0, revDecoAmt = 0, revPillAmt = 0;
         dataSet.forEach(function(r) {
             var isPill = r.剂型 === '丸剂';
             var amt = r.实付金额 || 0;
-            if (r.初复诊 === '初诊') {
+            var vn = r.诊次序号 || 0;
+            if (vn === 1) {
                 firstOrd++; firstAmt += amt;
                 if (isPill) { firstPill++; firstPillAmt += amt; }
                 else { firstDeco++; firstDecoAmt += amt; }
-            } else if (r.初复诊 === '复诊') {
+            } else if (vn >= 2) {
                 revOrd++; revAmt += amt;
                 if (isPill) { revPill++; revPillAmt += amt; }
                 else { revDeco++; revDecoAmt += amt; }
+                if (vn === 2) secondOrd++;
+                else if (vn >= 3) aboveSecondOrd++;
             }
         });
         return {
             firstOrd: firstOrd, firstAmt: firstAmt, revOrd: revOrd, revAmt: revAmt,
+            secondOrd: secondOrd, aboveSecondOrd: aboveSecondOrd,
             firstDeco: firstDeco, firstPill: firstPill, firstDecoAmt: firstDecoAmt, firstPillAmt: firstPillAmt,
             revDeco: revDeco, revPill: revPill, revDecoAmt: revDecoAmt, revPillAmt: revPillAmt
+        };
+    }
+
+    function formatDealConvRate(numerator, denominator) {
+        if (!denominator) return '—';
+        return (numerator / denominator * 100).toFixed(1) + '%';
+    }
+
+    function getDealConvTrend(dataSet, convType) {
+        if (!dataSet.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        var dated = dataSet.filter(function(d) { return d.支付时间; });
+        if (!dated.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        function bucketRate(bucket) {
+            var first = bucket.filter(function(r) { return r.诊次序号 === 1; }).length;
+            var second = bucket.filter(function(r) { return r.诊次序号 === 2; }).length;
+            var above = bucket.filter(function(r) { return (r.诊次序号 || 0) >= 3; }).length;
+            if (convType === 'secondConv') return first ? (second / first * 100) : 0;
+            return second ? (above / second * 100) : 0;
+        }
+        var stats = calcDealStats(dated);
+        var total = convType === 'secondConv'
+            ? (stats.firstOrd ? stats.secondOrd / stats.firstOrd * 100 : 0)
+            : (stats.secondOrd ? stats.aboveSecondOrd / stats.secondOrd * 100 : 0);
+        var dates = dated.map(function(d) { return d.支付时间.split(' ')[0]; });
+        var uniqueDates = Array.from(new Set(dates)).sort();
+        var isSingleDay = uniqueDates.length === 1;
+        if (isSingleDay) {
+            var labels = Array.from({ length: 24 }, function(_, i) { return i + ':00'; });
+            var values = Array.from({ length: 24 }, function(_, h) {
+                var bucket = dated.filter(function(d) {
+                    return parseInt(d.支付时间.split(' ')[1].split(':')[0], 10) === h;
+                });
+                return bucket.length ? bucketRate(bucket) : 0;
+            });
+            return { labels: labels, values: values, isHourly: true, total: total };
+        }
+        var dayMap = new Map();
+        dated.forEach(function(d) {
+            var date = d.支付时间.split(' ')[0];
+            if (!dayMap.has(date)) dayMap.set(date, []);
+            dayMap.get(date).push(d);
+        });
+        var sorted = Array.from(dayMap.keys()).sort();
+        return {
+            labels: sorted.map(function(d) { return d.slice(5); }),
+            values: sorted.map(function(d) { return bucketRate(dayMap.get(d)); }),
+            isHourly: false,
+            total: total
         };
     }
 
@@ -4021,9 +4095,10 @@
 
     function getDealTrendData(dataSet, statType) {
         if (!dataSet.length) return { labels: [], values: [], isHourly: false, total: 0 };
+        if (statType === 'secondConv' || statType === 'aboveSecondConv') return getDealConvTrend(dataSet, statType);
         var subset = dataSet;
-        if (statType === 'firstOrd' || statType === 'firstAmt') subset = dataSet.filter(function(r) { return r.初复诊 === '初诊'; });
-        if (statType === 'revOrd' || statType === 'revAmt') subset = dataSet.filter(function(r) { return r.初复诊 === '复诊'; });
+        if (statType === 'firstOrd' || statType === 'firstAmt') subset = dataSet.filter(function(r) { return r.诊次序号 === 1; });
+        if (statType === 'revOrd' || statType === 'revAmt') subset = dataSet.filter(function(r) { return (r.诊次序号 || 0) >= 2; });
         if (!subset.length) return { labels: [], values: [], isHourly: false, total: 0 };
         var dates = subset.map(function(r) { return r.支付时间 ? r.支付时间.split(' ')[0] : ''; }).filter(Boolean);
         var uniqueDates = Array.from(new Set(dates)).sort();
@@ -4051,7 +4126,11 @@
     }
 
     function updateDealTrendChart() {
-        var titles = { firstOrd: '初诊成交单数趋势', firstAmt: '初诊成交金额趋势(元)', revOrd: '复诊成交单数趋势', revAmt: '复诊成交金额趋势(元)' };
+        var titles = {
+            firstOrd: '初诊成交单数趋势', firstAmt: '初诊成交金额趋势(元)',
+            revOrd: '复诊成交单数趋势', revAmt: '复诊成交金额趋势(元)',
+            secondConv: '二诊转化率趋势(%)', aboveSecondConv: '二诊以上转化率趋势(%)'
+        };
         var title = titles[dealCurrentStat] || '趋势';
         document.getElementById('dealTrendTitle').textContent = title;
         if (!dealQueried || !dealFiltered.length) {
@@ -4060,9 +4139,10 @@
             return;
         }
         var trendData = getDealTrendData(dealFiltered, dealCurrentStat);
+        var isConv = dealCurrentStat === 'secondConv' || dealCurrentStat === 'aboveSecondConv';
         document.getElementById('dealTrendSubtitle').textContent = trendData.isHourly
-            ? '按支付时间小时统计 · 共 ' + trendData.total + (dealCurrentStat.indexOf('Amt') >= 0 ? ' 元' : ' 单')
-            : '按支付时间天统计 · 共 ' + trendData.total + (dealCurrentStat.indexOf('Amt') >= 0 ? ' 元' : ' 单');
+            ? '按支付时间小时统计 · 整体 ' + trendData.total.toFixed(1) + (isConv ? '%' : (dealCurrentStat.indexOf('Amt') >= 0 ? ' 元' : ' 单'))
+            : '按支付时间天统计 · 整体 ' + trendData.total.toFixed(1) + (isConv ? '%' : (dealCurrentStat.indexOf('Amt') >= 0 ? ' 元' : ' 单'));
         var ctx = document.getElementById('dealTrendChart').getContext('2d');
         if (dealTrendChart) dealTrendChart.destroy();
         dealTrendChart = new Chart(ctx, {
@@ -4071,13 +4151,23 @@
                 labels: trendData.labels,
                 datasets: [{ label: title, data: trendData.values, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', borderWidth: 2, pointRadius: 2, tension: 0.3, fill: true }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: isConv ? { callback: function(v) { return v + '%'; } } : {}
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
         });
     }
 
     function renderDealStatsAndTable() {
         if (!dealQueried) {
-            ['dealFirstOrdCnt', 'dealFirstAmtVal', 'dealRevOrdCnt', 'dealRevAmtVal'].forEach(function(id) {
+            ['dealFirstOrdCnt', 'dealFirstAmtVal', 'dealRevOrdCnt', 'dealRevAmtVal', 'dealSecondConvRate', 'dealAboveSecondConvRate'].forEach(function(id) {
                 document.getElementById(id).textContent = '-';
             });
             ['dealFirstOrdDesc', 'dealFirstAmtDesc', 'dealRevOrdDesc', 'dealRevAmtDesc'].forEach(function(id) {
@@ -4096,6 +4186,8 @@
         document.getElementById('dealRevOrdDesc').textContent = fmtDealDrugCnt(stats.revDeco, stats.revPill);
         document.getElementById('dealRevAmtVal').textContent = '¥' + stats.revAmt.toFixed(0);
         document.getElementById('dealRevAmtDesc').textContent = fmtDealDrugAmt(stats.revDecoAmt, stats.revPillAmt);
+        document.getElementById('dealSecondConvRate').textContent = formatDealConvRate(stats.secondOrd, stats.firstOrd);
+        document.getElementById('dealAboveSecondConvRate').textContent = formatDealConvRate(stats.aboveSecondOrd, stats.secondOrd);
         renderDealTable();
         updateDealTrendChart();
     }
@@ -4158,10 +4250,10 @@
     }
 
     function buildDealExportSheet() {
-        var header = ['订单编号','处方编号','订单创建时间','支付时间','用户编号','用户昵称','医助名称','医助账号','所属团队','医生名','初复诊','剂型','病历主诉','药费','待煎费','运费','折扣率','实付金额','年龄','性别','收货地址','手机操作系统','渠道','子渠道','应用','应用版本','加粉时间'];
+        var header = ['订单编号','处方编号','订单创建时间','支付时间','用户编号','用户昵称','医助名称','医助账号','所属团队','医生名','诊次','剂型','病历主诉','药费','待煎费','运费','折扣率','实付金额','年龄','性别','收货地址','渠道','子渠道','应用','应用版本','加粉时间'];
         var sheet = [header];
         dealFiltered.forEach(function(r) {
-            sheet.push([r.订单编号,r.处方编号,r.订单创建时间,r.支付时间,r.用户编号,r.用户昵称,r.医助名称,r.医助账号,r.所属团队,r.医生名,r.初复诊,r.剂型,r.病历主诉,r.药费,r.待煎费,r.运费,r.折扣率,r.实付金额,r.年龄,r.性别,r.收货地址,r.手机操作系统,r.渠道,r.子渠道,r.应用,r.应用版本,r.加粉时间]);
+            sheet.push([r.订单编号,r.处方编号,r.订单创建时间,r.支付时间,r.用户编号,r.用户昵称,r.医助名称,r.医助账号,r.所属团队,r.医生名,r.诊次,r.剂型,r.病历主诉,r.药费,r.待煎费,r.运费,r.折扣率,r.实付金额,r.年龄,r.性别,r.收货地址,r.渠道,r.子渠道,r.应用,r.应用版本,r.加粉时间]);
         });
         return sheet;
     }

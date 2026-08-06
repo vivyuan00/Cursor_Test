@@ -85,7 +85,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
     <div class="hero">
       <h1>用户转化明细产品需求文档（PRD）</h1>
       <p>便于评审与联调的 HTML 阅读版，内容来自同目录「数据明细prd2.1md」。</p>
-      <div class="meta"><span>版本 V2.1</span><span>模块：数据明细</span><span>修订 2026-08-05</span></div>
+      <div class="meta"><span>版本 V2.1</span><span>模块：数据明细</span><span>修订 2026-08-06</span></div>
       <div class="links">
         <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1%E5%92%8C%E6%98%8E%E7%BB%86%E6%89%93%E9%80%9A2.1.html" target="_blank" rel="noopener">交互原型 · 数据统计和明细打通2.1</a>
         <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E6%95%B0%E6%8D%AE%E6%98%8E%E7%BB%86prd2.html" target="_blank" rel="noopener">关联 · 数据明细 PRD V1.4</a>
@@ -93,7 +93,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
       </div>
     </div>
     <article class="doc">
-<h1>用户转化明细产品需求文档（PRD）</h1>
+<h1 id="用户转化明细产品需求文档prd">用户转化明细产品需求文档（PRD）</h1>
 <ul>
 <li><strong>文档类型</strong>：PRD</li>
 <li><strong>模块</strong>：数据明细</li>
@@ -101,17 +101,18 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <li><strong>创建日期</strong>：2026-07-13</li>
 <li><strong>修订日期</strong>：2026-08-05</li>
 <li><strong>作者</strong>：产品</li>
-<li><strong>交互原型</strong>：<a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1%E5%92%8C%E6%98%8E%E7%BB%86%E6%89%93%E9%80%9A2.1.html">数据统计和明细打通2.1</a></li>
-<li><strong>关联文档2</strong>：多维度数据统计 PRD</li>
+<li><strong>交互原型</strong>：https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1%E5%92%8C%E6%98%8E%E7%BB%86%E6%89%93%E9%80%9A2.1.html</li>
+<li><strong>HTML 阅读版</strong>：https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E6%95%B0%E6%8D%AE%E6%98%8E%E7%BB%86prd2.1.html</li>
+<li><strong>关联文档2</strong>：<code>prds/funnel-optimization/多维度数据统计prd.md</code></li>
 </ul>
 <h2 id="1-需求背景与目标">1. 需求背景与目标</h2>
 <h3 id="1-1-业务背景">1.1 业务背景</h3>
-<p>主要增加「支付时间」维度筛选成交明细；加粉明细补充应用/应用版本筛选、成交信息更精简，详细成交跳转至成交明细查看；明细页和多维数据统计联动使明细页不仅能独立排查个案，还能承接全链路漏斗汇总表的下钻——从漏斗任意汇总行一键跳入明细，并自动带入对应日期、渠道、医助等筛选条件。大数据导出优化。</p>
+<p>增加「支付时间」维度筛选成交明细，用于统计成交信息便于分析；<br>加粉明细，增加首次添加时间和更新添加时间选择（便于筛选新老用户），其他补充应用/应用版本筛选、成交信息更精简，详细成交跳转至成交明细查看；<br>明细页和多维数据统计联动使明细页不仅能独立排查个案，还能承接全链路漏斗汇总表的下钻——从漏斗任意汇总行一键跳入明细，并自动带入对应日期、渠道、医助等筛选条件。<br>大数据导出优化</p>
 <h3 id="1-2-需求目标">1.2 需求目标</h3>
 <div class="table-wrap"><table>
 <thead><tr><th>目标编号</th><th>目标描述</th><th>衡量方式</th></tr></thead>
 <tbody>
-<tr><td>G01</td><td>支持加粉/支付双时间维度</td><td>切换后筛选项、统计卡片、列表、趋势图口径一致</td></tr>
+<tr><td>G01</td><td>支持加粉时间类型（首次/更新）与支付双时间维度</td><td>切换后筛选项、统计卡片、列表、趋势图、导出口径一致</td></tr>
 <tr><td>G02</td><td>多维数据统计表可一键下钻至明细</td><td>各表操作列链接带入正确时间维度与筛选项</td></tr>
 <tr><td>G03</td><td>支持大数据量场景下的稳定数据导出</td><td>10 万条以内筛选结果异步导出成功率 ≥ 99%</td></tr>
 </tbody></table></div>
@@ -122,7 +123,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <tr><td>U01</td><td>加粉数据明细</td><td>用户维度明细；应用/版本；Query 列展示；成交摘要列；「成交详情」跳转</td><td>P0</td></tr>
 <tr><td>U02</td><td>成交数据明细</td><td>订单维度明细；成交统计卡片与趋势；分组列表展示</td><td>P0</td></tr>
 <tr><td>U03</td><td>漏斗汇总表下钻</td><td>加粉类下钻进入加粉明细；支付/订单类下钻进入成交明细</td><td>P1</td></tr>
-<tr><td>U04</td><td>异步导出 Excel</td><td>—</td><td>P0</td></tr>
+<tr><td>U04</td><td>异步导出 Excel</td><td>-</td><td>P0</td></tr>
 </tbody></table></div>
 <h2 id="2-角色与权限">2. 角色与权限</h2>
 <p>沿用全链路漏斗优化 PRD 权限体系：</p>
@@ -138,16 +139,17 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <div class="table-wrap"><table>
 <thead><tr><th>菜单</th><th>页面</th><th>数据粒度</th><th>默认时间口径</th></tr></thead>
 <tbody>
-<tr><td>加粉明细</td><td>用户加粉记录 + 沟通 + 成交摘要</td><td>用户（加粉记录）</td><td>加粉时间</td></tr>
+<tr><td>加粉明细</td><td>用户加粉记录 + 沟通 + 成交摘要</td><td>用户（加粉记录）</td><td>更新添加时间</td></tr>
 <tr><td>成交明细</td><td>支付成功订单明细</td><td>订单</td><td>支付时间</td></tr>
 </tbody></table></div>
-<h2 id="4-加粉数据明细-u01">4. 加粉数据明细（U01）</h2>
+<h2 id="4-加粉数据明细u01">4. 加粉数据明细（U01）</h2>
 <h3 id="4-1-筛选项">4.1 筛选项</h3>
 <div class="table-wrap"><table>
 <thead><tr><th>筛选项</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
 <tbody>
+<tr><td>时间类型</td><td>单选</td><td>更新添加时间</td><td><strong>首次添加时间</strong> / <strong>更新添加时间</strong>；决定日期筛选字段及列表来源字段展示口径；「?」hover 见字段说明</td></tr>
 <tr><td>时间快捷</td><td>按钮组</td><td>今日</td><td>今日 / 昨日 / 近7天 / 近30天</td></tr>
-<tr><td>加粉日期起 / 止</td><td>日期</td><td>今日</td><td>按加粉时间筛选</td></tr>
+<tr><td>添加日期起 / 止</td><td>日期</td><td>今日</td><td>按所选时间类型对应字段筛选</td></tr>
 <tr><td>所属渠道 / 子渠道</td><td>下拉</td><td>全部</td><td>子渠道随渠道联动</td></tr>
 <tr><td>应用 / 应用版本</td><td>下拉</td><td>全部</td><td>版本随应用联动</td></tr>
 <tr><td>所属团队</td><td>下拉</td><td>全部</td><td>沿用现状</td></tr>
@@ -160,6 +162,14 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <tr><td>昵称/编号</td><td>输入框</td><td>—</td><td>患者昵称或编号模糊搜索</td></tr>
 <tr><td>操作</td><td>按钮组</td><td>—</td><td>「筛选」「重置」「导出 Excel」</td></tr>
 </tbody></table></div>
+<p><strong>时间类型与列表展示规则</strong></p>
+<div class="table-wrap"><table>
+<thead><tr><th>时间类型</th><th>筛选字段</th><th>列表展示口径</th></tr></thead>
+<tbody>
+<tr><td>首次添加时间</td><td>首次添加时间</td><td>渠道、子渠道、应用、应用版本、Query、报告编号、加粉时间均取<strong>首次添加</strong>时快照</td></tr>
+<tr><td>更新添加时间</td><td>最新更新添加时间</td><td>上述来源字段均取<strong>最新一次更新添加</strong>时快照；若存在多次更新，取最新一条</td></tr>
+</tbody></table></div>
+<p>切换时间类型后，统计卡片、趋势图、列表、导出口径与所选类型保持一致。</p>
 <h3 id="4-2-统计卡片与趋势图">4.2 统计卡片与趋势图</h3>
 <div class="table-wrap"><table>
 <thead><tr><th>统计卡片</th><th>统计口径</th></tr></thead>
@@ -167,7 +177,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <tr><td>添加用户数</td><td>加粉记录数；副文案：去重用户数</td></tr>
 <tr><td>已开口用户数</td><td>客户对话数 &gt; 0 的加粉记录数</td></tr>
 <tr><td>初诊成交单数</td><td>初诊支付成功订单数</td></tr>
-<tr><td>初诊成交金额</td><td>初诊实付金额合计</td></tr>
+<tr><td>初诊转化率</td><td>初诊成交单数 / 添加用户去重数</td></tr>
 </tbody></table></div>
 <p>点击卡片切换右侧趋势图指标；支持开启对比。</p>
 <h3 id="4-3-核心数据列表">4.3 核心数据列表</h3>
@@ -175,13 +185,13 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <div class="table-wrap"><table>
 <thead><tr><th>分组</th><th>列名</th><th>说明</th></tr></thead>
 <tbody>
-<tr><td>线索信息</td><td>用户(编号/昵称)、医助(名/账号)、所属团队、渠道、子渠道、应用、应用版本</td><td>沿用</td></tr>
-<tr><td>线索信息</td><td>Query</td><td>—</td></tr>
-<tr><td>线索信息</td><td>报告时间、加粉时间、加粉状态</td><td>沿用</td></tr>
-<tr><td>沟通信息</td><td>用户对话数、医助回复数、用户图片数、响应状态</td><td>沿用</td></tr>
+<tr><td>线索信息</td><td>用户(编号/昵称)、医助(名/账号)、所属团队</td><td>沿用</td></tr>
+<tr><td>线索信息</td><td>渠道、子渠道、应用、应用版本</td><td>随时间类型展示首次/最新更新快照</td></tr>
+<tr><td>线索信息</td><td>Query</td><td>-</td></tr>
+<tr><td>线索信息</td><td>报告编号、加粉时间、加粉状态</td><td>报告编号与加粉时间随时间类型切换展示口径（见 4.1）</td></tr>
+<tr><td>沟通信息</td><td>患者对话数、医助回复数、患者图片数、响应状态</td><td>沿用</td></tr>
 <tr><td>成交信息</td><td><strong>初诊开方状态</strong></td><td>已开方 / 未开方；沿用</td></tr>
 <tr><td>成交信息</td><td>初诊支付状态</td><td>已支付 / 未支付 / 未开方；同行或副行展示初诊订单数</td></tr>
-<tr><td>成交信息</td><td><strong>初诊成交金额</strong></td><td>初诊实付金额合计</td></tr>
 <tr><td>成交信息</td><td>初诊成交周期</td><td>首单支付成功时间 − 加粉时间；单位天、时</td></tr>
 <tr><td>成交信息</td><td>复诊状态</td><td>已成交 / 未成交；同行或副行展示复诊订单数</td></tr>
 <tr><td>成交信息</td><td>总订单数、总订单金额</td><td>初诊+复诊订单汇总</td></tr>
@@ -191,7 +201,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <div class="table-wrap"><table>
 <thead><tr><th>操作</th><th>说明</th></tr></thead>
 <tbody>
-<tr><td>成交详情</td><td>跳转「成交明细」，带入当前行<strong>用户编号</strong>并执行查询</td></tr>
+<tr><td>成交详情</td><td>跳转「成交数据明细」，带入当前行<strong>用户编号</strong>并执行查询</td></tr>
 <tr><td>沟通详情</td><td>展开沟通时间与间隔</td></tr>
 <tr><td>对话</td><td>查看沟通记录</td></tr>
 </tbody></table></div>
@@ -199,12 +209,12 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <div class="table-wrap"><table>
 <thead><tr><th>分组</th><th>导出列</th></tr></thead>
 <tbody>
-<tr><td>线索信息</td><td>用户编号、用户昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、Query、报告时间、加粉时间、加粉状态</td></tr>
-<tr><td>沟通信息</td><td>用户对话数、医助回复数、用户图片数、响应状态</td></tr>
-<tr><td>成交信息</td><td>初诊开方状态、初诊支付状态、初诊订单数、初诊成交金额、初诊成交周期、复诊状态、复诊订单数、总订单数、总订单金额</td></tr>
+<tr><td>线索信息</td><td>患者编号、患者昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、Query、报告编号、加粉时间、加粉状态</td></tr>
+<tr><td>沟通信息</td><td>患者对话数、医助回复数、患者图片数、响应状态</td></tr>
+<tr><td>成交信息</td><td>初诊开方状态、初诊支付状态、初诊订单数、初诊成交周期、复诊状态、复诊订单数、总订单数、总订单金额</td></tr>
 </tbody></table></div>
-<p>文件命名：<code>加粉明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
-<h2 id="5-成交数据明细-u02">5. 成交数据明细（U02）</h2>
+<p>文件命名：<code>加粉数据明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
+<h2 id="5-成交数据明细u02">5. 成交数据明细（U02）</h2>
 <h3 id="5-1-筛选项">5.1 筛选项</h3>
 <div class="table-wrap"><table>
 <thead><tr><th>筛选项</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
@@ -215,46 +225,93 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <tr><td>应用 / 应用版本</td><td>下拉</td><td>全部</td><td>版本随应用联动</td></tr>
 <tr><td>所属团队</td><td>下拉</td><td>全部</td><td>沿用现状</td></tr>
 <tr><td>医助名(搜索)</td><td>输入框</td><td>—</td><td>姓名 / 企微账号模糊搜索</td></tr>
-<tr><td>初复诊</td><td>下拉</td><td>全部</td><td>全部 / 初诊 / 复诊</td></tr>
+<tr><td>诊次</td><td>下拉</td><td>全部</td><td>全部 / 初诊 / 二诊 / 二诊及以上</td></tr>
 <tr><td>昵称/编号</td><td>输入框</td><td>—</td><td>用户昵称或编号；支持从加粉页「成交详情」带入</td></tr>
 <tr><td>操作</td><td>按钮组</td><td>—</td><td>「筛选」「重置」「导出 Excel」</td></tr>
 </tbody></table></div>
 <h3 id="5-2-统计卡片与趋势图">5.2 统计卡片与趋势图</h3>
-<p>成交页中间区域展示 <strong>4 个统计卡片 + 趋势图</strong>（含汤剂/丸剂副文案）：</p>
+<p>成交页中间区域展示 <strong>6 个统计卡片 + 趋势图</strong>：</p>
 <div class="table-wrap"><table>
 <thead><tr><th>统计卡片</th><th>统计口径</th></tr></thead>
 <tbody>
-<tr><td>初诊成交单数</td><td>筛选范围内初诊支付成功订单数</td></tr>
+<tr><td>初诊成交单数</td><td>筛选范围内初诊（诊次序号 = 1）支付成功订单数</td></tr>
 <tr><td>初诊成交金额</td><td>筛选范围内初诊实付金额合计</td></tr>
-<tr><td>复诊成交单数</td><td>筛选范围内复诊支付成功订单数</td></tr>
-<tr><td>复诊成交金额</td><td>筛选范围内复诊实付金额合计</td></tr>
+<tr><td>复诊成交单数</td><td>筛选范围内<strong>二诊及二诊以上</strong>（诊次序号 ≥ 2）支付成功订单数</td></tr>
+<tr><td>复诊成交金额</td><td>筛选范围内<strong>二诊及二诊以上</strong>订单实付金额合计</td></tr>
+<tr><td>二诊转化率</td><td>二诊成交单数 / 初诊成交单数</td></tr>
+<tr><td>二诊以上转化率</td><td>三诊及以上成交单数 / 二诊成交单数</td></tr>
 </tbody></table></div>
-<p>点击卡片切换右侧趋势图；支持开启对比。趋势图 X 轴按支付时间聚合（单日按小时、多日按天）。</p>
+<p><strong>复诊口径说明</strong>：成交页统计卡片中的「复诊」均指<strong>二诊及二诊以上</strong>订单，不再等同于列表中的单次「复诊」标签。</p>
+<p>点击卡片切换右侧趋势图；支持开启对比。趋势图 X 轴按支付时间聚合（单日按小时、多日按天）。转化率类卡片趋势图 Y 轴以百分比展示。</p>
 <h3 id="5-3-核心数据列表">5.3 核心数据列表</h3>
 <p>每行一条<strong>支付成功订单</strong>，表头按以下四类分组：</p>
-<p><strong>订单基础信息</strong>：订单编号、处方编号、订单创建时间、支付时间、用户编号、用户昵称、医助名称、医助账号、所属团队、医生名</p>
-<p><strong>订单详细</strong>：初复诊、剂型、病历主诉、药费、待煎费、运费、折扣率、实付金额</p>
-<p><strong>患者信息</strong>：年龄、性别、收货地址、手机操作系统</p>
-<p><strong>用户来源</strong>：渠道、子渠道、应用、应用版本、加粉时间</p>
+<p><strong>订单基础信息</strong></p>
+<div class="table-wrap"><table>
+<thead><tr><th>列名</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>订单编号</td><td>业务订单号</td></tr>
+<tr><td>处方编号</td><td>关联处方号</td></tr>
+<tr><td>订单创建时间</td><td>订单创建时间</td></tr>
+<tr><td>支付时间</td><td>支付成功时间</td></tr>
+<tr><td>用户编号</td><td>原「患者编号」，用户微信编号</td></tr>
+<tr><td>用户昵称</td><td>原「患者昵称」</td></tr>
+<tr><td>医助名称</td><td>服务医助姓名</td></tr>
+<tr><td>医助账号</td><td>企微/系统账号</td></tr>
+<tr><td>所属团队</td><td>医助所属团队</td></tr>
+<tr><td>医生名</td><td>开单医生</td></tr>
+</tbody></table></div>
+<p><strong>订单详细</strong></p>
+<div class="table-wrap"><table>
+<thead><tr><th>列名</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>诊次</td><td>该用户第 N 次支付成功订单，展示为：初诊 / 二诊 / 三诊 / N诊（按用户维度订单序号递增）</td></tr>
+<tr><td>剂型</td><td>汤剂 / 丸剂等</td></tr>
+<tr><td>病历主诉</td><td>病例主诉摘要</td></tr>
+<tr><td>药费</td><td>药品费用</td></tr>
+<tr><td>待煎费</td><td>代煎费用（无则 —）</td></tr>
+<tr><td>运费</td><td>物流运费</td></tr>
+<tr><td>折扣率</td><td>订单折扣比例</td></tr>
+<tr><td>实付金额</td><td>实付金额</td></tr>
+</tbody></table></div>
+<p><strong>患者信息</strong></p>
+<div class="table-wrap"><table>
+<thead><tr><th>列名</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>年龄</td><td>用户年龄</td></tr>
+<tr><td>性别</td><td>用户性别</td></tr>
+<tr><td>收货地址</td><td>收货地址</td></tr>
+</tbody></table></div>
+<p><strong>用户来源</strong></p>
+<p>成交页用户来源字段固定取<strong>最新一次更新添加</strong>时快照（与加粉明细默认「更新添加时间」口径一致）；若用户无更新记录，则回退至首次添加信息。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>列名</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>渠道</td><td>最新更新添加时的所属渠道</td></tr>
+<tr><td>子渠道</td><td>最新更新添加时的子渠道</td></tr>
+<tr><td>应用</td><td>最新更新添加时的来源应用</td></tr>
+<tr><td>应用版本</td><td>最新更新添加时的应用版本</td></tr>
+<tr><td>加粉时间</td><td>最新一次更新添加时间；无更新记录时取首次添加时间</td></tr>
+</tbody></table></div>
 <h3 id="5-4-导出字段">5.4 导出字段</h3>
-<p>与 5.3 列表列一致。文件命名：<code>成交明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
-<h2 id="6-漏斗汇总表下钻明细-u03">6. 漏斗汇总表下钻明细（U03）</h2>
+<p>与 5.3 列表列一致（含拆分后的年龄、性别、收货地址及用户编号/昵称命名）。</p>
+<p>文件命名：<code>成交数据明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
+<h2 id="6-漏斗汇总表下钻明细u03">6. 漏斗汇总表下钻明细（U03）</h2>
 <div class="table-wrap"><table>
 <thead><tr><th>来源页面</th><th>操作文案</th><th>目标页面</th><th>带入筛选条件</th></tr></thead>
 <tbody>
-<tr><td>每日转化数据</td><td>加粉明细</td><td>加粉明细</td><td>加粉日期起止=该行日期；渠道/子渠道/应用等=当前漏斗筛选</td></tr>
+<tr><td>每日转化数据</td><td>加粉明细</td><td>加粉明细</td><td>添加日期起止=该行日期（默认更新添加时间）；渠道/子渠道/应用等=当前漏斗筛选</td></tr>
 <tr><td>每日转化数据</td><td>支付明细</td><td>成交明细</td><td>支付日期起止=该行日期；渠道等筛选项带入</td></tr>
 <tr><td>每日订单金额数据</td><td>数据明细</td><td>成交明细</td><td>支付日期起止=该行日期；渠道等筛选项带入</td></tr>
-<tr><td>医助服务人效统计</td><td>加粉明细</td><td>加粉明细</td><td>加粉日期=当前查询范围；医助企微 ID；渠道等带入</td></tr>
+<tr><td>医助服务人效统计</td><td>加粉明细</td><td>加粉明细</td><td>添加日期=当前查询范围（默认更新添加时间）；医助企微 ID；渠道等带入</td></tr>
 <tr><td>医助服务人效统计</td><td>支付明细</td><td>成交明细</td><td>支付日期=当前查询范围；医助企微 ID；渠道等带入</td></tr>
 <tr><td>医助成交数据</td><td>数据明细</td><td>成交明细</td><td>支付日期=当前查询范围；医助企微 ID；渠道等带入</td></tr>
 <tr><td>渠道维度数据</td><td>转化详细</td><td>渠道产品详细转化页</td><td>原逻辑不变</td></tr>
-<tr><td>渠道维度数据</td><td>加粉明细</td><td>加粉明细</td><td>加粉日期=当前范围；带入渠道、子渠道、应用、版本</td></tr>
+<tr><td>渠道维度数据</td><td>加粉明细</td><td>加粉明细</td><td>添加日期=当前范围（默认更新添加时间）；带入渠道、子渠道、应用、版本</td></tr>
 <tr><td>渠道维度数据</td><td>支付明细</td><td>成交明细</td><td>支付日期=当前范围；带入渠道、子渠道、应用、版本</td></tr>
 </tbody></table></div>
 <p>加粉页「成交详情」下钻：带入<strong>用户编号</strong>至成交明细「昵称/编号」筛选项。</p>
-<h2 id="7-异步导出-excel-u04">7. 异步导出 Excel（U04）</h2>
-<h3 id="7-1-交互流程">7.1 交互流程</h3>
+<h2 id="7-异步导出-excelu04">7. 异步导出 Excel（U04）</h2>
+<h2 id="7-1-交互流程">7.1 交互流程</h2>
 <pre><code>用户点击「导出 Excel」
     ↓
 校验：是否已执行筛选（detailQueried = true）
@@ -272,8 +329,14 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <thead><tr><th>字段</th><th>说明入口</th><th>交互</th></tr></thead>
 <tbody>
 <tr><td>响应状态</td><td>列表表头、筛选项</td><td>「?」hover 浮层展示计算公式与等级对照</td></tr>
-<tr><td>初诊成交周期</td><td>加粉列表表头</td><td>「?」hover 展示：首单支付成功时间 − 加粉时间；单位天、时</td></tr>
-<tr><td>初诊成交金额</td><td>加粉列表表头、统计卡片</td><td>「?」hover 展示：统计口径为订单<strong>实付金额</strong>（初诊支付成功订单的实际付款金额合计）</td></tr>
+<tr><td>初诊成交周期</td><td>加粉列表表头</td><td>「?」hover 展示：首单支付成功时间 − 加粉时间；单位天、时（加粉时间取当前时间类型下展示口径）</td></tr>
+<tr><td>时间类型</td><td>加粉筛选项</td><td>「?」hover 展示：<strong>更新添加</strong>——根据用户删除医助后又添加的时间和来源信息进行统计；<strong>首次添加</strong>——根据首次添加信息展示</td></tr>
+<tr><td>初诊转化率</td><td>加粉统计卡片</td><td>「?」hover 展示：初诊成交单数 / 添加用户去重数</td></tr>
+<tr><td>复诊成交单数 / 复诊成交金额</td><td>成交统计卡片</td><td>「?」hover 展示：统计<strong>二诊及二诊以上</strong>支付成功订单数 / 实付金额合计</td></tr>
+<tr><td>二诊转化率</td><td>成交统计卡片</td><td>「?」hover 展示：二诊成交单数 / 初诊成交单数</td></tr>
+<tr><td>二诊以上转化率</td><td>成交统计卡片</td><td>「?」hover 展示：三诊及以上成交单数 / 二诊成交单数</td></tr>
+<tr><td>用户来源</td><td>成交列表</td><td>渠道、子渠道、应用、应用版本、加粉时间均取<strong>最新一次更新添加</strong>时快照</td></tr>
+<tr><td>初诊成交金额</td><td>成交统计卡片</td><td>筛选范围内初诊实付金额合计</td></tr>
 <tr><td>总订单金额</td><td>加粉列表表头</td><td>「?」hover 展示：统计口径为订单<strong>实付金额</strong>（初诊与复诊全部支付成功订单的实际付款金额合计）</td></tr>
 </tbody></table></div>
     </article>

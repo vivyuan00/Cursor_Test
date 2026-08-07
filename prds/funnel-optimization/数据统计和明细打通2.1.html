@@ -51,9 +51,9 @@
         }
         .btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .stats-trend-wrapper { display: flex; gap: 16px; margin: 0 24px 20px; flex-wrap: wrap; }
+        .stats-trend-wrapper { display: flex; gap: 16px; margin: 0 24px 20px; flex-wrap: nowrap; align-items: stretch; }
         .stats-cards { flex: 0 0 300px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
-        .stats-cards.mode-pay { flex: 0 0 320px; }
+        .stats-cards.mode-pay { flex: 0 0 340px; grid-template-columns: 1fr 1fr; }
         .stat-card {
             background: #fff; border-radius: 14px; padding: 10px 12px; border: 1px solid #edf2f7;
             cursor: pointer; transition: all 0.2s;
@@ -66,7 +66,8 @@
         .filter-add-only.hidden { display: none; }
         .trend-panel {
             flex: 1; background: #fff; border-radius: 16px; padding: 12px 16px;
-            border: 1px solid #edf2f7; min-width: 300px;
+            border: 1px solid #edf2f7; min-width: 0;
+            display: flex; flex-direction: column;
         }
         .trend-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #eef2f8; }
         .trend-title { font-size: 0.9rem; font-weight: 600; }
@@ -75,8 +76,11 @@
         .compare-date-picker.show { display: flex; }
         .compare-date-picker input { padding: 3px 6px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.65rem; }
         .trend-subtitle { font-size: 0.65rem; color: #5b6e8c; margin-bottom: 8px; }
-        .chart-container { height: 200px; position: relative; }
-        .table-wrapper { margin: 0 24px 16px; overflow-x: auto; border-radius: 20px; border: 1px solid #eef2f8; background: #fff; }
+        .chart-container { flex: 1; min-height: 200px; position: relative; }
+        .table-wrapper { margin: 0 24px 16px; border-radius: 20px; border: 1px solid #eef2f8; background: #fff; position: relative; overflow: visible; }
+        .table-wrapper .table-scroll { overflow-x: auto; border-radius: 20px; }
+        .table-wrapper.req-marker-wrapper { padding-top: 10px; }
+        .table-wrapper.req-marker-wrapper > .req-marker { top: 0; right: 8px; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 1680px; }
         .data-table th { background: #f9fafb; padding: 10px 6px; border-bottom: 1px solid #e2e8f0; font-weight: 600; text-align: center; vertical-align: middle; }
         .group-header { background: #f1f5f9; font-size: 0.7rem; border-bottom: 1px solid #cbd5e1; }
@@ -243,7 +247,9 @@
 
         .req-marker-wrapper {
             position: relative;
-            display: inline-block;
+        }
+        .req-marker-wrapper.block-wrap:not(.stats-trend-wrapper) {
+            display: block;
         }
 
         /* 筛选卡片 */
@@ -331,13 +337,18 @@
             display: flex;
             gap: 16px;
             margin: 0 24px 20px 24px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            align-items: stretch;
         }
         .stats-cards {
-            flex: 0 0 260px;
+            flex: 0 0 300px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+            align-content: start;
+        }
+        .stats-cards.mode-pay {
+            flex: 0 0 340px;
         }
         .stat-card {
             background: white;
@@ -393,6 +404,9 @@
             padding: 12px 16px;
             border: 1px solid #edf2f7;
             box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
         .trend-header {
             display: flex;
@@ -441,17 +455,30 @@
             margin-bottom: 8px;
         }
         .chart-container {
-            height: 200px;
+            flex: 1;
+            min-height: 200px;
             position: relative;
         }
 
         /* 表格样式 */
         .table-wrapper {
             margin: 0 0 16px 0;
-            overflow-x: auto;
             border-radius: 20px;
             border: 1px solid #eef2f8;
             background: white;
+            position: relative;
+            overflow: visible;
+        }
+        .table-wrapper .table-scroll {
+            overflow-x: auto;
+            border-radius: 20px;
+        }
+        .table-wrapper.req-marker-wrapper {
+            padding-top: 10px;
+        }
+        .table-wrapper.req-marker-wrapper > .req-marker {
+            top: 0;
+            right: 8px;
         }
         .data-table {
             width: 100%;
@@ -795,7 +822,8 @@
     <div class="main-layout">
         <div class="sidebar">
             <div class="sidebar-title">全链路漏斗优化</div>
-            <div class="nav-menu">
+            <div class="nav-menu req-marker-wrapper block-wrap">
+                <span class="req-marker" data-id="15">15</span>
                 <div class="nav-item active" data-page="funnel">📊 全链路漏斗</div>
                 <div class="nav-item" data-page="add-detail">👥 加粉明细</div>
                 <div class="nav-item" data-page="deal-detail">💰 成交明细</div>
@@ -808,10 +836,11 @@
         <div class="page-sub" id="pageSub">线索 → 沟通 → 成交摘要 · 用户维度转化监控（时间筛选：更新添加时间）</div>
     </div>
 
-    <div class="filter-card">
+    <div class="filter-card req-marker-wrapper block-wrap">
+        <span class="req-marker" data-id="9">9</span>
         <div class="filter-row">
             <div class="filter-group">
-                <label id="timeTypeLabel"><span class="field-help-wrap">时间类型<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpFilter"><div class="field-help-title">时间类型说明</div><div><strong>更新添加</strong>：根据用户删除医助后又添加的时间和来源信息进行统计。</div><div style="margin-top:6px;"><strong>首次添加</strong>：根据首次添加信息展示。</div></div></span></label>
+                <label id="timeTypeLabel"><span class="field-help-wrap">时间类型<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpFilter"></div></span></label>
                 <select id="timeTypeSelect">
                     <option value="initial">首次添加时间</option>
                     <option value="update" selected>更新添加时间</option>
@@ -834,15 +863,6 @@
             <div class="filter-group"><label>应用版本</label><select id="appVersionSelect"><option value="all">全部</option></select></div>
             <div class="filter-group"><label>所属团队</label><select id="groupSelect"><option value="all">全部</option><option value="B组">B组</option></select></div>
             <div class="filter-group"><label>医助名(搜索)</label><input type="text" id="doctorSearch" class="search-input-sm" placeholder="输入医助姓名"></div>
-            <div class="filter-group filter-add-only" id="fgAddStatus">
-                <label>加粉状态</label>
-                <select id="addStatusSelect">
-                    <option value="all">全部</option>
-                    <option value="正常">正常</option>
-                    <option value="重复添加">重复添加</option>
-                    <option value="已删除">已删除</option>
-                </select>
-            </div>
             <div class="filter-group filter-add-only" id="fgResponse">
                 <label><span class="field-help-wrap">响应状态<span class="field-help-icon">?</span><div class="field-help-popover" id="responseStatusHelpFilter"></div></span></label>
                 <select id="responseSelect"><option value="all">全部</option><option value="优良">优良</option><option value="良好">良好</option><option value="一般">一般</option><option value="较差">较差</option></select>
@@ -861,7 +881,8 @@
 
     <div class="export-bar" id="exportBar"><span class="export-spinner"></span><span id="exportBarText">正在导出，请稍候...</span></div>
 
-    <div class="stats-trend-wrapper">
+    <div class="stats-trend-wrapper req-marker-wrapper block-wrap">
+        <span class="req-marker" data-id="10">10</span>
         <div class="stats-cards" id="statsCards">
             <div class="stat-card active stat-add-only" data-stat="total">
                 <div class="stat-label"><span class="field-help-wrap">添加用户数<span class="field-help-icon">?</span><div class="field-help-popover"><div class="field-help-title">添加用户数</div><div>用户添加医助的数量，1个用户加不同医助算多条，1个用户加同一个医助删了再加算1条</div></div></span></div>
@@ -897,7 +918,9 @@
         </div>
     </div>
 
-    <div class="table-wrapper">
+    <div class="table-wrapper req-marker-wrapper block-wrap">
+        <span class="req-marker" data-id="11">11</span>
+        <div class="table-scroll">
         <table class="data-table">
             <thead>
                 <tr class="group-header">
@@ -907,7 +930,7 @@
                     <th rowspan="2">操作</th>
                 </tr>
                 <tr>
-                    <th>用户(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>Query</th><th>报告编号</th><th>加粉时间</th><th>加粉状态</th>
+                    <th>用户(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>Query</th><th>报告编号</th><th><span class="field-help-wrap">加粉时间<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpTable"></div></span></th><th>加粉状态</th>
                     <th>用户对话数</th><th>医助回复数</th><th>用户图片数</th>
                     <th><span class="field-help-wrap">响应状态<span class="field-help-icon">?</span><div class="field-help-popover" id="responseStatusHelpTable"></div></span></th>
                     <th>初诊开方状态</th>
@@ -920,6 +943,7 @@
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
+        </div>
     </div>
     <div class="pagination">
         <button class="btn" id="prevPageBtn">◀ 上一页</button>
@@ -933,7 +957,8 @@
         <div class="page-title">💰 成交明细 <span class="version-tag">V2.1 · PRD 原型</span></div>
         <div class="page-sub" id="dealPageSub">订单维度明细 · 按支付时间筛选</div>
     </div>
-    <div class="filter-card">
+    <div class="filter-card req-marker-wrapper block-wrap">
+        <span class="req-marker" data-id="12">12</span>
         <div class="filter-row">
             <div class="filter-group">
                 <label id="dealQuickDateLabel">📅 时间快捷(支付时间)</label>
@@ -962,7 +987,8 @@
         </div>
     </div>
     <div class="export-bar" id="dealExportBar"><span class="export-spinner"></span><span id="dealExportBarText">正在导出，请稍候...</span></div>
-    <div class="stats-trend-wrapper">
+    <div class="stats-trend-wrapper req-marker-wrapper block-wrap">
+        <span class="req-marker" data-id="13">13</span>
         <div class="stats-cards mode-pay" id="dealStatsCards">
             <div class="stat-card active" data-deal-stat="firstOrd">
                 <div class="stat-label">初诊成交单数</div>
@@ -1008,7 +1034,9 @@
             <div class="chart-container"><canvas id="dealTrendChart"></canvas></div>
         </div>
     </div>
-    <div class="table-wrapper">
+    <div class="table-wrapper req-marker-wrapper block-wrap">
+        <span class="req-marker" data-id="14">14</span>
+        <div class="table-scroll">
         <table class="data-table deal-table">
             <thead>
                 <tr class="group-header">
@@ -1027,6 +1055,7 @@
             </thead>
             <tbody id="dealTableBody"></tbody>
         </table>
+        </div>
     </div>
     <div class="pagination">
         <button class="btn" id="dealPrevPageBtn">◀ 上一页</button>
@@ -2518,6 +2547,239 @@
   </ul>
 </div>
 `
+        },
+        '9': {
+            title: '需求描述：加粉明细 · 筛选项与导出（U01）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">功能范围</div>
+  <p>加粉数据明细（U01）筛选项、筛选/重置/导出操作，及异步导出流程（U04）。切换时间类型后，统计卡片、趋势图、列表、导出口径须保持一致。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项</div>
+  <ul>
+    <li><strong>时间类型</strong>（单选，默认<strong>更新添加时间</strong>）：<strong>首次添加时间</strong> / <strong>更新添加时间</strong>；决定日期筛选字段及列表来源字段展示口径；「?」hover 见字段说明</li>
+    <li><strong>时间快捷</strong>（按钮组，默认今日）：今日 / 昨日 / 近7天 / 近30天</li>
+    <li><strong>添加日期起 / 止</strong>（日期，默认今日）：按所选时间类型对应字段筛选</li>
+    <li><strong>所属渠道 / 子渠道</strong>（下拉，默认全部）：子渠道随渠道联动</li>
+    <li><strong>应用 / 应用版本</strong>（下拉，默认全部）：版本随应用联动</li>
+    <li><strong>所属团队</strong>（下拉，默认全部）：沿用现状</li>
+    <li><strong>医助名(搜索)</strong>（输入框）：姓名 / 企微账号模糊搜索</li>
+    <li><strong>响应状态</strong>（下拉，默认全部）：全部 / 优良 / 良好 / 一般 / 较差</li>
+    <li><strong>初诊开方状态</strong>（下拉，默认全部）：全部 / 已开方 / 未开方</li>
+    <li><strong>初诊成交状态</strong>（下拉，默认全部）：全部 / 已成交 / 未成交</li>
+    <li><strong>复诊成交状态</strong>（下拉，默认全部）：全部 / 已成交 / 未成交</li>
+    <li><strong>昵称/编号</strong>（输入框）：患者昵称或编号模糊搜索</li>
+    <li><strong>操作</strong>：「筛选」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">时间类型与列表展示规则</div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <tr><th style="border:1px solid #ccc;padding:4px;">时间类型</th><th style="border:1px solid #ccc;padding:4px;">筛选字段</th><th style="border:1px solid #ccc;padding:4px;">列表展示口径</th></tr>
+    <tr><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">渠道、子渠道、应用、应用版本、Query、报告编号、加粉时间均取<strong>首次添加</strong>时快照</td></tr>
+    <tr><td style="border:1px solid #ccc;padding:4px;">更新添加时间</td><td style="border:1px solid #ccc;padding:4px;">最新更新添加时间</td><td style="border:1px solid #ccc;padding:4px;">上述来源字段均取<strong>最新一次更新添加</strong>时快照；若存在多次更新，取最新一条</td></tr>
+  </table>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">字段说明 · 时间类型</div>
+  <blockquote><strong>更新添加</strong>——根据用户删除医助后又添加的时间和来源信息进行统计；<strong>首次添加</strong>——根据首次添加信息展示</blockquote>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">导出字段（U01 §4.4）</div>
+  <ul>
+    <li><strong>线索信息</strong>：患者编号、患者昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、Query、报告编号、加粉时间、加粉状态</li>
+    <li><strong>沟通信息</strong>：患者对话数、医助回复数、患者图片数、响应状态</li>
+    <li><strong>成交信息</strong>：初诊开方状态、初诊支付状态、初诊订单数、初诊成交周期、复诊状态、复诊订单数、总订单数、总订单金额</li>
+  </ul>
+  <p>文件命名：<code>加粉数据明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">异步导出 Excel（U04 §7.1）</div>
+  <ol>
+    <li>用户点击「导出 Excel」</li>
+    <li>校验：是否已执行筛选（detailQueried = true）；否 → Toast「请先筛选数据后再导出」</li>
+    <li>按钮置灰 + 文案变为「导出中...」</li>
+    <li>后端创建导出任务（携带当前全部筛选条件快照）</li>
+    <li>前端轮询任务状态</li>
+    <li>成功 → Toast「导出成功」+ 下载；失败/超时 → 提示原因并恢复按钮</li>
+  </ol>
+</div>
+`
+        },
+        '10': {
+            title: '需求描述：加粉明细 · 统计卡片与趋势图（U01）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计卡片</div>
+  <ul>
+    <li><strong>添加用户数</strong>：加粉记录数；副文案：去重用户数</li>
+    <li><strong>已开口用户数</strong>：客户对话数 &gt; 0 的加粉记录数</li>
+    <li><strong>初诊成交单数</strong>：初诊支付成功订单数</li>
+    <li><strong>初诊转化率</strong>：初诊成交单数 / 添加用户去重数（「?」hover 展示公式）</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">交互与趋势</div>
+  <ul>
+    <li>点击卡片切换右侧趋势图指标</li>
+    <li>支持开启对比</li>
+    <li>切换时间类型后，统计卡片、趋势图口径与所选类型保持一致</li>
+  </ul>
+</div>
+`
+        },
+        '11': {
+            title: '需求描述：加粉明细 · 数据列表与操作（U01）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">字段分组（§4.3.1）</div>
+  <ul>
+    <li><strong>线索信息</strong>：用户(编号/昵称)、医助(名/账号)、所属团队；渠道、子渠道、应用、应用版本（随时间类型展示首次/最新更新快照）；Query；报告编号、加粉时间（表头「?」文案同时间类型说明）、加粉状态（随时间类型切换展示口径）</li>
+    <li><strong>沟通信息</strong>：患者对话数、医助回复数、患者图片数、响应状态（「?」hover 展示计算公式与等级对照）</li>
+    <li><strong>成交信息</strong>：初诊开方状态（已开方/未开方）；初诊支付状态（已支付/未支付/未开方，同行或副行展示初诊订单数）；初诊成交周期（首单支付成功时间 − 加粉时间，单位天、时，加粉时间取当前时间类型下展示口径）；复诊状态（已成交/未成交，同行或副行展示复诊订单数）；总订单数、总订单金额（实付金额合计，「?」hover 说明口径）</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">操作列（§4.3.2）</div>
+  <ul>
+    <li><strong>成交详情</strong>：跳转「成交数据明细」，带入当前行<strong>用户编号</strong>并执行查询</li>
+    <li><strong>沟通详情</strong>：展开沟通时间与间隔</li>
+    <li><strong>对话</strong>：查看沟通记录</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">字段说明 · 初诊成交周期</div>
+  <blockquote>首单支付成功时间 − 加粉时间；展示单位：<strong>天</strong>、<strong>时</strong>（加粉时间取当前时间类型下展示口径）</blockquote>
+</div>
+`
+        },
+        '12': {
+            title: '需求描述：成交明细 · 筛选项与导出（U02）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">筛选项（§5.1）</div>
+  <ul>
+    <li><strong>时间快捷</strong>（按钮组，默认今日）：今日 / 昨日 / 近7天 / 近30天</li>
+    <li><strong>支付日期起 / 止</strong>（日期，默认今日）：订单支付时间落在范围内即命中</li>
+    <li><strong>所属渠道 / 子渠道</strong>（下拉，默认全部）：子渠道随渠道联动</li>
+    <li><strong>应用 / 应用版本</strong>（下拉，默认全部）：版本随应用联动</li>
+    <li><strong>所属团队</strong>（下拉，默认全部）：沿用现状</li>
+    <li><strong>医助名(搜索)</strong>（输入框）：姓名 / 企微账号模糊搜索</li>
+    <li><strong>诊次</strong>（下拉，默认全部）：全部 / 初诊 / 二诊 / 二诊及以上</li>
+    <li><strong>昵称/编号</strong>（输入框）：用户昵称或编号；支持从加粉页「成交详情」带入</li>
+    <li><strong>操作</strong>：「筛选」「重置」「导出 Excel」</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">导出（§5.4）</div>
+  <p>与 §5.3 列表列一致（含拆分后的年龄、性别、收货地址及用户编号/昵称命名）。</p>
+  <p>文件命名：<code>成交数据明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">异步导出 Excel（U04 §7.1）</div>
+  <p>同加粉明细：须先筛选（dealQueried = true）；异步轮询；失败/超时提示并恢复按钮。</p>
+</div>
+`
+        },
+        '13': {
+            title: '需求描述：成交明细 · 统计卡片与趋势图（U02）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">统计卡片（6 个 + 趋势图）</div>
+  <ul>
+    <li><strong>初诊成交单数</strong>：筛选范围内初诊（诊次序号 = 1）支付成功订单数</li>
+    <li><strong>初诊成交金额</strong>：筛选范围内初诊实付金额合计</li>
+    <li><strong>复诊成交单数</strong>：筛选范围内<strong>二诊及二诊以上</strong>（诊次序号 ≥ 2）支付成功订单数（「?」说明）</li>
+    <li><strong>复诊成交金额</strong>：筛选范围内<strong>二诊及二诊以上</strong>订单实付金额合计（「?」说明）</li>
+    <li><strong>二诊转化率</strong>：二诊成交单数 / 初诊成交单数（「?」说明）</li>
+    <li><strong>二诊以上转化率</strong>：三诊及以上成交单数 / 二诊成交单数（「?」说明）</li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">复诊口径说明</div>
+  <blockquote>成交页统计卡片中的「复诊」均指<strong>二诊及二诊以上</strong>订单，不再等同于列表中的单次「复诊」标签。</blockquote>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">交互与趋势</div>
+  <ul>
+    <li>点击卡片切换右侧趋势图；支持开启对比</li>
+    <li>趋势图 X 轴按支付时间聚合（单日按小时、多日按天）</li>
+    <li>转化率类卡片趋势图 Y 轴以百分比展示</li>
+    <li>初诊/复诊卡片副文案展示汤剂、丸剂拆分</li>
+  </ul>
+</div>
+`
+        },
+        '14': {
+            title: '需求描述：成交明细 · 数据列表（U02）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">数据粒度</div>
+  <p>每行一条<strong>支付成功订单</strong>，表头按四类分组展示。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">订单基础信息</div>
+  <p>订单编号、处方编号、订单创建时间、支付时间、用户编号（原「患者编号」）、用户昵称、医助名称、医助账号、所属团队、医生名</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">订单详细</div>
+  <ul>
+    <li><strong>诊次</strong>：该用户第 N 次支付成功订单，展示为初诊 / 二诊 / 三诊 / N诊（按用户维度订单序号递增）</li>
+    <li><strong>剂型</strong>：汤剂 / 丸剂等</li>
+    <li><strong>病历主诉、药费、待煎费、运费、折扣率、实付金额</strong></li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">患者信息</div>
+  <p>年龄、性别、收货地址</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">用户来源</div>
+  <blockquote>固定取<strong>最新一次更新添加</strong>时快照（与加粉明细默认「更新添加时间」口径一致）；无更新记录时回退至首次添加信息。</blockquote>
+  <ul>
+    <li><strong>渠道 / 子渠道 / 应用 / 应用版本</strong>：最新更新添加时快照</li>
+    <li><strong>加粉时间</strong>：最新一次更新添加时间；无更新记录时取首次添加时间</li>
+  </ul>
+</div>
+`
+        },
+        '15': {
+            title: '需求描述：页面结构与漏斗下钻（U03）',
+            content: `
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">页面结构（§3）</div>
+  <p>侧边栏菜单（与全链路漏斗并列）：</p>
+  <ul>
+    <li><strong>加粉明细</strong>：用户加粉记录 + 沟通 + 成交摘要；粒度=用户（加粉记录）；默认时间口径=<strong>更新添加时间</strong></li>
+    <li><strong>成交明细</strong>：支付成功订单明细；粒度=订单；默认时间口径=<strong>支付时间</strong></li>
+  </ul>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">角色与权限（§2）</div>
+  <ul>
+    <li><strong>管理员</strong>：全量数据查看、导出</li>
+    <li><strong>运营管理员</strong>：查看权限范围内数据、导出</li>
+    <li><strong>流量组长</strong>：查看本团队及以下数据、导出</li>
+  </ul>
+  <p>沿用全链路漏斗优化 PRD 权限体系。</p>
+</div>
+<div class="req-tooltip-section">
+  <div class="req-tooltip-section-title">漏斗汇总表下钻明细（§6）</div>
+  <ul>
+    <li><strong>每日转化数据 → 加粉明细</strong>：添加日期起止=该行日期（默认更新添加时间）；渠道/子渠道/应用等=当前漏斗筛选</li>
+    <li><strong>每日转化数据 → 支付明细</strong>：支付日期起止=该行日期；渠道等筛选项带入</li>
+    <li><strong>每日订单金额数据 → 数据明细</strong>：支付日期起止=该行日期；渠道等筛选项带入</li>
+    <li><strong>医助服务人效统计 → 加粉明细</strong>：添加日期=当前查询范围（默认更新添加时间）；医助企微 ID；渠道等带入</li>
+    <li><strong>医助服务人效统计 → 支付明细</strong>：支付日期=当前查询范围；医助企微 ID；渠道等带入</li>
+    <li><strong>医助成交数据 → 数据明细</strong>：支付日期=当前查询范围；医助企微 ID；渠道等带入</li>
+    <li><strong>渠道维度数据 → 转化详细</strong>：渠道产品详细转化页（原逻辑不变）</li>
+    <li><strong>渠道维度数据 → 加粉明细</strong>：添加日期=当前范围（默认更新添加时间）；带入渠道、子渠道、应用、版本</li>
+    <li><strong>渠道维度数据 → 支付明细</strong>：支付日期=当前范围；带入渠道、子渠道、应用、版本</li>
+  </ul>
+  <p>加粉页「成交详情」下钻：带入<strong>用户编号</strong>至成交明细「昵称/编号」筛选项。</p>
+</div>
+`
         }
     };
 
@@ -2655,6 +2917,11 @@
         '<tr><td><strong>较差</strong></td><td>均 &gt; 10 分钟</td><td>响应偏慢，存在服务延迟</td></tr>' +
         '</tbody></table>';
 
+    var TIME_TYPE_HELP_HTML =
+        '<div class="field-help-title">时间类型说明</div>' +
+        '<div><strong>更新添加</strong>：根据用户删除医助后又添加的时间和来源信息进行统计。</div>' +
+        '<div style="margin-top:6px;"><strong>首次添加</strong>：根据首次添加信息展示。</div>';
+
     var DEAL_CYCLE_HELP_HTML =
         '<div class="field-help-title">成交周期</div>' +
         '<div>首单成交时间与加粉时间的间隔。</div>' +
@@ -2665,6 +2932,10 @@
         '<div>统计口径为订单<strong>实付金额</strong>，即初诊与复诊全部支付成功订单的实际付款金额合计。</div>';
 
     function initFieldHelpPopovers() {
+        ['timeTypeHelpFilter', 'timeTypeHelpTable'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.innerHTML = TIME_TYPE_HELP_HTML;
+        });
         ['responseStatusHelpFilter', 'responseStatusHelpTable'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.innerHTML = RESPONSE_STATUS_HELP_HTML;
@@ -3584,7 +3855,6 @@
         var appVersion = document.getElementById('appVersionSelect').value;
         var group = document.getElementById('groupSelect').value;
         var doctorKw = document.getElementById('doctorSearch').value.trim().toLowerCase();
-        var addStatus = document.getElementById('addStatusSelect').value;
         var resp = document.getElementById('responseSelect').value;
         var prescribe = document.getElementById('prescribeSelect').value;
         var deal = document.getElementById('dealSelect').value;
@@ -3603,7 +3873,6 @@
             if (appVersion !== 'all' && view.应用版本 !== appVersion) return false;
             if (group !== 'all' && row.所属业务组 !== group) return false;
             if (doctorKw && !row.医助名.toLowerCase().includes(doctorKw) && !row.医助账号.toLowerCase().includes(doctorKw)) return false;
-            if (addStatus !== 'all' && row.加粉状态 !== addStatus) return false;
             if (resp !== 'all' && row.响应状态 !== resp) return false;
             if (prescribe === 'yes' && row.初诊开方状态 !== '已开方') return false;
             if (prescribe === 'no' && row.初诊开方状态 === '已开方') return false;
@@ -3798,7 +4067,6 @@
         document.getElementById('appVersionSelect').value = 'all';
         document.getElementById('groupSelect').value = 'all';
         document.getElementById('doctorSearch').value = '';
-        document.getElementById('addStatusSelect').value = 'all';
         document.getElementById('responseSelect').value = 'all';
         document.getElementById('prescribeSelect').value = 'all';
         document.getElementById('dealSelect').value = 'all';

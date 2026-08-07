@@ -926,13 +926,13 @@
         <table class="data-table">
             <thead>
                 <tr class="group-header">
-                    <th colspan="11">🔍 线索信息</th>
+                    <th colspan="10">🔍 线索信息</th>
                     <th colspan="4">💬 沟通信息</th>
                     <th colspan="6" class="th-first">💰 成交信息</th>
                     <th rowspan="2">操作</th>
                 </tr>
                 <tr>
-                    <th>用户(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>Query</th><th>报告<br><span class="sub-text">(状态/编号)</span></th><th><span class="field-help-wrap">加粉时间<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpTable"></div></span></th><th>加粉状态</th>
+                    <th>用户(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>应用</th><th>Query</th><th>报告<br><span class="sub-text">(状态/编号)</span></th><th><span class="field-help-wrap">加粉时间<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpTable"></div></span></th><th>加粉状态</th><th>加粉方式</th>
                     <th>用户对话数</th><th>医助回复数</th><th>用户图片数</th>
                     <th><span class="field-help-wrap">响应状态<span class="field-help-icon">?</span><div class="field-help-popover" id="responseStatusHelpTable"></div></span></th>
                     <th>初诊开方状态</th>
@@ -1042,17 +1042,19 @@
         <table class="data-table deal-table">
             <thead>
                 <tr class="group-header">
-                    <th colspan="10">📦 订单基础信息</th>
+                    <th colspan="7">📦 订单基础信息</th>
                     <th colspan="8" class="th-first">💊 订单详细</th>
-                    <th colspan="3" class="th-revisit">👤 患者信息</th>
-                    <th colspan="5">🔗 用户来源</th>
+                    <th colspan="2" class="th-revisit">👤 患者信息</th>
+                    <th colspan="4">🔗 用户来源</th>
                 </tr>
                 <tr>
-                    <th>订单编号</th><th>处方编号</th><th>订单创建时间</th><th>支付时间</th>
-                    <th>用户编号</th><th>用户昵称</th><th>医助名称</th><th>医助账号</th><th>所属团队</th><th>医生名</th>
+                    <th>订单编号</th><th>处方编号</th>
+                    <th>订单时间<br><span class="sub-text">(支付/创建)</span></th>
+                    <th>用户<br><span class="sub-text">(编号/昵称)</span></th>
+                    <th>医助<br><span class="sub-text">(名/账号)</span></th><th>所属团队</th><th>医生名</th>
                     <th>诊次</th><th>剂型</th><th>病历主诉</th><th>药费</th><th>待煎费</th><th>运费</th><th>折扣率</th><th>实付金额</th>
-                    <th>年龄</th><th>性别</th><th>收货地址</th>
-                    <th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>加粉时间</th>
+                    <th>患者<br><span class="sub-text">(姓名/年龄/性别)</span></th><th>收货地址</th>
+                    <th>渠道</th><th>应用</th><th>更新加粉时间</th><th>首次加粉时间</th>
                 </tr>
             </thead>
             <tbody id="dealTableBody"></tbody>
@@ -1064,7 +1066,7 @@
         <span id="dealPageInfo">第1页</span>
         <button class="btn" id="dealNextPageBtn">下一页 ▶</button>
     </div>
-    <div class="footer-note" id="dealFooterNote">当前时间筛选基于「支付时间」；用户来源（渠道、子渠道、应用、应用版本、加粉时间）取<strong>最新一次更新添加</strong>时快照；支持从加粉明细「成交详情」带入用户编号筛选。</div>
+    <div class="footer-note" id="dealFooterNote">当前时间筛选基于「支付时间」；用户来源（渠道、子渠道、应用、应用版本）及<strong>更新加粉时间</strong>取<strong>最新一次更新添加</strong>时快照，<strong>首次加粉时间</strong>单独展示；收货地址仅展示至省/市/县（区）；支持从加粉明细「成交详情」带入用户编号筛选。</div>
             <!-- pages-build: 2026-08-06-v2 -->
             </div>
             <div id="page-funnel" class="funnel-page active">
@@ -2579,7 +2581,7 @@
   <div class="req-tooltip-section-title">时间类型与列表展示规则</div>
   <table style="width:100%;border-collapse:collapse;font-size:12px;">
     <tr><th style="border:1px solid #ccc;padding:4px;">时间类型</th><th style="border:1px solid #ccc;padding:4px;">筛选字段</th><th style="border:1px solid #ccc;padding:4px;">列表展示口径</th></tr>
-    <tr><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">渠道、子渠道、应用、应用版本、Query、报告（状态/编号）、加粉时间均取<strong>首次添加</strong>时快照</td></tr>
+    <tr><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">渠道（含子渠道）、应用（含版本）、Query、报告（状态/编号）、加粉时间均取<strong>首次添加</strong>时快照</td></tr>
     <tr><td style="border:1px solid #ccc;padding:4px;">更新添加时间</td><td style="border:1px solid #ccc;padding:4px;">最新更新添加时间</td><td style="border:1px solid #ccc;padding:4px;">上述来源字段均取<strong>最新一次更新添加</strong>时快照；若存在多次更新，取最新一条</td></tr>
   </table>
 </div>
@@ -2590,7 +2592,7 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">导出字段（U01 §4.4）</div>
   <ul>
-    <li><strong>线索信息</strong>：患者编号、患者昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、Query、报告状态、报告编号、加粉时间、加粉状态</li>
+    <li><strong>线索信息</strong>：患者编号、患者昵称、医助名、医助账号、所属团队、渠道(含子渠道)、应用(含版本)、Query、报告状态、报告编号、加粉时间、加粉状态、加粉方式</li>
     <li><strong>沟通信息</strong>：患者对话数、医助回复数、患者图片数、响应状态</li>
     <li><strong>成交信息</strong>：初诊开方状态、初诊支付状态、初诊订单数、初诊成交周期、复诊状态、复诊订单数、总订单数、总订单金额</li>
   </ul>
@@ -2637,7 +2639,7 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">字段分组（§4.3.1）</div>
   <ul>
-    <li><strong>线索信息</strong>：用户(编号/昵称)、医助(名/账号)、所属团队；渠道、子渠道、应用、应用版本（随时间类型展示首次/最新更新快照）；Query；报告（编号在上、状态在下；成功仅展示编号；初始/失败状态弱化展示；失败记录沉底）、加粉时间（表头「?」文案同时间类型说明）、加粉状态（随时间类型切换展示口径）</li>
+    <li><strong>线索信息</strong>：用户(编号/昵称)、医助(名/账号)、所属团队；渠道（主行）/子渠道（弱化行）、应用（主行）/应用版本（弱化行），随时间类型展示首次/最新更新快照；Query；报告（编号在上、状态在下；成功仅展示编号；初始/失败状态弱化展示；失败记录沉底）、加粉时间（表头「?」文案同时间类型说明）、加粉状态（随时间类型切换展示口径）、加粉方式（获客链接 / 离职转移 / 内部成员共享 / 扫码二维码等；暂不支持筛选）</li>
     <li><strong>沟通信息</strong>：患者对话数、医助回复数、患者图片数、响应状态（「?」hover 展示计算公式与等级对照）</li>
     <li><strong>成交信息</strong>：初诊开方状态（已开方/未开方）；初诊支付状态（已支付/未支付/未开方，同行或副行展示初诊订单数）；初诊成交周期（首单支付成功时间 − 加粉时间，单位天、时，加粉时间取当前时间类型下展示口径）；复诊状态（已成交/未成交，同行或副行展示复诊订单数）；总订单数、总订单金额（实付金额合计，「?」hover 说明口径）</li>
   </ul>
@@ -2675,7 +2677,7 @@
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">导出（§5.4）</div>
-  <p>与 §5.3 列表列一致（含拆分后的年龄、性别、收货地址及用户编号/昵称命名）。</p>
+  <p>与 §5.3 列表列一致（含合并后的订单时间、用户、医助、患者、渠道、应用及更新/首次加粉时间等列）。</p>
   <p>文件命名：<code>成交数据明细_{开始日期}_{结束日期}_{导出时间}.xlsx</code></p>
 </div>
 <div class="req-tooltip-section">
@@ -2722,7 +2724,13 @@
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">订单基础信息</div>
-  <p>订单编号、处方编号、订单创建时间、支付时间、用户编号（原「患者编号」）、用户昵称、医助名称、医助账号、所属团队、医生名</p>
+  <ul>
+    <li><strong>订单编号、处方编号</strong></li>
+    <li><strong>订单时间</strong>：合并展示「支付时间：xxx，创建时间：xxx」</li>
+    <li><strong>用户(编号/昵称)</strong>：昵称为主、编号弱化展示（原患者编号/患者昵称）</li>
+    <li><strong>医助(名/账号)</strong>：名称为主、账号弱化展示</li>
+    <li><strong>所属团队、医生名</strong></li>
+  </ul>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">订单详细</div>
@@ -2734,14 +2742,16 @@
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">患者信息</div>
-  <p>年龄、性别、收货地址</p>
+  <p>患者(姓名/年龄/性别)：姓名为主，年龄·性别弱化展示；收货地址（仅展示至省/市/县·区，不含街道门牌）</p>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">用户来源</div>
-  <blockquote>固定取<strong>最新一次更新添加</strong>时快照（与加粉明细默认「更新添加时间」口径一致）；无更新记录时回退至首次添加信息。</blockquote>
+  <blockquote>渠道（含子渠道）、应用（含版本）及<strong>更新加粉时间</strong>固定取<strong>最新一次更新添加</strong>时快照（与加粉明细默认「更新添加时间」口径一致）；无更新记录时回退至首次添加信息。</blockquote>
   <ul>
-    <li><strong>渠道 / 子渠道 / 应用 / 应用版本</strong>：最新更新添加时快照</li>
-    <li><strong>加粉时间</strong>：最新一次更新添加时间；无更新记录时取首次添加时间</li>
+    <li><strong>渠道</strong>：主行展示渠道，弱化行展示子渠道</li>
+    <li><strong>应用</strong>：主行展示应用，弱化行展示应用版本</li>
+    <li><strong>更新加粉时间</strong>：最新一次更新添加时间；无更新记录时取首次添加时间</li>
+    <li><strong>首次加粉时间</strong>：用户首次添加时间，独立展示</li>
   </ul>
 </div>
 `
@@ -2902,7 +2912,8 @@
         '体质测试': ['v3.2', 'v1.0'],
         '问诊H5': ['v2.1', 'v1.0']
     };
-    var TABLE_COLS = 22;
+    var TABLE_COLS = 21;
+    var ADD_METHOD_LIST = ['获客链接', '离职转移', '内部成员共享', '扫码二维码'];
     var exporting = false;
     var exportPollTimer = null;
 
@@ -3030,6 +3041,18 @@
     function escapeHtml(s) {
         if (!s) return '';
         return String(s).replace(/[&<>]/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]); });
+    }
+    function formatAddChannelCell(view) {
+        return '<strong>' + escapeHtml(view.所属渠道) + '</strong><br><span class="sub-text">' + escapeHtml(view.子渠道) + '</span>';
+    }
+    function formatAddAppCell(view) {
+        return '<strong>' + escapeHtml(view.应用) + '</strong><br><span class="sub-text">' + escapeHtml(view.应用版本) + '</span>';
+    }
+    function formatAddChannelExport(view) {
+        return view.所属渠道 + ' / ' + view.子渠道;
+    }
+    function formatAddAppExport(view) {
+        return view.应用 + ' / ' + view.应用版本;
     }
     function formatReportDisplayHtml(status, reportNo) {
         var st = status || '初始';
@@ -3311,7 +3334,8 @@
                     复诊次数: revisit.复诊次数,
                     复诊支付记录: revisit.复诊支付记录,
                     最近复诊支付时间: revisit.最近复诊支付时间,
-                    复诊金额: revisit.复诊金额
+                    复诊金额: revisit.复诊金额,
+                    加粉方式: ADD_METHOD_LIST[(dayOffset + i) % ADD_METHOD_LIST.length]
                 });
             }
         }
@@ -3416,7 +3440,8 @@
                 复诊次数: revisit.复诊次数,
                 复诊支付记录: revisit.复诊支付记录,
                 最近复诊支付时间: revisit.最近复诊支付时间,
-                复诊金额: revisit.复诊金额
+                复诊金额: revisit.复诊金额,
+                加粉方式: cfg.addMethod || ADD_METHOD_LIST[Math.abs(cfg.id.charCodeAt(cfg.id.length - 1) || 0) % ADD_METHOD_LIST.length]
             };
         }
 
@@ -3734,14 +3759,13 @@
                 '<td><div><strong>' + escapeHtml(row.患者微信名) + '</strong><br><span class="sub-text">' + escapeHtml(row.患者微信编号) + '</span></div></td>' +
                 '<td><div><strong>' + escapeHtml(row.医助名) + '</strong><br><span class="sub-text">' + escapeHtml(row.医助账号) + '</span></div></td>' +
                 '<td>' + escapeHtml(row.所属业务组) + '</td>' +
-                '<td>' + escapeHtml(view.所属渠道) + '</td>' +
-                '<td>' + escapeHtml(view.子渠道) + '</td>' +
-                '<td>' + escapeHtml(view.应用) + '</td>' +
-                '<td>' + escapeHtml(view.应用版本) + '</td>' +
+                '<td><div>' + formatAddChannelCell(view) + '</div></td>' +
+                '<td><div>' + formatAddAppCell(view) + '</div></td>' +
                 '<td>' + escapeHtml(view.Query || '—') + '</td>' +
                 '<td>' + formatReportDisplayHtml(view.报告状态, view.报告编号) + '</td>' +
                 '<td>' + escapeHtml(view.加粉时间) + '</td>' +
                 '<td class="' + statusColor + '" style="text-align:center;">' + row.加粉状态 + '</td>' +
+                '<td>' + escapeHtml(row.加粉方式 || '—') + '</td>' +
                 '<td>' + row.客户对话数 + '</td>' +
                 '<td>' + row.医助对话数 + '</td>' +
                 '<td>' + row.客户图片数 + '</td>' +
@@ -3935,7 +3959,7 @@
 
     function buildExportSheet() {
         var header = [
-            '用户编号', '用户昵称', '医助名', '医助账号', '所属团队', '渠道', '子渠道', '应用', '应用版本', 'Query', '报告状态', '报告编号', '加粉时间', '加粉状态',
+            '用户编号', '用户昵称', '医助名', '医助账号', '所属团队', '渠道(含子渠道)', '应用(含版本)', 'Query', '报告状态', '报告编号', '加粉时间', '加粉状态', '加粉方式',
             '用户对话数', '医助回复数', '用户图片数', '响应状态',
             '初诊开方状态', '初诊支付状态', '初诊订单数', '初诊成交周期', '复诊状态', '复诊订单数', '总订单数', '总订单金额'
         ];
@@ -3943,8 +3967,8 @@
         filteredData.forEach(function(r) {
             var view = resolveAddDetailView(r);
             sheet.push([
-                r.患者微信编号, r.患者微信名, r.医助名, r.医助账号, r.所属业务组, view.所属渠道, view.子渠道, view.应用, view.应用版本,
-                view.Query || '', view.报告状态 || '初始', view.报告编号 || '', view.加粉时间, r.加粉状态,
+                r.患者微信编号, r.患者微信名, r.医助名, r.医助账号, r.所属业务组, formatAddChannelExport(view), formatAddAppExport(view),
+                view.Query || '', view.报告状态 || '初始', view.报告编号 || '', view.加粉时间, r.加粉状态, r.加粉方式 || '—',
                 r.客户对话数, r.医助对话数, r.客户图片数, r.响应状态,
                 r.初诊开方状态, r.初诊支付状态, r.初诊订单数 || 0, r.初诊成交周期 || '',
                 r.复诊状态, r.复诊订单数 || 0, r.总订单数 || 0, r.总订单金额 || 0
@@ -4232,7 +4256,7 @@
 
 // ===== 成交明细 V2.1 =====
 (function(){
-    var DEAL_COLS = 26;
+    var DEAL_COLS = 21;
     var APP_LIST = ['舌诊', '体质测试', '问诊H5'];
     var APP_VERSION_MAP = {
         '舌诊': ['v3.2', 'v2.1'],
@@ -4256,6 +4280,59 @@
             加粉时间: row.最新更新添加时间 || row.首次添加时间 || row.加粉时间 || ''
         };
     };
+    var getFirstSource = shared.getFirstSource || function(row) {
+        return row.首次来源 || {
+            所属渠道: row.所属渠道 || '百度巧舱',
+            子渠道: row.子渠道 || '1032767:百度搜索推广',
+            应用: row.应用 || '舌诊',
+            应用版本: row.应用版本 || 'v3.2',
+            加粉时间: row.首次添加时间 || row.加粉时间 || ''
+        };
+    };
+    function formatRegionAddress(addr) {
+        if (!addr) return '—';
+        var m = addr.match(/^(.+?(?:省|自治区|特别行政区))?(?:.+?(?:市|自治州|地区|盟))?(?:.+?(?:区|县|旗|市))/);
+        return m ? m[0] : addr;
+    }
+    function derivePatientName(nick, fallback) {
+        if (!nick) return fallback || '—';
+        var parts = nick.split('·');
+        if (parts.length > 1) return parts[parts.length - 1];
+        return nick.replace(/^演示用户/, '') || fallback || nick;
+    }
+    function formatDealOrderTimeCell(r) {
+        return '支付时间：' + escapeHtml(r.支付时间) + '<br><span class="sub-text">创建时间：' + escapeHtml(r.订单创建时间) + '</span>';
+    }
+    function formatDealOrderTimeExport(r) {
+        return '支付时间：' + r.支付时间 + '，创建时间：' + r.订单创建时间;
+    }
+    function formatDealUserExport(r) {
+        return r.用户昵称 + '（' + r.用户编号 + '）';
+    }
+    function formatDealAssistantCell(r) {
+        return '<strong>' + escapeHtml(r.医助名称) + '</strong><br><span class="sub-text">' + escapeHtml(r.医助账号) + '</span>';
+    }
+    function formatDealAssistantExport(r) {
+        return r.医助名称 + '（' + r.医助账号 + '）';
+    }
+    function formatDealPatientCell(r) {
+        return '<strong>' + escapeHtml(r.患者姓名 || '—') + '</strong><br><span class="sub-text">' + escapeHtml(r.年龄) + ' · ' + escapeHtml(r.性别) + '</span>';
+    }
+    function formatDealPatientExport(r) {
+        return (r.患者姓名 || '—') + '（' + r.年龄 + ' · ' + r.性别 + '）';
+    }
+    function formatDealChannelCell(r) {
+        return '<strong>' + escapeHtml(r.渠道) + '</strong><br><span class="sub-text">' + escapeHtml(r.子渠道) + '</span>';
+    }
+    function formatDealChannelExport(r) {
+        return r.渠道 + ' / ' + r.子渠道;
+    }
+    function formatDealAppCell(r) {
+        return '<strong>' + escapeHtml(r.应用) + '</strong><br><span class="sub-text">' + escapeHtml(r.应用版本) + '</span>';
+    }
+    function formatDealAppExport(r) {
+        return r.应用 + ' / ' + r.应用版本;
+    }
     var dealFullDataset = [];
     var dealFiltered = [];
     var dealPage = 1, dealPageSize = 10, dealQueried = false, dealExporting = false, dealExportTimer = null;
@@ -4288,8 +4365,9 @@
         var createTime = payRecord.time ? addMinutesToTime(payRecord.time, -18) : userRow.首单创建时间;
         var age = 28 + idx % 20;
         var gender = idx % 2 === 0 ? '女' : '男';
-        var address = '浙江省杭州市西湖区文三路' + (100 + idx) + '号';
-        var src = getLatestSource(userRow);
+        var address = formatRegionAddress('浙江省杭州市西湖区文三路' + (100 + idx) + '号');
+        var latestSrc = getLatestSource(userRow);
+        var firstSrc = getFirstSource(userRow);
         return {
             订单编号: 'ORD' + String(Date.now()).slice(-8) + idx,
             处方编号: userRow.首单编号 ? userRow.首单编号 + (visitNum > 1 ? 'R' + idx : '') : 'PRES' + idx,
@@ -4310,14 +4388,17 @@
             运费: shipping,
             折扣率: (discount * 100).toFixed(0) + '%',
             实付金额: paid,
+            患者姓名: userRow.患者姓名 || derivePatientName(userRow.患者微信名, '—'),
             年龄: age + '岁',
             性别: gender,
             收货地址: address,
-            渠道: src.所属渠道,
-            子渠道: src.子渠道,
-            应用: src.应用,
-            应用版本: src.应用版本,
-            加粉时间: src.加粉时间
+            渠道: latestSrc.所属渠道,
+            子渠道: latestSrc.子渠道,
+            应用: latestSrc.应用,
+            应用版本: latestSrc.应用版本,
+            更新加粉时间: latestSrc.加粉时间,
+            首次加粉时间: firstSrc.加粉时间,
+            加粉时间: latestSrc.加粉时间
         };
     }
 
@@ -4349,6 +4430,9 @@
             var addDate = new Date(payDate);
             addDate.setDate(addDate.getDate() - cfg.addDayOffset);
             var addTime = formatLocalDate(addDate) + ' 08:30:00';
+            var firstAddDate = new Date(addDate);
+            firstAddDate.setDate(firstAddDate.getDate() - 3);
+            var firstAddTime = formatLocalDate(firstAddDate) + ' 09:15:00';
             var drugFee = Math.round(cfg.amount * 0.82);
             var decoctionFee = cfg.drug === '汤剂' ? Math.round(cfg.amount * 0.08) : 0;
             return {
@@ -4371,13 +4455,16 @@
                 运费: 15,
                 折扣率: '95%',
                 实付金额: cfg.amount,
+                患者姓名: derivePatientName(cfg.nick, '演示患者'),
                 年龄: (30 + idx) + '岁',
                 性别: idx % 2 === 0 ? '女' : '男',
-                收货地址: '浙江省杭州市西湖区演示路' + (100 + idx) + '号',
+                收货地址: formatRegionAddress('浙江省杭州市西湖区演示路' + (100 + idx) + '号'),
                 渠道: cfg.channel,
                 子渠道: cfg.sub,
                 应用: cfg.app,
                 应用版本: cfg.ver,
+                更新加粉时间: addTime,
+                首次加粉时间: firstAddTime,
                 加粉时间: addTime
             };
         });
@@ -4422,12 +4509,9 @@
             return '<tr>' +
                 '<td>' + escapeHtml(r.订单编号) + '</td>' +
                 '<td>' + escapeHtml(r.处方编号) + '</td>' +
-                '<td>' + escapeHtml(r.订单创建时间) + '</td>' +
-                '<td>' + escapeHtml(r.支付时间) + '</td>' +
-                '<td>' + escapeHtml(r.用户编号) + '</td>' +
-                '<td>' + escapeHtml(r.用户昵称) + '</td>' +
-                '<td>' + escapeHtml(r.医助名称) + '</td>' +
-                '<td>' + escapeHtml(r.医助账号) + '</td>' +
+                '<td><div>' + formatDealOrderTimeCell(r) + '</div></td>' +
+                '<td><div><strong>' + escapeHtml(r.用户昵称) + '</strong><br><span class="sub-text">' + escapeHtml(r.用户编号) + '</span></div></td>' +
+                '<td><div>' + formatDealAssistantCell(r) + '</div></td>' +
                 '<td>' + escapeHtml(r.所属团队) + '</td>' +
                 '<td>' + escapeHtml(r.医生名) + '</td>' +
                 '<td>' + escapeHtml(r.诊次) + '</td>' +
@@ -4438,14 +4522,12 @@
                 '<td>¥' + r.运费 + '</td>' +
                 '<td>' + r.折扣率 + '</td>' +
                 '<td><strong>¥' + r.实付金额 + '</strong></td>' +
-                '<td>' + escapeHtml(r.年龄) + '</td>' +
-                '<td>' + escapeHtml(r.性别) + '</td>' +
+                '<td><div>' + formatDealPatientCell(r) + '</div></td>' +
                 '<td>' + escapeHtml(r.收货地址) + '</td>' +
-                '<td>' + escapeHtml(r.渠道) + '</td>' +
-                '<td>' + escapeHtml(r.子渠道) + '</td>' +
-                '<td>' + escapeHtml(r.应用) + '</td>' +
-                '<td>' + escapeHtml(r.应用版本) + '</td>' +
-                '<td>' + escapeHtml(r.加粉时间) + '</td>' +
+                '<td><div>' + formatDealChannelCell(r) + '</div></td>' +
+                '<td><div>' + formatDealAppCell(r) + '</div></td>' +
+                '<td>' + escapeHtml(r.更新加粉时间 || r.加粉时间) + '</td>' +
+                '<td>' + escapeHtml(r.首次加粉时间 || '—') + '</td>' +
                 '</tr>';
         }).join('');
         var totalPages = Math.ceil(dealFiltered.length / dealPageSize) || 0;
@@ -4728,10 +4810,10 @@
     }
 
     function buildDealExportSheet() {
-        var header = ['订单编号','处方编号','订单创建时间','支付时间','用户编号','用户昵称','医助名称','医助账号','所属团队','医生名','诊次','剂型','病历主诉','药费','待煎费','运费','折扣率','实付金额','年龄','性别','收货地址','渠道','子渠道','应用','应用版本','加粉时间'];
+        var header = ['订单编号','处方编号','订单时间','用户(编号/昵称)','医助(名/账号)','所属团队','医生名','诊次','剂型','病历主诉','药费','待煎费','运费','折扣率','实付金额','患者(姓名/年龄/性别)','收货地址','渠道(含子渠道)','应用(含版本)','更新加粉时间','首次加粉时间'];
         var sheet = [header];
         dealFiltered.forEach(function(r) {
-            sheet.push([r.订单编号,r.处方编号,r.订单创建时间,r.支付时间,r.用户编号,r.用户昵称,r.医助名称,r.医助账号,r.所属团队,r.医生名,r.诊次,r.剂型,r.病历主诉,r.药费,r.待煎费,r.运费,r.折扣率,r.实付金额,r.年龄,r.性别,r.收货地址,r.渠道,r.子渠道,r.应用,r.应用版本,r.加粉时间]);
+            sheet.push([r.订单编号,r.处方编号,formatDealOrderTimeExport(r),formatDealUserExport(r),formatDealAssistantExport(r),r.所属团队,r.医生名,r.诊次,r.剂型,r.病历主诉,r.药费,r.待煎费,r.运费,r.折扣率,r.实付金额,formatDealPatientExport(r),r.收货地址,formatDealChannelExport(r),formatDealAppExport(r),r.更新加粉时间 || r.加粉时间,r.首次加粉时间 || '—']);
         });
         return sheet;
     }

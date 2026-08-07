@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>全链路漏斗优化 · 多维度数据统计 PRD</title>
+<title>多维度数据看板 · 全链路漏斗优化 PRD</title>
 <style>
 :root{--brand:#2563eb;--ink:#172033;--line:#e7ebf3;--bg:#f3f5f9;--card:#fff;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -57,7 +57,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <div class="layout">
   <aside class="side">
     <div class="side-brand">
-      <h1>多维度数据统计 PRD</h1>
+      <h1>多维度数据看板 PRD</h1>
       <p>全链路漏斗优化 · V1.1 · 点击目录定位</p>
     </div>
     <div class="toc-title">目录</div>
@@ -70,6 +70,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <li class="lv1"><a href="#2角色与权限">2. 角色与权限</a></li>
 <li class="lv1"><a href="#3交互模型与筛选架构">3. 交互模型与筛选架构</a></li>
 <li class="lv2"><a href="#交互层级">交互层级</a></li>
+<li class="lv2"><a href="#31加粉来源筛选规则">3.1 加粉来源筛选规则</a></li>
 <li class="lv1"><a href="#4全链路漏斗数据统计">4. 全链路漏斗数据统计</a></li>
 <li class="lv2"><a href="#41每日数据统计">4.1 每日数据统计</a></li>
 <li class="lv3"><a href="#筛选项">筛选项</a></li>
@@ -83,21 +84,13 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <li class="lv3"><a href="#筛选项-3">筛选项</a></li>
 <li class="lv3"><a href="#431渠道核心数据概览">4.3.1 渠道核心数据概览</a></li>
 <li class="lv3"><a href="#432产品详细转化数据页">4.3.2 产品详细转化数据页</a></li>
-<li class="lv1"><a href="#5非功能需求">5. 非功能需求</a></li>
-<li class="lv1"><a href="#6数据模型">6. 数据模型</a></li>
-<li class="lv2"><a href="#61漏斗日汇总dws_funnel_channel_assistant_1d">6.1 漏斗日汇总 dws_funnel_channel_assistant_1d</a></li>
-<li class="lv2"><a href="#62订单金额日汇总按药物类型初复诊dws_order_drug_visit_1d">6.2 订单金额日汇总（按药物类型/初复诊） dws_order_drug_visit_1d</a></li>
-<li class="lv2"><a href="#63医助成交日汇总dws_assistant_trade_1d">6.3 医助成交日汇总 dws_assistant_trade_1d</a></li>
-<li class="lv2"><a href="#64渠道产品转化日汇总dws_channel_product_conversion_1d">6.4 渠道产品转化日汇总 dws_channel_product_conversion_1d</a></li>
-<li class="lv1"><a href="#7业务规则">7. 业务规则</a></li>
-<li class="lv1"><a href="#8验收标准uat">8. 验收标准（UAT）</a></li>
     </ul>
   </aside>
   <main class="main">
     <section class="hero">
-      <h1>全链路漏斗优化 · 多维度数据统计</h1>
+      <h1>多维度数据看板 · 全链路漏斗优化</h1>
       <p>从渠道引流、加企微到医助转化与支付履约的全链路数据统计需求说明。</p>
-      <div class="meta"><span>版本 V1.1</span><span>修订 2026-07-23</span><span>模块 funnel-optimization</span></div>
+      <div class="meta"><span>版本 V1.1</span><span>修订 2026-08-07</span><span>模块 funnel-optimization</span></div>
       <div class="links">
         <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html" target="_blank" rel="noopener">原型 V1.0</a>
         <a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html" target="_blank" rel="noopener">原型 V1.1</a>
@@ -105,33 +98,45 @@ tbody tr:nth-child(even){background:#fbfcff;}
       </div>
     </section>
     <article class="doc">
-<h1>全链路漏斗优化产品需求文档（PRD）</h1>
+<h1 id="多维度数据看板产品需求文档（PRD）">多维度数据看板 产品需求文档（PRD）</h1>
 <ul>
 <li><strong>文档类型</strong>：PRD</li>
 <li><strong>模块</strong>：全链路漏斗优化（funnel-optimization）</li>
 <li><strong>版本</strong>：V1.1</li>
 <li><strong>创建日期</strong>：2026-06-06</li>
-<li><strong>修订日期</strong>：2026-07-23（章节重组：需求范围合并功能清单；交互模型升为一级；数据统计合并为第4章）</li>
+<li><strong>修订日期</strong>：2026-08-07（加粉来源筛选：枚举更新、渠道维联动、开方/支付口径、AI 列隐藏规则）</li>
 <li><strong>作者</strong>：产品（从 data-platform-bi PRD 拆分）</li>
-<li><strong>交互原型</strong>：
-V1.0版本：
-<a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html">https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html</a>
-V1.1版本:
-<a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html">https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html</a></li>
+<li><strong>交互原型</strong>：</li>
 </ul>
+<p>V1.0版本：</p>
+<p><a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html">https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.0.html</a></p>
+<p>V1.1版本:</p>
+<p><a href="https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html">https://vivyuan00.github.io/Cursor_Test/prds/funnel-optimization/%E5%A4%9A%E7%BB%B4%E6%95%B0%E6%8D%AE%E7%BB%9F%E8%AE%A1V1.1.html</a></p>
 <h2 id="0变更">0.变更</h2>
-<p>1、初诊复诊订单数统计方式调整（原初诊有报告no，复诊无，问题是线下加粉的订单也有报告no，现在重新定义了初复诊，即通过诊次判断，统计更准确）
-2、医助维度-医助报告数的统计口径：AI智能体报告中分配企微曝光的数量（仅包含crm医助分配场景，不包含巧仓等第三方分配）
-3、筛选增加「过滤重复添加用户」：勾选后，加粉数（报告转化）/加粉数（渠道汇总）/加粉数（来源）均按用户去重（删除再加粉计 1）
-4、增加<strong>加粉数（渠道汇总）</strong>：由该渠道新增的加企微人数（含 AI 工具添加及投放企微卡添加等）</p>
+<p>1、初诊复诊订单数统计方式调整（原初诊有报告no，复诊无，问题是线下加粉的订单也有报告no，现在重新定义了初复诊，即通过诊次判断，统计更准确）</p>
+<p>2、医助维度-医助报告数的统计口径：AI智能体报告中分配企微曝光的数量（仅包含crm医助分配场景，不包含巧仓等第三方分配）</p>
+<p>3、增加<strong>加粉数（渠道汇总）</strong>：由该渠道新增的加企微人数（含 AI 工具添加及投放企微卡添加等）</p>
 <p>v1.1版本增加：</p>
-<p>5、<strong>投流消耗 / 行为点击</strong>改为按 <strong>渠道维度</strong>统计
-6、重新定义三类加粉：</p>
+<p>4、筛选增加「过滤重复添加用户」：未勾选默认，加粉数（报告转化）/加粉数（渠道汇总）/加粉数（来源）均按照用户+医助两个条件统计；勾选后，均按用户去重（一个用户加多个医助算1）</p>
+<p>5、<strong>投流消耗 / 行为点击</strong>改为按 <strong>渠道维度</strong>统计</p>
+<p>6、重新定义三类加粉：</p>
 <ul>
 <li><strong>加粉数（报告转化）</strong>：通过 AI 工具产生报告而新增的加企微人数；报告-加粉转化率 PV = 加粉数（报告转化）/成功报告数；AI工具首页-加粉转化率 PV = 加粉数（报告转化）/AI工具首页 PV</li>
-<li><strong>加粉数（渠道汇总）</strong>：由该渠道新增的加企微人数（含 AI 工具添加及投放企微卡添加等）；行为点击-加粉转化率 = 加粉数（渠道汇总）/行为点击；平均获客成本 = 投流消耗/加粉数（渠道汇总）；筛选 <strong>子渠道/产品/版本</strong> 时隐藏投流消耗、行为点击、加粉数（渠道汇总）及上述衍生指标</li>
-<li><strong>加粉数（来源）</strong>：按企微添加来源统计；「来源」筛选项仅控制该字段，支持多选（全部、获客链接、离职转移、在职转移、其他）；筛选 <strong>渠道/子渠道/产品/版本</strong> 时隐藏来源筛选项，字段切换为：仅筛渠道→加粉数（渠道汇总）；筛子渠道/产品/版本→加粉数（报告转化）
-7、以上口径在每日转化数据、医助人效统计、渠道维度数据同步调整；渠道维度去掉「首页-支付转化率」</li>
+<li><strong>加粉数（渠道汇总）</strong>：由该渠道新增的加企微人数（含 AI 工具添加及投放企微卡添加等）；行为点击-加粉转化率 = 加粉数（渠道汇总）/行为点击；平均获客成本 = 投流消耗/加粉数（渠道汇总）；</li>
+<li><strong>加粉数（来源）</strong>：按企微添加来源统计；「加粉来源」筛选项控制该字段及医助转化中的开方、支付计算，支持多选（全部、获客链接、离职转移、内部成员共享、扫描二维码、其他），默认全选</li>
+</ul>
+<p>7、汇总筛选对应表格的交互变化</p>
+<p>深维度筛选（子渠道/应用/版本）：隐藏投流消耗、行为点击、首页PV、首页UV、加粉数（渠道汇总）及上述衍生指标（行为点击-加粉转化率、平均获客成本、首页-报告转化率PV、AI工具首页-加粉转化率PV等）；</p>
+<p>筛选医助/团队：隐藏 AI 工具转化全部数据；</p>
+<p>加粉数（来源）：文案固定为「加粉数（来源）」，数值随筛选项切换计算口径；</p>
+<p>8、<strong>加粉来源筛选</strong>（详见 §3.1、§4.1 筛选项说明）：</p>
+<ul>
+<li>加粉来源枚举：获客链接、离职转移、内部成员共享、扫描二维码、其他</li>
+<li>筛选项支持多选，默认全选；控制 <strong>加粉数（来源）</strong> 及 <strong>医助转化</strong> 中 <strong>开方、支付</strong> 的统计口径</li>
+<li><strong>与渠道维筛选联动</strong>：渠道/子渠道/应用/版本均为「全部」时展示加粉来源筛选项；任一非「全部」时隐藏加粉来源，<strong>加粉数（来源）文案不变</strong>，取值随渠道维切换（仅渠道→渠道汇总口径；深维度→报告转化口径）</li>
+<li><strong>反向联动</strong>：加粉来源不含「获客链接」时，隐藏渠道/子渠道/应用/版本筛选项</li>
+<li><strong>待验证</strong>：加粉来源仅选「获客链接」时，加粉数（来源）与加粉数（渠道汇总）是否相等</li>
+<li><strong>数据表</strong>：加粉来源不含「获客链接」时，隐藏 AI 工具转化全部列及辅助图表</li>
 </ul>
 <h2 id="1需求背景与目标">1. 需求背景与目标</h2>
 <h3 id="11业务背景">1.1 业务背景</h3>
@@ -145,14 +150,13 @@ V1.1版本:
 </ul>
 <h3 id="12需求目标">1.2 需求目标</h3>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>目标编号</th>
 <th>目标描述</th>
 <th>衡量方式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>G01</td>
 <td>建立全链路转化漏斗数据模型，支持每日数据统计</td>
 <td>漏斗日汇总表稳定产出，F01~F6各步数据准确</td>
@@ -176,42 +180,41 @@ V1.1版本:
 <h3 id="13需求范围">1.3 需求范围</h3>
 <p><strong>包含</strong>：</p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>编号</th>
 <th>功能名称</th>
 <th>功能描述</th>
 <th>优先级</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>F01</td>
 <td>漏斗日汇总模型</td>
-<td>每日漏斗步骤F01~F06去重人数，按渠道/医助维度汇总（<code>dws_funnel_channel_assistant_1d</code>）</td>
+<td>每日漏斗步骤人数，按渠道/医助维度汇总</td>
 <td>P0</td>
 </tr>
 <tr>
 <td>F02</td>
 <td>订单金额日汇总</td>
-<td>按药物类型（汤剂/丸剂）、初复诊拆分的订单数与金额（<code>dws_order_drug_visit_1d</code>）</td>
+<td>按药物类型（汤剂/丸剂）、初复诊拆分的订单数与金额</td>
 <td>P0</td>
 </tr>
 <tr>
 <td>F03</td>
 <td>医助成交日汇总</td>
-<td>医助维度初诊/复诊订单数与金额汇总（<code>dws_assistant_trade_1d</code>）</td>
+<td>医助维度初诊/复诊订单数与金额汇总</td>
 <td>P0</td>
 </tr>
 <tr>
 <td>F04</td>
 <td>渠道产品转化日汇总</td>
-<td>渠道→子渠道→产品→版本层级核心指标与转化漏斗（<code>dws_channel_product_conversion_1d</code>）</td>
+<td>渠道→子渠道→产品→版本层级核心指标与转化漏斗</td>
 <td>P0</td>
 </tr>
 <tr>
 <td>F05</td>
 <td>BI看板-每日数据统计</td>
-<td>每日转化数据（F01~F06）、每日订单金额数据</td>
+<td>每日转化数据、每日订单金额数据</td>
 <td>P0</td>
 </tr>
 <tr>
@@ -229,13 +232,12 @@ V1.1版本:
 </tbody></table></div>
 <h2 id="2角色与权限">2. 角色与权限</h2>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>角色</th>
 <th>核心诉求</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>管理员</td>
 <td>全量权限、任务运维、口径配置审批</td>
 </tr>
@@ -255,8 +257,7 @@ V1.1版本:
     ↓ 筛选栏下方
 二级 Tab（数据子类）: 例如每日转化数据 | 每日订单金额数据
     ↓
-核心区域: 上方可选图表（简单辅助） + 下方横纵坐标数据表（核心）
-</code></pre>
+核心区域: 上方可选图表（简单辅助） + 下方横纵坐标数据表（核心）</code></pre>
 <p><strong>设计原则：</strong></p>
 <ol>
 <li>用户先选择一级 Tab（统计类型），页面展示该类型的专属筛选栏</li>
@@ -265,6 +266,46 @@ V1.1版本:
 <li>辅助图表采用<strong>一行多列网格</strong>（2 列或 3 列）并排展示，横向撑满内容区；每日数据统计模块内容区 100% 宽度展示</li>
 <li>每个筛选栏末尾均有「查询」「重置」「导出 Excel」按钮</li>
 </ol>
+<h3 id="31加粉来源筛选规则">3.1 加粉来源筛选规则</h3>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>规则</th>
+<th>说明</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>枚举值</td>
+<td>获客链接、离职转移、内部成员共享、扫描二维码、其他</td>
+</tr>
+<tr>
+<td>筛选项</td>
+<td>全部、获客链接、离职转移、内部成员共享、扫描二维码、其他；支持多选，<strong>默认全选</strong></td>
+</tr>
+<tr>
+<td>控制范围</td>
+<td><strong>加粉数（来源）</strong>；<strong>医助转化</strong>中的 <strong>开方数、支付数</strong>（及以其为分母的转化率）</td>
+</tr>
+<tr>
+<td>与渠道维正向联动</td>
+<td>渠道 / 子渠道 / 应用 / 版本 <strong>均为「全部」</strong> 时，展示加粉来源筛选项</td>
+</tr>
+<tr>
+<td>与渠道维正向联动</td>
+<td>渠道 / 子渠道 / 应用 / 版本 <strong>任一非「全部」</strong> 时，<strong>立即隐藏</strong>加粉来源筛选项（无需点击「查询」）；<strong>加粉数（来源）文案固定</strong>，取值随渠道维切换（仅渠道→渠道汇总；深维度→报告转化，见 §0 变更 7）</td>
+</tr>
+<tr>
+<td>与渠道维反向联动</td>
+<td>加粉来源 <strong>不含「获客链接」</strong> 时，<strong>立即隐藏</strong>渠道 / 子渠道 / 应用 / 版本筛选项（无需点击「查询」）</td>
+</tr>
+<tr>
+<td>待验证</td>
+<td>加粉来源 <strong>仅选「获客链接」</strong> 时，加粉数（来源）与加粉数（渠道汇总）是否相等，需数据对账验证</td>
+</tr>
+<tr>
+<td>数据表展示</td>
+<td>加粉来源 <strong>不含「获客链接」</strong> 时，<strong>隐藏 AI 工具转化</strong>全部指标列及对应辅助图表</td>
+</tr>
+</tbody></table></div>
 <hr>
 <h2 id="4全链路漏斗数据统计">4. 全链路漏斗数据统计</h2>
 <p>全链路漏斗页分为三大数据分析模块，分别从时间维度、医助维度和渠道维度提供多角度数据洞察。</p>
@@ -272,15 +313,14 @@ V1.1版本:
 <p>[1] <strong>二级 Tab</strong>：每日转化数据 | 每日订单金额数据</p>
 <h4 id="筛选项">筛选项</h4>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>筛选项</th>
 <th>类型</th>
 <th>默认值</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>时间筛选</td>
 <td>日期范围</td>
 <td>当前时间一个月内</td>
@@ -329,10 +369,10 @@ V1.1版本:
 <td>标签「医助：」+ placeholder「系统用户名/企微id」；筛选医助后首页 PV/UV 灰置</td>
 </tr>
 <tr>
-<td>来源筛选</td>
+<td>加粉来源筛选</td>
 <td>多选下拉</td>
-<td>全部</td>
-<td>下拉选择器，支持多选；选项：全部、获客链接、离职转移、在职转移、其他；<strong>仅控制「加粉数（来源）」</strong>；筛选渠道/子渠道/产品/版本时隐藏</td>
+<td>全选（全部）</td>
+<td>下拉选择器，支持多选；选项：全部、获客链接、离职转移、内部成员共享、扫描二维码、其他；控制 <strong>加粉数（来源）</strong> 及 <strong>医助转化开方、支付</strong>；规则见 §3.1</td>
 </tr>
 <tr>
 <td>操作</td>
@@ -342,15 +382,17 @@ V1.1版本:
 </tr>
 </tbody></table></div>
 <blockquote>
-<p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。<br><strong>投流 / 加粉数（渠道汇总）隐藏规则</strong>：筛选 <strong>子渠道 / 产品 / 产品版本</strong> 任一非「全部」时，隐藏投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本及获客成本趋势图。<br><strong>来源与加粉字段切换</strong>：  </p>
+<p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。</p>
+<p><strong>深维度隐藏规则</strong>（子渠道 / 产品 / 产品版本 任一非「全部」，点击「查询」后生效）：隐藏投流消耗、行为点击、首页PV、首页UV、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、首页-报告转化率PV、AI工具首页-加粉转化率PV及获客成本趋势图。</p>
+<p><strong>加粉来源与渠道维联动</strong>（§3.1，<strong>变更即生效，无需点击「查询」</strong>）：</p>
 <ul>
-<li>未筛渠道维：展示「加粉数（来源）」，来源筛选项可见；  </li>
-<li>仅筛渠道：字段变为「加粉数（渠道汇总）」，来源筛选项隐藏；  </li>
-<li>筛子渠道 / 产品 / 版本：字段变为「加粉数（报告转化）」，来源筛选项隐藏。</li>
+<li>渠道 / 子渠道 / 产品 / 版本均为「全部」：展示加粉来源筛选项，医助转化展示「加粉数（来源）」；</li>
+<li>任一渠道维非「全部」：隐藏加粉来源，<strong>加粉数（来源）文案固定</strong>，取值随渠道维切换；</li>
+<li>加粉来源不含「获客链接」：隐藏渠道 / 子渠道 / 产品 / 版本筛选项；数据表隐藏 AI 工具转化全部列。</li>
 </ul>
 </blockquote>
 <h4 id="411每日转化数据统计">4.1.1 每日转化数据统计</h4>
-<p>[4] &gt; <strong>统计口径</strong>：全链路漏斗分为两大类：AI工具转化和医助转化。</p>
+<p>[4] > <strong>统计口径</strong>：全链路漏斗分为两大类：AI工具转化和医助转化。</p>
 <blockquote>
 <ul>
 <li>AI工具转化：统计从用户访问 AI 工具首页到加粉的转化链路（首页 PV/UV 均为 AI 工具首页）</li>
@@ -359,25 +401,26 @@ V1.1版本:
 </blockquote>
 <p><strong>AI工具转化</strong></p>
 <blockquote>
-<p><strong>统计口径</strong>：统计从投流行为点击 / 用户访问 AI 工具首页到加粉的转化链路。<br><strong>投流指标粒度</strong>：投流消耗、行为点击按 <strong>渠道</strong> 维度统计，<strong>不拆分子渠道 / 产品 / 产品版本</strong>。<br><strong>展示条件</strong>：当筛选 <strong>子渠道 / 产品 / 产品版本</strong> 任一非「全部」时，隐藏投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本及相关图表。</p>
+<p><strong>统计口径</strong>：统计从投流行为点击 / 用户访问 AI 工具首页到加粉的转化链路。</p>
+<p><strong>投流指标粒度</strong>：投流消耗、行为点击按 <strong>渠道</strong> 维度统计，<strong>不拆分子渠道 / 产品 / 产品版本</strong>。</p>
+<p><strong>展示条件</strong>：当筛选 <strong>子渠道 / 产品 / 产品版本</strong> 任一非「全部」时，隐藏投流消耗、行为点击、首页PV、首页UV、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、首页-报告转化率PV、AI工具首页-加粉转化率PV及相关图表。</p>
 </blockquote>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>漏斗步骤</th>
 <th>指标名称</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>A00</td>
-<td>行为点击</td>
-<td>投放广告产生的行为点击次数（渠道维度）</td>
-</tr>
+</tr></thead>
+<tbody>
 <tr>
 <td>—</td>
 <td>投流消耗</td>
 <td>投放广告消耗金额（元）；渠道维度</td>
+</tr>
+<tr>
+<td>A00</td>
+<td>行为点击</td>
+<td>投放广告产生的行为点击次数（渠道维度）</td>
 </tr>
 <tr>
 <td>A01</td>
@@ -397,7 +440,7 @@ V1.1版本:
 <tr>
 <td>A04</td>
 <td>报告人次</td>
-<td>生成报告的去重用户数</td>
+<td>成功报告的去重用户数</td>
 </tr>
 <tr>
 <td>A05</td>
@@ -407,7 +450,7 @@ V1.1版本:
 <tr>
 <td>A06</td>
 <td>加粉数（报告转化）</td>
-<td>通过 AI 工具产生报告而新增的加企微人数</td>
+<td>通过 AI 工具产生报告而新增的加企微人数；若同一用户加多个医助算多条，用户去重后算1条</td>
 </tr>
 <tr>
 <td>A07</td>
@@ -422,7 +465,7 @@ V1.1版本:
 <tr>
 <td>A09</td>
 <td>加粉数（渠道汇总）</td>
-<td>由该渠道新增的加企微人数（含 AI 工具及投放企微卡等）；随投流指标一并隐藏</td>
+<td>由该渠道新增的加企微人数（含 AI 工具及投放企微卡等）；若同一用户加多个医助算多条，用户去重后算1条</td>
 </tr>
 <tr>
 <td>A09a</td>
@@ -440,17 +483,16 @@ V1.1版本:
 <p><strong>统计口径</strong>：仅统计<strong>初诊流程</strong>转化，从加粉到付费确认的完整链路。</p>
 </blockquote>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>漏斗步骤</th>
 <th>指标名称</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>F01</td>
-<td>加粉数（来源/渠道汇总/报告转化）</td>
-<td>默认「加粉数（来源）」；随渠道维筛选切换为渠道或报告口径（见上）</td>
+<td>加粉数（来源）</td>
+<td>文案固定；数值随渠道维/加粉来源筛选切换计算口径（见 §3.1）；全部方式新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；若同一用户加多个医助算多条，用户去重后算1条</td>
 </tr>
 <tr>
 <td>F02</td>
@@ -465,12 +507,12 @@ V1.1版本:
 <tr>
 <td>F04</td>
 <td>开方数</td>
-<td>完成初诊病例总结和开方的数量</td>
+<td>完成初诊病例总结和开方的数量，若一个微信用户有两个就诊人都转化成果算2条；<strong>受加粉来源筛选控制</strong>（与加粉数（来源）同一来源范围）</td>
 </tr>
 <tr>
 <td>F05</td>
 <td>支付数</td>
-<td>初诊支付成功的订单数量</td>
+<td>初诊支付成功的订单数量，若一个微信用户有两个就诊人都转化成果算2条；<strong>受加粉来源筛选控制</strong>（与加粉数（来源）同一来源范围）</td>
 </tr>
 <tr>
 <td>F07</td>
@@ -480,14 +522,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>展示内容：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>区块</th>
 <th>内容</th>
 <th>格式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>平均获客成本趋势图</td>
 <td>按日展示平均获客成本（投流消耗 / 加粉数（渠道汇总））折线；<strong>放在辅助图最左侧</strong>；筛子渠道/产品/版本时隐藏</td>
 <td>折线图</td>
@@ -504,26 +545,27 @@ V1.1版本:
 </tr>
 <tr>
 <td>漏斗布局</td>
-<td>展示投流指标时：<strong>获客成本趋势 | AI工具转化 | 医助转化</strong> 三列；隐藏投流时：AI 与医助两列</td>
+<td>展示投流指标时：**获客成本趋势 \</td>
+<td>AI工具转化 \</td>
+<td>医助转化** 三列；隐藏投流时：AI 与医助两列</td>
 <td>3 列 / 2 列网格</td>
 </tr>
 <tr>
 <td>数据表</td>
-<td>纵坐标=日期；<strong>AI 工具转化</strong>（投流/行为点击/首页～加粉数（报告转化）/报告-加粉/AI工具首页-加粉；及加粉数（渠道汇总）与衍生获客指标，随筛选隐藏）+ <strong>医助转化</strong>（当前加粉字段、开口、舌象上传、开方、支付、支付转化率）</td>
+<td>纵坐标=日期；<strong>AI 工具转化</strong>（投流/行为点击/首页～加粉数（报告转化）/报告-加粉/AI工具首页-加粉；及加粉数（渠道汇总）与衍生获客指标，随筛选隐藏；<strong>加粉来源不含获客链接时整组隐藏</strong>）+ <strong>医助转化</strong>（当前加粉字段、开口、舌象上传、开方、支付、支付转化率；开方/支付受加粉来源筛选控制）</td>
 <td>宽表格，分组表头</td>
 </tr>
 </tbody></table></div>
 <h4 id="412每日订单金额数据">4.1.2 每日订单金额数据</h4>
-<p>[5] &gt; <strong>统计口径</strong>：按业务日统计订单与金额，分别按药物类型、初复诊两个维度拆分。</p>
+<p>[5] > <strong>统计口径</strong>：按业务日统计订单与金额，分别按药物类型、初复诊两个维度拆分。</p>
 <p><strong>按药物类型拆分：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>指标</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>汤剂订单数</td>
 <td>当日药物类型为汤剂的支付成功订单数</td>
 </tr>
@@ -542,13 +584,12 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>按初复诊拆分：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>指标</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>初诊订单数</td>
 <td>当日首次成交用户的支付成功订单数</td>
 </tr>
@@ -567,13 +608,12 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>汇总指标：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>指标</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>总订单数</td>
 <td>当日全部支付成功订单数（= 汤剂+丸剂 = 初诊+复诊）</td>
 </tr>
@@ -584,14 +624,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>展示内容：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>区块</th>
 <th>内容</th>
 <th>格式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>辅助图表1</td>
 <td><strong>初复诊汇总</strong>：初诊/复诊两根柱，每柱汤剂+丸剂堆叠</td>
 <td>堆叠柱状图</td>
@@ -617,15 +656,14 @@ V1.1版本:
 <p>[2] <strong>二级 Tab</strong>：医助服务人效统计 | 医助成交数据</p>
 <h4 id="筛选项-2">筛选项</h4>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>筛选项</th>
 <th>类型</th>
 <th>默认值</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>时间筛选（快捷）</td>
 <td>标签切换</td>
 <td>今日</td>
@@ -674,10 +712,10 @@ V1.1版本:
 <td>标签「医助：」+ placeholder「系统用户名/企微id」</td>
 </tr>
 <tr>
-<td>来源筛选</td>
+<td>加粉来源筛选</td>
 <td>多选下拉</td>
-<td>全部</td>
-<td>下拉选择器，支持多选；选项：全部、获客链接、离职转移、在职转移、其他；仅控制「加粉数（来源）」；筛选渠道/子渠道/产品/版本时隐藏，加粉字段随规则切换为加粉数（渠道汇总）或加粉数（报告转化）</td>
+<td>全选（全部）</td>
+<td>下拉选择器，支持多选；选项：全部、获客链接、离职转移、内部成员共享、扫描二维码、其他；控制加粉数（来源）及医助转化开方、支付；规则见 §3.1</td>
 </tr>
 <tr>
 <td>操作</td>
@@ -687,24 +725,23 @@ V1.1版本:
 </tr>
 </tbody></table></div>
 <blockquote>
-<p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。加粉字段展示规则与每日数据一致。</p>
+<p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。加粉来源与渠道维联动、加粉字段展示规则与每日数据统计一致（§3.1）。</p>
 </blockquote>
 <h4 id="421医助服务人效统计">4.2.1 医助服务人效统计</h4>
-<p>[5] &gt; <strong>统计维度</strong>：以医助（assistant_id）为主维度，在筛选的时间段内汇总每个医助的转化数据。</p>
+<p>[5] > <strong>统计维度</strong>：以医助（assistant_id）为主维度，在筛选的时间段内汇总每个医助的转化数据。</p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>指标</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>曝光数</td>
 <td>AI智能体报告中分配企微曝光的数量(仅包含crm医助分配场景，不包含巧仓等第三方分配)</td>
 </tr>
 <tr>
-<td>加粉数（来源/渠道汇总/报告转化）</td>
-<td>默认加粉数（来源）；随渠道维筛选切换；图表与表头展示当前口径字段名</td>
+<td>加粉数（来源）</td>
+<td>文案固定；数值随渠道维/加粉来源筛选切换计算口径；全部方式新增企微好友人数（含非 AI 工具来源，如线下转介绍等）</td>
 </tr>
 <tr>
 <td>开口数</td>
@@ -716,11 +753,11 @@ V1.1版本:
 </tr>
 <tr>
 <td>开方数</td>
-<td>该医助服务的用户完成初诊病例总结和开方的人数</td>
+<td>该医助服务的用户完成初诊病例总结和开方数，若一个微信用户有两个就诊人都转化成果算2条；<strong>受加粉来源筛选控制</strong></td>
 </tr>
 <tr>
 <td>支付数</td>
-<td>该医助服务的用户初诊支付成功订单数</td>
+<td>该医助服务的用户初诊支付成功订单数，若一个微信用户有两个就诊人都转化成果算2条；<strong>受加粉来源筛选控制</strong></td>
 </tr>
 <tr>
 <td>加粉-支付转化率</td>
@@ -729,14 +766,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>展示内容：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>区块</th>
 <th>内容</th>
 <th>格式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>排行榜</td>
 <td>医助按 <strong>加粉-支付转化率</strong> / <strong>加粉-开方转化率</strong> 排序 Top <strong>10</strong>，左 5 + 右 5 双列展示</td>
 <td>水平条形图</td>
@@ -753,15 +789,14 @@ V1.1版本:
 </tr>
 </tbody></table></div>
 <h4 id="422医助成交数据">4.2.2 医助成交数据</h4>
-<p>[6] &gt; <strong>统计维度</strong>：以医助（assistant_id）为主维度，在筛选时段内汇总每个医助的订单与金额数据。</p>
+<p>[6] > <strong>统计维度</strong>：以医助（assistant_id）为主维度，在筛选时段内汇总每个医助的订单与金额数据。</p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>指标</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>初诊订单数</td>
 <td>该医助服务的初诊用户支付成功订单数</td>
 </tr>
@@ -788,14 +823,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>展示内容：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>区块</th>
 <th>内容</th>
 <th>格式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>排行榜1</td>
 <td>医助按 <strong>总订单数</strong> 排序 Top <strong>10</strong>，左 5 + 右 5 双列展示</td>
 <td>水平条形图</td>
@@ -826,15 +860,14 @@ V1.1版本:
 <p>[3] <strong>二级 Tab</strong>：渠道核心数据概览（产品详细转化数据通过操作列「查看详情」进入独立页面）</p>
 <h4 id="筛选项-3">筛选项</h4>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>筛选项</th>
 <th>类型</th>
 <th>默认值</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>时间筛选（快捷）</td>
 <td>标签切换</td>
 <td>今日</td>
@@ -878,21 +911,21 @@ V1.1版本:
 </tr>
 </tbody></table></div>
 <blockquote>
-<p>上述筛选栏控制渠道核心数据概览；产品详细转化数据页继承本模块筛选条件。<br><strong>投流 / 加粉数（渠道汇总）隐藏规则</strong>：筛选 <strong>子渠道 / 产品 / 产品版本</strong> 时，隐藏投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本及相关排行图。</p>
+<p>上述筛选栏控制渠道核心数据概览；产品详细转化数据页继承本模块筛选条件。</p>
+<p><strong>投流 / 加粉数（渠道汇总）隐藏规则</strong>：筛选 <strong>子渠道 / 产品 / 产品版本</strong> 时，隐藏投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本及相关排行图。</p>
 </blockquote>
 <h4 id="431渠道核心数据概览">4.3.1 渠道核心数据概览</h4>
-<p>[7] &gt; <strong>统计维度</strong>：以渠道（channel）→ 子渠道（sub_channel）→ 投放产品（product）→ 产品版本（product_version）为层级，在所选时间段内汇总核心指标。  </p>
+<p>[7] > <strong>统计维度</strong>：以渠道（channel）→ 子渠道（sub_channel）→ 投放产品（product）→ 产品版本（product_version）为层级，在所选时间段内汇总核心指标。</p>
 <blockquote>
 <p><strong>投流指标</strong>：投流消耗、行为点击挂在 <strong>渠道</strong> 维度；产品 / 版本行不拆分投流（展示「—」）。筛选子渠道/产品/版本时隐藏投流相关列与排行图。</p>
 </blockquote>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>指标</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>投流消耗</td>
 <td>投放广告消耗金额（元）；渠道维度</td>
 </tr>
@@ -951,14 +984,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>展示内容：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>区块</th>
 <th>内容</th>
 <th>格式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>辅助图表1</td>
 <td>各渠道 <strong>加粉</strong> 分布</td>
 <td>水平条形图</td>
@@ -993,21 +1025,20 @@ V1.1版本:
 <p><strong>操作列 — 查看详情</strong>：点击后进入「产品详细转化数据页」，默认选中当前行对应的渠道、子渠道、产品和版本。</p>
 </blockquote>
 <h4 id="432产品详细转化数据页">4.3.2 产品详细转化数据页</h4>
-<p>[8] &gt; <strong>入口</strong>：渠道核心数据概览表 → 操作列「查看详情」</p>
+<p>[8] > <strong>入口</strong>：渠道核心数据概览表 → 操作列「查看详情」</p>
 <blockquote>
 <p><strong>上下文</strong>：默认筛选条件继承自上一级已选的渠道、子渠道、产品、产品版本；时间范围继承全局筛选栏设置。</p>
 </blockquote>
 <p><strong>筛选项（页面顶部）：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>筛选项</th>
 <th>类型</th>
 <th>默认值</th>
 <th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>渠道</td>
 <td>展示</td>
 <td>继承上一级选中渠道</td>
@@ -1054,14 +1085,13 @@ V1.1版本:
 </blockquote>
 <p><strong>舌诊类产品</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>阶段</th>
 <th>列（横坐标）</th>
 <th>计算公式或说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>首页与舌象</td>
 <td>首页PV</td>
 <td>AI智能体工具首页页面浏览量</td>
@@ -1189,14 +1219,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>快测类型产品</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>阶段</th>
 <th>列（横坐标）</th>
 <th>计算公式或说明</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>会话</td>
 <td>首页PV</td>
 <td>快测对话页浏览量</td>
@@ -1299,14 +1328,13 @@ V1.1版本:
 </tbody></table></div>
 <p><strong>展示内容：</strong></p>
 <div class="table-wrap"><table>
-<thead>
-<tr>
+<thead><tr>
 <th>区块</th>
 <th>内容</th>
 <th>格式</th>
-</tr>
-</thead>
-<tbody><tr>
+</tr></thead>
+<tbody>
+<tr>
 <td>辅助图表（舌诊类）</td>
 <td>汇总所选日期范围内全部数据，横向漏斗柱状图三组：① 核心转化（首页PV → 舌诊报告数 → 小结数 → 留资数）② 对话转化（对话数 → 开口对话数）③ 对话轮次（平均出小结轮次 → 平均对话轮次）</td>
 <td><strong>一行三列</strong>并排</td>
@@ -1322,395 +1350,6 @@ V1.1版本:
 <td>宽表格，支持横向滚动、排序、导出</td>
 </tr>
 </tbody></table></div>
-<h2 id="5非功能需求">5. 非功能需求</h2>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>类别</th>
-<th>要求</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>时效</td>
-<td>默认一小时内更新，比如10点可以看到9点前的数据</td>
-</tr>
-<tr>
-<td>可用</td>
-<td>核心看板月可用性目标与任务重跑机制需运维侧确认（建议≥99%依赖云SLA）</td>
-</tr>
-<tr>
-<td>安全</td>
-<td>分级脱敏、权限、审计、环境隔离</td>
-</tr>
-<tr>
-<td>可维护</td>
-<td>指标需版本化，支持回溯重算</td>
-</tr>
-</tbody></table></div>
-<h1>以下仅供参考</h1>
-<h2 id="6数据模型">6. 数据模型</h2>
-<h3 id="61漏斗日汇总dws_funnel_channel_assistant_1d">6.1 漏斗日汇总 <code>dws_funnel_channel_assistant_1d</code></h3>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>字段名</th>
-<th>类型</th>
-<th>必填</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pt</td>
-<td>STRING</td>
-<td>是</td>
-<td>业务日分区，格式 <code>yyyy-MM-dd</code></td>
-</tr>
-<tr>
-<td>channel_id</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>渠道维度，可空表示未知</td>
-</tr>
-<tr>
-<td>assistant_id</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>医助维度，可空表示未分配</td>
-</tr>
-<tr>
-<td>cnt_f01 ~ cnt_f10</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>漏斗步骤F01～F6当日完成去重人数</td>
-</tr>
-</tbody></table></div>
-<h3 id="62订单金额日汇总按药物类型初复诊dws_order_drug_visit_1d">6.2 订单金额日汇总（按药物类型/初复诊） <code>dws_order_drug_visit_1d</code></h3>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>字段名</th>
-<th>类型</th>
-<th>必填</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pt</td>
-<td>STRING</td>
-<td>是</td>
-<td>业务日分区，格式 <code>yyyy-MM-dd</code></td>
-</tr>
-<tr>
-<td>channel_id</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>渠道维度</td>
-</tr>
-<tr>
-<td>assistant_id</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>医助维度</td>
-</tr>
-<tr>
-<td>drug_type</td>
-<td>STRING</td>
-<td>是</td>
-<td>药物类型：DECOCTION（汤剂）/ PILL（丸剂）/ OTHER（其他）</td>
-</tr>
-<tr>
-<td>visit_type</td>
-<td>STRING</td>
-<td>是</td>
-<td>就诊类型：FIRST（初诊）/ REVISIT（复诊）</td>
-</tr>
-<tr>
-<td>order_cnt</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>支付成功订单数</td>
-</tr>
-<tr>
-<td>gmv</td>
-<td>DECIMAL(18,2)</td>
-<td>是</td>
-<td>实付金额合计</td>
-</tr>
-</tbody></table></div>
-<h3 id="63医助成交日汇总dws_assistant_trade_1d">6.3 医助成交日汇总 <code>dws_assistant_trade_1d</code></h3>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>字段名</th>
-<th>类型</th>
-<th>必填</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pt</td>
-<td>STRING</td>
-<td>是</td>
-<td>业务日分区</td>
-</tr>
-<tr>
-<td>assistant_id</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>医助ID</td>
-</tr>
-<tr>
-<td>first_order_cnt</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>初诊支付成功订单数</td>
-</tr>
-<tr>
-<td>first_gmv</td>
-<td>DECIMAL(18,2)</td>
-<td>是</td>
-<td>初诊实付金额合计</td>
-</tr>
-<tr>
-<td>revisit_order_cnt</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>复诊支付成功订单数</td>
-</tr>
-<tr>
-<td>revisit_gmv</td>
-<td>DECIMAL(18,2)</td>
-<td>是</td>
-<td>复诊实付金额合计</td>
-</tr>
-<tr>
-<td>total_order_cnt</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>总订单数（= first + revisit）</td>
-</tr>
-<tr>
-<td>total_gmv</td>
-<td>DECIMAL(18,2)</td>
-<td>是</td>
-<td>总实付金额</td>
-</tr>
-</tbody></table></div>
-<h3 id="64渠道产品转化日汇总dws_channel_product_conversion_1d">6.4 渠道产品转化日汇总 <code>dws_channel_product_conversion_1d</code></h3>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>字段名</th>
-<th>类型</th>
-<th>必填</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pt</td>
-<td>STRING</td>
-<td>是</td>
-<td>业务日分区</td>
-</tr>
-<tr>
-<td>channel</td>
-<td>STRING</td>
-<td>是</td>
-<td>渠道（如 baidu_doctor_h5）</td>
-</tr>
-<tr>
-<td>sub_channel</td>
-<td>STRING</td>
-<td>否</td>
-<td>子渠道</td>
-</tr>
-<tr>
-<td>product</td>
-<td>STRING</td>
-<td>是</td>
-<td>投放产品（如 舌诊、体质测试）</td>
-</tr>
-<tr>
-<td>product_version</td>
-<td>STRING</td>
-<td>否</td>
-<td>产品版本</td>
-</tr>
-<tr>
-<td>page_pv</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>首页PV</td>
-</tr>
-<tr>
-<td>page_uv</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>首页UV</td>
-</tr>
-<tr>
-<td>upload_pv</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>舌象上传PV（仅舌诊类产品适用）</td>
-</tr>
-<tr>
-<td>report_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>报告生成数（如舌诊报告数）</td>
-</tr>
-<tr>
-<td>report_user_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>报告生成去重用户数（舌诊报告人次）</td>
-</tr>
-<tr>
-<td>dialog_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>对话数</td>
-</tr>
-<tr>
-<td>valid_dialog_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>开口对话数（界面展示名；原有效对话数）</td>
-</tr>
-<tr>
-<td>avg_dialog_turns</td>
-<td>DECIMAL(8,2)</td>
-<td>否</td>
-<td>平均对话轮次</td>
-</tr>
-<tr>
-<td>avg_summary_turns</td>
-<td>DECIMAL(8,2)</td>
-<td>否</td>
-<td>平均出小结轮次</td>
-</tr>
-<tr>
-<td>summary_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>小结数</td>
-</tr>
-<tr>
-<td>summary_user_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>小结去重用户数（小结人次）</td>
-</tr>
-<tr>
-<td>lead_cnt</td>
-<td>BIGINT</td>
-<td>否</td>
-<td>留资数</td>
-</tr>
-<tr>
-<td>wechat_add_cnt</td>
-<td>BIGINT</td>
-<td>是</td>
-<td>加粉数（界面展示名）</td>
-</tr>
-</tbody></table></div>
-<h2 id="7业务规则">7. 业务规则</h2>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>规则编号</th>
-<th>规则描述</th>
-<th>适用场景</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>R01</td>
-<td>付费成功以订单payment_status=PAID且paid_at非空为准；GMV默认取实付金额paid_amount</td>
-<td>GMV、支付转化率</td>
-</tr>
-<tr>
-<td>R02</td>
-<td>漏斗步骤的进入/完成条件、去重主体（user_id或role_id）以指标字典为准，变更需走评审</td>
-<td>漏斗看板、实验对比</td>
-</tr>
-<tr>
-<td>R03</td>
-<td>漏斗冻结：已发布的日报pt在T+2日内仅允许因数据订正触发回补，须留审计记录</td>
-<td>漏斗、管理考核</td>
-</tr>
-<tr>
-<td>R04</td>
-<td>日切与时区统一为业务日pt（默认Asia/Shanghai）；报表展示须标注数据截至昨日</td>
-<td>BI与对外同步</td>
-</tr>
-<tr>
-<td>R05</td>
-<td>归因若同时存在首触点与末次付费触点，须分卡或分字段展示，禁止混用单一字段解释ROI</td>
-<td>渠道分析</td>
-</tr>
-</tbody></table></div>
-<h2 id="8验收标准uat">8. 验收标准（UAT）</h2>
-<div class="table-wrap"><table>
-<thead>
-<tr>
-<th>编号</th>
-<th>验收项</th>
-<th>通过条件</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>A01</td>
-<td>漏斗看板-每日转化</td>
-<td>与业务抽样至少100单路径核对F01~F06人数一致（允许已知口径差异备案）</td>
-</tr>
-<tr>
-<td>A01a</td>
-<td>漏斗看板-每日订单金额</td>
-<td>按药物类型（汤剂/丸剂）、初复诊拆分的订单数与金额与财务侧日报交叉校验，差异≤0.5%或备案说明</td>
-</tr>
-<tr>
-<td>A01b</td>
-<td>漏斗看板-医助服务人效</td>
-<td>医助维度 F01~F06 各步人数与总量一致；加粉-支付转化率 Top10 排行榜与明细表可交叉验证；表头排序功能正常</td>
-</tr>
-<tr>
-<td>A01c</td>
-<td>漏斗看板-医助成交数据</td>
-<td>医助维度初诊/复诊订单数与金额之和等于总量；与每日订单金额数据可交叉验证</td>
-</tr>
-<tr>
-<td>A01d</td>
-<td>漏斗看板-渠道核心数据</td>
-<td>渠道→子渠道→产品→版本层级数据可展开折叠；加粉转化率计算正确（PV 口径）</td>
-</tr>
-<tr>
-<td>A01e</td>
-<td>漏斗看板-渠道产品转化漏斗（舌诊类）</td>
-<td>以舌诊产品为例，验证首页PV、舌象上传PV、舌诊报告数、对话数、小结数、留资数、支付数逐级递减合理；各转化率与折损率计算正确；汇总漏斗三组并排展示</td>
-</tr>
-<tr>
-<td>A01f</td>
-<td>漏斗看板-渠道产品转化漏斗（快测类）</td>
-<td>以快测类型产品为例，验证首页PV（会话数）、开口会话数、报告数量、加粉数、支付数逐级递减合理；会话开口率、首页-报告转化率、报告-加粉转化率、加粉-支付转化率计算正确；汇总漏斗两组并排展示</td>
-</tr>
-<tr>
-<td>A02</td>
-<td>GMV</td>
-<td>与财务/订单侧日报差异0或备案说明</td>
-</tr>
-<tr>
-<td>A03</td>
-<td>权限</td>
-<td>渠道账号不可见其他渠道；医助仅本人/本组</td>
-</tr>
-<tr>
-<td>A04</td>
-<td>口径变更</td>
-<td>执行一次模拟回补后，版本号与公告链路可追溯（R03）</td>
-</tr>
-</tbody></table></div>
-
     </article>
   </main>
 </div>
@@ -1730,3 +1369,8 @@ V1.1版本:
 </script>
 </body>
 </html>
+
+
+
+
+

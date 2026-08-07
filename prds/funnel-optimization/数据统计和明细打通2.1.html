@@ -101,6 +101,8 @@
         .status-normal { color: #15803d; }
         .status-deleted { color: #b91c1c; }
         .status-duplicate { color: #854d0e; }
+        .report-status-sub { font-size: 0.58rem; color: #94a3b8; font-weight: 400; }
+        .report-status-fail { color: #b45309; }
         .action-btn {
             background: none; border: none; cursor: pointer; font-size: 0.65rem; color: #3b82f6;
             font-weight: 500; padding: 3px 8px; border-radius: 30px; margin: 0 2px;
@@ -930,7 +932,7 @@
                     <th rowspan="2">操作</th>
                 </tr>
                 <tr>
-                    <th>用户(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>Query</th><th>报告编号</th><th><span class="field-help-wrap">加粉时间<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpTable"></div></span></th><th>加粉状态</th>
+                    <th>用户(编号/昵称)</th><th>医助(名/账号)</th><th>所属团队</th><th>渠道</th><th>子渠道</th><th>应用</th><th>应用版本</th><th>Query</th><th>报告<br><span class="sub-text">(状态/编号)</span></th><th><span class="field-help-wrap">加粉时间<span class="field-help-icon">?</span><div class="field-help-popover" id="timeTypeHelpTable"></div></span></th><th>加粉状态</th>
                     <th>用户对话数</th><th>医助回复数</th><th>用户图片数</th>
                     <th><span class="field-help-wrap">响应状态<span class="field-help-icon">?</span><div class="field-help-popover" id="responseStatusHelpTable"></div></span></th>
                     <th>初诊开方状态</th>
@@ -2577,7 +2579,7 @@
   <div class="req-tooltip-section-title">时间类型与列表展示规则</div>
   <table style="width:100%;border-collapse:collapse;font-size:12px;">
     <tr><th style="border:1px solid #ccc;padding:4px;">时间类型</th><th style="border:1px solid #ccc;padding:4px;">筛选字段</th><th style="border:1px solid #ccc;padding:4px;">列表展示口径</th></tr>
-    <tr><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">渠道、子渠道、应用、应用版本、Query、报告编号、加粉时间均取<strong>首次添加</strong>时快照</td></tr>
+    <tr><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">首次添加时间</td><td style="border:1px solid #ccc;padding:4px;">渠道、子渠道、应用、应用版本、Query、报告（状态/编号）、加粉时间均取<strong>首次添加</strong>时快照</td></tr>
     <tr><td style="border:1px solid #ccc;padding:4px;">更新添加时间</td><td style="border:1px solid #ccc;padding:4px;">最新更新添加时间</td><td style="border:1px solid #ccc;padding:4px;">上述来源字段均取<strong>最新一次更新添加</strong>时快照；若存在多次更新，取最新一条</td></tr>
   </table>
 </div>
@@ -2588,7 +2590,7 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">导出字段（U01 §4.4）</div>
   <ul>
-    <li><strong>线索信息</strong>：患者编号、患者昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、Query、报告编号、加粉时间、加粉状态</li>
+    <li><strong>线索信息</strong>：患者编号、患者昵称、医助名、医助账号、所属团队、渠道、子渠道、应用、应用版本、Query、报告状态、报告编号、加粉时间、加粉状态</li>
     <li><strong>沟通信息</strong>：患者对话数、医助回复数、患者图片数、响应状态</li>
     <li><strong>成交信息</strong>：初诊开方状态、初诊支付状态、初诊订单数、初诊成交周期、复诊状态、复诊订单数、总订单数、总订单金额</li>
   </ul>
@@ -2635,7 +2637,7 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">字段分组（§4.3.1）</div>
   <ul>
-    <li><strong>线索信息</strong>：用户(编号/昵称)、医助(名/账号)、所属团队；渠道、子渠道、应用、应用版本（随时间类型展示首次/最新更新快照）；Query；报告编号、加粉时间（表头「?」文案同时间类型说明）、加粉状态（随时间类型切换展示口径）</li>
+    <li><strong>线索信息</strong>：用户(编号/昵称)、医助(名/账号)、所属团队；渠道、子渠道、应用、应用版本（随时间类型展示首次/最新更新快照）；Query；报告（编号在上、状态在下；成功仅展示编号；初始/失败状态弱化展示；失败记录沉底）、加粉时间（表头「?」文案同时间类型说明）、加粉状态（随时间类型切换展示口径）</li>
     <li><strong>沟通信息</strong>：患者对话数、医助回复数、患者图片数、响应状态（「?」hover 展示计算公式与等级对照）</li>
     <li><strong>成交信息</strong>：初诊开方状态（已开方/未开方）；初诊支付状态（已支付/未支付/未开方，同行或副行展示初诊订单数）；初诊成交周期（首单支付成功时间 − 加粉时间，单位天、时，加粉时间取当前时间类型下展示口径）；复诊状态（已成交/未成交，同行或副行展示复诊订单数）；总订单数、总订单金额（实付金额合计，「?」hover 说明口径）</li>
   </ul>
@@ -3029,6 +3031,26 @@
         if (!s) return '';
         return String(s).replace(/[&<>]/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]); });
     }
+    function formatReportDisplayHtml(status, reportNo) {
+        var st = status || '初始';
+        var no = reportNo || '—';
+        if (st === '成功') {
+            return '<div>' + escapeHtml(no) + '</div>';
+        }
+        var statusClass = st === '失败' ? 'report-status-sub report-status-fail' : 'report-status-sub';
+        return '<div>' + escapeHtml(no) + '<br><span class="' + statusClass + '">' + escapeHtml(st) + '</span></div>';
+    }
+    function getRowReportStatus(row, timeDim) {
+        return resolveAddDetailView(row, timeDim).报告状态 || '初始';
+    }
+    function sortAddDetailRows(rows, timeDim) {
+        var normal = [], failed = [];
+        rows.forEach(function(row) {
+            if (getRowReportStatus(row, timeDim) === '失败') failed.push(row);
+            else normal.push(row);
+        });
+        return normal.concat(failed);
+    }
     function getTimeDim() {
         var sel = document.getElementById('timeTypeSelect');
         return sel && sel.value === 'initial' ? 'initial' : 'update';
@@ -3039,7 +3061,7 @@
     function getFirstSource(row) {
         return row.首次来源 || {
             所属渠道: row.所属渠道, 子渠道: row.子渠道, 应用: row.应用, 应用版本: row.应用版本,
-            Query: row.Query, 报告编号: row.报告编号, 加粉时间: row.加粉时间 || row.首次添加时间
+            Query: row.Query, 报告状态: row.报告状态 || '成功', 报告编号: row.报告编号, 加粉时间: row.加粉时间 || row.首次添加时间
         };
     }
     function getLatestSource(row) {
@@ -3054,6 +3076,7 @@
             应用: snap.应用,
             应用版本: snap.应用版本,
             Query: snap.Query,
+            报告状态: snap.报告状态 || '初始',
             报告编号: snap.报告编号,
             加粉时间: snap.加粉时间,
             筛选时间: row[TIME_DIMS[timeDim].field] || snap.加粉时间
@@ -3215,6 +3238,7 @@
                 var hour = 6 + Math.floor((i / perDay) * 14), min = (i * 13 + dayOffset * 7) % 60, sec = (i * 11) % 60;
                 var addTime = formatDateTime(dateStr, hour, min, sec);
                 var reportNo = 'RPT' + dateStr.replace(/-/g, '') + String(i).padStart(3, '0');
+                var reportStatus = (dayOffset + i) % 11 === 0 ? '失败' : ((dayOffset + i) % 7 === 0 ? '初始' : '成功');
                 var query = QUERY_SAMPLES[(dayOffset + i) % QUERY_SAMPLES.length];
                 var hasOrder = !!(tmpl.首单编号 && tmpl.首单编号 !== '');
                 var payTime = hasOrder && tmpl.paid ? addMinutesToTime(addTime, 5) : '';
@@ -3232,6 +3256,7 @@
                     应用: app,
                     应用版本: appVersion,
                     Query: query,
+                    报告状态: reportStatus,
                     报告编号: reportNo,
                     加粉时间: addTime
                 };
@@ -3247,6 +3272,7 @@
                         应用: updateApp,
                         应用版本: updateVersions[(dayOffset + i) % updateVersions.length],
                         Query: '更新query-' + i,
+                        报告状态: '成功',
                         报告编号: 'RPT-U' + dateStr.replace(/-/g, '') + String(i).padStart(3, '0'),
                         加粉时间: latestUpdateTime
                     };
@@ -3263,6 +3289,7 @@
                     应用: initialSource.应用,
                     应用版本: initialSource.应用版本,
                     Query: initialSource.Query,
+                    报告状态: initialSource.报告状态,
                     报告编号: initialSource.报告编号,
                     加粉时间: initialSource.加粉时间,
                     医助名: tmpl.医助名, 医助账号: tmpl.医助账号, 所属业务组: tmpl.所属业务组,
@@ -3335,6 +3362,7 @@
                 应用: cfg.app || '舌诊',
                 应用版本: cfg.ver || 'v3.2',
                 Query: cfg.query || '演示query-' + cfg.id.slice(-2),
+                报告状态: cfg.reportStatus || '成功',
                 报告编号: 'RPT-DEMO-' + cfg.id.slice(-3),
                 加粉时间: addTime
             };
@@ -3357,6 +3385,7 @@
                 应用: firstSource.应用,
                 应用版本: firstSource.应用版本,
                 Query: firstSource.Query,
+                报告状态: firstSource.报告状态,
                 报告编号: firstSource.报告编号,
                 加粉时间: firstSource.加粉时间,
                 医助名: cfg.doctor || '丁莞月100yym',
@@ -3396,13 +3425,15 @@
             makeRecord({
                 id: 'demoAdd002', name: '演示·更新来源', addTime: yestStr + ' 10:00:00', updateTime: todayStr + ' 14:20:00',
                 paid: true, firstCnt: 1, revisitCnt: 1, amount: 105, drug: '丸剂',
-                latestSource: { 所属渠道: '抖音信息流', 子渠道: '更新子渠道-演示', 应用: '体质测试', 应用版本: 'v3.2', Query: '更新query-演示', 报告编号: 'RPT-U-DEMO-002' }
+                latestSource: { 所属渠道: '抖音信息流', 子渠道: '更新子渠道-演示', 应用: '体质测试', 应用版本: 'v3.2', Query: '更新query-演示', 报告状态: '成功', 报告编号: 'RPT-U-DEMO-002' }
             }),
             makeRecord({ id: 'demoAdd003', name: '演示·复诊用户', addTime: todayStr + ' 11:40:00', paid: true, firstCnt: 1, revisitCnt: 2, amount: 106, doctor: '熊国庆100lfy' }),
             makeRecord({ id: 'demoAdd004', name: '演示·重复添加', addTime: todayStr + ' 08:30:00', repeat: true, paid: true, firstCnt: 1, revisitCnt: 0, amount: 101 }),
             makeRecord({ id: 'demoAdd005', name: '演示·慢响应', addTime: todayStr + ' 13:05:00', firstGap: 720, lastGap: 720, paid: false, hasOrder: false, dialogs: 2, replies: 1 }),
             makeRecord({ id: 'demoAdd006', name: '演示·未开方', addTime: todayStr + ' 15:20:00', paid: false, hasOrder: false, dialogs: 1, replies: 1 }),
-            makeRecord({ id: 'demoAdd007', name: '演示·多初诊', addTime: todayStr + ' 10:50:00', paid: true, firstCnt: 2, revisitCnt: 1, amount: 107, doctor: '钟云飞100yym' })
+            makeRecord({ id: 'demoAdd007', name: '演示·多初诊', addTime: todayStr + ' 10:50:00', paid: true, firstCnt: 2, revisitCnt: 1, amount: 107, doctor: '钟云飞100yym' }),
+            makeRecord({ id: 'demoAdd008', name: '演示·报告初始', addTime: todayStr + ' 16:10:00', reportStatus: '初始', paid: false, hasOrder: false, dialogs: 0, replies: 0 }),
+            makeRecord({ id: 'demoAdd009', name: '演示·报告失败', addTime: todayStr + ' 17:25:00', reportStatus: '失败', paid: false, hasOrder: false, dialogs: 1, replies: 1 })
         ];
     }
 
@@ -3708,7 +3739,7 @@
                 '<td>' + escapeHtml(view.应用) + '</td>' +
                 '<td>' + escapeHtml(view.应用版本) + '</td>' +
                 '<td>' + escapeHtml(view.Query || '—') + '</td>' +
-                '<td>' + escapeHtml(view.报告编号 || '—') + '</td>' +
+                '<td>' + formatReportDisplayHtml(view.报告状态, view.报告编号) + '</td>' +
                 '<td>' + escapeHtml(view.加粉时间) + '</td>' +
                 '<td class="' + statusColor + '" style="text-align:center;">' + row.加粉状态 + '</td>' +
                 '<td>' + row.客户对话数 + '</td>' +
@@ -3883,6 +3914,7 @@
             if (kw && !row.患者微信名.toLowerCase().includes(kw) && !row.患者微信编号.toLowerCase().includes(kw)) return false;
             return true;
         });
+        filteredData = sortAddDetailRows(filteredData, getTimeDim());
         currentPage = 1;
         renderStatsAndTable();
     }
@@ -3903,7 +3935,7 @@
 
     function buildExportSheet() {
         var header = [
-            '用户编号', '用户昵称', '医助名', '医助账号', '所属团队', '渠道', '子渠道', '应用', '应用版本', 'Query', '报告编号', '加粉时间', '加粉状态',
+            '用户编号', '用户昵称', '医助名', '医助账号', '所属团队', '渠道', '子渠道', '应用', '应用版本', 'Query', '报告状态', '报告编号', '加粉时间', '加粉状态',
             '用户对话数', '医助回复数', '用户图片数', '响应状态',
             '初诊开方状态', '初诊支付状态', '初诊订单数', '初诊成交周期', '复诊状态', '复诊订单数', '总订单数', '总订单金额'
         ];
@@ -3912,7 +3944,7 @@
             var view = resolveAddDetailView(r);
             sheet.push([
                 r.患者微信编号, r.患者微信名, r.医助名, r.医助账号, r.所属业务组, view.所属渠道, view.子渠道, view.应用, view.应用版本,
-                view.Query || '', view.报告编号 || '', view.加粉时间, r.加粉状态,
+                view.Query || '', view.报告状态 || '初始', view.报告编号 || '', view.加粉时间, r.加粉状态,
                 r.客户对话数, r.医助对话数, r.客户图片数, r.响应状态,
                 r.初诊开方状态, r.初诊支付状态, r.初诊订单数 || 0, r.初诊成交周期 || '',
                 r.复诊状态, r.复诊订单数 || 0, r.总订单数 || 0, r.总订单金额 || 0

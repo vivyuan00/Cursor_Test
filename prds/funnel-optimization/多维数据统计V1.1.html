@@ -766,6 +766,7 @@
     // ===== Funnel Mock Data =====
     const AI_FUNNEL_STEPS=[{label:'A01 首页PV',count:12800},{label:'A02 首页UV',count:9600},{label:'A03 报告数',count:6720},{label:'A04 报告人次',count:5890},{label:'A05 加粉数（报告转化）',count:4500}];
     const ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数（来源）',count:5200},{label:'F02 开口',count:3720},{label:'F03 舌象上传',count:2790},{label:'F04 开方',count:1860},{label:'F05 支付',count:893}];
+    const DAILY_ASSISTANT_FUNNEL_STEPS=[{label:'F01 加粉数（来源）',count:5200},{label:'F04 开方',count:1860},{label:'F05 支付',count:893}];
     const FANS_REPORT=4500;
     const FANS_CHANNEL=4900;
     const FANS_SOURCE=5200;
@@ -829,7 +830,7 @@
       '平均获客成本':'投流消耗 / 加粉数（渠道汇总），单位：元/人',
       '加粉数（报告转化）':'通过 AI 工具产生报告而新增的加企微人数；默认按用户+医助统计（同一微信用户加多个医助算多条），勾选「过滤重复添加用户」后按微信ID去重（算1条）',
       '加粉数（渠道汇总）':'由该渠道新增的加企微人数（含 AI 工具添加及投放企微卡添加等）；默认按用户+医助统计（同一微信用户加多个医助算多条），勾选「过滤重复添加用户」后按微信ID去重（算1条）',
-      '加粉数（来源）':'按企微添加来源统计；表头文案固定为「加粉数（来源）」，数值随渠道维/加粉来源筛选切换计算口径；默认按用户+医助统计，勾选「过滤重复添加用户」后按微信ID去重（算1条）',
+      '加粉数（来源）':'根据加粉来源统计，当筛选全部加粉来源时，默认减去离职转移的数量。',
       '报告-加粉转化率PV':'加粉数（报告转化） / 成功报告数',
       'AI工具首页-加粉转化率PV':'加粉数（报告转化） / AI 工具首页 PV',
       // 4.1.2.1 每日转化 · AI工具转化
@@ -1074,7 +1075,7 @@
       if(showAd) n+=3;
       return n;
     }
-    /** 筛选项 UI：渠道/子渠道/应用/版本均为全部时展示加粉来源（变更即生效） */
+    /** 筛选项 UI：渠道/子渠道/应用/版本均为全部时展示加粉来源（面板内多选，确定后生效） */
     function isSourceFilterVisible(){return !isDimScoped(false);}
     /** 医助转化加粉字段：文案固定 */
     function addFansColLabel(){return '加粉数（来源）';}
@@ -1088,7 +1089,10 @@
     var SOURCE_FANS_MAP={'获客链接':4500,'离职转移':250,'内部成员共享':170,'扫描二维码':120,'其他':280};
     function sourceFansRatio(forData){
       var sel=_fs(forData).fSource||['全部'];
-      if(!sel.length||sel.indexOf('全部')>=0) return 1;
+      if(!sel.length||sel.indexOf('全部')>=0){
+        var resign=SOURCE_FANS_MAP['离职转移']||0;
+        return Math.min(1,(FANS_SOURCE-resign)/FANS_SOURCE);
+      }
       var sum=0; sel.forEach(function(s){sum+=(SOURCE_FANS_MAP[s]||0);});
       return Math.min(1,sum/FANS_SOURCE);
     }
@@ -1171,6 +1175,43 @@
       if(sel.length===1) return sel[0];
       return sel[0]+'等'+sel.length+'项';
     }
+    function _readSourcePanelSel(dd){
+      var sel=[];
+      dd.querySelectorAll('[data-source-opt]').forEach(function(c){
+        if(c.checked) sel.push(c.getAttribute('data-source-opt'));
+      });
+      if(!sel.length) sel=['全部'];
+      return sel;
+    }
+    function _syncSourcePanelSel(dd,sel){
+      sel=sel||['全部'];
+      dd.querySelectorAll('[data-source-opt]').forEach(function(c){
+        var v=c.getAttribute('data-source-opt');
+        c.checked=sel.indexOf(v)>=0;
+      });
+    }
+    function _toggleSourcePanelOpt(dd,v,checked){
+      var sel=_readSourcePanelSel(dd);
+      if(v==='全部'){
+        sel=['全部'];
+      }else{
+        sel=sel.filter(function(x){return x!=='全部';});
+        if(checked){ if(sel.indexOf(v)<0) sel.push(v); }
+        else sel=sel.filter(function(x){return x!==v;});
+        if(!sel.length) sel=['全部'];
+      }
+      _syncSourcePanelSel(dd,sel);
+      return sel;
+    }
+    function _applySourceSelection(sel){
+      funnelState.fSource=sel;
+      if(!hasAcquisitionLinkInSource()){
+        funnelState.fChannel='全部';
+        funnelState.fSubChannel='全部';
+        funnelState.fProduct='全部';
+        funnelState.fVersion='全部';
+      }
+    }
     function _sourceMultiHtml(){
       if(!isSourceFilterVisible()) return '';
       var opts=['全部','获客链接','离职转移','内部成员共享','扫描二维码','其他'];
@@ -1187,7 +1228,13 @@
             '<span data-source-label>'+h(_sourceLabelText(sel))+'</span>'+
             '<span class="text-slate-400 text-[10px] leading-none">▾</span>'+
           '</button>'+
-          '<div data-source-panel class="hidden absolute left-0 top-full mt-1 z-30 min-w-[160px] bg-white border border-slate-200 rounded shadow-md py-1">'+items+'</div>'+
+          '<div data-source-panel class="hidden absolute left-0 top-full mt-1 z-30 min-w-[168px] bg-white border border-slate-200 rounded shadow-md overflow-hidden">'+
+            '<div class="py-1">'+items+'</div>'+
+            '<div class="flex items-center justify-end gap-2 px-2 py-2 border-t border-slate-100 bg-slate-50/80">'+
+              '<button type="button" data-source-cancel class="btn-outline text-xs px-3 py-1">取消</button>'+
+              '<button type="button" data-source-confirm class="btn-primary text-xs px-3 py-1">确定</button>'+
+            '</div>'+
+          '</div>'+
         '</div>'+
         '<span class="border-l border-slate-200 h-5 mx-1"></span>';
     }
@@ -1352,7 +1399,7 @@
       if(showAi){
         var aiSteps=[{label:'A01 首页PV',count:AI_FUNNEL_STEPS[0].count},{label:'A02 报告数',count:AI_FUNNEL_STEPS[2].count},{label:'A03 加粉数（报告转化）',count:reportFans}];
         if(showAd){
-          aiSteps=[{label:'A00 行为点击',count:clickBase}].concat(aiSteps).concat([{label:'A04 加粉数（渠道汇总）',count:channelFans}]);
+          aiSteps=[{label:'A00 行为点击',count:clickBase}].concat(aiSteps);
         }
         var aiMaxCount=aiSteps[0].count||1;
         aiBars=aiSteps.map(function(s,i){
@@ -1371,9 +1418,9 @@
       }
 
       var asstFansBase=dedupeFansCnt(resolveFansBase());
-      var asstSteps=ASSISTANT_FUNNEL_STEPS.map(function(s,idx){
+      var asstSteps=DAILY_ASSISTANT_FUNNEL_STEPS.map(function(s,idx){
         if(idx===0) return {label:'F01 '+fansLabel,count:asstFansBase};
-        if(idx===3||idx===4) return {label:s.label,count:scaleAsstConvCount(s.count)};
+        if(idx===1||idx===2) return {label:s.label,count:scaleAsstConvCount(s.count)};
         return s;
       });
       var asstMaxCount=asstSteps[0].count||1;
@@ -1382,7 +1429,7 @@
         var convRate=i>0?((s.count/asstSteps[i-1].count)*100).toFixed(1)+'%':'—';
         return '<div class="flex items-center gap-3 funnel-bar-row"><div class="w-40 text-sm text-right font-medium shrink-0">'+h(s.label)+'</div><div class="bar-wrap"><div class="funnel-bar bg-brand-500" style="width:'+w+'%">'+fmt(s.count)+'</div></div><div class="w-16 text-xs text-slate-500 text-right shrink-0">'+convRate+'</div></div>';
       }).join('');
-      var asstPayRate=((asstSteps[4].count/asstSteps[0].count)*100).toFixed(1)+'%';
+      var asstPayRate=((asstSteps[2].count/asstSteps[0].count)*100).toFixed(1)+'%';
       var dedupeHint=_fs(true).fDedupeAdd?' · 已过滤重复添加':'';
       var sourceHint=isSourceConvScoped()?(' · 加粉来源：'+(_fs(true).fSource||[]).join('、')):'';
       var calcHint=addFansCalcHint();
@@ -1393,7 +1440,7 @@
       var dates=['05-10','05-11','05-12','05-13','05-14','05-15','05-16'];
       var aiColspan=aiTableColspan(showAi,showAd,showHomePv,{pvToReport:true});
       var aiHeader=showAi?('<th colspan="'+aiColspan+'" class="px-3 py-2 text-center bg-brand-50 text-brand-700 font-semibold">AI工具转化</th>'):'';
-      var asstHeader='<th colspan="6" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
+      var asstHeader='<th colspan="4" class="px-3 py-2 text-center bg-blue-50 text-blue-700 font-semibold">医助转化</th>';
       var aiSubHeaders=showAi?((showAd?[
         _th('投流消耗','投流消耗','px-2 py-1 text-right text-xs'),
         _th('行为点击','行为点击','px-2 py-1 text-right text-xs')
@@ -1417,8 +1464,6 @@
       ]:[]).join('')):'';
       var asstSubHeaders=[
         _th(fansLabel,fansLabel,'px-2 py-1 text-right text-xs'),
-        _th('开口','开口','px-2 py-1 text-right text-xs'),
-        _th('舌象上传','舌象上传','px-2 py-1 text-right text-xs'),
         _th('开方','开方','px-2 py-1 text-right text-xs'),
         _th('支付','支付','px-2 py-1 text-right text-xs'),
         _th('支付转化率','支付转化率','px-2 py-1 text-right text-xs text-blue-700')
@@ -1427,20 +1472,20 @@
         var aiScale=0.9+idx*0.02;
         var asstScale=0.85+idx*0.025;
         var aiCounts=AI_FUNNEL_STEPS.map(function(s){return Math.round(s.count*aiScale);});
-        var asstCounts=ASSISTANT_FUNNEL_STEPS.map(function(s){return Math.round(s.count*asstScale);});
+        var asstCounts=DAILY_ASSISTANT_FUNNEL_STEPS.map(function(s){return Math.round(s.count*asstScale);});
         var dayReport=dedupeFansCnt(Math.round(FANS_REPORT*aiScale));
         var dayChannel=dedupeFansCnt(Math.round(FANS_CHANNEL*aiScale));
         var dayAsstFans=dedupeFansCnt(Math.round(resolveFansBase()*asstScale));
         aiCounts[4]=dayReport;
         asstCounts[0]=dayAsstFans;
-        asstCounts[3]=scaleAsstConvCount(Math.round(ASSISTANT_FUNNEL_STEPS[3].count*asstScale));
-        asstCounts[4]=scaleAsstConvCount(Math.round(ASSISTANT_FUNNEL_STEPS[4].count*asstScale));
+        asstCounts[1]=scaleAsstConvCount(Math.round(DAILY_ASSISTANT_FUNNEL_STEPS[1].count*asstScale));
+        asstCounts[2]=scaleAsstConvCount(Math.round(DAILY_ASSISTANT_FUNNEL_STEPS[2].count*asstScale));
         var daySpend=Math.round(spendBase*aiScale);
         var dayClicks=Math.round(clickBase*aiScale);
         var reportToFan=aiCounts[2]>0?((dayReport/aiCounts[2])*100).toFixed(1)+'%':'—';
         var pvToReport=aiCounts[0]>0?((aiCounts[2]/aiCounts[0])*100).toFixed(1)+'%':'—';
         var homeToFan=aiCounts[0]>0?((dayReport/aiCounts[0])*100).toFixed(1)+'%':'—';
-        var asstPayRate=dayAsstFans>0?((asstCounts[4]/dayAsstFans)*100).toFixed(1)+'%':'—';
+        var asstPayRate=dayAsstFans>0?((asstCounts[2]/dayAsstFans)*100).toFixed(1)+'%':'—';
         var adCells=showAd?('<td class="px-2 py-1 text-right text-xs">'+fmtMoney(daySpend)+'</td><td class="px-2 py-1 text-right text-xs">'+fmt(dayClicks)+'</td>'):'';
         var chFanCells=showAd?('<td class="px-2 py-1 text-right text-xs">'+fmt(dayChannel)+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+clickToFanRate(dayChannel,dayClicks)+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+(function(){var c=avgCac(daySpend,dayChannel);return c==='—'?'—':('¥'+c);})()+'</td>'):'';
         var homeCells=showHomePv?('<td class="px-2 py-1 text-right text-xs">'+fmt(aiCounts[0])+'</td><td class="px-2 py-1 text-right text-xs">'+fmt(aiCounts[1])+'</td>'):'';
@@ -1449,13 +1494,16 @@
         var fanCells='<td class="px-2 py-1 text-right text-xs">'+fmt(dayReport)+'</td><td class="px-2 py-1 text-right text-xs text-brand-700">'+reportToFan+'</td>';
         var homeToFanCell=showHomePv?('<td class="px-2 py-1 text-right text-xs text-brand-700">'+homeToFan+'</td>'):'';
         var aiRow=showAi?(adCells+homeCells+reportCells+pvToReportCell+fanCells+homeToFanCell+chFanCells):'';
-        var asstRow='<td class="px-2 py-1 text-right text-xs">'+fmt(dayAsstFans)+'</td>'+asstCounts.slice(1).map(function(c){return '<td class="px-2 py-1 text-right text-xs">'+fmt(c)+'</td>';}).join('')+'<td class="px-2 py-1 text-right text-xs text-blue-700">'+asstPayRate+'</td>';
+        var asstRow='<td class="px-2 py-1 text-right text-xs">'+fmt(dayAsstFans)+'</td>'+
+          '<td class="px-2 py-1 text-right text-xs">'+fmt(asstCounts[1])+'</td>'+
+          '<td class="px-2 py-1 text-right text-xs">'+fmt(asstCounts[2])+'</td>'+
+          '<td class="px-2 py-1 text-right text-xs text-blue-700">'+asstPayRate+'</td>';
         var ymd=_mmddToYmd(d);
         var ops=_opsCell(_opsLink(_detailLink('add',ymd,ymd),'加粉明细')+' '+_opsLink(_detailLink('pay',ymd,ymd),'支付明细'));
         return '<tr class="border-t border-slate-100 hover:bg-slate-50"><td class="px-3 py-1.5 font-mono text-xs sticky left-0 bg-white">'+h(d)+'</td>'+aiRow+asstRow+ops+'</tr>';
       }).join('');
 
-      var aiCard=showAi?('<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">首页PV → 报告数 → 加粉数（报告转化）'+(showAd?' → 加粉数（渠道汇总）':'')+dedupeHint+'</p><div class="space-y-2 funnel-bar-track">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">首页-报告转化率PV: '+aiPvToReport+'</span> | <span class="font-medium text-brand-700">报告-加粉转化率PV: '+aiReportToFan+'</span> | <span class="font-medium text-brand-700">AI工具首页-加粉转化率PV: '+aiHomeToFan+'</span>'+aiExtra+'</div></div>'):'';
+      var aiCard=showAi?('<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">🤖 AI工具转化</h3><p class="text-xs text-slate-400 mb-3">'+(showAd?'行为点击 → ':'')+'首页PV → 报告数 → 加粉数（报告转化）'+dedupeHint+'</p><div class="space-y-2 funnel-bar-track">'+aiBars+'</div><div class="mt-3 text-xs"><span class="font-medium text-brand-700">首页-报告转化率PV: '+aiPvToReport+'</span> | <span class="font-medium text-brand-700">报告-加粉转化率PV: '+aiReportToFan+'</span> | <span class="font-medium text-brand-700">AI工具首页-加粉转化率PV: '+aiHomeToFan+'</span>'+aiExtra+'</div></div>'):'';
       var chartsBlock=showAi?(showAd
         ?('<div class="aux-charts-row cols-3">'+cacCard+aiCard+'<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">'+asstSubTitle+'</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div></div>')
         :('<div class="aux-charts-row cols-2">'+aiCard+'<div class="card min-w-0"><h3 class="font-semibold mb-3 text-sm">👨‍⚕️ 医助转化</h3><p class="text-xs text-slate-400 mb-3">'+asstSubTitle+'</p><div class="space-y-2 funnel-bar-track">'+asstBars+'</div><div class="mt-3 text-xs font-medium text-brand-700">支付转化率: '+asstPayRate+'</div></div></div>')
@@ -1979,7 +2027,7 @@
       }
       if(funnelState.tab==='daily'){
         if(funnelState.dailySub==='conversion'){
-          exportFunnelTableMock('每日转化数据_'+ts+'.xlsx','每日转化',['日期','首页PV','加粉数','开口','支付','支付转化率'],['05-16',fmt(AI_FUNNEL_STEPS[0].count),fmt(AI_FUNNEL_STEPS[4].count),fmt(ASSISTANT_FUNNEL_STEPS[1].count),fmt(ASSISTANT_FUNNEL_STEPS[4].count),'19.8%']);
+          exportFunnelTableMock('每日转化数据_'+ts+'.xlsx','每日转化',['日期','首页PV','加粉数','开方','支付','支付转化率'],['05-16',fmt(AI_FUNNEL_STEPS[0].count),fmt(resolveFansBase()),fmt(DAILY_ASSISTANT_FUNNEL_STEPS[1].count),fmt(DAILY_ASSISTANT_FUNNEL_STEPS[2].count),'18.0%']);
         }else{
           exportFunnelTableMock('每日订单金额_'+ts+'.xlsx','订单金额',['日期','汤剂订单数','丸剂订单数','总订单金额'],['05-16','52','31','85770']);
         }
@@ -2070,53 +2118,68 @@
         el.addEventListener('change',apply);
         if(k==='assistant') el.addEventListener('input',apply);
       });
-      // 来源：外观与其它下拉一致，面板内多选
+      // 来源：外观与其它下拉一致，面板内多选；确定后生效
       document.querySelectorAll('[data-source-dd]').forEach(function(dd){
         var toggle=dd.querySelector('[data-source-toggle]');
         var panel=dd.querySelector('[data-source-panel]');
         var label=dd.querySelector('[data-source-label]');
+        var btnCancel=dd.querySelector('[data-source-cancel]');
+        var btnConfirm=dd.querySelector('[data-source-confirm]');
+        function closeSourcePanel(revert){
+          if(revert) _syncSourcePanelSel(dd,(funnelState.fSource||['全部']).slice());
+          if(panel) panel.classList.add('hidden');
+        }
         if(toggle&&panel){
           toggle.addEventListener('click',function(e){
             e.stopPropagation();
-            panel.classList.toggle('hidden');
+            var willOpen=panel.classList.contains('hidden');
+            document.querySelectorAll('[data-source-panel]').forEach(function(p){
+              var wrap=p.closest('[data-source-dd]');
+              if(wrap&&wrap!==dd) wrap.querySelector('[data-source-panel]').classList.add('hidden');
+            });
+            if(willOpen){
+              _syncSourcePanelSel(dd,(funnelState.fSource||['全部']).slice());
+              panel.classList.remove('hidden');
+            }else{
+              closeSourcePanel(true);
+            }
           });
+        }
+        if(panel){
+          panel.addEventListener('click',function(e){ e.stopPropagation(); });
         }
         dd.querySelectorAll('[data-source-opt]').forEach(function(chk){
           chk.addEventListener('change',function(){
-            var v=chk.getAttribute('data-source-opt');
-            var sel=(funnelState.fSource||['全部']).slice();
-            if(v==='全部'){
-              sel=['全部'];
-              dd.querySelectorAll('[data-source-opt]').forEach(function(c){c.checked=c.getAttribute('data-source-opt')==='全部';});
-            }else{
-              sel=sel.filter(function(x){return x!=='全部';});
-              var allChk=dd.querySelector('[data-source-opt="全部"]');
-              if(allChk) allChk.checked=false;
-              if(chk.checked){ if(sel.indexOf(v)<0) sel.push(v); }
-              else sel=sel.filter(function(x){return x!==v;});
-              if(!sel.length){
-                sel=['全部'];
-                if(allChk) allChk.checked=true;
-              }
-            }
-            funnelState.fSource=sel;
-            if(!hasAcquisitionLinkInSource()){
-              funnelState.fChannel='全部';
-              funnelState.fSubChannel='全部';
-              funnelState.fProduct='全部';
-              funnelState.fVersion='全部';
-            }
-            if(label) label.textContent=_sourceLabelText(sel);
-            renderFunnelPage();
+            _toggleSourcePanelOpt(dd,chk.getAttribute('data-source-opt'),chk.checked);
           });
         });
+        if(btnCancel){
+          btnCancel.addEventListener('click',function(e){
+            e.stopPropagation();
+            closeSourcePanel(true);
+          });
+        }
+        if(btnConfirm){
+          btnConfirm.addEventListener('click',function(e){
+            e.stopPropagation();
+            var sel=_readSourcePanelSel(dd);
+            _applySourceSelection(sel);
+            if(label) label.textContent=_sourceLabelText(sel);
+            closeSourcePanel(false);
+            renderFunnelPage();
+          });
+        }
       });
       if(!window.__sourceDdDocBound){
         window.__sourceDdDocBound=true;
         document.addEventListener('click',function(e){
           document.querySelectorAll('[data-source-panel]').forEach(function(p){
+            if(p.classList.contains('hidden')) return;
             var wrap=p.closest('[data-source-dd]');
-            if(wrap&&!wrap.contains(e.target)) p.classList.add('hidden');
+            if(wrap&&!wrap.contains(e.target)){
+              _syncSourcePanelSel(wrap,(funnelState.fSource||['全部']).slice());
+              p.classList.add('hidden');
+            }
           });
         });
       }
@@ -2501,7 +2564,7 @@
   <ul>
     <li><strong>深维度筛选</strong>（子渠道/产品/版本，点击「查询」后生效）：隐藏投流消耗、行为点击、首页PV、首页UV、加粉数（渠道汇总）及上述衍生指标（行为点击-加粉转化率、平均获客成本、首页-报告转化率PV、AI工具首页-加粉转化率PV等）</li>
     <li><strong>筛选团队/医助</strong>：隐藏 AI 工具转化全部数据（辅助图 + 数据表列）</li>
-    <li><strong>加粉数（来源）</strong>：表头/漏斗文案固定为「加粉数（来源）」，数值随筛选项切换计算口径</li>
+    <li><strong>加粉数（来源）</strong>：表头/漏斗文案固定为「加粉数（来源）」，数值随筛选项切换计算口径；筛选「全部」加粉来源时，默认减去离职转移的数量</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
@@ -2598,14 +2661,12 @@
   </ul>
 </div>
 <div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">医助转化（F01～F06）</div>
+  <div class="req-tooltip-section-title">医助转化（F01 / F04 / F05）</div>
   <ul>
-    <li><strong>F01 加粉数（来源）</strong>：文案固定；数值随渠道维/加粉来源筛选切换计算口径</li>
-    <li><strong>F02 开口数</strong>：用户主动发送首条消息的去重人数</li>
-    <li><strong>F03 舌象上传数</strong>：用户提交舌象图片的去重人数（本期可实现为用户上传图片即算）</li>
+    <li><strong>F01 加粉数（来源）</strong>：根据加粉来源统计；筛选「全部」时默认减去离职转移的数量；数值随渠道维/加粉来源筛选切换计算口径</li>
     <li><strong>F04 开方数</strong>：完成病例总结和开方的数量；受加粉来源筛选控制</li>
     <li><strong>F05 支付数</strong>：支付成功的订单数（R01）；受加粉来源筛选控制</li>
-    <li><strong>F06 支付转化率</strong>：支付数 / 加粉数</li>
+    <li><strong>支付转化率</strong>：支付数 / 加粉数（来源）</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
@@ -2628,8 +2689,8 @@
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
     <li><strong>AI工具转化漏斗图</strong>：A01 首页PV → A02 首页UV → A03 报告数 → A04 报告人次 → A05 加粉数；显示各步人数与环节转化率；底部显示首页-报告转化率 PV、报告-加微转化率 PV、首页-加微转化率 PV。格式：漏斗条形图，与医助转化并列展示</li>
-    <li><strong>医助转化漏斗图</strong>：F01 加粉数 → F02 开口 → F03 舌象上传 → F04 开方 → F05 支付；显示各步人数与环节转化率；底部显示支付转化率。格式：漏斗条形图，与 AI 工具转化并列展示</li>
-    <li><strong>数据表</strong>：纵坐标=日期；横坐标=AI 工具转化（首页PV、首页UV、报告数、报告人次、首页-报告转化率PV、加粉数、报告-加微转化率PV、首页-加微转化率PV）+ 医助转化（开口、舌象上传、开方、支付、支付转化率）。格式：宽表格，支持横向滚动、排序、导出</li>
+    <li><strong>医助转化漏斗图</strong>：F01 加粉数（来源） → F04 开方 → F05 支付；显示各步人数与环节转化率；底部显示支付转化率。格式：漏斗条形图，与 AI 工具转化并列展示</li>
+    <li><strong>数据表</strong>：纵坐标=日期；横坐标=AI 工具转化（首页PV、首页UV、报告数、报告人次、首页-报告转化率PV、加粉数、报告-加微转化率PV、首页-加微转化率PV）+ 医助转化（加粉数（来源）、开方、支付、支付转化率）。格式：宽表格，支持横向滚动、排序、导出</li>
   </ul>
 </div>
 `

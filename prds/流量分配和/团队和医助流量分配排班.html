@@ -723,7 +723,6 @@ td input[type="number"] { width: 72px; }
       actions = `
         <button type="button" class="btn btn-sm" data-action="batch-weight" data-channel="${ch.id}">批量修改权重</button>
         ${state.tab === 'team' ? `<button type="button" class="btn btn-sm" data-action="edit-traffic-type" data-channel="${ch.id}">编辑流量类型</button>` : ''}
-        ${isSpecified ? `<button type="button" class="btn btn-primary btn-sm" data-action="add-assistant" data-channel="${ch.id}" data-slot="${activeGroup.id}">+ 添加医助</button>` : ''}
         <button type="button" class="btn btn-sm" data-action="cancel-edit" data-channel="${ch.id}">取消</button>
         <button type="button" class="btn btn-primary btn-sm" data-action="save-edit" data-channel="${ch.id}">保存</button>`;
     } else {
@@ -853,19 +852,6 @@ td input[type="number"] { width: 72px; }
           <button type="button" class="btn" data-action="close-modal">取消</button>
           <button type="button" class="btn btn-primary" data-action="confirm-edit-traffic-type" data-channel="${m.channelId}">保存</button>
         </div></div></div>`;
-    } else if (m.type === 'addAssistant') {
-      html = `<div class="modal-mask" id="modalMask">
-        <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-header">添加医助</div>
-        <div class="modal-body">
-          <div class="form-row"><label>医助</label><select id="newAssistant"><option>陈晓明100lfy (CXM)</option><option>周杰100lfy (ZJ)</option></select></div>
-          <div class="form-row"><label>权重(0-100)</label><input type="number" id="newWeight" min="0" max="100" value="0"/></div>
-          <div class="hint">添加到当前时段：${slotLabel(findChannel(m.channelId).slots.find(s => s.id === m.slotId))}</div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn" data-action="close-modal">取消</button>
-          <button type="button" class="btn btn-primary" data-action="confirm-add-assistant" data-channel="${m.channelId}" data-slot="${m.slotId}">确定</button>
-        </div></div></div>`;
     }
 
     document.getElementById('modalRoot').innerHTML = html;
@@ -959,13 +945,19 @@ td input[type="number"] { width: 72px; }
       case 'edit-traffic-type':
         openModal('editTrafficType', { channelId });
         break;
-      case 'add-assistant':
+      case 'add-assistant': {
         if (!isEditing(channelId)) return;
-        openModal('addAssistant', {
-          channelId,
-          slotId: slotId || state.selectedSlot[channelId] || getDisplayGroups(ch)[0]?.id
-        });
+        const group = getGroupById(ch, slotId || state.selectedSlot[channelId] || getDisplayGroups(ch)[0]?.id);
+        if (!group) break;
+        const item = {
+          id: uid(), name: '新医助', wxId: 'NEW001', doctor: '袁一娟', weight: 0,
+          expose: 0, teamRatioExp: 0, teamRatioRt: 0, docRatioExp: 0, docRatioRt: 0
+        };
+        group.slots.forEach(s => s.items.push({ ...item }));
+        syncGroupItems(ch, group);
+        render();
         break;
+      }
       case 'add-team': {
         const group = getGroupById(ch, slotId);
         if (!group) break;
@@ -1070,22 +1062,6 @@ td input[type="number"] { width: 72px; }
       ch.trafficType = document.getElementById('trafficTypeSelect').value;
       closeModal(); render(); toast('流量类型已更新', 'success');
       return;
-    }
-
-    if (action === 'confirm-add-assistant') {
-      const ch = findChannel(btn.dataset.channel);
-      const group = getGroupById(ch, btn.dataset.slot);
-      if (!group) return;
-      const sel = document.getElementById('newAssistant').value;
-      const name = sel.split(' (')[0];
-      const wxId = sel.match(/\(([^)]+)\)/)?.[1] || '';
-      const item = {
-        id: uid(), name, wxId, doctor: '袁一娟', weight: parseInt(document.getElementById('newWeight').value, 10) || 0,
-        expose: 0, teamRatioExp: 0, teamRatioRt: 0, docRatioExp: 0, docRatioRt: 0
-      };
-      group.slots.forEach(s => s.items.push({ ...item }));
-      syncGroupItems(ch, group);
-      closeModal(); render(); toast('医助已添加', 'success');
     }
   });
 

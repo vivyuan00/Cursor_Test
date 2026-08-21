@@ -150,10 +150,12 @@ table{width:100%;border-collapse:collapse;font-size:12px;min-width:1040px;}
 th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
 th{background:#f7f9fc;color:var(--muted);font-weight:700;position:sticky;top:0;z-index:1;}
 thead tr:nth-child(2) th{top:34px;z-index:1;}
+thead tr:nth-child(3) th{top:68px;z-index:1;}
 th.th-group{text-align:center;}
-table.deal-table{min-width:920px;}
+th.th-sub{text-align:center;font-size:11px;}
+table.deal-table{min-width:1680px;}
 td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:2;padding-left:10px;}
-th:first-child{background:#f7f9fc;z-index:3;}
+th:first-child{background:#f7f9fc;z-index:5;}
 tr:last-child td{border-bottom:0;}
 .hint{font-size:12px;color:var(--muted);margin:6px 2px 0;line-height:1.45;}
 .order-soft{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
@@ -648,24 +650,27 @@ th:first-child .th-inner{justify-content:flex-start;}
     return '<th'+a+'>'+inner+'</th>';
   }
   function buildDealThead(){
-    const medSubs=['汤剂单','丸剂单','颗粒剂单','合计'];
-    const totSubs=['汤剂','丸剂','颗粒剂','合计'];
+    const medLabels=['汤剂','丸剂','颗粒剂','合计'];
+    const medRow=medLabels.map(l=>thCell(l,{colspan:2,cls:'th-sub',help:false})).join('');
+    const leafRow=medLabels.map(()=>
+      thCell('订单数',{tip:'合计单'})+thCell('金额',{tip:'合计额'})
+    ).join('');
     return '<thead><tr>'+
-      thCell('日期',{rowspan:2,tip:'日期'})+
-      thCell('初诊',{colspan:4,cls:'th-group',help:false})+
-      thCell('复诊',{colspan:4,cls:'th-group',help:false})+
-      thCell('总订单',{colspan:4,cls:'th-group',help:false})+
-      '</tr><tr>'+
-      medSubs.map(l=>thCell(l,{tip:l==='合计'?'合计单':l})).join('')+
-      medSubs.map(l=>thCell(l,{tip:l==='合计'?'合计单':l})).join('')+
-      totSubs.map(l=>thCell(l,{tip:l==='合计'?'合计单':l+'单'})).join('')+
-      '</tr></thead>';
+      thCell('日期',{rowspan:3,tip:'日期'})+
+      thCell('初诊',{colspan:8,cls:'th-group',help:false})+
+      thCell('复诊',{colspan:8,cls:'th-group',help:false})+
+      thCell('总订单',{colspan:8,cls:'th-group',help:false})+
+      '</tr><tr>'+medRow+medRow+medRow+'</tr><tr>'+leafRow+leafRow+leafRow+'</tr></thead>';
+  }
+  function dealPair(cnt, gmv){
+    return '<td>'+cnt+'</td><td>'+fmtY(gmv)+'</td>';
   }
   function dealTableRow(x){
     return '<tr><td>'+x.d+'</td>'+
-      '<td>'+x.firstDeco+'</td><td>'+x.firstPill+'</td><td>'+x.firstGranule+'</td><td>'+x.first+'</td>'+
-      '<td>'+x.revDeco+'</td><td>'+x.revPill+'</td><td>'+x.revGranule+'</td><td>'+x.rev+'</td>'+
-      '<td>'+x.deco+'</td><td>'+x.pill+'</td><td>'+x.granule+'</td><td>'+x.total+'</td></tr>';
+      dealPair(x.firstDeco,x.firstDecoG)+dealPair(x.firstPill,x.firstPillG)+dealPair(x.firstGranule,x.firstGranuleG)+dealPair(x.first,x.firstG)+
+      dealPair(x.revDeco,x.revDecoG)+dealPair(x.revPill,x.revPillG)+dealPair(x.revGranule,x.revGranuleG)+dealPair(x.rev,x.revG)+
+      dealPair(x.deco,x.decoG)+dealPair(x.pill,x.pillG)+dealPair(x.granule,x.granuleG)+dealPair(x.total,x.totalG)+
+      '</tr>';
   }
   function openTipModal(key){
     const title=document.getElementById('tipTitle');

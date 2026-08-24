@@ -242,7 +242,7 @@ th:first-child .th-inner{justify-content:flex-start;}
         <button data-go="deal">成交</button>
         <button data-go="channel">渠道</button>
         <button data-go="asst">团队</button>
-        <button data-go="asstCh">团队×渠道</button>
+        <button data-go="asstCh">渠道×团队</button>
       </nav>
       <button type="button" class="user-entry" id="userEntry" title="个人中心">管</button>
     </div>
@@ -332,17 +332,14 @@ th:first-child .th-inner{justify-content:flex-start;}
 
   <section class="page" data-page="deal">
     <div class="filters" id="fDeal"></div>
-    <div class="grid2 sec">
-      <div class="card">
-        <div class="chart-title">订单数</div>
-        <div class="vbar-wrap" id="ordStack"></div>
-        <div class="legend"><span><i style="background:var(--deco)"></i>汤剂</span><span><i style="background:var(--pill)"></i>丸剂</span><span><i style="background:var(--granule)"></i>颗粒剂</span></div>
+    <div class="sec card">
+      <div class="chart-title">初诊/复诊订单</div>
+      <div class="order-trend-toggle" id="dealStackToggle">
+        <button type="button" data-mode="gmv" class="on">订单金额</button>
+        <button type="button" data-mode="cnt">订单数</button>
       </div>
-      <div class="card">
-        <div class="chart-title">订单金额</div>
-        <div class="vbar-wrap" id="gmvStack"></div>
-        <div class="legend"><span><i style="background:var(--deco)"></i>汤剂</span><span><i style="background:var(--pill)"></i>丸剂</span><span><i style="background:var(--granule)"></i>颗粒剂</span></div>
-      </div>
+      <div class="vbar-wrap" id="dealStack"></div>
+      <div class="legend"><span><i style="background:var(--deco)"></i>汤剂</span><span><i style="background:var(--pill)"></i>丸剂</span><span><i style="background:var(--granule)"></i>颗粒剂</span></div>
     </div>
     <div class="sec card">
       <div class="chart-title">趋势折线图</div>
@@ -379,11 +376,17 @@ th:first-child .th-inner{justify-content:flex-start;}
     <div class="filters" id="fAsst"></div>
     <div class="sec stack-col">
       <div class="card"><div class="chart-title">团队初诊转化率 Top5</div><div class="bar-chart" id="asstConvTop"></div></div>
-      <div class="card"><div class="chart-title">总订单数 Top5</div><div class="bar-chart" id="asstOrdTop"></div></div>
-      <div class="card"><div class="chart-title">总订单金额 Top5</div><div class="bar-chart" id="asstGmvTop"></div></div>
+      <div class="card">
+        <div class="chart-title">总订单 Top5</div>
+        <div class="order-trend-toggle" id="asstOrdToggle">
+          <button type="button" data-mode="gmv" class="on">订单金额</button>
+          <button type="button" data-mode="cnt">订单数</button>
+        </div>
+        <div class="bar-chart" id="asstOrdBar"></div>
+      </div>
     </div>
     <div class="sec">
-      <div class="sec-h"><h2>数据表</h2><span class="hint" style="margin:0;">默认团队汇总，点击展开查看医助明细</span></div>
+      <div class="sec-h"><h2>数据表</h2></div>
       <div class="table-wrap" id="asstTable"></div>
     </div>
   </section>
@@ -755,18 +758,22 @@ th:first-child .th-inner{justify-content:flex-start;}
     const members=ASSISTANTS.filter(a=>a.team===team);
     CHANNELS.slice(0,4).forEach((ch,ci)=>{
       const seed=(team.charCodeAt(0)+ci*17)%7;
+      let fans=0, firstOrd=0, revOrd=0, firstGmv=0, revGmv=0;
       members.forEach((a,ai)=>{
-        const fans=Math.round(a.f01*(0.08+seed*0.012+ai*0.015));
-        const firstOrd=Math.max(1, Math.round(fans*(0.06+seed*0.008)));
-        const revOrd=Math.max(0, Math.round(firstOrd*(0.55+seed*0.05)));
-        const firstGmv=firstOrd*(720+seed*40);
-        const revGmv=revOrd*(880+seed*30);
-        ASST_CH.push({
-          team, ch:ch.ch, chName:ch.name, asst:a.name,
-          fans, firstOrd, firstGmv, revOrd, revGmv,
-          totalOrd:firstOrd+revOrd, totalGmv:firstGmv+revGmv,
-          firstConv:fans?firstOrd/fans:0
-        });
+        const f=Math.round(a.f01*(0.08+seed*0.012+ai*0.015));
+        const fo=Math.max(1, Math.round(f*(0.06+seed*0.008)));
+        const ro=Math.max(0, Math.round(fo*(0.55+seed*0.05)));
+        fans+=f;
+        firstOrd+=fo;
+        revOrd+=ro;
+        firstGmv+=fo*(720+seed*40);
+        revGmv+=ro*(880+seed*30);
+      });
+      ASST_CH.push({
+        team, ch:ch.ch, chName:ch.name,
+        fans, firstOrd, firstGmv, revOrd, revGmv,
+        totalOrd:firstOrd+revOrd, totalGmv:firstGmv+revGmv,
+        firstConv:fans?firstOrd/fans:0
       });
     });
   });
@@ -779,8 +786,11 @@ th:first-child .th-inner{justify-content:flex-start;}
     asst:{quick:'today',team:'全部',q:'',start:defaultStart,end:defaultEnd},
     asstCh:{quick:'today',team:'全部',ch:'全部',start:defaultStart,end:defaultEnd},
     expandedTeams:{},
+    expandedChannels:{},
     dateTarget:null,
-    orderTrendMode:'gmv'
+    orderTrendMode:'gmv',
+    dealStackMode:'gmv',
+    asstOrdMode:'gmv'
   };
 
   function medSoftLine(r){
@@ -1146,6 +1156,13 @@ th:first-child .th-inner{justify-content:flex-start;}
     }).join('');
   }
 
+  function renderDealStack(){
+    document.querySelectorAll('#dealStackToggle button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===state.dealStackMode);
+    });
+    document.getElementById('dealStack').innerHTML=stackCols(state.dealStackMode);
+  }
+
   function renderDealTrend(){
     const isGmv=state.orderTrendMode==='gmv';
     document.querySelectorAll('#orderTrendToggle button').forEach(b=>{
@@ -1181,8 +1198,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 
   function renderDeal(){
     filterRange(document.getElementById('fDeal'),'deal');
-    document.getElementById('ordStack').innerHTML=stackCols('cnt');
-    document.getElementById('gmvStack').innerHTML=stackCols('gmv');
+    renderDealStack();
     renderDealTrend();
     let t='<table class="deal-table">'+buildDealThead()+'<tbody>';
     DAILY_ORD.forEach(x=>{t+=dealTableRow(x);});
@@ -1237,16 +1253,26 @@ th:first-child .th-inner{justify-content:flex-start;}
   function asstRowCells(r){
     return '<td>'+fmt(r.f01)+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td>';
   }
+  function renderAsstOrdBar(){
+    document.querySelectorAll('#asstOrdToggle button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===state.asstOrdMode);
+    });
+    const list=filteredAsst();
+    const isGmv=state.asstOrdMode==='gmv';
+    const sorted=list.slice().sort((a,b)=>isGmv?b.totalGmv-a.totalGmv:b.totalOrd-a.totalOrd).slice(0,5);
+    barChart(document.getElementById('asstOrdBar'), sorted.map(a=>({
+      name:a.name,
+      value:isGmv?a.totalGmv:a.totalOrd,
+      label:isGmv?fmtY(a.totalGmv):fmt(a.totalOrd)
+    })), isGmv?{tone:'warm'}:{});
+  }
   function renderAsst(){
     filterQuick(document.getElementById('fAsst'),'asst',{team:1,search:1});
     const list=filteredAsst();
     const teams=aggregateTeam(list);
     const byConv=teams.slice().sort((a,b)=>b.firstConv-a.firstConv).slice(0,5);
-    const byO=list.slice().sort((a,b)=>b.totalOrd-a.totalOrd).slice(0,5);
-    const byG=list.slice().sort((a,b)=>b.totalGmv-a.totalGmv).slice(0,5);
     barChart(document.getElementById('asstConvTop'), byConv.map(t=>({name:t.team,value:t.firstConv,label:pct(t.firstConv)})), {tone:'teal'});
-    barChart(document.getElementById('asstOrdTop'), byO.map(a=>({name:a.name,value:a.totalOrd,label:fmt(a.totalOrd)})));
-    barChart(document.getElementById('asstGmvTop'), byG.map(a=>({name:a.name,value:a.totalGmv,label:fmtY(a.totalGmv)})), {tone:'warm'});
+    renderAsstOrdBar();
     const teamRows=teams.slice().sort((a,b)=>b.firstConv-a.firstConv);
     let t='<table>'+buildThead([
       ['团队/医助','团队'],['加粉','加粉'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊转化率','初诊转化率'],
@@ -1275,28 +1301,52 @@ th:first-child .th-inner{justify-content:flex-start;}
     if(st.ch&&st.ch!=='全部') list=list.filter(r=>r.ch===st.ch);
     return list;
   }
-  function sortAsstChList(list){
-    const teamIdx=t=>{const i=TEAMS.indexOf(t.team);return i<0?999:i;};
-    const chIdx=r=>{const i=CHANNELS.findIndex(c=>c.ch===r.ch);return i<0?999:i;};
-    return list.slice().sort((a,b)=>{
-      const td=teamIdx(a)-teamIdx(b);
-      if(td) return td;
-      const cd=chIdx(a)-chIdx(b);
-      if(cd) return cd;
-      return b.totalGmv-a.totalGmv;
+  function isChExpanded(ch){
+    return state.expandedChannels[ch]!==false;
+  }
+  function aggregateByChannel(list){
+    const map={};
+    list.forEach(r=>{
+      if(!map[r.ch]) map[r.ch]={ch:r.ch,chName:r.chName,fans:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,totalOrd:0,totalGmv:0,teams:[]};
+      const g=map[r.ch];
+      g.fans+=r.fans; g.firstOrd+=r.firstOrd; g.firstGmv+=r.firstGmv;
+      g.revOrd+=r.revOrd; g.revGmv+=r.revGmv; g.totalOrd+=r.totalOrd; g.totalGmv+=r.totalGmv;
+      g.teams.push(r);
     });
+    const chIdx=ch=>{const i=CHANNELS.findIndex(c=>c.ch===ch);return i<0?999:i;};
+    const teamIdx=t=>{const i=TEAMS.indexOf(t.team);return i<0?999:i;};
+    return Object.values(map).map(g=>({
+      ...g,
+      firstConv:g.fans?g.firstOrd/g.fans:0,
+      teams:g.teams.slice().sort((a,b)=>teamIdx(a)-teamIdx(b))
+    })).sort((a,b)=>chIdx(a.ch)-chIdx(b.ch));
+  }
+  function asstChRowCells(r){
+    return '<td>'+fmt(r.fans)+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td>';
   }
   function renderAsstCh(){
     filterQuick(document.getElementById('fAsstCh'),'asstCh',{team:1,channel:1});
-    const list=sortAsstChList(filteredAsstCh());
+    const groups=aggregateByChannel(filteredAsstCh());
     let t='<table>'+buildThead([
-      ['团队','团队'],['渠道','渠道'],['加粉','加粉'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊转化率','初诊转化率'],
+      ['渠道/团队','渠道'],['加粉','加粉'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊转化率','初诊转化率'],
       ['复诊单','复诊单'],['复诊额','复诊额'],['总订单','总单'],['总订单额','总额']
     ])+'<tbody>';
-    list.forEach(r=>{
-      t+='<tr><td>'+r.team+'</td><td>'+r.chName+'</td><td>'+fmt(r.fans)+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td></tr>';
+    groups.forEach(g=>{
+      const open=isChExpanded(g.ch);
+      t+='<tr class="team-row" data-ch="'+g.ch+'"><td><span style="display:inline-flex;align-items:center;gap:6px;"><button type="button" class="team-toggle" data-toggle-ch="'+g.ch+'">'+(open?'−':'+')+'</button>'+g.chName+'</span></td>'+asstChRowCells(g)+'</tr>';
+      g.teams.forEach(r=>{
+        t+='<tr class="child-row'+(open?' show':'')+'" data-parent-ch="'+g.ch+'"><td>'+r.team+'</td>'+asstChRowCells(r)+'</tr>';
+      });
     });
     document.getElementById('asstChTable').innerHTML=t+'</tbody></table>';
+    document.getElementById('asstChTable').querySelectorAll('[data-toggle-ch]').forEach(btn=>{
+      btn.onclick=e=>{
+        e.stopPropagation();
+        const ch=btn.dataset.toggleCh;
+        state.expandedChannels[ch]=!isChExpanded(ch);
+        renderAsstCh();
+      };
+    });
   }
 
   function renderProfile(){
@@ -1325,6 +1375,18 @@ th:first-child .th-inner{justify-content:flex-start;}
     if(!btn) return;
     state.orderTrendMode=btn.dataset.mode;
     if(state.page==='deal') renderDealTrend();
+  });
+  document.getElementById('dealStackToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.dealStackMode=btn.dataset.mode;
+    if(state.page==='deal') renderDealStack();
+  });
+  document.getElementById('asstOrdToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.asstOrdMode=btn.dataset.mode;
+    if(state.page==='asst') renderAsstOrdBar();
   });
   document.getElementById('appView').addEventListener('click',e=>{
     const help=e.target.closest('.th-help');

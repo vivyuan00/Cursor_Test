@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>3天排便改善计划 · 含舌诊</title>
+<style>
+  :root {
+    --primary: #E8590C;
+    --primary-deep: #C2410C;
+    --primary-light: #FFF0E4;
+    --gold: #F59F00;
+    --ink: #3D2B1F;
+    --ink-2: #8A7563;
+    --bg: #FFF7EE;
+    --card: #FFFFFF;
+    --green: #2F9E44;
+    --green-bg: #EBFBEE;
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #1a120c;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg);
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,0,0,.35);
+    overflow-x: hidden;
+    padding-bottom: calc(168px + env(safe-area-inset-bottom, 0));
+  }
+  #pageMain { position: relative; }
+  @media (min-width: 480px) {
+    .phone { margin: 24px 0; border-radius: 36px; min-height: calc(100vh - 48px); overflow: hidden; }
+  }
+
+  /* ===== 首屏容器（标题 + 视频两组件，视觉融合） ===== */
+  .live-first-view {
+    position: relative;
+    width: 100%;
+    min-height: calc(100dvh - 170px);
+    min-height: calc(100vh - 170px);
+    display: flex;
+    flex-direction: column;
+    background: #2B1D12;
+    overflow: hidden;
+  }
+
+  /* 组件1：活动标题区 */
+  .live-hero-block {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    padding: calc(10px + env(safe-area-inset-top, 0)) 14px 32px;
+    color: #fff;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,224,102,.18), transparent 55%),
+      linear-gradient(180deg, #4A342A 0%, #3d2a1f 55%, rgba(43,29,18,0) 100%);
+  }
+  .live-hero-block::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 24px;
+    background: linear-gradient(180deg, rgba(43,29,18,.85), transparent);
+    pointer-events: none;
+  }
+
+  .live-hero {
+    text-align: center;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 组件2：视频区 */
+  .live-video-block {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-height: 260px;
+    margin-top: -18px;
+  }
+  .live-video {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255,224,102,.12), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(232,89,12,.18), transparent 45%),
+      linear-gradient(165deg, #1a120c 0%, #3d2a1f 40%, #2B1D12 100%);
+    cursor: pointer;
+  }
+  .live-video::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      rgba(0,0,0,.25) 0%,
+      rgba(0,0,0,.04) 30%,
+      rgba(0,0,0,.05) 55%,
+      rgba(0,0,0,.45) 100%);
+    pointer-events: none;
+  }
+  .live-hero h1 {
+    font-size: 24px; font-weight: 900; line-height: 1.2;
+    text-shadow: 0 2px 12px rgba(0,0,0,.5);
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+  .live-hero h1 .hl { color: #FFE066; font-size: 26px; }
+  .live-hero-sub {
+    margin-top: 6px; font-size: 12px; opacity: .95;
+    text-shadow: 0 1px 6px rgba(0,0,0,.4);
+  }
+  .live-hero-sub b {
+    background: rgba(255,224,102,.9); color: #B3541E;
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .live-gift-pill {
+    display: inline-block;
+    margin-top: 8px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 10.5px;
+    line-height: 1.6;
+    backdrop-filter: blur(6px);
+  }
+  .live-gift-pill b { color: #FFE066; }
+
+  /* 倒计时已并入底部操作栏，此处移除独立样式 */
+
+  /* 视频播放区控件 */
+  .live-play-zone {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+  }
+  .play-btn {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(232,89,12,.88);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 24px rgba(232,89,12,.5);
+    transition: transform .2s, opacity .3s;
+  }
+  .play-btn:active { transform: scale(.92); }
+  .play-btn.hidden { opacity: 0; pointer-events: none; }
+  .play-icon {
+    width: 0; height: 0;
+    border-left: 24px solid #fff;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    margin-left: 5px;
+  }
+
+  .video-countdown {
+    position: absolute; top: 10px; right: 14px;
+    z-index: 10;
+    background: rgba(0,0,0,.55); color: #fff;
+    font-size: 11px; padding: 4px 10px; border-radius: 14px;
+    font-variant-numeric: tabular-nums;
+    backdrop-filter: blur(4px);
+  }
+  .video-countdown.finish { background: rgba(47,158,68,.92); }
+  .rate-btn {
+    position: absolute; bottom: 28px; right: 14px;
+    z-index: 10;
+    background: rgba(0,0,0,.55); color: #fff;
+    font-size: 11px; padding: 5px 12px; border-radius: 14px;
+    backdrop-filter: blur(4px);
+  }
+  .rate-btn.hot { background: rgba(232,89,12,.9); }
+  .video-progress {
+    position: absolute; bottom: 16px; left: 0; right: 0;
+    z-index: 10;
+    height: 3px; background: rgba(255,255,255,.2);
+  }
+  .video-progress-inner {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #F59F00, #E8590C);
+    transition: width .25s linear;
+  }
+
+  /* 弱引导：下方还有更多内容 */
+  .scroll-more-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    color: rgba(255,255,255,.38);
+    pointer-events: none;
+    transition: opacity .4s;
+  }
+  .scroll-more-hint.hide { opacity: 0; }
+  .scroll-more-hint span {
+    font-size: 9px;
+    letter-spacing: 1px;
+    opacity: .85;
+  }
+  .scroll-more-arrow {
+    font-size: 11px;
+    line-height: 1;
+    animation: scrollHintBounce 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollHintBounce {
+    0%, 100% { transform: translateY(0); opacity: .45; }
+    50% { transform: translateY(4px); opacity: .75; }
+  }
+
+  /* 底部 dock：①②③ 进度浮动在操作区正上方 */
+  .bottom-dock {
+    position: fixed;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 420px;
+    z-index: 80;
+  }
+  .live-task-side {
+    position: absolute;
+    bottom: 100%;
+    left: 10px;
+    margin-bottom: 10px;
+    z-index: 2;
+    background: rgba(0,0,0,.65);
+    border-radius: 10px;
+    padding: 9px 11px;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.5;
+    min-width: 118px;
+    border: 1px solid rgba(255,255,255,.18);
+    box-shadow: 0 4px 16px rgba(0,0,0,.28);
+  }
+  @media (min-width: 421px) {
+    .live-task-side { left: 10px; }
+  }
+  .task-item {
+    display: flex;
+    align-items: center;
+  }
+  .task-item + .task-item { margin-top: 4px; }
+  .task-item.done .task-label { color: #7DED9A; }
+  .task-item.cur .task-label { color: #FFE066; font-weight: 700; }
+  .task-label { white-space: nowrap; }
+
+  /* 底部固定区：舌诊卡片 + 领取按钮 + 倒计时 */
+  .fixed-bottom-panel {
+    position: relative;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 -6px 24px rgba(0,0,0,.14);
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+  }
+  .fixed-action-bar {
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0));
+    background: #fff;
+  }
+  .claim-stock-tip {
+    font-size: 11px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .claim-stock-tip b {
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 13px;
+  }
+  .action-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--ink-2);
+    line-height: 1.4;
+    text-align: center;
+    flex-wrap: wrap;
+  }
+  .action-meta-sep {
+    color: #E8DCC8;
+    font-size: 10px;
+    user-select: none;
+  }
+  .panel-countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .panel-cd-label { font-weight: 500; }
+  .panel-cd-cells {
+    display: flex; align-items: center; gap: 1px;
+    font-size: 12px; font-weight: 700;
+    color: var(--primary-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .panel-cd-cell {
+    background: none;
+    padding: 0;
+    min-width: auto;
+    color: var(--primary);
+    border-radius: 0;
+  }
+  .panel-cd-sep { color: var(--ink-2); font-weight: 500; }
+
+  /* 舌诊介绍卡片 */
+  .tongue-intro-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #F8FBF8 0%, #F0FAF2 100%);
+    border-bottom: 1px solid #E8F0E9;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .tongue-intro-card:active { background: #EBFBEE; }
+  .tongue-intro-img {
+    width: 52px; height: 52px; flex-shrink: 0;
+    background: linear-gradient(135deg, #EBFBEE, #D9F2DE);
+    border-radius: 12px;
+    border: 1px solid #CDE9D2;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .tongue-intro-text { flex: 1; min-width: 0; }
+  .tongue-intro-title {
+    font-size: 14px; font-weight: 700; color: #2B5C33;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tongue-intro-sub {
+    font-size: 11px; color: #6B8F72; margin-top: 3px; line-height: 1.4;
+  }
+  .tongue-intro-go {
+    flex-shrink: 0; border: none; cursor: pointer;
+    padding: 8px 14px; border-radius: 18px;
+    font-size: 12px; font-weight: 700;
+    background: linear-gradient(90deg, #2F9E44, #4CAF50);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(47,158,68,.3);
+    transition: all .25s;
+  }
+  .tongue-intro-go.ready {
+    animation: pulse-green 1.8s infinite;
+  }
+  @keyframes pulse-green {
+    0%,100% { box-shadow: 0 3px 10px rgba(47,158,68,.3); }
+    50% { box-shadow: 0 3px 16px rgba(47,158,68,.55); }
+  }
+  .tongue-intro-go.done {
+    background: var(--green-bg); color: var(--green);
+    border: 1px solid #B2E5BD; box-shadow: none;
+    animation: none;
+  }
+
+  .action-claim-btn {
+    width: 100%; border: none; cursor: pointer;
+    padding: 13px 0; border-radius: 12px;
+    font-size: 15px; font-weight: 800;
+    background: linear-gradient(90deg, #FF4D4F, #E8590C);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(232,89,12,.38);
+    letter-spacing: .5px;
+  }
+  .action-claim-btn.ready { animation: breathe 1.8s infinite; }
+  .action-claim-btn.finished {
+    background: var(--green-bg); color: var(--green);
+    border: 1px solid #B2E5BD; box-shadow: none;
+    font-size: 13px;
+  }
+  @keyframes breathe {
+    0%,100% { box-shadow: 0 4px 14px rgba(232,89,12,.38); }
+    50% { box-shadow: 0 4px 22px rgba(232,89,12,.55); transform: translateY(-1px); }
+  }
+
+  /* ===== 视频下方内容区（商品介绍 + 活动规则，不叠加视频） ===== */
+  .secondary-section {
+    background: var(--bg);
+    padding: 16px 16px 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 商品介绍 */
+  .section-title {
+    font-size: 16px; font-weight: 800; color: var(--ink);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .product-intro {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid #F5E3CE;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 14px rgba(194,65,12,.06);
+  }
+  .product-intro-list {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 12px;
+  }
+  .product-intro-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: #54382A; line-height: 1.55;
+  }
+  .product-intro-item em {
+    flex-shrink: 0; font-style: normal;
+    width: 22px; height: 22px; border-radius: 6px;
+    background: var(--primary-light); color: var(--primary-deep);
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* 商品卡 */
+  .product-sale-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid #F5E3CE;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(194,65,12,.08);
+  }
+  .product-sale-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, #54382A 0%, #7A5842 100%);
+    color: #F8E8D0;
+  }
+  .product-sale-title { font-size: 14px; font-weight: 700; }
+  .product-sale-body {
+    display: flex; gap: 14px; align-items: center; padding: 16px;
+  }
+  .product-sale-img {
+    width: 80px; height: 80px; flex-shrink: 0;
+    background: linear-gradient(150deg, #FFF3DF, #FFE3B8);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+  .product-sale-info { flex: 1; min-width: 0; }
+  .product-sale-desc { font-size: 11px; color: var(--ink-2); line-height: 1.5; }
+  .product-sale-price { margin-top: 6px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .ps-price { font-size: 22px; font-weight: 800; color: var(--primary); }
+  .ps-price small { font-size: 11px; font-weight: 500; color: var(--ink-2); }
+  .ps-price-old { font-size: 12px; color: #B3A38F; text-decoration: line-through; }
+  .ps-tag { font-size: 10px; background: #FFE9E0; color: #D9480F; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .stock-bar { margin-top: 6px; }
+  .stock-track { height: 5px; background: #F5EBDD; border-radius: 3px; overflow: hidden; }
+  .stock-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #F59F00, #E8590C); width: 68%; }
+  .stock-text { font-size: 10px; color: var(--primary-deep); margin-top: 3px; display: flex; justify-content: space-between; }
+  .ps-buy-btn {
+    flex-shrink: 0; border: none; cursor: pointer;
+    background: linear-gradient(90deg, #F0620C, #D9480F);
+    color: #fff; font-size: 12px; font-weight: 700;
+    padding: 8px 14px; border-radius: 9px;
+  }
+
+  /* 活动规则 */
+  .rules h4 {
+    font-size: 13px; color: var(--ink-2); text-align: center; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .rules h4::before, .rules h4::after { content: ""; flex: 1; height: 1px; background: #E8DCC8; }
+  .rules p { font-size: 11px; color: #B3A38F; line-height: 1.9; }
+
+  /* ===== 二级页面：舌诊拍摄 ===== */
+  .sub-page {
+    position: absolute; inset: 0; z-index: 90;
+    background: #0a0a0a;
+    transform: translateX(100%);
+    transition: transform .32s cubic-bezier(.32,.72,.24,1);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .sub-page.show { transform: translateX(0); }
+  .sub-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; color: #fff; z-index: 2;
+    background: linear-gradient(180deg, rgba(0,0,0,.6), transparent);
+  }
+  .sub-nav-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+  }
+  .sub-nav-title { font-size: 16px; font-weight: 600; }
+
+  .camera-view {
+    flex: 1;
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255,180,180,.15), transparent 60%),
+      linear-gradient(180deg, #1a1010 0%, #0a0a0a 100%);
+  }
+  .camera-guide {
+    width: 220px; height: 280px;
+    border: 3px dashed rgba(255,255,255,.45);
+    border-radius: 110px 110px 80px 80px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .camera-guide::before {
+    content: "请将舌头置于框内";
+    position: absolute; top: -32px;
+    font-size: 13px; color: rgba(255,255,255,.7);
+    white-space: nowrap;
+  }
+  .camera-tongue-demo {
+    font-size: 80px; opacity: .25;
+    animation: float 2s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .camera-tips {
+    margin-top: 24px;
+    text-align: center;
+    color: rgba(255,255,255,.55);
+    font-size: 12px; line-height: 1.8;
+    padding: 0 30px;
+  }
+  .camera-bottom {
+    padding: 20px 24px calc(24px + env(safe-area-inset-bottom, 0));
+    display: flex; align-items: center; justify-content: center; gap: 40px;
+    background: linear-gradient(0deg, rgba(0,0,0,.8), transparent);
+  }
+  .camera-shutter {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: #fff;
+    border: 4px solid rgba(255,255,255,.3);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s;
+  }
+  .camera-shutter:active { transform: scale(.92); }
+  .camera-shutter-inner {
+    width: 58px; height: 58px; border-radius: 50%;
+    background: linear-gradient(135deg, #2F9E44, #4CAF50);
+  }
+  .camera-shutter.analyzing .camera-shutter-inner {
+    animation: spin 1s linear infinite;
+    background: conic-gradient(#2F9E44, #4CAF50, #2F9E44);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .camera-side-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff;
+  }
+
+  /* ===== 二级页面：舌诊报告 ===== */
+  .report-page { background: var(--bg); overflow-y: auto; }
+  .report-body { padding: 0 16px 100px; }
+  .report-header {
+    background: linear-gradient(160deg, #2F9E44 0%, #4CAF50 100%);
+    color: #fff;
+    padding: 20px 16px 28px;
+    text-align: center;
+  }
+  .report-header-icon { font-size: 40px; margin-bottom: 6px; }
+  .report-header h2 { font-size: 20px; font-weight: 800; }
+  .report-header p { font-size: 12px; opacity: .85; margin-top: 4px; }
+  .report-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-top: -16px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(47,158,68,.12);
+    border: 1px solid #CDE9D2;
+  }
+  .report-type {
+    text-align: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed #E8F0E9;
+    margin-bottom: 14px;
+  }
+  .report-type-label { font-size: 11px; color: var(--ink-2); }
+  .report-type-value {
+    font-size: 22px; font-weight: 900; color: #2B5C33;
+    margin-top: 4px;
+  }
+  .report-items { display: flex; flex-direction: column; gap: 10px; }
+  .report-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    background: #F8FBF8;
+    border-radius: 10px;
+    font-size: 13px; line-height: 1.5;
+  }
+  .report-item-icon { font-size: 18px; flex-shrink: 0; }
+  .report-item-text { color: #54382A; }
+  .report-item-text b { color: #2F9E44; }
+  .report-suggest {
+    margin-top: 14px;
+    background: var(--primary-light);
+    border: 1px solid #F5D9BE;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12px; color: #7A5A44; line-height: 1.7;
+  }
+  .report-suggest b { color: var(--primary-deep); }
+  .report-claim-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 0));
+    background: linear-gradient(180deg, rgba(255,255,255,.94), #fff);
+    box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+    z-index: 5;
+  }
+  .report-claim-btn {
+    width: 100%; border: none; cursor: pointer;
+    padding: 14px 0; border-radius: 14px;
+    font-size: 16px; font-weight: 700;
+    background: linear-gradient(90deg, #F0620C, #D9480F);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(232,89,12,.35);
+    letter-spacing: 1px;
+  }
+  .report-claim-btn.finished {
+    background: var(--green-bg); color: var(--green);
+    border: 1px solid #B2E5BD; box-shadow: none;
+  }
+
+  /* ===== 地址登记页 ===== */
+  .page-address {
+    position: absolute; inset: 0; z-index: 95;
+    background: var(--bg);
+    transform: translateX(100%);
+    transition: transform .32s cubic-bezier(.32,.72,.24,1);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  .page-address.show { transform: translateX(0); }
+  .navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #E8590C 0%, #D9480F 100%);
+    color: #fff;
+  }
+  .nav-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 15px;
+  }
+  .nav-title { font-size: 16px; font-weight: 600; }
+  .addr-body { padding: 16px; }
+  .purpose-card {
+    background: var(--primary-light);
+    border: 1px solid #F5D9BE;
+    border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .purpose-title { font-size: 14px; font-weight: 700; color: var(--primary-deep); margin-bottom: 6px; }
+  .purpose-text { font-size: 12px; color: #7A5A44; line-height: 1.75; }
+  .purpose-text b { color: var(--primary-deep); }
+  .form-row { margin-bottom: 14px; }
+  .form-label { font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+  .form-input, .form-area {
+    width: 100%; border: 1.5px solid #E8DCC8; border-radius: 10px;
+    padding: 12px 14px; font-size: 14px; background: #fff;
+    outline: none; font-family: inherit; color: var(--ink);
+  }
+  .form-input:focus, .form-area:focus { border-color: var(--primary); }
+  .form-area { min-height: 74px; resize: none; }
+  .form-error { font-size: 11px; color: #D9480F; margin-top: 5px; display: none; }
+  .form-error.show { display: block; }
+  .addr-submit {
+    width: 100%; border: none; cursor: pointer;
+    background: linear-gradient(90deg, #F0620C, #D9480F);
+    color: #fff; font-size: 16px; font-weight: 700;
+    padding: 14px 0; border-radius: 12px; margin-top: 4px;
+  }
+  .privacy-note { font-size: 10px; color: #B3A38F; line-height: 1.7; margin-top: 12px; text-align: center; }
+
+  /* ===== 弹窗 ===== */
+  .risk-mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 110;
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .risk-mask.show { opacity: 1; pointer-events: auto; }
+  .risk-dialog {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(105%);
+    width: 100%; max-width: 420px;
+    background: #FFFDF9; border-radius: 22px 22px 0 0;
+    z-index: 111; transition: transform .35s cubic-bezier(.32,.72,.24,1);
+    padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height: 88vh; overflow-y: auto;
+  }
+  .risk-dialog.show { transform: translateX(-50%) translateY(0); }
+  .risk-icon { text-align: center; font-size: 34px; margin-bottom: 4px; }
+  .risk-title { text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .risk-desc { font-size: 15px; margin-bottom: 12px; text-align: center; line-height: 1.6; }
+  .risk-desc b { color: var(--primary-deep); }
+  .risk-list-new {
+    background: #FFFBF5; border: 1px solid #F0E4D2; border-radius: 12px;
+    padding: 6px 14px; margin-bottom: 12px;
+  }
+  .risk-item-new { font-size: 14px; color: #54382A; line-height: 2.1; }
+  .risk-choose { display: flex; gap: 10px; margin-bottom: 12px; }
+  .risk-choose-btn {
+    flex: 1; border: none; cursor: pointer; border-radius: 14px;
+    padding: 14px 8px; display: flex; flex-direction: column;
+    align-items: center; gap: 6px; font-family: inherit;
+  }
+  .risk-choose-btn .rcb-icon { font-size: 26px; }
+  .risk-choose-btn .rcb-text { font-size: 13px; line-height: 1.4; }
+  .none-btn { background: linear-gradient(135deg, #EBFBEE, #D9F2DE); border: 2px solid #B2E5BD; }
+  .none-btn.selected { background: linear-gradient(135deg, #2F9E44, #4CAF50); }
+  .none-btn.selected .rcb-text { color: #fff; }
+  .have-btn { background: #F8F4EE; border: 2px solid #E8DCC8; }
+  .have-btn.selected { background: #FFF0E8; border-color: #F5C4A8; }
+  .have-btn.selected .rcb-text { color: #D9480F; }
+  .risk-warning {
+    background: #FFF0E8; border: 1px solid #F5C4A8;
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
+    font-size: 14px; color: #D9480F; line-height: 1.6; text-align: center;
+  }
+  .consent-row { margin-bottom: 14px; }
+  .consent-label {
+    display: flex; align-items: flex-start; gap: 10px;
+    cursor: pointer; padding: 13px 14px;
+    background: #F8F4EE; border-radius: 12px; border: 1.5px solid #E8DCC8;
+  }
+  .consent-label input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .check-box {
+    width: 20px; height: 20px; flex-shrink: 0;
+    border: 1.5px solid #D8C9B4; border-radius: 6px; background: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-weight: 700;
+  }
+  .consent-label input:checked + .check-box { background: var(--green); border-color: var(--green); }
+  .consent-label input:checked + .check-box::after { content: "✓"; }
+  .consent-text { font-size: 14px; color: #7A5A44; line-height: 1.6; }
+  .consent-text a { color: var(--primary); text-decoration: none; font-weight: 600; }
+  .risk-confirm-btn {
+    width: 100%; padding: 14px 0; border-radius: 12px;
+    border: none; cursor: pointer; font-size: 17px; font-weight: 700;
+    background: #E8DCC8; color: #B3A38F;
+  }
+  .risk-confirm-btn.ready {
+    background: linear-gradient(90deg, #F0620C, #D9480F);
+    color: #fff; box-shadow: 0 6px 18px rgba(232,89,12,.35);
+  }
+  .risk-tip-bottom { text-align: center; font-size: 11px; color: #C2B4A0; margin-top: 8px; }
+
+  .success-mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 120;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .3s; padding: 30px;
+  }
+  .success-mask.show { opacity: 1; pointer-events: auto; }
+  .success-box {
+    background: #fff; border-radius: 20px; width: 100%; max-width: 300px;
+    padding: 30px 24px 22px; text-align: center;
+    transform: scale(.85); transition: transform .3s;
+  }
+  .success-mask.show .success-box { transform: scale(1); }
+  .success-icon {
+    width: 64px; height: 64px; margin: 0 auto 14px;
+    background: var(--green-bg); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 30px;
+  }
+  .success-title { font-size: 17px; font-weight: 700; }
+  .success-desc { font-size: 12px; color: var(--ink-2); margin-top: 8px; line-height: 1.7; }
+  .success-desc b { color: var(--primary); }
+  .success-btn {
+    margin-top: 16px; width: 100%; border: none; cursor: pointer;
+    background: linear-gradient(90deg, #F0620C, #D9480F);
+    color: #fff; padding: 12px 0; border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+  }
+
+  .float-notify {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(188px + env(safe-area-inset-bottom, 0));
+    z-index: 85;
+    width: max-content; max-width: 88%;
+    background: rgba(61,43,31,.88); color: #fff;
+    font-size: 11px; padding: 7px 14px; border-radius: 20px;
+    opacity: 0; pointer-events: none; transition: opacity .4s;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+  }
+  .float-notify.show { opacity: 1; }
+  #toast { bottom: 50%; z-index: 200; }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ========== 主页面 ========== -->
+  <div id="pageMain">
+
+    <!-- 首屏：标题组件 + 视频组件（视觉融合） -->
+    <div class="live-first-view" id="liveScreen">
+
+      <!-- 组件1：活动标题区 -->
+      <section class="live-hero-block">
+        <div class="live-hero">
+          <h1>3天吃出<span class="hl">通畅</span>好肠道</h1>
+          <div class="live-hero-sub">
+            不吃药不拉肚 · 免费领 <b>99元礼品包</b>
+          </div>
+          <div class="live-gift-pill">
+            🎁 价值¥99益生元精选装 + <b>7天私人健康管理</b> · 舌诊解读 · 健康咨询
+          </div>
+        </div>
+      </section>
+
+      <!-- 组件2：视频区 -->
+      <section class="live-video-block">
+        <div class="live-video" id="videoBox">
+          <div class="live-play-zone">
+            <div class="play-btn" id="playBtn"><div class="play-icon" id="playIcon"></div></div>
+          </div>
+        </div>
+
+        <div class="video-countdown" id="videoCountdown">⏱ 还需观看 01:00</div>
+        <div class="rate-btn" id="rateBtn">倍速 <b id="rateText">1.0x</b> ›</div>
+        <div class="video-progress"><div class="video-progress-inner" id="videoProgress"></div></div>
+
+        <div class="scroll-more-hint" id="scrollMoreHint">
+          <span>更多</span>
+          <div class="scroll-more-arrow">⌄</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 视频下方：商品介绍 + 活动规则 -->
+    <div class="secondary-section">
+
+      <div class="section-title">📦 商品介绍</div>
+      <div class="product-intro">
+        <div class="product-sale-card" style="margin-bottom:0;box-shadow:none;border:none;">
+          <div class="product-sale-head">
+            <span class="product-sale-title">益生元固体饮料</span>
+          </div>
+          <div class="product-sale-body">
+            <div class="product-sale-img">🫙</div>
+            <div class="product-sale-info">
+              <div class="product-sale-desc">低聚果糖 + 膳食纤维 · 温和调理肠道</div>
+              <div class="product-sale-price">
+                <span class="ps-price">¥99<small>/盒</small></span>
+                <span class="ps-price-old">¥129</span>
+                <span class="ps-tag">限时立省30</span>
+              </div>
+              <div class="stock-bar">
+                <div class="stock-track"><div class="stock-fill" id="stockFill"></div></div>
+                <div class="stock-text"><span>已售出 <b id="sentCount">8,861</b> 盒</span><em style="color:var(--ink-2);font-style:normal;">库存告急</em></div>
+              </div>
+            </div>
+            <button class="ps-buy-btn" onclick="showToast('演示：跳转购买页')">购买</button>
+          </div>
+        </div>
+        <div class="product-intro-list">
+          <div class="product-intro-item"><em>01</em><span>含低聚果糖（FOS）和膳食纤维，帮助增殖有益菌，改善肠道环境</span></div>
+          <div class="product-intro-item"><em>02</em><span>温和不刺激，适合长期调理，非泻药型产品</span></div>
+          <div class="product-intro-item"><em>03</em><span>独立小包装，每日一条，方便携带、即冲即饮</span></div>
+          <div class="product-intro-item"><em>04</em><span>配合 AI 舌诊报告，获取个性化调理建议</span></div>
+        </div>
+      </div>
+
+      <div class="rules">
+        <h4>活动规则</h4>
+        <p>
+          1. 活动时间：<b>24小时限时领取</b>，每人限领 1 份；<br>
+          2. 需完成 <b>看视频（进度≥100%）</b> 和 <b>AI舌诊</b> 两个任务，方可领取；<br>
+          3. 舌诊流程：点击「舌诊」→ 拍摄舌象 → 查看报告 → 领取礼品；<br>
+          4. 可在活动页或报告页领取礼品包，确认地址后 48 小时内寄出；<br>
+          5. 礼品含价值¥99益生元精选装 + 7天私人健康管理服务；<br>
+          6. 禁忌人群：肠梗阻、肠道手术恢复期、癌症（肠道相关）、孕妇/哺乳期、3岁以下幼儿、糖尿病（控制不佳）、免疫问题、果糖不耐受、服用抗生素者请勿领取；<br>
+          7. 本活动最终解释权归商家所有。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 dock：①②③ 进度 + 操作区 -->
+  <div class="bottom-dock" id="bottomDock">
+    <div class="live-task-side" id="taskSide">
+      <div class="task-item cur" id="taskVideoLine"><span class="task-label">① 看视频</span></div>
+      <div class="task-item" id="taskTongueLine"><span class="task-label">② AI舌诊</span></div>
+      <div class="task-item" id="taskClaimLine"><span class="task-label">③ 免费领</span></div>
+    </div>
+    <div class="fixed-bottom-panel" id="fixedBottomPanel">
+    <div class="tongue-intro-card" id="tongueCard" onclick="goTonguePage()">
+      <div class="tongue-intro-img">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M12 21C7 16.5 3 13.2 3 8.9C3 5.6 5.5 3 8.7 3C10.1 3 11.3 3.5 12 4.4C12.7 3.5 13.9 3 15.3 3C18.5 3 21 5.6 21 8.9C21 13.2 17 16.5 12 21Z" fill="#2F9E44" opacity=".85"/>
+        </svg>
+      </div>
+      <div class="tongue-intro-text">
+        <div class="tongue-intro-title">AI 舌诊 · 30秒出体质报告</div>
+        <div class="tongue-intro-sub" id="tongueIntroSub">拍一张舌头照片，了解你的身体健康状态</div>
+      </div>
+      <button class="tongue-intro-go" id="tongueBtn" onclick="event.stopPropagation();goTonguePage()">👅 去舌诊</button>
+    </div>
+    <div class="fixed-action-bar">
+      <button class="action-claim-btn" id="claimBtn" onclick="smartClaim()">🎁 免费领取礼品</button>
+      <div class="action-meta-row">
+        <div class="claim-stock-tip">仅剩 <b id="giftRemain">8</b> 份</div>
+        <span class="action-meta-sep">·</span>
+        <div class="panel-countdown">
+          <span class="panel-cd-label">限时领取</span>
+          <span class="panel-cd-cells">
+            <span class="panel-cd-cell" id="cdHour">23</span><span class="panel-cd-sep">:</span>
+            <span class="panel-cd-cell" id="cdMin">59</span><span class="panel-cd-sep">:</span>
+            <span class="panel-cd-cell" id="cdSec">59</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- ========== 二级页：舌诊拍摄 ========== -->
+  <div class="sub-page" id="pageTongue">
+    <div class="sub-nav">
+      <div class="sub-nav-btn" onclick="backFromTongue()">←</div>
+      <div class="sub-nav-title">AI 舌诊 · 拍摄舌象</div>
+      <div style="width:32px;"></div>
+    </div>
+    <div class="camera-view">
+      <div class="camera-guide">
+        <div class="camera-tongue-demo">👅</div>
+      </div>
+      <div class="camera-tips">
+        请在自然光下拍摄<br>
+        伸舌自然、避免反光<br>
+        30秒出体质报告
+      </div>
+    </div>
+    <div class="camera-bottom">
+      <div class="camera-side-btn">🔄</div>
+      <div class="camera-shutter" id="cameraShutter" onclick="takeTonguePhoto()">
+        <div class="camera-shutter-inner"></div>
+      </div>
+      <div class="camera-side-btn">💡</div>
+    </div>
+  </div>
+
+  <!-- ========== 二级页：舌诊报告 ========== -->
+  <div class="sub-page report-page" id="pageReport">
+    <div class="sub-nav" style="background:transparent;position:absolute;top:0;left:0;right:0;">
+      <div class="sub-nav-btn" onclick="backFromReport()">←</div>
+      <div class="sub-nav-title" style="color:#fff;">体质报告</div>
+      <div style="width:32px;"></div>
+    </div>
+    <div class="report-body">
+      <div class="report-header">
+        <div class="report-header-icon">📋</div>
+        <h2>AI 舌诊报告</h2>
+        <p>基于舌象分析 · 仅供参考</p>
+      </div>
+      <div class="report-card">
+        <div class="report-type">
+          <div class="report-type-label">您的体质类型</div>
+          <div class="report-type-value">脾胃虚弱型</div>
+        </div>
+        <div class="report-items">
+          <div class="report-item">
+            <span class="report-item-icon">👅</span>
+            <span class="report-item-text">舌象特征：舌淡苔白，边有齿痕，提示<b>脾胃运化不足</b></span>
+          </div>
+          <div class="report-item">
+            <span class="report-item-icon">🌿</span>
+            <span class="report-item-text">调理方向：建议补充<b>膳食纤维+益生元</b>，温和改善肠道</span>
+          </div>
+          <div class="report-item">
+            <span class="report-item-icon">💡</span>
+            <span class="report-item-text">生活建议：规律作息、少生冷、多温水，配合适量运动</span>
+          </div>
+        </div>
+        <div class="report-suggest">
+          <b>专属建议：</b>您的体质适合通过益生元调理肠道菌群，配合7天私人健康管理服务，获取一对一舌诊解读与调理方案。
+        </div>
+      </div>
+    </div>
+    <div class="report-claim-bar">
+      <button class="report-claim-btn" id="reportClaimBtn" onclick="claimFromReport()">🎁 领取99元礼品包（免费）</button>
+    </div>
+  </div>
+
+  <!-- ========== 地址登记页 ========== -->
+  <div class="page-address" id="pageAddress">
+    <div class="navbar">
+      <div class="nav-btn" onclick="backToMain()">←</div>
+      <div class="nav-title">收货地址登记</div>
+      <div style="width:32px;"></div>
+    </div>
+    <div class="addr-body">
+      <div class="purpose-card">
+        <div class="purpose-title">🔒 信息收集告知</div>
+        <p class="purpose-text">您正在领取：<b>价值99元礼品包</b>（价值¥99益生元精选装 + 7天私人健康管理服务）</p>
+      </div>
+      <div class="form-row">
+        <div class="form-label">收件人</div>
+        <input class="form-input" id="fName" placeholder="请输入收件人姓名" maxlength="20">
+      </div>
+      <div class="form-row">
+        <div class="form-label">手机号</div>
+        <input class="form-input" id="fPhone" placeholder="请输入11位手机号" type="tel" maxlength="11" value="13856789012">
+      </div>
+      <div class="form-row">
+        <div class="form-label">详细地址</div>
+        <textarea class="form-area" id="fAddress" placeholder="省市区 + 街道、小区、楼牌号..." maxlength="100"></textarea>
+        <div class="form-error" id="formError">请完善收件人、手机号和详细地址</div>
+      </div>
+      <button class="addr-submit" onclick="submitAddress()">确认提交 · 免费包邮</button>
+      <p class="privacy-note">提交即表示同意我们为寄送目的处理上述信息</p>
+    </div>
+  </div>
+
+  <!-- 禁忌人群确认弹窗 -->
+  <div class="risk-mask" id="riskMask" onclick="closeRiskByMask()"></div>
+  <div class="risk-dialog" id="riskDialog">
+    <div class="risk-icon">❤️</div>
+    <div class="risk-title">先确认一下</div>
+    <div class="risk-desc">为了您的健康，领之前请确认：<b>您是否有以下情况？</b></div>
+    <div class="risk-list-new">
+      <div class="risk-item-new">🚫 肠梗阻 / 肠道手术恢复期</div>
+      <div class="risk-item-new">🚫 癌症（尤其是肠道相关）</div>
+      <div class="risk-item-new">🚫 孕期或哺乳期 / 3岁以下幼儿</div>
+      <div class="risk-item-new">🚫 糖尿病（控制不佳）/ 免疫问题</div>
+      <div class="risk-item-new">🚫 果糖不耐受 / 正在服用抗生素</div>
+    </div>
+    <div class="risk-choose">
+      <button class="risk-choose-btn have-btn" id="riskHaveBtn" onclick="chooseHave()">
+        <span class="rcb-icon">⚠️</span>
+        <span class="rcb-text">以上情况<br><b>我有至少一种</b></span>
+      </button>
+      <button class="risk-choose-btn none-btn" id="riskNoneBtn" onclick="chooseNone()">
+        <span class="rcb-icon">✅</span>
+        <span class="rcb-text">以上情况<br><b>我都没有</b></span>
+      </button>
+    </div>
+    <div class="risk-warning" id="riskWarning" style="display:none;">
+      🙏 为了您的健康，这个产品<b>不建议您食用</b>。
+    </div>
+    <div class="consent-row" id="consentRow" style="display:none;">
+      <label class="consent-label">
+        <input type="checkbox" id="consentCheck">
+        <span class="check-box"></span>
+        <span class="consent-text">我已阅读并同意《产品知情同意书》</span>
+      </label>
+    </div>
+    <button class="risk-confirm-btn" id="riskConfirmBtn" onclick="tryConfirm()" disabled>确认领取</button>
+    <div class="risk-tip-bottom" id="riskTipBottom">先选择情况，即可领取啦</div>
+  </div>
+
+  <!-- 领取成功弹窗 -->
+  <div class="success-mask" id="successMask" onclick="closeSuccess()">
+    <div class="success-box" onclick="event.stopPropagation()">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">领取成功！</div>
+      <div class="success-desc">礼品包将在 <b>48 小时内</b>发货<br>联系医助获取7天私人健康管理服务</div>
+      <button class="success-btn" onclick="closeSuccess()">我知道了</button>
+    </div>
+  </div>
+
+  <!-- 浮动通知 + Toast -->
+  <div class="float-notify" id="floatNotify">
+    <span>🎁</span> <span id="floatText">用户 138****5678 刚刚领取了礼品包</span>
+  </div>
+  <div class="float-notify" id="toast">📢 <span id="toastText"></span></div>
+
+</div>
+
+<script>
+  var TOTAL = 60, COMPLETE_AT = 60;
+  var progress = 0, rate = 1, rates = [1, 1.25, 1.5, 2];
+  var playing = false, finished = false, tongueDone = false, claimed = false;
+  var riskChoice = "";
+  var $ = function(id){ return document.getElementById(id); };
+
+  function fmt(sec){
+    sec = Math.max(0, Math.ceil(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+  }
+
+  function updateUI(){
+    $("videoProgress").style.width = Math.min(100, progress / TOTAL * 100) + "%";
+    if (!finished) {
+      $("videoCountdown").textContent = "⏱ 还需观看 " + fmt(TOTAL - progress);
+    }
+
+    // 任务侧栏
+    $("taskVideoLine").className = "task-item" + (finished ? " done" : " cur");
+    $("taskTongueLine").className = "task-item" + (tongueDone ? " done" : (finished ? " cur" : ""));
+    $("taskClaimLine").className = "task-item" + (claimed ? " done" : ((finished && tongueDone) ? " cur" : ""));
+
+    // 舌诊卡片 + 按钮
+    var cardBtn = $("tongueBtn");
+    var sub = $("tongueIntroSub");
+
+    if (tongueDone) {
+      cardBtn.className = "tongue-intro-go done";
+      cardBtn.textContent = "✓ 已完成";
+      sub.textContent = "体质：脾胃虚弱型 · 点击查看完整报告";
+    } else if (finished) {
+      cardBtn.className = "tongue-intro-go ready";
+      cardBtn.textContent = "👅 去舌诊";
+      sub.textContent = "视频已看完，拍一张舌头照片即可出报告";
+    } else {
+      cardBtn.className = "tongue-intro-go";
+      cardBtn.textContent = "👅 去舌诊";
+      sub.textContent = "先看完视频，再拍舌头照片了解体质";
+    }
+
+    // 领取按钮
+    var cb = $("claimBtn");
+    if (claimed) {
+      cb.className = "action-claim-btn finished";
+      cb.textContent = "✓ 已领取";
+    } else if (finished && tongueDone) {
+      cb.className = "action-claim-btn ready";
+      cb.textContent = "🎁 免费领取礼品";
+    } else {
+      cb.className = "action-claim-btn";
+      cb.textContent = "🎁 免费领取礼品";
+    }
+
+    // 报告页领取按钮
+    if ($("reportClaimBtn")) {
+      if (claimed) {
+        $("reportClaimBtn").className = "report-claim-btn finished";
+        $("reportClaimBtn").textContent = "✓ 已领取成功";
+      } else if (finished && tongueDone) {
+        $("reportClaimBtn").textContent = "🎁 领取99元礼品包（免费）";
+      } else if (!finished) {
+        $("reportClaimBtn").textContent = "🔒 请先看完视频再领取";
+      } else {
+        $("reportClaimBtn").textContent = "🔒 请先完成舌诊再领取";
+      }
+    }
+  }
+
+  // ===== 视频播放 =====
+  var timer = null;
+  function tick(){
+    progress += 0.25 * rate;
+    if (progress >= COMPLETE_AT && !finished) completeVideo();
+    if (progress >= TOTAL) { progress = TOTAL; pause(); }
+    updateUI();
+  }
+  function play(){
+    if (finished || claimed) return;
+    playing = true;
+    $("playBtn").classList.add("hidden");
+    timer = setInterval(tick, 250);
+  }
+  function pause(){
+    playing = false;
+    clearInterval(timer);
+    if (!finished) $("playBtn").classList.remove("hidden");
+  }
+  function togglePlay(){ playing ? pause() : play(); }
+
+  $("videoBox").addEventListener("click", function(e){
+    if (e.target.closest(".rate-btn") || e.target.closest(".live-hero-block") || e.target.closest(".live-task-side")) return;
+    togglePlay();
+  });
+
+  $("rateBtn").addEventListener("click", function(e){
+    e.stopPropagation();
+    var idx = rates.indexOf(rate);
+    rate = rates[(idx + 1) % rates.length];
+    $("rateText").textContent = rate + "x";
+    $("rateBtn").className = "rate-btn" + (rate > 1 ? " hot" : "");
+    showToast("已切换为 " + rate + " 倍速");
+  });
+
+  function completeVideo(){
+    finished = true;
+    pause();
+    progress = TOTAL;
+    $("playBtn").innerHTML = '<span style="font-size:28px;">✓</span>';
+    $("playBtn").style.background = "rgba(47,158,68,.85)";
+    $("playBtn").classList.remove("hidden");
+    $("playBtn").style.pointerEvents = "none";
+    $("videoCountdown").textContent = "✓ 视频已完成";
+    $("videoCountdown").className = "video-countdown finish";
+    updateUI();
+    showToast(tongueDone ? "🎉 任务全部完成！可以领礼品包了" : "🎉 视频看完了！现在可以开始舌诊了");
+  }
+
+  // ===== 舌诊流程 =====
+  function scrollToVideo(){
+    $("liveScreen").scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(function(){
+      if (!playing && !finished) play();
+    }, 400);
+  }
+
+  function goTonguePage(){
+    if (tongueDone) {
+      $("pageReport").classList.add("show");
+      return;
+    }
+    if (!finished) {
+      showToast("请先看完视频，再进行舌诊");
+      scrollToVideo();
+      return;
+    }
+    $("pageTongue").classList.add("show");
+  }
+
+  function backFromTongue(){
+    $("pageTongue").classList.remove("show");
+    $("cameraShutter").classList.remove("analyzing");
+  }
+
+  function takeTonguePhoto(){
+    var shutter = $("cameraShutter");
+    shutter.classList.add("analyzing");
+    showToast("📸 正在拍摄...");
+
+    setTimeout(function(){
+      showToast("🔬 AI 识别体质中...");
+    }, 1200);
+
+    setTimeout(function(){
+      tongueDone = true;
+      shutter.classList.remove("analyzing");
+      $("pageTongue").classList.remove("show");
+      $("pageReport").classList.add("show");
+      updateUI();
+      showToast("🎉 舌诊完成！查看您的体质报告");
+    }, 2800);
+  }
+
+  function backFromReport(){
+    $("pageReport").classList.remove("show");
+  }
+
+  function claimFromReport(){
+    if (claimed) return;
+    if (!finished) { showToast("请先看完视频"); backFromReport(); if (!playing) play(); return; }
+    if (!tongueDone) { showToast("请先完成舌诊"); return; }
+    openAddressPage();
+  }
+
+  // ===== 智能领取 =====
+  function smartClaim(){
+    if (claimed) return;
+    if (!finished && !tongueDone) {
+      showToast("完成任务即可领取，先看视频吧");
+      if (!playing) play();
+      return;
+    }
+    if (!finished) {
+      showToast("还差任务1：看视频（1分钟）");
+      if (!playing) play();
+      return;
+    }
+    if (!tongueDone) {
+      showToast("还差任务2：AI舌诊");
+      goTonguePage();
+      return;
+    }
+    openAddressPage();
+  }
+
+  // ===== 地址 + 禁忌确认 =====
+  function openAddressPage(){
+    $("riskMask").classList.add("show");
+    $("riskDialog").classList.add("show");
+    resetRiskForm();
+  }
+  function resetRiskForm(){
+    riskChoice = "";
+    $("riskNoneBtn").classList.remove("selected");
+    $("riskHaveBtn").classList.remove("selected");
+    $("consentCheck").checked = false;
+    $("riskWarning").style.display = "none";
+    $("consentRow").style.display = "none";
+    $("riskConfirmBtn").disabled = true;
+    $("riskConfirmBtn").className = "risk-confirm-btn";
+    $("riskTipBottom").textContent = "请您选一下情况，就可以继续领取啦";
+    $("riskNoneBtn").disabled = false;
+    $("riskHaveBtn").disabled = false;
+    $("riskNoneBtn").classList.remove("locked");
+    $("riskHaveBtn").classList.remove("locked");
+  }
+  function closeRiskByMask(){
+    $("riskMask").classList.remove("show");
+    $("riskDialog").classList.remove("show");
+  }
+  function chooseNone(){
+    riskChoice = "none";
+    $("riskNoneBtn").classList.add("selected");
+    $("riskHaveBtn").classList.remove("selected");
+    $("riskWarning").style.display = "none";
+    $("consentRow").style.display = "block";
+    $("consentCheck").checked = true;
+    updateRiskState();
+  }
+  function chooseHave(){
+    riskChoice = "have";
+    $("riskHaveBtn").classList.add("selected");
+    $("riskNoneBtn").classList.remove("selected");
+    $("consentRow").style.display = "none";
+    $("riskWarning").style.display = "block";
+    $("riskConfirmBtn").disabled = true;
+    $("riskConfirmBtn").className = "risk-confirm-btn";
+    $("riskTipBottom").textContent = "身体要紧，建议先咨询医生";
+    $("riskNoneBtn").disabled = true;
+    $("riskHaveBtn").disabled = true;
+  }
+  $("consentCheck").addEventListener("change", updateRiskState);
+  function updateRiskState(){
+    if (riskChoice !== "none") return;
+    var ok = $("consentCheck").checked;
+    $("riskConfirmBtn").disabled = !ok;
+    $("riskConfirmBtn").className = ok ? "risk-confirm-btn ready" : "risk-confirm-btn";
+  }
+  function tryConfirm(){
+    if (riskChoice !== "none" || !$("consentCheck").checked) return;
+    closeRiskByMask();
+    $("pageReport").classList.remove("show");
+    $("pageAddress").classList.add("show");
+  }
+  function backToMain(){
+    $("pageAddress").classList.remove("show");
+    $("formError").classList.remove("show");
+  }
+  function submitAddress(){
+    var name = $("fName").value.trim(),
+        phone = $("fPhone").value.trim(),
+        addr = $("fAddress").value.trim();
+    if (!name || !/^1\d{10}$/.test(phone) || addr.length < 5) {
+      $("formError").classList.add("show");
+      return;
+    }
+    $("formError").classList.remove("show");
+    backToMain();
+    claimed = true;
+    updateUI();
+    $("successMask").classList.add("show");
+  }
+  function closeSuccess(){ $("successMask").classList.remove("show"); }
+
+  // ===== 倒计时 =====
+  var cd = 23 * 3600 + 59 * 60 + 59;
+  setInterval(function(){
+    cd = Math.max(0, cd - 1);
+    var h = Math.floor(cd / 3600), m = Math.floor(cd % 3600 / 60), s = cd % 60;
+    var p = function(n){ return n < 10 ? "0" + n : "" + n; };
+    $("cdHour").textContent = p(h);
+    $("cdMin").textContent = p(m);
+    $("cdSec").textContent = p(s);
+  }, 1000);
+
+  // ===== 礼品库存递减 =====
+  var giftRemain = 8;
+  setInterval(function(){
+    if (claimed || giftRemain <= 3) return;
+    giftRemain -= 1 + Math.floor(Math.random() * 2);
+    giftRemain = Math.max(3, giftRemain);
+    $("giftRemain").textContent = giftRemain;
+  }, 5000);
+
+  // ===== 库存滚动 =====
+  setInterval(function(){
+    if (claimed) return;
+    var el = $("sentCount");
+    var n = parseInt(el.textContent.replace(/,/g, "")) + 1 + Math.floor(Math.random() * 3);
+    el.textContent = n.toLocaleString();
+    $("stockFill").style.width = Math.min(99, n / 100) + "%";
+  }, 4000);
+
+  // ===== 浮动领取通知 =====
+  var notifies = [
+    "用户 138****5678 刚刚领取了礼品包",
+    "用户 186****8812 刚刚领取了礼品包",
+    "用户 177****3311 刚刚领取了礼品包",
+    "用户 156****4429 刚刚领取了礼品包",
+    "用户 139****8076 刚刚领取了礼品包"
+  ];
+  var ni = 0;
+  var claimNotifyTimer = null;
+  function showClaimNotify(){
+    if (claimed) return;
+    $("floatText").textContent = notifies[ni++ % notifies.length];
+    $("floatNotify").classList.add("show");
+    clearTimeout(claimNotifyTimer);
+    claimNotifyTimer = setTimeout(function(){ $("floatNotify").classList.remove("show"); }, 3200);
+  }
+  // 首批进入页面即露出
+  setTimeout(showClaimNotify, 600);
+  setInterval(showClaimNotify, 6500);
+
+  // ===== Toast =====
+  var toastTimer = null;
+  function showToast(msg){
+    $("toastText").textContent = msg;
+    $("toast").classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ $("toast").classList.remove("show"); }, 2200);
+  }
+
+  updateUI();
+
+  // 滚动后隐藏弱引导箭头
+  (function(){
+    var hint = $("scrollMoreHint");
+    if (!hint) return;
+    function onScroll(){
+      if (window.scrollY > 30) hint.classList.add("hide");
+      else hint.classList.remove("hide");
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+  })();
+</script>
+</body>
+</html>

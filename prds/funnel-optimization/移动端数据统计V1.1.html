@@ -242,7 +242,6 @@ th:first-child .th-inner{justify-content:flex-start;}
         <button data-go="deal">成交</button>
         <button data-go="channel">渠道</button>
         <button data-go="asst">团队</button>
-        <button data-go="asstCh">渠道×团队</button>
       </nav>
       <button type="button" class="user-entry" id="userEntry" title="个人中心">管</button>
     </div>
@@ -388,14 +387,6 @@ th:first-child .th-inner{justify-content:flex-start;}
     <div class="sec">
       <div class="sec-h"><h2>数据表</h2></div>
       <div class="table-wrap" id="asstTable"></div>
-    </div>
-  </section>
-
-  <section class="page" data-page="asstCh">
-    <div class="filters" id="fAsstCh"></div>
-    <div class="sec">
-      <div class="sec-h"><h2>数据表</h2></div>
-      <div class="table-wrap" id="asstChTable"></div>
     </div>
   </section>
 
@@ -789,9 +780,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     page:'home',
     fans:{start:defaultStart,end:defaultEnd,plat:'全部',ch:'全部',team:'全部'},
     deal:{start:defaultStart,end:defaultEnd,plat:'全部',ch:'全部',team:'全部'},
-    channel:{quick:'today',plat:'全部',ch:'全部',start:defaultStart,end:defaultEnd},
+    channel:{quick:'today',plat:'全部',ch:'全部',team:'全部',start:defaultStart,end:defaultEnd},
     asst:{quick:'today',team:'全部',q:'',start:defaultStart,end:defaultEnd},
-    asstCh:{quick:'today',team:'全部',ch:'全部',start:defaultStart,end:defaultEnd},
     expandedTeams:{},
     expandedChannels:{},
     dateTarget:null,
@@ -1229,25 +1219,63 @@ th:first-child .th-inner{justify-content:flex-start;}
     if(st.ch&&st.ch!=='全部') list=list.filter(c=>c.ch===st.ch);
     return list;
   }
+  function filteredAsstChForChannel(){
+    const st=state.channel;
+    let list=ASST_CH.slice();
+    if(st.team&&st.team!=='全部') list=list.filter(r=>r.team===st.team);
+    if(st.ch&&st.ch!=='全部') list=list.filter(r=>r.ch===st.ch);
+    return list;
+  }
+  function isChExpanded(ch){
+    return state.expandedChannels[ch]!==false;
+  }
+  function chRowCells(c){
+    return '<td>'+(c.spend?fmtY(c.spend):'—')+'</td><td>'+(c.clicks?fmt(c.clicks):'—')+'</td><td>'+fmt(c.add)+'</td><td>'+(c.clicks?pct(c.rate):'—')+'</td><td>'+(c.cac?fmtY(c.cac):'—')+'</td><td>'+fmt(c.pay)+'</td><td>'+fmtY(c.payGmv)+'</td><td>'+pct(c.payRate)+'</td><td>'+fmt(c.revOrd)+'</td><td>'+fmtY(c.revGmv)+'</td><td>'+fmt(c.totalOrd)+'</td><td>'+fmtY(c.totalGmv)+'</td>';
+  }
+  function chTeamRowCells(r){
+    const dash='—';
+    if(!r) return '<td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td>';
+    return '<td>'+dash+'</td><td>'+dash+'</td><td>'+fmt(r.fans)+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td>';
+  }
   function renderChannel(){
-    filterQuick(document.getElementById('fCh'),'channel',{platform:1,channel:1});
+    filterQuick(document.getElementById('fCh'),'channel',{platform:1,channel:1,team:1});
     const list=filteredChannels();
+    const asstChList=filteredAsstChForChannel();
     const byAdd=list.slice().sort((a,b)=>b.add-a.add).slice(0,5);
     const byPay=list.slice().sort((a,b)=>b.pay-a.pay).slice(0,5);
     const byCac=list.filter(c=>c.cac>0).sort((a,b)=>a.cac-b.cac).slice(0,5);
     barChart(document.getElementById('chFansTop'), byAdd.map(c=>({name:c.name,value:c.add,label:fmt(c.add)})));
     barChart(document.getElementById('chPayTop'), byPay.map(c=>({name:c.name,value:c.pay,label:fmt(c.pay)})), {tone:'teal'});
     barChart(document.getElementById('chCacTop'), byCac.map(c=>({name:c.name,value:c.cac,label:fmtY(c.cac)})), {tone:'warm'});
+    const teamIdx=t=>{const i=TEAMS.indexOf(t);return i<0?999:i;};
     let t='<table>'+buildThead([
-      ['渠道','渠道'],['投流消耗','投流消耗'],['行为点击','行为点击'],['加粉数（渠道汇总）','加粉数（渠道汇总）'],
+      ['渠道/团队','渠道'],['投流消耗','投流消耗'],['行为点击','行为点击'],['加粉数（渠道汇总）','加粉数（渠道汇总）'],
       ['行为点击-加粉转化率','行为点击-加粉转化率'],['平均获客成本','平均获客成本'],
       ['初诊成交订单','初诊成交订单'],['初诊成交额','初诊成交额'],['加粉-初诊成交转化率','加粉-初诊成交转化率'],
       ['复诊单','复诊单'],['复诊额','复诊额'],['总单','总单'],['总额','总额']
     ])+'<tbody>';
     list.slice().sort((a,b)=>b.add-a.add).forEach(c=>{
-      t+='<tr><td>'+c.name+'</td><td>'+(c.spend?fmtY(c.spend):'—')+'</td><td>'+(c.clicks?fmt(c.clicks):'—')+'</td><td>'+fmt(c.add)+'</td><td>'+(c.clicks?pct(c.rate):'—')+'</td><td>'+(c.cac?fmtY(c.cac):'—')+'</td><td>'+fmt(c.pay)+'</td><td>'+fmtY(c.payGmv)+'</td><td>'+pct(c.payRate)+'</td><td>'+fmt(c.revOrd)+'</td><td>'+fmtY(c.revGmv)+'</td><td>'+fmt(c.totalOrd)+'</td><td>'+fmtY(c.totalGmv)+'</td></tr>';
+      const open=isChExpanded(c.ch);
+      const teamMap={};
+      asstChList.filter(r=>r.ch===c.ch).forEach(r=>{teamMap[r.team]=r;});
+      const teams=(state.channel.team&&state.channel.team!=='全部'?[state.channel.team]:TEAMS.slice()).sort((a,b)=>teamIdx(a)-teamIdx(b));
+      const hasTeams=teams.some(tm=>teamMap[tm]);
+      t+='<tr class="team-row" data-ch="'+c.ch+'"><td><span style="display:inline-flex;align-items:center;gap:6px;">'+(hasTeams?'<button type="button" class="team-toggle" data-toggle-ch="'+c.ch+'">'+(open?'−':'+')+'</button>':'')+c.name+'</span></td>'+chRowCells(c)+'</tr>';
+      if(hasTeams){
+        teams.forEach(tm=>{
+          t+='<tr class="child-row'+(open?' show':'')+'" data-parent-ch="'+c.ch+'"><td>'+tm+'</td>'+chTeamRowCells(teamMap[tm])+'</tr>';
+        });
+      }
     });
     document.getElementById('chTable').innerHTML=t+'</tbody></table>';
+    document.getElementById('chTable').querySelectorAll('[data-toggle-ch]').forEach(btn=>{
+      btn.onclick=e=>{
+        e.stopPropagation();
+        const ch=btn.dataset.toggleCh;
+        state.expandedChannels[ch]=!isChExpanded(ch);
+        renderChannel();
+      };
+    });
   }
 
   function filteredAsst(){
@@ -1312,60 +1340,6 @@ th:first-child .th-inner{justify-content:flex-start;}
       };
     });
   }
-  function filteredAsstCh(){
-    const st=state.asstCh; let list=ASST_CH.slice();
-    if(st.team&&st.team!=='全部') list=list.filter(r=>r.team===st.team);
-    if(st.ch&&st.ch!=='全部') list=list.filter(r=>r.ch===st.ch);
-    return list;
-  }
-  function isChExpanded(ch){
-    return state.expandedChannels[ch]!==false;
-  }
-  function aggregateByChannel(list){
-    const map={};
-    list.forEach(r=>{
-      if(!map[r.ch]) map[r.ch]={ch:r.ch,chName:r.chName,fans:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,totalOrd:0,totalGmv:0,teams:[]};
-      const g=map[r.ch];
-      g.fans+=r.fans; g.firstOrd+=r.firstOrd; g.firstGmv+=r.firstGmv;
-      g.revOrd+=r.revOrd; g.revGmv+=r.revGmv; g.totalOrd+=r.totalOrd; g.totalGmv+=r.totalGmv;
-      g.teams.push(r);
-    });
-    const chIdx=ch=>{const i=CHANNELS.findIndex(c=>c.ch===ch);return i<0?999:i;};
-    const teamIdx=t=>{const i=TEAMS.indexOf(t.team);return i<0?999:i;};
-    return Object.values(map).map(g=>({
-      ...g,
-      firstConv:g.fans?g.firstOrd/g.fans:0,
-      teams:g.teams.slice().sort((a,b)=>teamIdx(a)-teamIdx(b))
-    })).sort((a,b)=>chIdx(a.ch)-chIdx(b.ch));
-  }
-  function asstChRowCells(r){
-    return '<td>'+fmt(r.fans)+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td>';
-  }
-  function renderAsstCh(){
-    filterQuick(document.getElementById('fAsstCh'),'asstCh',{team:1,channel:1});
-    const groups=aggregateByChannel(filteredAsstCh());
-    let t='<table>'+buildThead([
-      ['渠道/团队','渠道'],['加粉','加粉'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊转化率','初诊转化率'],
-      ['复诊单','复诊单'],['复诊额','复诊额'],['总订单','总单'],['总订单额','总额']
-    ])+'<tbody>';
-    groups.forEach(g=>{
-      const open=isChExpanded(g.ch);
-      t+='<tr class="team-row" data-ch="'+g.ch+'"><td><span style="display:inline-flex;align-items:center;gap:6px;"><button type="button" class="team-toggle" data-toggle-ch="'+g.ch+'">'+(open?'−':'+')+'</button>'+g.chName+'</span></td>'+asstChRowCells(g)+'</tr>';
-      g.teams.forEach(r=>{
-        t+='<tr class="child-row'+(open?' show':'')+'" data-parent-ch="'+g.ch+'"><td>'+r.team+'</td>'+asstChRowCells(r)+'</tr>';
-      });
-    });
-    document.getElementById('asstChTable').innerHTML=t+'</tbody></table>';
-    document.getElementById('asstChTable').querySelectorAll('[data-toggle-ch]').forEach(btn=>{
-      btn.onclick=e=>{
-        e.stopPropagation();
-        const ch=btn.dataset.toggleCh;
-        state.expandedChannels[ch]=!isChExpanded(ch);
-        renderAsstCh();
-      };
-    });
-  }
-
   function renderProfile(){
     if(!currentUser) return;
     const short=(currentUser.name||currentUser.account||'用').slice(0,1);
@@ -1383,7 +1357,6 @@ th:first-child .th-inner{justify-content:flex-start;}
     else if(state.page==='deal') renderDeal();
     else if(state.page==='channel') renderChannel();
     else if(state.page==='asst') renderAsst();
-    else if(state.page==='asstCh') renderAsstCh();
     else if(state.page==='profile') renderProfile();
   }
 

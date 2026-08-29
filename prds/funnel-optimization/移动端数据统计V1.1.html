@@ -36,10 +36,10 @@ button{border:0;background:none;cursor:pointer;}
 .sec-h .link{font-size:12px;color:var(--brand);font-weight:600;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.kpi{display:block;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
-.kpi .lab{font-size:12px;color:var(--muted);font-weight:600;}
+.kpi{display:block;position:relative;text-align:left;padding:14px 32px 14px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
+.kpi .lab{font-size:12px;color:var(--muted);font-weight:600;padding-right:4px;}
 .kpi .val{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:22px;font-weight:700;margin:8px 0 6px;letter-spacing:-.03em;}
-.kpi .go{font-size:12px;color:var(--brand);font-weight:700;margin-top:8px;}
+.kpi-arrow{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:16px;font-weight:800;line-height:22px;text-align:center;pointer-events:none;}
 .kpi .soft{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.4;}
 .triple .cell .soft,.dual .cell .soft{font-size:10px;margin-top:4px;line-height:1.45;color:var(--muted);font-weight:600;}
 .triple .cell .soft b,.dual .cell .soft b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:700;color:var(--muted);}
@@ -146,7 +146,7 @@ tr.child-row td:first-child{z-index:2;}
 .multi-legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle;}
 .mini-rank.full{max-height:none;}
 .table-wrap{overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:#fff;}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:1040px;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1280px;}
 th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
 th{background:#f7f9fc;color:var(--muted);font-weight:700;position:sticky;top:0;z-index:1;}
 thead tr:nth-child(2) th{top:34px;z-index:1;}
@@ -253,40 +253,40 @@ th:first-child .th-inner{justify-content:flex-start;}
       <div class="sec-h"><h2>今日实时</h2></div>
       <div class="grid2">
         <button class="kpi" data-go="fans">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">加粉数（全量）</div>
           <div class="val" id="hFans">—</div>
           <span id="hFansD"></span>
-          <div class="go">进入每日转化 ›</div>
         </button>
         <button class="kpi" data-go="deal">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">成交订单数</div>
           <div class="val" id="hOrd">—</div>
           <span id="hOrdD"></span>
-          <div class="go">进入成交 ›</div>
         </button>
         <button class="kpi" data-go="deal">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">初诊转化率</div>
           <div class="val" id="hFirstConv">—</div>
           <div class="soft" id="hFirstOrd">初诊订单数 <b>—</b></div>
           <span id="hFirstConvD"></span>
-          <div class="go">进入成交 ›</div>
         </button>
         <button class="kpi" data-go="deal">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">成交GMV</div>
           <div class="val" id="hGmv">—</div>
           <div class="soft" id="hNetGmv">净GMV <b>—</b></div>
           <span id="hGmvD"></span>
-          <div class="go">进入成交 ›</div>
         </button>
       </div>
     </div>
     <div class="sec">
-      <div class="sec-h"><h2>今日分渠道核心数据</h2><button class="link" data-go="channel">渠道 ›</button></div>
-      <div class="card" id="hCh"></div>
-    </div>
-    <div class="sec">
       <div class="sec-h"><h2>今日订单核心数据</h2><button class="link" data-go="deal">成交 ›</button></div>
       <div class="card" id="hOrders"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>今日分渠道核心数据</h2><button class="link" data-go="channel">渠道 ›</button></div>
+      <div class="card" id="hCh"></div>
     </div>
     <div class="sec">
       <div class="sec-h"><h2>今日团队 Top</h2><button class="link" data-go="asst">团队 ›</button></div>
@@ -628,7 +628,10 @@ th:first-child .th-inner{justify-content:flex-start;}
     '支付数':'该医助服务的用户初诊支付成功订单数。',
     '加粉-支付转化率':'支付数 ÷ 加粉数；加粉为 0 时展示「—」。',
     '总单':'初诊单 + 复诊单。',
-    '总额':'初诊额 + 复诊额。'
+    '总额':'初诊额 + 复诊额。',
+    '初诊客单价':'初诊成交额 ÷ 初诊订单数；初诊订单数为 0 时展示「—」。',
+    '复诊客单价':'复诊额 ÷ 复诊单；复诊单为 0 时展示「—」。',
+    '总客单价':'总订单额 ÷ 总订单数；总订单数为 0 时展示「—」。'
   };
 
   function thHelp(label, tipKey){
@@ -743,13 +746,17 @@ th:first-child .th-inner{justify-content:flex-start;}
   ].map(a=>({...a,totalOrd:a.firstOrd+a.revOrd,totalGmv:a.firstGmv+a.revGmv,firstConv:a.f01?a.firstOrd/a.f01:0}));
 
   const TEAM_TODAY=[
-    {team:'A组',fans:2160,ydFans:2040,firstOrd:29,ydFirstOrd:26,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200},
-    {team:'B组',fans:1780,ydFans:1720,firstOrd:22,ydFirstOrd:24,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120},
-    {team:'C组',fans:1050,ydFans:980,firstOrd:12,ydFirstOrd:11,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640}
+    {team:'A组',fans:2160,ydFans:2040,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200},
+    {team:'B组',fans:1780,ydFans:1720,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120},
+    {team:'C组',fans:1050,ydFans:980,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640}
   ].map(t=>({
     ...t,
     firstConv:t.fans?t.firstOrd/t.fans:0,
-    ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0
+    ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
+    firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
+    revAov:t.revOrd?t.revGmv/t.revOrd:0,
+    ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
+    ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0
   }));
 
   const TEAMS=['A组','B组','C组'];
@@ -799,6 +806,7 @@ th:first-child .th-inner{justify-content:flex-start;}
   }
   const fmt=n=>Number(n).toLocaleString('zh-CN');
   const fmtY=n=>'¥'+fmt(Math.round(n));
+  const aov=(gmv,cnt)=>cnt?fmtY(gmv/cnt):'—';
   const pct=n=>(n*100).toFixed(1)+'%';
   function yestEl(prev){
     if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
@@ -815,6 +823,11 @@ th:first-child .th-inner{justify-content:flex-start;}
   function setYest(id,prev){
     const el=document.getElementById(id); if(!el) return;
     const w=document.createElement('div'); w.innerHTML=yestEl(prev);
+    const n=w.firstChild; n.id=id; el.replaceWith(n);
+  }
+  function setYestY(id,prev){
+    const el=document.getElementById(id); if(!el) return;
+    const w=document.createElement('div'); w.innerHTML=yestY(prev);
     const n=w.firstChild; n.id=id; el.replaceWith(n);
   }
   function rankRows(list,labelFn,pctFn,warm){
@@ -916,7 +929,7 @@ th:first-child .th-inner{justify-content:flex-start;}
     setYest('hOrdD',ORD_YDAY);
     document.getElementById('hGmv').textContent=fmtY(GMV_TODAY);
     document.getElementById('hNetGmv').innerHTML='净GMV <b>'+fmtY(NET_GMV_TODAY)+'</b>（退'+REFUND_ORD_TODAY+'单）';
-    setYest('hGmvD',GMV_YDAY);
+    setYestY('hGmvD',GMV_YDAY);
     document.getElementById('hFirstConv').textContent=pct(FIRST_CONV_TODAY);
     document.getElementById('hFirstOrd').innerHTML='初诊订单数 <b>'+fmt(FIRST_ORD_TODAY)+'</b>';
     const hfcD=document.getElementById('hFirstConvD');
@@ -938,6 +951,10 @@ th:first-child .th-inner{justify-content:flex-start;}
       '<div class="soft">加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b></div>'+yestPct(t.ydFirstConv)+'</div>'+
       '<div class="cell"><div class="k">总订单数</div><div class="x">'+fmt(t.totalOrd)+'</div>'+
       '<div class="soft">总订单额 <b>'+fmtY(t.totalGmv)+'</b></div>'+yestEl(t.ydTotalOrd)+'</div>'+
+      '</div>'+
+      '<div class="dual" style="margin-top:6px">'+
+      '<div class="cell"><div class="k">初诊客单价</div><div class="x">'+aov(t.firstGmv,t.firstOrd)+'</div>'+yestY(t.ydFirstAov)+'</div>'+
+      '<div class="cell"><div class="k">复诊客单价</div><div class="x">'+aov(t.revGmv,t.revOrd)+'</div>'+yestY(t.ydRevAov)+'</div>'+
       '</div></div></div>'
     ).join('');
     document.getElementById('hOrders').innerHTML=
@@ -1251,7 +1268,7 @@ th:first-child .th-inner{justify-content:flex-start;}
     return Object.values(map).map(t=>({...t,firstConv:t.f01?t.firstOrd/t.f01:0})).sort((a,b)=>b.totalGmv-a.totalGmv);
   }
   function asstRowCells(r){
-    return '<td>'+fmt(r.f01)+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td>';
+    return '<td>'+fmt(r.f01)+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+aov(r.firstGmv,r.firstOrd)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+aov(r.revGmv,r.revOrd)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td><td>'+aov(r.totalGmv,r.totalOrd)+'</td>';
   }
   function renderAsstOrdBar(){
     document.querySelectorAll('#asstOrdToggle button').forEach(b=>{
@@ -1275,8 +1292,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     renderAsstOrdBar();
     const teamRows=teams.slice().sort((a,b)=>b.firstConv-a.firstConv);
     let t='<table>'+buildThead([
-      ['团队/医助','团队'],['加粉','加粉'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊转化率','初诊转化率'],
-      ['复诊单','复诊单'],['复诊额','复诊额'],['总订单','总单'],['总订单额','总额']
+      ['团队/医助','团队'],['加粉','加粉'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊客单价','初诊客单价'],['初诊转化率','初诊转化率'],
+      ['复诊单','复诊单'],['复诊额','复诊额'],['复诊客单价','复诊客单价'],['总订单','总单'],['总订单额','总额'],['总客单价','总客单价']
     ])+'<tbody>';
     teamRows.forEach(tm=>{
       const open=!!state.expandedTeams[tm.team];

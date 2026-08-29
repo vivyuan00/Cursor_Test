@@ -670,8 +670,10 @@
                 <div class="nav-group">
                     <div class="nav-group-label">📊 全链路漏斗</div>
                     <div class="nav-submenu">
-                        <div class="nav-item nav-sub active" data-page="funnel" data-funnel-tab="daily">每日数据统计</div>
-                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="assistant">团队维度</div>
+                        <div class="nav-item nav-sub active" data-page="funnel" data-funnel-tab="daily">每日转化</div>
+                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="dailyOrder">每日成交</div>
+                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="dailyAi">每日工具转化</div>
+                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="assistant">团队医助</div>
                         <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="chTeam">渠道×团队</div>
                         <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="chApp">渠道×应用</div>
                     </div>
@@ -1181,7 +1183,6 @@
     // Funnel state
     let funnelState={
       tab:'daily',
-      dailySub:'conversion',
       assistantSub:'trade',
       chDetailRow:null,
       fTimeQuick:'today',
@@ -1544,18 +1545,22 @@
 
     function renderFunnel(){
       if(funnelState.chDetailRow) return renderChDetailPage();
-      var tabTitles={daily:'每日数据统计',assistant:'团队维度',chTeam:'渠道×团队',chApp:'渠道×应用'};
+      var tabTitles={daily:'每日转化',dailyOrder:'每日成交',dailyAi:'每日工具转化',assistant:'团队医助',chTeam:'渠道×团队',chApp:'渠道×应用'};
       var pageTitle=tabTitles[funnelState.tab]||'全链路漏斗';
-      var filter='',subTabs='',content='';
+      var filter='',subTabsPre='',subTabsPost='',content='';
       if(funnelState.tab==='daily'){
         filter=renderFilterDaily();
-        var subs=[{key:'conversion',label:'每日转化'},{key:'order',label:'每日订单金额数据'},{key:'ai',label:'AI工具转化'}];
-        subTabs=subs.map(function(s){return '<button data-daily-sub="'+h(s.key)+'" class="tab-btn text-xs '+(funnelState.dailySub===s.key?'active':'')+'">'+h(s.label)+'</button>';}).join('');
-        content=funnelState.dailySub==='ai'?renderDailyAiConversion():(funnelState.dailySub==='conversion'?renderDailyConversion():renderDailyOrder());
+        content=renderDailyConversion();
+      } else if(funnelState.tab==='dailyOrder'){
+        filter=renderFilterDaily();
+        content=renderDailyOrder();
+      } else if(funnelState.tab==='dailyAi'){
+        filter=renderFilterDaily();
+        content=renderDailyAiConversion();
       } else if(funnelState.tab==='assistant'){
         filter=renderFilterAssistant();
-        var subs2=[{key:'trade',label:'团队成交数据'},{key:'efficiency',label:'团队服务人效统计'}];
-        subTabs=subs2.map(function(s){return '<button data-asst-sub="'+h(s.key)+'" class="tab-btn text-xs '+(funnelState.assistantSub===s.key?'active':'')+'">'+h(s.label)+'</button>';}).join('');
+        var subs2=[{key:'trade',label:'医助成交'},{key:'efficiency',label:'医助人效'}];
+        subTabsPost=subs2.map(function(s){return '<button data-asst-sub="'+h(s.key)+'" class="tab-btn text-xs '+(funnelState.assistantSub===s.key?'active':'')+'">'+h(s.label)+'</button>';}).join('');
         content=funnelState.assistantSub==='efficiency'?renderAsstEfficiency():renderAsstTrade();
       } else if(funnelState.tab==='chTeam'){
         filter=renderFilterChannel();
@@ -1566,8 +1571,9 @@
       }
       return '<div class="space-y-4 funnel-root w-full max-w-none">'+
         '<h2 class="text-xl font-bold">'+h(pageTitle)+'</h2>'+
-        (subTabs?'<div class="border-b border-slate-100 flex gap-1">'+subTabs+'</div>':'')+
+        (subTabsPre?'<div class="border-b border-slate-100 flex gap-1">'+subTabsPre+'</div>':'')+
         filter+
+        (subTabsPost?'<div class="border-b border-slate-100 flex gap-1">'+subTabsPost+'</div>':'')+
         content+
       '</div>';
     }
@@ -2448,7 +2454,7 @@
     }
 
     function initOrderCharts(){
-      if(funnelState.tab!=='daily'||funnelState.dailySub!=='order') return;
+      if(funnelState.tab!=='dailyOrder') return;
       var O=DAILY_ORDERS;
       var labels=O.trend.map(function(t){return t.d;});
       var split=_orderSummarySplit();
@@ -2486,15 +2492,13 @@
         return;
       }
       if(funnelState.tab==='daily'){
-        if(funnelState.dailySub==='ai'){
-          exportFunnelTableMock('AI工具转化_'+ts+'.xlsx','AI工具转化',['日期','首页PV','加粉数','开方','支付','支付转化率'],['05-16',fmt(AI_FUNNEL_STEPS[0].count),fmt(resolveFansBase()),fmt(DAILY_ASSISTANT_FUNNEL_STEPS[1].count),fmt(DAILY_ASSISTANT_FUNNEL_STEPS[2].count),'18.0%']);
-        }else if(funnelState.dailySub==='conversion'){
           exportFunnelTableMock('每日转化_'+ts+'.xlsx','每日转化',['日期','加粉数（全量）','初诊单','初诊转化率','复诊单','复诊额','总单','总额'],['05-16','782','53','6.8%','41','¥37,820','94','¥79,280']);
-        }else{
-          exportFunnelTableMock('每日订单金额_'+ts+'.xlsx','订单金额',['日期','汤剂订单数','丸剂订单数','颗粒剂订单数','总订单金额'],['05-16','52','31','12','97770']);
-        }
+      }else if(funnelState.tab==='dailyOrder'){
+          exportFunnelTableMock('每日成交_'+ts+'.xlsx','每日成交',['日期','汤剂订单数','丸剂订单数','颗粒剂订单数','总订单金额'],['05-16','52','31','12','97770']);
+      }else if(funnelState.tab==='dailyAi'){
+          exportFunnelTableMock('每日工具转化_'+ts+'.xlsx','每日工具转化',['日期','首页PV','加粉数','开方','支付','支付转化率'],['05-16',fmt(AI_FUNNEL_STEPS[0].count),fmt(resolveFansBase()),fmt(DAILY_ASSISTANT_FUNNEL_STEPS[1].count),fmt(DAILY_ASSISTANT_FUNNEL_STEPS[2].count),'18.0%']);
       }else if(funnelState.tab==='assistant'){
-        var name=funnelState.assistantSub==='efficiency'?'团队服务人效':'团队成交';
+        var name=funnelState.assistantSub==='efficiency'?'医助人效':'医助成交';
         exportFunnelTableMock(name+'_'+ts+'.xlsx',name,['医助','示例指标'],[ASSISTANTS[0].name,'示例值']);
       }else if(funnelState.tab==='chTeam'){
           exportFunnelTableMock('渠道团队_'+ts+'.xlsx','渠道×团队',['渠道','加粉数','初诊成交订单','初诊成交额','总单','总额'],[CH_CHANNEL_LIST[0].name,fmt(CH_CHANNEL_LIST[0].add),fmt(CH_CHANNEL_LIST[0].pay),fmtMoney(CH_CHANNEL_LIST[0].payGmv),fmt(CH_CHANNEL_LIST[0].totalOrd),fmtMoney(CH_CHANNEL_LIST[0].totalGmv)]);
@@ -2514,7 +2518,7 @@
     }
 
     function initCacTrendChart(){
-      if(funnelState.tab!=='daily'||funnelState.dailySub!=='conversion'||isAdMetricsHidden()) return;
+      if(funnelState.tab!=='daily'||isAdMetricsHidden()) return;
       var el=document.getElementById('cacTrendChart');
       if(!el||typeof Chart==='undefined') return;
       var rows=buildDailyFansRows();
@@ -2524,7 +2528,7 @@
     }
 
     function initDailyConversionCharts(){
-      if(funnelState.tab!=='daily'||funnelState.dailySub!=='conversion') return;
+      if(funnelState.tab!=='daily') return;
       if(typeof Chart==='undefined') return;
       var rows=buildDailyFansRows();
       var labels=rows.map(function(r){return r.d;});
@@ -2552,9 +2556,6 @@
     }
 
     function bindFunnelEvents(){
-      document.querySelectorAll('[data-daily-sub]').forEach(function(el){
-        el.addEventListener('click',function(){funnelState.dailySub=el.getAttribute('data-daily-sub');renderFunnelPage();});
-      });
       document.querySelectorAll('[data-asst-sub]').forEach(function(el){
         el.addEventListener('click',function(){funnelState.assistantSub=el.getAttribute('data-asst-sub');renderFunnelPage();});
       });
@@ -3062,11 +3063,11 @@
     // Annotation System
     const annotationData = {
         '1': {
-            title: '7.2.1 每日数据统计',
+            title: '7.2.1 每日转化',
             content: `
 <div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">二级 Tab</div>
-  <p><strong>每日转化</strong> | <strong>每日订单金额数据</strong> | <strong>AI工具转化</strong></p>
+  <div class="req-tooltip-section-title">左侧菜单</div>
+  <p>本页为<strong>每日转化</strong>；同组另有 <strong>每日成交</strong>、<strong>每日工具转化</strong> 独立菜单项。</p>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">筛选项</div>
@@ -3077,43 +3078,27 @@
     <li><strong>子渠道筛选</strong>：全部、baidu_doctor_h501、baidu_doctor_h502</li>
     <li><strong>产品筛选</strong>：全部、舌诊、体质测试、问诊H5</li>
     <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
-    <li><strong>团队筛选</strong>：按团队筛选；筛选团队后首页 PV/UV 灰置</li>
-    <li><strong>医助筛选</strong>：标签「医助」+ 系统用户名或企微 id 输入框；筛选医助后首页 PV/UV 灰置</li>
-    <li><strong>加粉来源筛选</strong>：多选，默认全选；选项：全部、获客链接、离职转移、内部成员共享、扫描二维码、其他；控制加粉数（来源）及医助转化开方、支付</li>
+    <li><strong>团队筛选</strong>：按团队筛选</li>
+    <li><strong>医助筛选</strong>：标签「医助」+ 系统用户名或企微 id 输入框</li>
     <li><strong>过滤重复添加用户</strong>：勾选后加粉相关指标按微信ID去重</li>
     <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">汇总筛选 · 表格交互</div>
+  <div class="req-tooltip-section-title">展示内容</div>
   <ul>
-    <li><strong>深维度筛选</strong>（子渠道/产品/版本，点击「查询」后生效）：隐藏投流消耗、行为点击、首页PV、首页UV、加粉数（渠道汇总）及上述衍生指标（行为点击-加粉转化率、平均获客成本、首页-报告转化率PV、AI工具首页-加粉转化率PV等）</li>
-    <li><strong>筛选团队/医助</strong>：隐藏 AI 工具转化全部数据（辅助图 + 数据表列）</li>
-    <li><strong>加粉数（来源）</strong>：表头/漏斗文案固定为「加粉数（来源）」，数值随筛选项切换计算口径；筛选「全部」加粉来源时，默认减去离职转移的数量</li>
+    <li><strong>加粉数趋势</strong>、<strong>初诊转化率趋势</strong>、<strong>平均获客成本趋势</strong>（深维度筛选后隐藏投流相关图）</li>
+    <li><strong>数据表</strong>：加粉数（全量）+ 初诊/复诊/总单/总额等；支持横向滚动、导出</li>
   </ul>
-</div>
-<div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">加粉来源与渠道维联动</div>
-  <ul>
-    <li>渠道/子渠道/产品/版本均为「全部」时，展示加粉来源筛选项</li>
-    <li>任一渠道维非「全部」时，隐藏加粉来源；加粉数（来源）<em>文案固定</em>，取值随渠道维切换计算口径</li>
-    <li>加粉来源不含「获客链接」时，隐藏渠道/子渠道/产品/版本筛选项</li>
-    <li>加粉来源不含「获客链接」时，数据表隐藏 AI 工具转化全部列</li>
-    <li><em>待验证</em>：仅选「获客链接」时，加粉数（来源）与加粉数（渠道汇总）是否相等</li>
-  </ul>
-</div>
-<div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">业务规则</div>
-  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。</p>
 </div>
 `
         },
         '2': {
-            title: '7.2.2 团队维度',
+            title: '7.2.2 团队医助',
             content: `
 <div class="req-tooltip-section">
-  <div class="req-tooltip-section-title">二级 Tab</div>
-  <p><strong>团队成交数据</strong> | <strong>团队服务人效统计</strong></p>
+  <div class="req-tooltip-section-title">二级 Tab（位于筛选栏下方）</div>
+  <p><strong>医助成交</strong> | <strong>医助人效</strong></p>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">筛选项</div>
@@ -3126,13 +3111,13 @@
     <li><strong>产品版本筛选</strong>：全部、v3.2、v2.1、v1.0</li>
     <li><strong>团队筛选</strong>：按团队筛选</li>
     <li><strong>医助筛选</strong>：标签「医助」+ 系统用户名/企微 id 输入框</li>
-    <li><strong>加粉来源筛选</strong>：多选，默认全选；控制加粉数（来源）及医助转化开方、支付；联动规则同每日数据统计</li>
+    <li><strong>加粉来源筛选</strong>：多选，默认全选；控制加粉数（来源）及医助转化开方、支付；联动规则同每日转化</li>
     <li><strong>操作</strong>：「查询」「重置」「导出 Excel」</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">业务规则</div>
-  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。加粉来源与渠道维联动规则见每日数据统计 §3.1。</p>
+  <p>上述筛选栏同时控制本模块下所有二级 Tab 的数据。加粉来源与渠道维联动规则见每日转化 §3.1。</p>
 </div>
 `
         },
@@ -3141,7 +3126,7 @@
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">左侧二级菜单</div>
-  <p><strong>渠道×团队</strong> | <strong>渠道×应用</strong>（位于「全链路漏斗」分组下，与每日数据统计、团队维度并列）</p>
+  <p><strong>渠道×团队</strong> | <strong>渠道×应用</strong>（位于「全链路漏斗」分组下，与每日转化、团队医助等并列）</p>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">筛选项</div>
@@ -3197,7 +3182,7 @@
 `
         },
         '4': {
-            title: '7.2.1.1 AI工具转化',
+            title: '7.2.1.3 每日工具转化',
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">统计口径</div>
@@ -3286,7 +3271,7 @@
 `
         },
         '5-order': {
-            title: '4.1.2.2 每日订单金额数据',
+            title: '7.2.1.2 每日成交',
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">统计口径</div>
@@ -3319,7 +3304,7 @@
 `
         },
         '5': {
-            title: '7.2.2.1 团队服务人效统计',
+            title: '7.2.2.1 医助人效',
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">统计维度</div>
@@ -3348,7 +3333,7 @@
 `
         },
         '6': {
-            title: '7.2.2.2 团队成交数据',
+            title: '7.2.2.2 医助成交',
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">统计维度</div>

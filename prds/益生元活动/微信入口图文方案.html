@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>益生元活动 · 微信私聊入口图文方案</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #E8590C;
+    --primary-deep: #C2410C;
+    --gold: #FFE066;
+    --ink: #3D2B1F;
+    --ink-2: #8A7563;
+    --bg: #EDEDED;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
+    background: #F5F0EA; color: var(--ink); line-height: 1.5;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #3D2B1F, #6B3E2A);
+    color: #fff; padding: 36px 24px 28px; text-align: center;
+  }
+  .page-header h1 { font-size: 21px; font-weight: 900; }
+  .page-header p { margin-top: 8px; font-size: 13px; opacity: .88; max-width: 560px; margin-inline: auto; }
+  .page-header .tags { margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .page-header .tag {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+  }
+
+  .design-principles {
+    max-width: 720px; margin: -16px auto 0; padding: 20px;
+    background: #FFF8F0; border: 2px solid #F59F00; border-radius: 12px;
+    position: relative; z-index: 1; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  }
+  .design-principles h3 { font-size: 14px; font-weight: 900; color: var(--primary-deep); margin-bottom: 8px; }
+  .design-principles ul { font-size: 12px; color: var(--ink-2); padding-left: 16px; line-height: 1.9; }
+  .design-principles li b { color: var(--ink); }
+
+  .section-group-title {
+    max-width: 720px; margin: 32px auto 0; padding: 0 20px;
+    font-size: 13px; font-weight: 900; color: var(--primary-deep);
+    letter-spacing: 2px;
+  }
+  .section {
+    max-width: 720px; margin: 0 auto; padding: 36px 20px;
+  }
+  .section.section-with-ref {
+    max-width: 780px;
+  }
+  .section + .section { border-top: 1px dashed #D8C9B4; }
+  .section-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 2px; color: var(--primary);
+    background: #FFF0E4; padding: 4px 12px; border-radius: 4px; display: inline-block; margin-bottom: 8px;
+  }
+  .section-label.new { background: #FFEBEE; color: #C62828; }
+  .section h2 { font-size: 19px; font-weight: 900; margin-bottom: 6px; }
+  .hook-note {
+    font-size: 12px; color: var(--ink-2); margin-bottom: 20px;
+    padding: 10px 14px; background: #FFFBF5; border-left: 3px solid #F59F00; border-radius: 0 8px 8px 0;
+  }
+  .hook-note b { color: var(--primary-deep); }
+
+  /* 方案预览 + 参考图 */
+  .scheme-preview-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+  @media (max-width: 760px) {
+    .scheme-preview-row { flex-wrap: wrap; }
+  }
+  .scheme-preview-row .wx-chat { margin: 0; flex-shrink: 0; }
+  .ref-expand {
+    flex: 0 0 148px;
+    max-width: 148px;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    transition: max-width .25s ease, flex-basis .25s ease;
+  }
+  .ref-expand[open] {
+    flex: 0 0 320px;
+    max-width: 320px;
+  }
+  @media (max-width: 760px) {
+    .ref-expand[open] {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  }
+  .ref-expand summary {
+    cursor: pointer;
+    list-style: none;
+    background: #fff;
+    border: 1px dashed #C9B896;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    transition: border-color .2s, box-shadow .2s;
+    flex-shrink: 0;
+  }
+  .ref-expand[open] summary {
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+  }
+  .ref-expand summary:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 12px rgba(232,89,12,.12);
+  }
+  .ref-expand summary::-webkit-details-marker { display: none; }
+  .ref-expand .ref-thumb {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 6px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .ref-expand .ref-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary-deep);
+    line-height: 1.45;
+    display: block;
+  }
+  .ref-expand .ref-label small {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-2);
+    margin-top: 3px;
+  }
+  .ref-expand[open] .ref-collapsed { display: none; }
+  .ref-expand:not([open]) .ref-full { display: none; }
+  .ref-expand:not([open]) .ref-open-bar { display: none; }
+  .ref-expand .ref-open-bar {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary);
+    display: block;
+  }
+  .ref-expand .ref-full {
+    flex: 1;
+    min-height: 0;
+    max-height: min(72vh, 640px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+    border: 1px dashed #C9B896;
+    border-radius: 10px;
+    padding: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ref-expand .ref-full img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 6px;
+  }
+  .ref-expand .ref-caption {
+    font-size: 10px;
+    color: var(--ink-2);
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.5;
+    padding-bottom: 4px;
+  }
+
+  /* 微信私聊 */
+  .wx-chat {
+    max-width: 375px; margin: 0 auto;
+    background: var(--bg); border-radius: 12px;
+    overflow: hidden; box-shadow: 0 8px 28px rgba(61,43,31,.12);
+  }
+  .wx-nav {
+    padding: 11px 16px 9px; text-align: center; border-bottom: 1px solid #D9D9D9; position: relative;
+  }
+  .wx-nav .back { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; }
+  .wx-nav .name { font-size: 15px; font-weight: 700; }
+  .wx-nav .sub { font-size: 10px; color: #888; }
+  .wx-body { padding: 14px 12px 18px; }
+  .wx-time { text-align: center; font-size: 11px; color: #B2B2B2; margin-bottom: 12px; }
+  .wx-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: flex-start; }
+  .wx-avatar {
+    width: 36px; height: 36px; border-radius: 5px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: #fff; font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wx-bubble-wrap { max-width: 74%; }
+  .wx-bubble {
+    background: #fff; border-radius: 4px 12px 12px 12px;
+    padding: 9px 11px; font-size: 14px; line-height: 1.55;
+    box-shadow: 0 1px 2px rgba(0,0,0,.05); position: relative;
+  }
+  .wx-bubble::before {
+    content: ""; position: absolute; left: -5px; top: 10px;
+    border: 5px solid transparent; border-right-color: #fff;
+  }
+
+  /* 小程序卡片 */
+  .mini-card {
+    background: #fff; border-radius: 6px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+  }
+  .mini-card-head { padding: 10px 11px 8px; }
+  .mini-card-title {
+    font-size: 14px; font-weight: 400; color: #111; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .mini-card-cover {
+    width: 100%; aspect-ratio: 5/4; overflow: hidden;
+    border-top: 1px solid #F5F5F5;
+  }
+  .mini-card-foot {
+    padding: 6px 10px 8px; border-top: 1px solid #F0F0F0;
+  }
+  .mini-card-desc {
+    font-size: 10px; color: #888;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .mini-card-desc .mp-icon {
+    width: 12px; height: 12px; border-radius: 50%; background: #07C160;
+    font-size: 7px; color: #fff;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* 分享封面 */
+  .share-card {
+    width: 100%; height: 100%; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; font-family: "Noto Sans SC", "PingFang SC", sans-serif;
+  }
+  .share-card .hook-1 {
+    font-size: 72px; font-weight: 900; line-height: 1; letter-spacing: -2px;
+    text-shadow: 0 3px 0 rgba(0,0,0,.12);
+  }
+  .share-card .hook-2 {
+    font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 6px;
+  }
+  .share-card .hook-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 14px 12px; font-size: 22px; font-weight: 900; letter-spacing: 1px;
+  }
+
+  .sc-a { background: linear-gradient(160deg, #FF4D00, #C2410C); }
+  .sc-a .hook-1 { color: #fff; } .sc-a .hook-2 { color: var(--gold); font-size: 96px; }
+  .sc-a .hook-bar { background: rgba(0,0,0,.55); color: var(--gold); }
+
+  .sc-b { background: #FFF5E6; }
+  .sc-b .hook-1 { color: var(--primary-deep); font-size: 56px; }
+  .sc-b .hook-2 { color: var(--ink); font-size: 64px; }
+  .sc-b .hook-2 em { font-style: normal; color: var(--primary); }
+  .sc-b .hook-bar { background: var(--primary); color: #fff; font-size: 20px; }
+
+  /* 实拍素材封面 */
+  .share-photo {
+    width: 100%; height: 100%; position: relative; overflow: hidden;
+    font-family: "Noto Sans SC", "PingFang SC", sans-serif;
+  }
+  .share-photo .photo-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center; background-repeat: no-repeat;
+  }
+  .share-photo .photo-dim {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+
+  .sc-p1 .photo-bg { background-image: url('assets/product.png'); background-size: 85%; background-color: #F7F3EE; background-position: center 58%; }
+  .sc-p1 .photo-dim { background: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.06) 32%, rgba(0,0,0,.05) 55%, rgba(194,65,12,.88) 100%); }
+  .sc-p1 .benefit-bar {
+    position: absolute; top: 8px; left: 0; right: 0;
+    padding: 0 10px;
+    background: none;
+    text-align: center;
+    z-index: 2;
+  }
+  .sc-p1 .benefit-bar .line1 {
+    font-size: 18px; font-weight: 900; color: #fff; line-height: 1.2;
+    letter-spacing: .5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,.85), 0 2px 8px rgba(0,0,0,.45);
+  }
+  .sc-p1 .benefit-bar .line1 em { font-style: normal; color: #FFE066; }
+  .sc-p1 .benefit-bar .tags {
+    margin-top: 5px; display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;
+  }
+  .sc-p1 .benefit-bar .tag {
+    background: rgba(0,0,0,.35); border: 1px solid rgba(255,224,102,.75);
+    color: #FFE066; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 20px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.5);
+  }
+  .sc-p1 .cta-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 12px 8px;
+    background: linear-gradient(90deg, #E8590C, #C2410C);
+    text-align: center;
+  }
+  .sc-p1 .cta-bar .main { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: .5px; }
+  .sc-p1 .cta-bar .sub { font-size: 11px; color: rgba(255,255,255,.85); margin-top: 2px; font-weight: 700; }
+
+  .sc-p2 .photo-bg { background-image: url('assets/pain-4grid.png'); }
+  .sc-p2 .photo-dim { background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,.15) 70%, rgba(0,0,0,.82) 100%); }
+  .sc-p2 .cta-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 12px 6px;
+    background: linear-gradient(90deg, #1565C0, #0D47A1);
+    text-align: center;
+  }
+  .sc-p2 .cta-bar .main {
+    font-size: 17px; font-weight: 900; color: #fff; line-height: 1;
+    white-space: nowrap;
+    letter-spacing: -0.3px;
+    text-shadow: 0 2px 4px rgba(0,0,0,.25);
+  }
+  .sc-p2 .cta-bar .main em { font-style: normal; color: #FFE066; }
+
+  .sc-p2b .photo-bg {
+    background-image: url('assets/pain-5stack.png');
+    background-size: contain;
+    background-color: #FFF5E6;
+    background-position: center top;
+  }
+  .sc-p2b .photo-dim {
+    background: linear-gradient(180deg, transparent 50%, rgba(255,255,255,.05) 70%, rgba(232,89,12,.9) 100%);
+  }
+  .sc-p2b .cta-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 13px 8px;
+    background: linear-gradient(90deg, #E8590C, #F59F00);
+    text-align: center;
+  }
+  .sc-p2b .cta-bar .main {
+    font-size: 20px; font-weight: 900; color: #fff; line-height: 1.25;
+    text-shadow: 0 1px 3px rgba(0,0,0,.2);
+  }
+  .sc-p2b .cta-bar .main em { font-style: normal; color: #FFE066; }
+
+  .sc-p3 .photo-bg {
+    background-image: url('assets/intestine.png');
+    background-size: cover;
+    background-color: #E8F4FC;
+    background-position: center center;
+  }
+  .sc-p3 .photo-dim {
+    background: linear-gradient(180deg, rgba(255,255,255,0) 55%, rgba(255,255,255,.05) 72%, rgba(232,89,12,.92) 100%);
+  }
+  .sc-p3 .product-inset {
+    position: absolute; left: 6px; bottom: 50px;
+    width: 34%; aspect-ratio: 1/1.05;
+    background: url('assets/product.png') center/contain no-repeat;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,.25));
+    border-radius: 6px;
+    z-index: 2;
+  }
+  .sc-p3 .product-inset::after {
+    content: ""; position: absolute; inset: -3px;
+    border: 2px solid rgba(255,255,255,.85); border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  }
+  .sc-p3 .cta-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+    padding: 12px 8px;
+    background: linear-gradient(90deg, #E8590C, #D9480F);
+    text-align: center;
+  }
+  .sc-p3 .cta-bar .main { font-size: 20px; font-weight: 900; color: #fff; line-height: 1.25; }
+  .sc-p3 .cta-bar .main em { font-style: normal; color: #FFE066; }
+
+  .sc-p3b .photo-bg {
+    background-image: url('assets/intestine-golden.png');
+    background-size: cover;
+    background-position: center center;
+    background-color: #E8F4FC;
+  }
+  .sc-p3b .photo-dim {
+    background: linear-gradient(180deg, rgba(255,255,255,0) 55%, rgba(255,255,255,.05) 72%, rgba(232,89,12,.92) 100%);
+  }
+  .sc-p3b .cta-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+    padding: 12px 8px;
+    background: linear-gradient(90deg, #E8590C, #D9480F);
+    text-align: center;
+  }
+  .sc-p3b .cta-bar .main { font-size: 20px; font-weight: 900; color: #fff; line-height: 1.25; }
+  .sc-p3b .cta-bar .main em { font-style: normal; color: #FFE066; }
+
+  .tips-box {
+    background: #FFFBF5; border: 1px solid #F0E4D2; border-radius: 12px; padding: 18px; margin-top: 12px;
+  }
+  .tips-box h3 { font-size: 14px; font-weight: 900; margin-bottom: 10px; }
+  .tips-box ul { padding-left: 16px; font-size: 12px; color: var(--ink-2); line-height: 2; }
+  .tips-box li b { color: var(--ink); }
+  .tips-box a { color: var(--primary); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>益生元活动 · 微信私聊入口图文方案</h1>
+  <p>每个方案：<strong>方案名称 + 钩子描述 + 微信私聊效果</strong></p>
+  <div class="tags">
+    <span class="tag">实拍素材版 · 推荐</span>
+    <span class="tag">文字↑ 图片↓</span>
+  </div>
+</div>
+
+<div class="design-principles">
+  <h3>小程序卡片结构 & 小图原则</h3>
+  <ul>
+    <li><b>卡片结构</b>：① 分享标题（上）→ ② 封面图（下）→ ③ 小程序名（底）</li>
+    <li><b>实拍封面</b>：素材图 + 顶部/底部色条叠字，小图也能看清功效与 CTA</li>
+    <li><b>验收</b>：看聊天卡片封面，1 秒内 get 到吸引点</li>
+  </ul>
+</div>
+
+<div class="section-group-title">▎ 实拍素材版（推荐测试）</div>
+
+<!-- P1 -->
+<div class="section section-with-ref">
+  <div class="section-label new">方案 1 · 实拍</div>
+  <h2>商品主图 · 功效 + 正品激励</h2>
+  <div class="hook-note"><b>封面结构：</b>榕树家商品图做主视觉 · 顶部「养肠胃·健脾祛湿」直接叠在图上 · 底部橙条「官方正品，限时免费领」</div>
+  <div class="scheme-preview-row">
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-time">下午 2:30</div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="wx-bubble">张姐，给您留了份<strong>榕树家益生元</strong>官方体验装 🎁<br>养肠胃、健脾祛湿，现在<strong>限时免费领</strong>，点开看看～</div>
+        </div>
+      </div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head">
+              <div class="mini-card-title">榕树家益生元精华饮 · 官方正品限时免费领，含AI舌诊+7天健康管理</div>
+            </div>
+            <div class="mini-card-cover">
+              <div class="share-photo sc-p1">
+                <div class="photo-bg"></div>
+                <div class="photo-dim"></div>
+                <div class="benefit-bar">
+                  <div class="line1"><em>养肠胃</em> · 健脾祛湿</div>
+                  <div class="tags"><span class="tag">通轻松</span><span class="tag">天然植萃</span></div>
+                </div>
+                <div class="cta-bar">
+                  <div class="main">官方正品 · 限时免费领</div>
+                  <div class="sub">价值¥99精选装 · 每人限1份</div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <details class="ref-expand">
+    <summary>
+      <span class="ref-collapsed">
+        <img class="ref-thumb" src="assets/product-main-ref.png" alt="商品主图参考缩略">
+        <span class="ref-label">更多商品主图参考<small>点击展开</small></span>
+      </span>
+      <span class="ref-open-bar">← 点击收起</span>
+    </summary>
+    <div class="ref-full">
+      <img src="assets/product-main-ref.png" alt="淘宝搜索「益生元」商品主图参考">
+      <p class="ref-caption">来源：淘宝搜索「益生元」· 商品主图布局、卖点呈现与信息密度参考</p>
+    </div>
+  </details>
+  </div>
+</div>
+
+<!-- P2 -->
+<div class="section">
+  <div class="section-label new">方案 2 · 实拍</div>
+  <h2>四宫格痛点 · 共鸣 + 激励点击</h2>
+  <div class="hook-note"><b>封面结构：</b>4 张痛点场景图铺满 · 底部蓝条「3天吃出好肠道·免费领取」</div>
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-time">上午 10:15</div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="wx-bubble">姐，消化不良、便秘、口气这些问题，其实都跟<strong>肠道</strong>有关 😔<br>这个3天调理计划很多姐妹反馈不错，<strong>免费领</strong>一份试试～</div>
+        </div>
+      </div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head">
+              <div class="mini-card-title">有这些困扰？3天吃出好肠道，免费领取益生元精选装+AI舌诊</div>
+            </div>
+            <div class="mini-card-cover">
+              <div class="share-photo sc-p2">
+                <div class="photo-bg"></div>
+                <div class="photo-dim"></div>
+                <div class="cta-bar">
+                  <div class="main"><em>3天</em>吃出好肠道 · <em>免费领取</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P2B -->
+<div class="section">
+  <div class="section-label new">方案 2B · 实拍</div>
+  <h2>五宫格痛点 · 共鸣 + 激励点击</h2>
+  <div class="hook-note"><b>封面结构：</b>竖版 5 痛点卡片（嗯嗯不畅 / 无光泽 / 负担大 / 社交尴尬 / 肚肚小情绪）· 底部橙条「3天吃出好肠道·免费领取」</div>
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-time">上午 11:20</div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="wx-bubble">姐，嗯嗯不畅、肚子胀、口气这些问题，是不是也困扰您？😔<br>其实都跟<strong>肠道</strong>有关，这个3天调理计划<strong>免费领</strong>，很多姐妹反馈不错～</div>
+        </div>
+      </div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head">
+              <div class="mini-card-title">嗯嗯不畅、肚肚胀？3天吃出好肠道，免费领取榕树家益生元精选装</div>
+            </div>
+            <div class="mini-card-cover">
+              <div class="share-photo sc-p2b">
+                <div class="photo-bg"></div>
+                <div class="photo-dim"></div>
+                <div class="cta-bar">
+                  <div class="main"><em>3天</em>吃出好肠道 · <em>免费领取</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P3 -->
+<div class="section">
+  <div class="section-label new">方案 3 · 实拍</div>
+  <h2>3D益生菌肠道主图 · 商品辅助</h2>
+  <div class="hook-note"><b>封面结构：</b>3D 肠道益生菌主视觉（22株尖子菌 / 1000亿益生菌等）· 左下嵌入商品小图 · 底部橙条「3天吃出好肠道·免费领取」</div>
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-time">晚上 7:40</div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="wx-bubble">张姐，肠道调理其实不难 👇<br><strong>3天</strong>就能感受到变化，还能<strong>免费领</strong>益生元+做AI舌诊，您点开看看～</div>
+        </div>
+      </div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head">
+              <div class="mini-card-title">3天调理肠道 · 1000亿益生菌加持，免费领取榕树家益生元精选装</div>
+            </div>
+            <div class="mini-card-cover">
+              <div class="share-photo sc-p3">
+                <div class="photo-bg"></div>
+                <div class="photo-dim"></div>
+                <div class="product-inset"></div>
+                <div class="cta-bar">
+                  <div class="main"><em>3天</em>吃出好肠道 · <em>免费领取</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- P3B -->
+<div class="section">
+  <div class="section-label new">方案 3B · 实拍</div>
+  <h2>黄金益生元赋能 · 3D肠道主图</h2>
+  <div class="hook-note"><b>封面结构：</b>黄金益生元 3D 肠道功效图全幅做主视觉（增殖有益菌 / 强化屏障等）· 底部橙条「3天吃出好肠道·免费领取」</div>
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-time">下午 3:05</div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="wx-bubble">张姐，给您分享一个<strong>黄金益生元</strong>的肠道调理方案 ✨<br>双效御护肠道，<strong>3天</strong>吃出好肠道，现在可以<strong>免费领</strong>体验装～</div>
+        </div>
+      </div>
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head">
+              <div class="mini-card-title">黄金益生元赋能肠道 · 3天吃出好肠道，免费领取榕树家益生元精选装</div>
+            </div>
+            <div class="mini-card-cover">
+              <div class="share-photo sc-p3b">
+                <div class="photo-bg"></div>
+                <div class="photo-dim"></div>
+                <div class="cta-bar">
+                  <div class="main"><em>3天</em>吃出好肠道 · <em>免费领取</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-group-title">▎ 纯文字封面版</div>
+
+<!-- A -->
+<div class="section">
+  <div class="section-label">方案 A</div>
+  <h2>免费豪礼冲击</h2>
+  <div class="hook-note"><b>封面钩子：</b>免费领 + ¥99 · 标题补充完整利益</div>
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head">
+              <div class="mini-card-title">3天吃出通畅好肠道 · 免费领99元礼品包</div>
+            </div>
+            <div class="mini-card-cover">
+              <div class="share-card sc-a"><div class="hook-1">免费领</div><div class="hook-2">¥99</div><div class="hook-bar">益生元精选装</div></div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- B -->
+<div class="section">
+  <div class="section-label">方案 B</div>
+  <h2>痛点 · 不拉肚</h2>
+  <div class="hook-note"><b>封面钩子：</b>3天通畅 + 不拉肚 · 强调温和调理、不吃药</div>
+  <div class="wx-chat">
+    <div class="wx-nav"><span class="back">‹</span><div class="name">小安 · 健康管理师</div><div class="sub">@榕树家健康</div></div>
+    <div class="wx-body">
+      <div class="wx-row">
+        <div class="wx-avatar">小安</div>
+        <div class="wx-bubble-wrap">
+          <div class="mini-card">
+            <div class="mini-card-head"><div class="mini-card-title">不吃药不拉肚 · 3天温和调理肠道</div></div>
+            <div class="mini-card-cover">
+              <div class="share-card sc-b"><div class="hook-1">3天通畅</div><div class="hook-2"><em>不拉肚</em></div><div class="hook-bar">不吃药 · 温和调理</div></div>
+            </div>
+            <div class="mini-card-foot"><div class="mini-card-desc"><span class="mp-icon">S</span> 榕树家健康 · 小程序</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">使用指南</div>
+  <h2>分工说明</h2>
+  <div class="tips-box">
+    <h3>标题 vs 封面 · 各司其职</h3>
+    <ul>
+      <li><b>卡片标题（上方文字）</b>：完整利益点，可 2 行，如「3天吃出好肠道，免费领¥99益生元精选装…」</li>
+      <li><b>封面图（下方小图）</b>：只放 1 个视觉钩子，2～4 个大字 + emoji</li>
+      <li><b>私聊文字</b>：场景铺垫 + 引导点击，与标题呼应但不重复</li>
+    </ul>
+  </div>
+  <div class="tips-box" style="margin-top:12px;">
+    <h3>推荐测试顺序</h3>
+    <ul>
+      <li><b>实拍素材版 P1～P3</b>：优先测试，商品/痛点/肠道图真实感强</li>
+      <li><b>纯文字版 A / B</b>：简洁大字封面，适合快速触达</li>
+      <li>活动页：<a href="有舌诊的益生元活动.html">有舌诊的益生元活动.html</a></li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

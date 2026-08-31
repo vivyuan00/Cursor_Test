@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>素灵AI - 以人工智能重构中医科技 | AI舌诊·智能问诊</title>
+  <meta name="description" content="想了解 AI 中医健康服务但找不到官方入口？素灵AI 提供 AI 舌诊与智能问诊，由成都青羊榕树家互联网医院合规背书，微信扫码立即体验。">
+  <meta name="keywords" content="素灵AI, AI舌诊, 智能问诊, 中医AI, 素灵AI是什么">
+  <link rel="stylesheet" href="../../../src/theme/vars.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "素灵AI",
+    "url": "https://www.sulingai.com",
+    "logo": "https://www.sulingai.com/logo.png",
+    "description": "素灵AI 是面向消费者的 AI 中医健康产品品牌，基于中医语义系统与多模态识别技术，提供 AI 舌诊与智能问诊服务。",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "榕树家"
+    },
+    "sameAs": []
+  }
+  </script>
+  <style>
+    /* 官网原型样式 — 引用 src/theme/vars.css，禁止硬编码品牌色 */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--site-header-h);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: var(--font-family-base);
+      background: var(--color-bg-page);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-relaxed);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--color-text-link);
+      text-decoration: none;
+      transition: color var(--duration-fast) var(--easing-default);
+    }
+    a:hover { color: var(--color-accent-500); }
+
+    .container {
+      width: 100%;
+      max-width: var(--site-max-w);
+      margin: 0 auto;
+      padding: 0 var(--spacing-page-x);
+    }
+
+    /* ── Header ── */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: var(--z-sticky);
+      height: var(--site-header-h);
+      background: color-mix(in srgb, var(--color-bg-page) 88%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: var(--site-max-w);
+      margin: 0 auto;
+      padding: 0 var(--spacing-page-x);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-12);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-18);
+      letter-spacing: 0.02em;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      position: relative;
+    }
+
+    .logo-icon::before,
+    .logo-icon::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-6);
+    }
+
+    .logo-icon::before {
+      background: linear-gradient(135deg, var(--color-primary-700), var(--color-accent-700));
+      opacity: 0.95;
+    }
+
+    .logo-icon::after {
+      inset: 6px;
+      background: var(--color-bg-page);
+      border-radius: var(--radius-4);
+    }
+
+    .nav-desktop {
+      display: none;
+      align-items: center;
+      gap: var(--spacing-32);
+    }
+
+    .nav-desktop a {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-14);
+      font-weight: var(--font-weight-medium);
+      transition: color var(--duration-fast) var(--easing-default);
+    }
+
+    .nav-desktop a:hover { color: var(--color-text-primary); }
+
+    .header-cta-wrap { position: relative; }
+
+    .btn-wechat,
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--spacing-56);
+      min-width: var(--spacing-56);
+      padding: var(--spacing-12) var(--spacing-24);
+      background: var(--color-action-primary);
+      color: var(--color-action-primary-text);
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-14);
+      border: none;
+      border-radius: var(--radius-button);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--easing-default),
+                  box-shadow var(--duration-normal) var(--easing-default),
+                  transform var(--duration-fast) var(--easing-default);
+    }
+
+    .btn-wechat:hover,
+    .btn-primary:hover {
+      background: var(--color-action-primary-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+      color: var(--color-action-primary-text);
+    }
+
+    .qr-popover {
+      position: absolute;
+      top: calc(100% + var(--spacing-12));
+      right: 0;
+      width: 200px;
+      padding: var(--spacing-16);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(calc(-1 * var(--spacing-8)));
+      transition: opacity var(--duration-normal) var(--easing-default),
+                  transform var(--duration-normal) var(--easing-default),
+                  visibility var(--duration-normal);
+      pointer-events: none;
+    }
+
+    .header-cta-wrap:hover .qr-popover,
+    .header-cta-wrap:focus-within .qr-popover {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .qr-popover p {
+      text-align: center;
+      font-size: var(--font-size-12);
+      color: var(--color-text-tertiary);
+      margin-top: var(--spacing-8);
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: var(--spacing-56);
+      height: var(--spacing-56);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-12);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--color-text-primary);
+      border-radius: 1px;
+      transition: transform var(--duration-slow) var(--easing-default),
+                  opacity var(--duration-normal) var(--easing-default);
+    }
+
+    .hamburger[aria-expanded="true"] span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .hamburger[aria-expanded="true"] span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: var(--site-header-h);
+      left: 0; right: 0;
+      background: color-mix(in srgb, var(--color-bg-page) 97%, transparent);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-border-default);
+      padding: var(--spacing-16) var(--spacing-page-x) var(--spacing-24);
+      z-index: calc(var(--z-sticky) - 1);
+    }
+
+    .nav-mobile.is-open { display: block; }
+
+    .nav-mobile a {
+      display: block;
+      padding: var(--spacing-12) 0;
+      color: var(--color-text-primary);
+      font-size: var(--font-size-16);
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .nav-mobile a:last-child { border-bottom: none; }
+
+    @media (min-width: 768px) {
+      .hamburger { display: none; }
+      .nav-desktop { display: flex; }
+    }
+
+    /* ── QR Placeholder ── */
+    .qr-placeholder {
+      width: 168px;
+      height: 168px;
+      background:
+        repeating-linear-gradient(0deg, var(--color-neutral-0) 0, var(--color-neutral-0) 6px, var(--color-neutral-900) 6px, var(--color-neutral-900) 12px),
+        repeating-linear-gradient(90deg, var(--color-neutral-0) 0, var(--color-neutral-0) 6px, var(--color-neutral-900) 6px, var(--color-neutral-900) 12px);
+      background-size: 12px 12px;
+      background-color: var(--color-neutral-0);
+      border-radius: var(--radius-8);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .qr-placeholder::after {
+      content: "";
+      position: absolute;
+      inset: 20%;
+      background: var(--color-bg-page);
+      border-radius: var(--radius-4);
+    }
+
+    .qr-placeholder::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 28%; height: 28%;
+      background: var(--color-neutral-0);
+      border: 3px solid var(--color-neutral-900);
+      border-radius: var(--radius-4);
+      z-index: 1;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: var(--site-header-h);
+      overflow: hidden;
+    }
+
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      z-index: var(--z-base);
+      background: var(--color-bg-brand-gradient);
+    }
+
+    .hero-particles::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at 10% 20%, var(--color-primary-500), transparent),
+        radial-gradient(1px 1px at 30% 70%, var(--color-accent-500), transparent),
+        radial-gradient(1px 1px at 50% 30%, var(--color-primary-700), transparent),
+        radial-gradient(1px 1px at 70% 80%, var(--color-accent-700), transparent),
+        radial-gradient(1px 1px at 90% 40%, var(--color-primary-500), transparent);
+      background-size: 100% 100%;
+      opacity: 0.35;
+      animation: particle-drift 20s ease-in-out infinite alternate;
+    }
+
+    .hero-particles::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 49.5%, color-mix(in srgb, var(--color-primary-200) 30%, transparent) 49.5%, color-mix(in srgb, var(--color-primary-200) 30%, transparent) 50.5%, transparent 50.5%),
+        linear-gradient(0deg, transparent 49.5%, color-mix(in srgb, var(--color-accent-100) 50%, transparent) 49.5%, color-mix(in srgb, var(--color-accent-100) 50%, transparent) 50.5%, transparent 50.5%);
+      background-size: 80px 80px;
+      opacity: 0.4;
+    }
+
+    @keyframes particle-drift {
+      0% { transform: translateY(0) scale(1); opacity: 0.6; }
+      100% { transform: translateY(-20px) scale(1.02); opacity: 0.85; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-particles::before { animation: none; }
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: var(--z-raised);
+      display: grid;
+      gap: var(--spacing-32);
+      align-items: center;
+      padding: var(--spacing-32) 0 6rem;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(var(--font-size-28), 5vw, var(--font-size-32));
+      font-weight: var(--font-weight-bold);
+      line-height: var(--line-height-tight);
+      letter-spacing: -0.02em;
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-16);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(var(--font-size-16), 2vw, var(--font-size-20));
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-24);
+      font-weight: var(--font-weight-regular);
+    }
+
+    .hero-entity {
+      font-size: var(--font-size-15);
+      color: var(--color-text-secondary);
+      max-width: 540px;
+      margin-bottom: var(--spacing-32);
+      line-height: var(--line-height-relaxed);
+      padding: var(--spacing-16) var(--spacing-20);
+      border-left: 3px solid var(--color-primary-700);
+      background: color-mix(in srgb, var(--color-bg-brand-subtle) 60%, transparent);
+      border-radius: 0 var(--radius-8) var(--radius-8) 0;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-12);
+      margin-bottom: var(--spacing-24);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--spacing-56);
+      padding: var(--spacing-12) var(--spacing-24);
+      background: var(--color-bg-card);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+      font-size: var(--font-size-15);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-button);
+      transition: border-color var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-primary-200);
+      background: var(--color-bg-brand-subtle);
+      color: var(--color-text-primary);
+    }
+
+    .trust-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-8) var(--spacing-16);
+      font-size: var(--font-size-12);
+      color: var(--color-text-tertiary);
+    }
+
+    .trust-bar span {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-8);
+    }
+
+    .trust-bar span::before {
+      content: "";
+      width: 4px; height: 4px;
+      background: var(--color-primary-700);
+      border-radius: var(--radius-full);
+    }
+
+    .hero-qr-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-16);
+    }
+
+    .hero-qr-wrap {
+      padding: var(--spacing-20);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-card-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-qr-label {
+      font-size: var(--font-size-14);
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 3fr 2fr;
+        gap: var(--spacing-32);
+      }
+      .hero-qr-col { align-items: flex-end; }
+    }
+
+    /* ── Sections ── */
+    .section {
+      padding: var(--site-section-py) 0;
+      position: relative;
+    }
+
+    .section-alt {
+      background: var(--color-bg-subtle);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto var(--spacing-32);
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: var(--font-size-12);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-brand);
+      margin-bottom: var(--spacing-12);
+    }
+
+    .section-header h2 {
+      font-size: clamp(var(--font-size-24), 3vw, var(--font-size-28));
+      font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
+      margin-bottom: var(--spacing-16);
+      line-height: var(--line-height-tight);
+    }
+
+    .section-intro {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-16);
+    }
+
+    .answer-capsule {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-15);
+      margin-top: var(--spacing-8);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(var(--spacing-32));
+      transition: opacity 0.7s var(--easing-decelerate),
+                  transform 0.7s var(--easing-decelerate);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ── Tech Pillars ── */
+    .tech-grid {
+      display: grid;
+      gap: var(--spacing-section-gap);
+    }
+
+    .tech-card {
+      padding: var(--spacing-32);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      transition: border-color var(--duration-normal) var(--easing-default),
+                  box-shadow var(--duration-normal) var(--easing-default);
+    }
+
+    .tech-card:hover {
+      border-color: var(--color-primary-200);
+      box-shadow: var(--shadow-md);
+    }
+
+    .tech-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-12);
+      background: var(--color-bg-brand-subtle);
+      color: var(--color-text-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--spacing-20);
+      font-size: var(--font-size-20);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .tech-card h3 {
+      font-size: var(--font-size-18);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-12);
+    }
+
+    .tech-card p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-15);
+    }
+
+    @media (min-width: 768px) {
+      .tech-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .tech-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* ── Pipeline ── */
+    .pipeline-track {
+      display: grid;
+      gap: var(--spacing-20);
+      position: relative;
+    }
+
+    .pipeline-step {
+      display: flex;
+      gap: var(--spacing-20);
+      padding: var(--spacing-24);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-bubble);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .pipeline-step.highlight {
+      border-color: var(--color-primary-500);
+      background: color-mix(in srgb, var(--color-bg-brand-subtle) 50%, var(--color-bg-card));
+      box-shadow: var(--shadow-md);
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary-700);
+      color: var(--color-text-inverse);
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-14);
+      border-radius: var(--radius-full);
+    }
+
+    .pipeline-step.highlight .step-num {
+      background: var(--color-accent-700);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-content h3 {
+      font-size: var(--font-size-16);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-8);
+    }
+
+    .step-content p {
+      font-size: var(--font-size-14);
+      color: var(--color-text-secondary);
+    }
+
+    @media (min-width: 1024px) {
+      .pipeline-track {
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--spacing-16);
+      }
+      .pipeline-step {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        padding: var(--spacing-24) var(--spacing-16);
+      }
+      .pipeline-track::before {
+        content: "";
+        position: absolute;
+        top: 44px;
+        left: 10%; right: 10%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--color-primary-200), var(--color-accent-500));
+        opacity: 0.6;
+        z-index: var(--z-base);
+      }
+      .pipeline-step { z-index: var(--z-raised); }
+    }
+
+    /* ── Agent + Health ── */
+    .dual-grid {
+      display: grid;
+      gap: var(--spacing-32);
+    }
+
+    .dual-card {
+      padding: var(--spacing-32);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dual-card h2 {
+      font-size: var(--font-size-20);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--spacing-16);
+      line-height: var(--line-height-tight);
+    }
+
+    .dual-card > p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-15);
+      margin-bottom: var(--spacing-24);
+    }
+
+    .health-list {
+      list-style: none;
+      display: grid;
+      gap: var(--spacing-16);
+    }
+
+    .health-list li {
+      padding: var(--spacing-16) var(--spacing-20);
+      background: var(--color-bg-brand-subtle);
+      border-left: 3px solid var(--color-primary-700);
+      border-radius: 0 var(--radius-8) var(--radius-8) 0;
+    }
+
+    .health-list strong {
+      display: block;
+      font-size: var(--font-size-15);
+      margin-bottom: var(--spacing-4);
+      color: var(--color-text-primary);
+    }
+
+    .health-list span {
+      font-size: var(--font-size-12);
+      color: var(--color-text-secondary);
+    }
+
+    @media (min-width: 768px) {
+      .dual-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── Tools ── */
+    .tools-grid {
+      display: grid;
+      gap: var(--spacing-section-gap);
+    }
+
+    .tool-card {
+      padding: var(--spacing-32);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: border-color var(--duration-normal) var(--easing-default),
+                  box-shadow var(--duration-normal) var(--easing-default),
+                  transform var(--duration-normal) var(--easing-default);
+    }
+
+    .tool-card:hover {
+      border-color: var(--color-primary-200);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+    }
+
+    .tool-card.coming { opacity: 0.65; }
+
+    .tool-card h3 {
+      font-size: var(--font-size-20);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-12);
+    }
+
+    .tool-card p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-15);
+      flex: 1;
+      margin-bottom: var(--spacing-24);
+    }
+
+    .tool-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-8);
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-15);
+      min-height: var(--spacing-56);
+      color: var(--color-text-link);
+    }
+
+    .tool-cta.disabled {
+      color: var(--color-text-tertiary);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    @media (min-width: 768px) {
+      .tools-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ── Compliance ── */
+    .compliance-grid {
+      display: grid;
+      gap: var(--spacing-20);
+    }
+
+    .compliance-item {
+      padding: var(--spacing-24);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-bubble);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .compliance-item h3 {
+      font-size: var(--font-size-16);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-8);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-12);
+    }
+
+    .compliance-item h3::before {
+      content: "";
+      width: 8px; height: 8px;
+      background: var(--color-primary-700);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    .compliance-item p {
+      font-size: var(--font-size-14);
+      color: var(--color-text-secondary);
+    }
+
+    .compliance-item a { word-break: break-all; }
+
+    @media (min-width: 768px) {
+      .compliance-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .compliance-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ── About Teaser ── */
+    .about-teaser {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--spacing-32) var(--spacing-32);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-card-lg);
+      box-shadow: var(--shadow-md);
+    }
+
+    .about-teaser h2 {
+      font-size: var(--font-size-28);
+      margin-bottom: var(--spacing-20);
+    }
+
+    .about-teaser p {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-24);
+      font-size: var(--font-size-15);
+    }
+
+    .about-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-8);
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-16);
+      color: var(--color-text-link);
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-list dt {
+      padding: var(--spacing-20) 3rem var(--spacing-20) var(--spacing-24);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-bubble);
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-16);
+      cursor: pointer;
+      position: relative;
+      margin-top: var(--spacing-12);
+      transition: border-color var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default);
+      list-style: none;
+    }
+
+    .faq-list dt:first-of-type { margin-top: 0; }
+
+    .faq-list dt:hover,
+    .faq-list dt[aria-expanded="true"] {
+      border-color: var(--color-primary-200);
+      background: var(--color-bg-brand-subtle);
+    }
+
+    .faq-list dt::after {
+      content: "+";
+      position: absolute;
+      right: var(--spacing-24);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--font-size-20);
+      color: var(--color-text-brand);
+      transition: transform var(--duration-normal) var(--easing-default);
+    }
+
+    .faq-list dt[aria-expanded="true"]::after { content: "−"; }
+
+    .faq-list dd {
+      padding: 0 var(--spacing-24);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--duration-slow) var(--easing-default),
+                  padding var(--duration-slow) var(--easing-default);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-15);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .faq-list dd.is-open {
+      padding: var(--spacing-16) var(--spacing-24) var(--spacing-20);
+      max-height: 300px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .faq-list dd { transition: none; }
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      padding: var(--spacing-32) 0 var(--spacing-32);
+      border-top: 1px solid var(--color-border-default);
+      background: var(--color-bg-subtle);
+    }
+
+    .footer-grid {
+      display: grid;
+      gap: var(--spacing-32);
+      margin-bottom: var(--spacing-32);
+    }
+
+    .footer-brand p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-14);
+      margin-top: var(--spacing-12);
+      max-width: 280px;
+    }
+
+    .footer-nav h4,
+    .footer-qr h4 {
+      font-size: var(--font-size-12);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--spacing-16);
+    }
+
+    .footer-nav ul {
+      list-style: none;
+      display: grid;
+      gap: var(--spacing-12);
+    }
+
+    .footer-nav a {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-14);
+    }
+
+    .footer-nav a:hover { color: var(--color-text-brand); }
+
+    .footer-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-12);
+    }
+
+    .footer-qr .qr-placeholder {
+      width: 120px;
+      height: 120px;
+    }
+
+    .footer-qr-hint {
+      font-size: var(--font-size-12);
+      color: var(--color-text-tertiary);
+    }
+
+    .footer-bottom {
+      padding-top: var(--spacing-32);
+      border-top: 1px solid var(--color-border-default);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-16);
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--font-size-12);
+      color: var(--color-text-tertiary);
+    }
+
+    .footer-legal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-16);
+    }
+
+    .footer-legal a { color: var(--color-text-tertiary); }
+    .footer-legal a:hover { color: var(--color-text-brand); }
+
+    @media (min-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="素灵AI 首页">
+        <span class="logo-icon" aria-hidden="true"></span>
+        <span>素灵AI</span>
+      </a>
+
+      <nav class="nav-desktop" aria-label="主导航">
+        <a href="#tech">技术底座</a>
+        <a href="#pipeline">诊疗流程</a>
+        <a href="#tools">产品体验</a>
+        <a href="#compliance">合规安全</a>
+        <a href="#faq">常见问题</a>
+      </nav>
+
+      <div class="header-cta-wrap">
+        <button class="btn-wechat" type="button" aria-label="微信体验">微信体验</button>
+        <div class="qr-popover" role="tooltip" aria-hidden="true">
+          <div class="qr-placeholder" aria-label="微信小程序二维码占位"></div>
+          <p>扫码进入素灵AI小程序</p>
+        </div>
+      </div>
+
+      <button class="hamburger" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="nav-mobile">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <nav id="nav-mobile" class="nav-mobile" aria-label="移动端导航">
+      <a href="#tech">技术底座</a>
+      <a href="#pipeline">诊疗流程</a>
+      <a href="#tools">产品体验</a>
+      <a href="#compliance">合规安全</a>
+      <a href="#faq">常见问题</a>
+      <a href="#hero-qr">微信体验</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Module 1: Hero -->
+    <section id="hero" class="hero" aria-labelledby="hero-title">
+      <div class="hero-particles" aria-hidden="true" data-threejs-placeholder="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <h1 id="hero-title">以人工智能重构中医科技</h1>
+          <p class="hero-subtitle">素灵AI — 融合中医语义系统、知识图谱与多模态识别的智能健康平台</p>
+          <p class="hero-entity answer-capsule speakable-intro">
+            素灵AI 是面向消费者的 AI 中医健康产品品牌，基于中医语义系统与多模态识别技术，提供舌象分析、智能问诊与辨证辅助服务；关键诊疗环节保留执业医师复核，由成都青羊榕树家互联网医院提供合规保障。
+          </p>
+          <div class="hero-ctas">
+            <a href="#hero-qr" class="btn-primary">微信扫一扫，立即体验</a>
+            <a href="#tech" class="btn-secondary">了解技术底座 ↓</a>
+            <a href="#tools" class="btn-secondary">体验 AI 工具 →</a>
+          </div>
+          <div class="trust-bar">
+            <span>成都青羊榕树家互联网医院</span>
+            <span>卫健委备案</span>
+            <span>数据加密传输</span>
+          </div>
+        </div>
+        <div class="hero-qr-col" id="hero-qr">
+          <div class="hero-qr-wrap">
+            <div class="qr-placeholder" role="img" aria-label="素灵AI 微信小程序二维码占位图"></div>
+          </div>
+          <p class="hero-qr-label">微信扫一扫，立即体验</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 2: Tech Pillars -->
+    <section id="tech" class="section" aria-labelledby="tech-heading">
+      <div class="container">
+        <header class="section-header reveal">
+          <span class="section-tag">Tech Foundation</span>
+          <h2 id="tech-heading">技术底座</h2>
+          <p class="section-intro answer-capsule">
+            素灵AI 以四大技术底座为支撑，为 AI 辅助诊疗提供可解释、合规的技术基础。
+          </p>
+        </header>
+        <div class="tech-grid">
+          <article class="tech-card reveal">
+            <div class="tech-icon" aria-hidden="true">语</div>
+            <h3>中医语义系统</h3>
+            <p>面向中医领域的语义理解与术语标准化，支撑问诊、辨证等场景的结构化表达</p>
+          </article>
+          <article class="tech-card reveal">
+            <div class="tech-icon" aria-hidden="true">图</div>
+            <h3>中医知识图谱</h3>
+            <p>融合经典理论与临床知识的关系网络，为 AI 推理提供可解释的知识基础</p>
+          </article>
+          <article class="tech-card reveal">
+            <div class="tech-icon" aria-hidden="true">模</div>
+            <h3>多模态识别</h3>
+            <p>舌象图像、语音问诊、文本病历等多源信息的联合感知与分析</p>
+          </article>
+          <article class="tech-card reveal">
+            <div class="tech-icon" aria-hidden="true">安</div>
+            <h3>隐私计算与数据安全</h3>
+            <p>健康数据加密传输与存储，遵循医疗数据合规要求</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 3: Pipeline -->
+    <section id="pipeline" class="section section-alt" aria-labelledby="pipeline-heading">
+      <div class="container">
+        <header class="section-header reveal">
+          <span class="section-tag">Diagnosis Pipeline</span>
+          <h2 id="pipeline-heading">多模态诊疗流程</h2>
+          <p class="section-intro answer-capsule">
+            素灵AI 提供从数据采集到医师复核的完整 AI 辅助诊疗链路，关键环节保留人工审核。
+          </p>
+        </header>
+        <div class="pipeline-track">
+          <article class="pipeline-step reveal">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <h3>舌象采集</h3>
+              <p>标准化拍摄引导，提取舌色、苔质、舌形等特征</p>
+            </div>
+          </article>
+          <article class="pipeline-step reveal">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <h3>问诊语音转写</h3>
+              <p>多轮对话采集症状信息，语音/文字双通道</p>
+            </div>
+          </article>
+          <article class="pipeline-step reveal">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <h3>病历信息抽取</h3>
+              <p>从对话中结构化提取主诉、现病史、既往史等</p>
+            </div>
+          </article>
+          <article class="pipeline-step reveal">
+            <span class="step-num">4</span>
+            <div class="step-content">
+              <h3>辨证辅助</h3>
+              <p>基于知识图谱与多模态数据的辨证推理与报告生成</p>
+            </div>
+          </article>
+          <article class="pipeline-step highlight reveal">
+            <span class="step-num">5</span>
+            <div class="step-content">
+              <h3>医师复核</h3>
+              <p>执业医师审核关键诊疗环节，全程留痕</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 4 & 5: Agent + Health -->
+    <section id="agent" class="section" aria-labelledby="agent-heading">
+      <div class="container">
+        <div class="dual-grid">
+          <article class="dual-card reveal" id="agent-section">
+            <h2 id="agent-heading">专家智能体 — 名医辨证思路的结构化沉淀</h2>
+            <p class="answer-capsule">
+              将资深中医师的辨证逻辑、经验方义与临证要点进行结构化建模，形成可复用、可校准的智能体能力；持续通过临床反馈迭代优化。
+            </p>
+          </article>
+          <article class="dual-card reveal" id="health">
+            <h2 id="health-heading">全周期健康算法</h2>
+            <p class="answer-capsule">
+              素灵AI 覆盖从体质辨识到治未病的全周期健康管理能力。
+            </p>
+            <ul class="health-list">
+              <li>
+                <strong>体质辨识</strong>
+                <span>基于舌象与问诊数据的体质倾向分析</span>
+              </li>
+              <li>
+                <strong>慢病管理</strong>
+                <span>长期健康指标跟踪与趋势提醒</span>
+              </li>
+              <li>
+                <strong>随访调衡</strong>
+                <span>用药/调理过程中的动态评估与方案调整建议</span>
+              </li>
+              <li>
+                <strong>治未病</strong>
+                <span>健康风险预警与生活方式干预方向</span>
+              </li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 6: Tools -->
+    <section id="tools" class="section section-alt" aria-labelledby="tools-heading">
+      <div class="container">
+        <header class="section-header reveal">
+          <span class="section-tag">Product Experience</span>
+          <h2 id="tools-heading">工具体验入口</h2>
+          <p class="section-intro answer-capsule">
+            素灵AI 提供 AI 舌诊与智能问诊等工具，微信扫码或点击下方入口即可体验。
+          </p>
+        </header>
+        <div class="tools-grid">
+          <article class="tool-card reveal">
+            <h3>素灵AI 舌诊</h3>
+            <p>拍一张舌头照片，获取 AI 舌诊分析报告</p>
+            <a href="/tools/tongue-diagnosis?from=official_site" class="tool-cta">立即体验 →</a>
+          </article>
+          <article class="tool-card reveal">
+            <h3>素灵AI 健康问诊</h3>
+            <p>描述症状，AI 助手 7×24 初步分析</p>
+            <a href="/tools/health-agent?from=official_site" class="tool-cta">立即体验 →</a>
+          </article>
+          <article class="tool-card coming reveal">
+            <h3>更多工具</h3>
+            <p>体质辨识、健康自测等持续更新</p>
+            <span class="tool-cta disabled">敬请期待</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 7: Compliance -->
+    <section id="compliance" class="section" aria-labelledby="compliance-heading">
+      <div class="container">
+        <header class="section-header reveal">
+          <span class="section-tag">Compliance &amp; Safety</span>
+          <h2 id="compliance-heading">合规安全</h2>
+          <p class="section-intro answer-capsule">
+            素灵AI 定位为 AI 辅助工具，由合规医疗机构背书，保障诊疗过程可追溯、数据安全可信赖。
+          </p>
+        </header>
+        <div class="compliance-grid">
+          <article class="compliance-item reveal">
+            <h3>医师审核</h3>
+            <p>关键诊疗环节保留执业医师复核，非纯 AI 自动决策</p>
+          </article>
+          <article class="compliance-item reveal">
+            <h3>诊疗留痕</h3>
+            <p>问诊、分析、复核全流程可追溯</p>
+          </article>
+          <article class="compliance-item reveal">
+            <h3>数据安全</h3>
+            <p>健康数据加密传输与存储，不对外出售用户数据</p>
+          </article>
+          <article class="compliance-item reveal">
+            <h3>医疗合规</h3>
+            <p>成都青羊榕树家互联网医院资质；卫健委备案可查</p>
+          </article>
+          <article class="compliance-item reveal">
+            <h3>AI 边界声明</h3>
+            <p>AI 分析结果仅供参考，不能替代专业医疗诊断；如有不适请及时就医</p>
+          </article>
+          <article class="compliance-item reveal">
+            <h3>资质信息</h3>
+            <p>医疗机构执业许可证编号、统一社会信用代码（<a href="https://www.nhc.gov.cn/" target="_blank" rel="noopener noreferrer">卫健委查询</a>）</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 8: About Teaser -->
+    <section id="about" class="section section-alt" aria-labelledby="about-heading">
+      <div class="container">
+        <article class="about-teaser reveal">
+          <h2 id="about-heading">关于素灵AI</h2>
+          <p class="answer-capsule">
+            素灵AI 是榕树家旗下专注「AI + 中医科技」的消费级产品品牌。我们以中医语义系统、知识图谱与多模态识别为底座，让专业、可解释、合规的 AI 健康服务触手可及。
+          </p>
+          <a href="/about" class="about-link">了解更多 →</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Module 9: FAQ -->
+    <section id="faq" class="section" aria-labelledby="faq-heading">
+      <div class="container">
+        <header class="section-header reveal">
+          <span class="section-tag">FAQ</span>
+          <h2 id="faq-heading">常见问题</h2>
+          <p class="section-intro">精选 6 条高频问题，完整版见 <a href="/faq">FAQ 页面</a></p>
+        </header>
+        <dl class="faq-list reveal">
+          <dt tabindex="0" role="button" aria-expanded="false">素灵AI 是什么？</dt>
+          <dd>素灵AI 是面向消费者的 AI 中医健康产品品牌，基于中医语义系统与多模态识别技术，提供 AI 舌诊与智能问诊服务，由成都青羊榕树家互联网医院提供合规医疗资质背书。</dd>
+
+          <dt tabindex="0" role="button" aria-expanded="false">素灵AI 的核心技术是什么？</dt>
+          <dd>素灵AI 以四大技术底座为支撑：中医语义系统、中医知识图谱、多模态识别、隐私计算与数据安全，为 AI 辅助诊疗提供可解释、合规的技术基础。</dd>
+
+          <dt tabindex="0" role="button" aria-expanded="false">素灵AI 如何保证诊疗安全？</dt>
+          <dd>素灵AI 定位为 AI 辅助工具，关键诊疗环节保留执业医师复核，问诊、分析、复核全流程留痕，确保服务合规可追溯。</dd>
+
+          <dt tabindex="0" role="button" aria-expanded="false">素灵AI 怎么用？</dt>
+          <dd>用户可通过微信扫描官网小程序二维码进入素灵AI，选择 AI 舌诊或 AI 健康问诊即可开始体验；也可通过官网工具体验入口访问。</dd>
+
+          <dt tabindex="0" role="button" aria-expanded="false">素灵AI 和榕树家是什么关系？</dt>
+          <dd>素灵AI 是榕树家旗下的 AI 中医健康产品品牌，医疗服务与合规资质由成都青羊榕树家互联网医院提供。</dd>
+
+          <dt tabindex="0" role="button" aria-expanded="false">使用素灵AI 安全吗？</dt>
+          <dd>素灵AI 对健康数据采用加密传输与存储，遵循医疗数据合规要求，不对外出售用户数据，详见官网隐私政策。</dd>
+        </dl>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Module 10: Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="logo" aria-label="素灵AI 首页">
+            <span class="logo-icon" aria-hidden="true"></span>
+            <span>素灵AI</span>
+          </a>
+          <p>以人工智能重构中医科技</p>
+        </div>
+        <nav class="footer-nav" aria-label="页脚导航">
+          <h4>导航</h4>
+          <ul>
+            <li><a href="#tech">技术底座</a></li>
+            <li><a href="#pipeline">诊疗流程</a></li>
+            <li><a href="#tools">产品体验</a></li>
+            <li><a href="#compliance">合规安全</a></li>
+            <li><a href="#faq">常见问题</a></li>
+            <li><a href="/about">关于素灵AI</a></li>
+          </ul>
+        </nav>
+        <div class="footer-qr">
+          <h4>微信体验</h4>
+          <div class="qr-placeholder" role="img" aria-label="素灵AI 微信小程序二维码占位图"></div>
+          <p class="footer-qr-hint">扫码进入小程序</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 素灵AI. All rights reserved.</p>
+        <p>ICP 备案号：待补充</p>
+        <div class="footer-legal">
+          <a href="/privacy">隐私政策</a>
+          <a href="/terms">用户协议</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var HEADER_H = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--site-header-h')) || 56;
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* Mobile menu */
+      var hamburger = document.querySelector('.hamburger');
+      var navMobile = document.getElementById('nav-mobile');
+
+      if (hamburger && navMobile) {
+        hamburger.addEventListener('click', function () {
+          var expanded = hamburger.getAttribute('aria-expanded') === 'true';
+          hamburger.setAttribute('aria-expanded', String(!expanded));
+          navMobile.classList.toggle('is-open');
+        });
+
+        navMobile.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            hamburger.setAttribute('aria-expanded', 'false');
+            navMobile.classList.remove('is-open');
+          });
+        });
+      }
+
+      /* Smooth scroll with header offset */
+      document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener('click', function (e) {
+          var id = this.getAttribute('href');
+          if (id.length <= 1) return;
+          var target = document.querySelector(id);
+          if (!target) return;
+          e.preventDefault();
+          var top = target.getBoundingClientRect().top + window.pageYOffset - HEADER_H;
+          window.scrollTo({ top: top, behavior: reducedMotion ? 'auto' : 'smooth' });
+        });
+      });
+
+      /* Mobile: WeChat CTA scrolls to QR */
+      var wechatBtn = document.querySelector('.btn-wechat');
+      if (wechatBtn && window.innerWidth < 768) {
+        wechatBtn.addEventListener('click', function () {
+          var qr = document.getElementById('hero-qr');
+          if (qr) {
+            var top = qr.getBoundingClientRect().top + window.pageYOffset - HEADER_H;
+            window.scrollTo({ top: top, behavior: reducedMotion ? 'auto' : 'smooth' });
+          }
+        });
+      }
+
+      /* FAQ accordion */
+      document.querySelectorAll('.faq-list dt').forEach(function (dt) {
+        function toggle() {
+          var dd = dt.nextElementSibling;
+          var isOpen = dt.getAttribute('aria-expanded') === 'true';
+
+          document.querySelectorAll('.faq-list dt').forEach(function (other) {
+            other.setAttribute('aria-expanded', 'false');
+            var otherDd = other.nextElementSibling;
+            if (otherDd) otherDd.classList.remove('is-open');
+          });
+
+          if (!isOpen) {
+            dt.setAttribute('aria-expanded', 'true');
+            if (dd) dd.classList.add('is-open');
+          }
+        }
+
+        dt.addEventListener('click', toggle);
+        dt.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
+
+      /* Scroll reveal */
+      if (!reducedMotion && 'IntersectionObserver' in window) {
+        var revealEls = document.querySelectorAll('.reveal');
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+        revealEls.forEach(function (el) { observer.observe(el); });
+      } else {
+        document.querySelectorAll('.reveal').forEach(function (el) {
+          el.classList.add('is-visible');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

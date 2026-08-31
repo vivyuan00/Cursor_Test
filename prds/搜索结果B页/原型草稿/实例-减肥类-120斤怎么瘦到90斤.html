@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>120斤怎么瘦到90斤 - 成都青羊榕树家互联网医院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部导航区 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            flex: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .credentials {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 快速自查卡片 */
+        .self-check-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .self-check-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .self-check-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .self-check-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .question-item {
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-item.selected {
+            background: #e3f2fd;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .option-item:active {
+            transform: scale(0.98);
+        }
+
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected .option-radio {
+            border-color: #667eea;
+            background: #667eea;
+        }
+
+        .option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .option-item.selected .option-radio::after {
+            display: block;
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .check-btn:active {
+            transform: scale(0.98);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 自查结果卡片 */
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: none;
+        }
+
+        .result-card.active {
+            display: block;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .result-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .result-warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .result-warning-text {
+            font-size: 13px;
+            color: #e65100;
+            line-height: 1.6;
+        }
+
+        .result-features {
+            margin-bottom: 20px;
+        }
+
+        .result-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .result-feature-icon {
+            width: 32px;
+            height: 32px;
+            background: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .result-feature-text {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .consult-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .consult-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 对比分析卡片 */
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .comparison-content {
+            display: flex;
+            gap: 12px;
+        }
+
+        .comparison-side {
+            flex: 1;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .comparison-normal {
+            background: #e8f5e9;
+        }
+
+        .comparison-user {
+            background: #fff3e0;
+        }
+
+        .comparison-side-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .comparison-normal .comparison-side-title {
+            color: #2e7d32;
+        }
+
+        .comparison-user .comparison-side-title {
+            color: #e65100;
+        }
+
+        .comparison-item {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .comparison-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        /* 相关科普内容折叠 */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .content-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .content-toggle {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .content-body {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+
+        .content-body.active {
+            display: block;
+        }
+
+        .content-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        /* 服务保障卡片 */
+        .trust-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .trust-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .trust-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .trust-item-icon {
+            width: 28px;
+            height: 28px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* AI舌诊服务卡片 */
+        .tongue-diagnosis-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tongue-diagnosis-card:active {
+            transform: scale(0.98);
+        }
+
+        .tongue-diagnosis-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tongue-diagnosis-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tongue-diagnosis-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tongue-diagnosis-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* 底部固定操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-bar-features {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .bottom-bar-feature {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-bar-feature-icon {
+            color: #4caf50;
+        }
+
+        .consult-btn-fixed {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 100px;
+            transition: all 0.3s;
+        }
+
+        .consult-btn-fixed:active {
+            transform: scale(0.95);
+        }
+
+        /* 隐私保障 */
+        .privacy-notice {
+            text-align: center;
+            padding: 16px;
+            color: #999;
+            font-size: 11px;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            min-height: 44px;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .modal-close {
+            margin-top: 12px;
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 适配iPhone X及以上 */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-bar {
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航区 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-logo">榕树</div>
+                <div class="brand-name">榕树家互联网医院</div>
+            </div>
+            <h1 class="search-title">120斤怎么瘦到90斤</h1>
+            <div class="credentials">
+                <span>✓</span>
+                <span>专家审阅</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 快速自查卡片 -->
+        <div class="self-check-card" id="selfCheckCard">
+            <div class="self-check-header">
+                <h2 class="self-check-title">减肥体质快速自查</h2>
+                <p class="self-check-subtitle">回答4个问题，了解您的减肥难点</p>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">1. 您目前的体重指数（BMI）是多少？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>BMI ≥ 28（肥胖）</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>BMI 24-27.9（超重）</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 3)">
+                        <div class="option-radio"></div>
+                        <span>BMI 18.5-23.9（正常）</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">2. 您尝试过减肥吗？效果如何？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>多次尝试，效果不明显或反弹</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>偶尔尝试，有一定效果</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 3)">
+                        <div class="option-radio"></div>
+                        <span>从未尝试过</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">3. 您的饮食习惯如何？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>经常吃外卖、油炸、高糖食物</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>偶尔不规律，总体还好</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 3)">
+                        <div class="option-radio"></div>
+                        <span>饮食规律，注重营养均衡</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">4. 您平时的运动量如何？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>几乎不运动，久坐为主</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>偶尔运动，每周1-2次</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 3)">
+                        <div class="option-radio"></div>
+                        <span>经常运动，每周3次以上</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="check-btn" id="checkBtn" onclick="showResult()" disabled>查看自查结果</button>
+        </div>
+
+        <!-- 自查结果卡片 -->
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <h2 class="result-title">您的减肥难度指数</h2>
+                <div class="result-score">78分</div>
+                <p class="result-desc">减肥难度：中高难度</p>
+            </div>
+
+            <div class="result-warning">
+                <p class="result-warning-text">⚠️ 您的减肥难度较高，建议制定科学的减肥方案。盲目节食或过度运动可能对身体造成伤害，甚至导致反弹。</p>
+            </div>
+
+            <div class="result-features">
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">🍽️</div>
+                    <span class="result-feature-text">饮食习惯需要调整，控制热量摄入</span>
+                </div>
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">🏃</div>
+                    <span class="result-feature-text">运动量不足，需要增加有氧运动</span>
+                </div>
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">⚡</div>
+                    <span class="result-feature-text">代谢可能较慢，需要提升基础代谢</span>
+                </div>
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">🎯</div>
+                    <span class="result-feature-text">目标30斤减重，需要3-6个月科学规划</span>
+                </div>
+            </div>
+
+            <button class="consult-btn" onclick="showModal('正在为您连接AI健康助手...')">获取个性化减肥方案</button>
+        </div>
+
+        <!-- 对比分析卡片 -->
+        <div class="comparison-card">
+            <h3 class="comparison-title">科学减肥 vs 盲目减肥</h3>
+            <div class="comparison-content">
+                <div class="comparison-side comparison-normal">
+                    <h4 class="comparison-side-title">科学减肥</h4>
+                    <div class="comparison-item">循序渐进，每周减重1-2斤</div>
+                    <div class="comparison-item">饮食+运动+生活方式综合调理</div>
+                    <div class="comparison-item">注重营养均衡，不节食</div>
+                    <div class="comparison-item">容易坚持，不易反弹</div>
+                </div>
+                <div class="comparison-side comparison-user">
+                    <h4 class="comparison-side-title">盲目减肥</h4>
+                    <div class="comparison-item">追求快速，每天减重过多</div>
+                    <div class="comparison-item">过度节食或单一食物减肥</div>
+                    <div class="comparison-item">营养不均衡，身体虚弱</div>
+                    <div class="comparison-item">容易反弹，损害健康</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相关科普内容折叠 -->
+        <div class="content-card">
+            <div class="content-header" onclick="toggleContent()">
+                <h3 class="content-title">了解科学减肥</h3>
+                <span class="content-toggle" id="contentToggle">展开 ▼</span>
+            </div>
+            <div class="content-body" id="contentBody">
+                <div class="content-text">
+                    <p><strong>什么是科学减肥？</strong><br>科学减肥是指在保证身体健康的前提下，通过合理的饮食控制、适量运动和良好的生活习惯，逐步减少体脂率，达到理想体重的过程。</p>
+                    <p><strong>120斤瘦到90斤需要多久？</strong><br>健康减重速度为每周1-2斤，减重30斤大约需要4-6个月。具体时间因个人体质、代谢率、执行力等因素而异。</p>
+                    <p><strong>科学减肥的关键</strong><br>1. 控制热量摄入：每天减少300-500卡路里<br>2. 增加运动消耗：每周进行150-300分钟中等强度运动<br>3. 保证蛋白质摄入：维持肌肉量，提升代谢<br>4. 充足睡眠：保证7-8小时睡眠，调节激素平衡</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务保障卡片 -->
+        <div class="trust-card">
+            <h3 class="trust-card-title">服务保障</h3>
+            <div class="trust-items">
+                <div class="trust-item">
+                    <div class="trust-item-icon">🏥</div>
+                    <span>卫健委可查</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">👨‍⚕️</div>
+                    <span>营养师团队</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🔒</div>
+                    <span>隐私保护</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🤖</div>
+                    <span>AI个性化方案</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI舌诊服务卡片 -->
+        <div class="tongue-diagnosis-card" onclick="showModal('正在为您打开AI舌诊工具...')">
+            <div class="tongue-diagnosis-content">
+                <h3 class="tongue-diagnosis-title">AI舌诊·智慧中医</h3>
+                <p class="tongue-diagnosis-desc">拍照即可分析体质，获取个性化调理建议</p>
+            </div>
+            <div class="tongue-diagnosis-icon">👅</div>
+        </div>
+
+        <!-- 隐私保障 -->
+        <div class="privacy-notice">
+            <p>统一社会信用代码：91510****X | 隐私政策 | 服务条款</p>
+            <p>本页面内容仅供参考，不构成医疗建议。如有健康问题，请咨询专业医生。</p>
+        </div>
+    </main>
+
+    <!-- 底部固定操作栏 -->
+    <div class="bottom-bar">
+        <div class="bottom-bar-features">
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>免费咨询</span>
+            </div>
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>隐私保障</span>
+            </div>
+        </div>
+        <button class="consult-btn-fixed" onclick="showModal('正在为您连接AI健康助手...')">立即咨询</button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="consultModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">温馨提示</h3>
+            <p class="modal-desc" id="modalDesc">正在为您连接AI健康助手...</p>
+            <button class="modal-btn" onclick="enterAgentPage()">进入问诊</button>
+            <button class="modal-close" onclick="closeModal()">稍后再说</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedOptions = {};
+
+        function selectOption(element, value) {
+            const questionItem = element.closest('.question-item');
+            const options = questionItem.querySelectorAll('.option-item');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const questionIndex = Array.from(document.querySelectorAll('.question-item')).indexOf(questionItem);
+            selectedOptions[questionIndex] = value;
+            
+            checkAllSelected();
+        }
+
+        function checkAllSelected() {
+            const totalQuestions = document.querySelectorAll('.question-item').length;
+            const answeredQuestions = Object.keys(selectedOptions).length;
+            const checkBtn = document.getElementById('checkBtn');
+            
+            if (answeredQuestions === totalQuestions) {
+                checkBtn.disabled = false;
+            }
+        }
+
+        function showResult() {
+            document.getElementById('selfCheckCard').style.display = 'none';
+            document.getElementById('resultCard').classList.add('active');
+        }
+
+        function toggleContent() {
+            const contentBody = document.getElementById('contentBody');
+            const contentToggle = document.getElementById('contentToggle');
+            
+            if (contentBody.classList.contains('active')) {
+                contentBody.classList.remove('active');
+                contentToggle.textContent = '展开 ▼';
+            } else {
+                contentBody.classList.add('active');
+                contentToggle.textContent = '收起 ▲';
+            }
+        }
+
+        function showModal(message) {
+            const modal = document.getElementById('consultModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDesc');
+            
+            modalTitle.textContent = '温馨提示';
+            modalDesc.textContent = message;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('consultModal');
+            modal.classList.remove('active');
+        }
+
+        function enterAgentPage() {
+            closeModal();
+            alert('即将跳转到问诊agent页面...');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('consultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

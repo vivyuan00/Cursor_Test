@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>孕妇用药安全 - 成都青羊榕树家互联网医院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部导航区 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            flex: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .credentials {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* 人群标签 */
+        .population-tag {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            margin: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .population-tag-icon {
+            font-size: 18px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 0 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 场景共鸣卡片 */
+        .scenario-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .scenario-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .scenario-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .scenario-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .scenario-item {
+            padding: 16px;
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scenario-item:active {
+            transform: scale(0.98);
+        }
+
+        .scenario-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .scenario-item-text {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .scenario-item-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        /* 分步引导卡片 */
+        .step-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .step-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .step-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .step-action {
+            margin-top: 8px;
+        }
+
+        .step-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .step-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 紧迫感提示卡片 */
+        .urgency-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+        }
+
+        .urgency-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .urgency-icon {
+            font-size: 24px;
+        }
+
+        .urgency-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .urgency-content {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        /* 专业建议卡片 */
+        .advice-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .advice-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .advice-card-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .advice-item {
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .advice-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .advice-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .advice-item-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 服务保障卡片 */
+        .trust-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .trust-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .trust-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .trust-item-icon {
+            width: 28px;
+            height: 28px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* AI舌诊服务卡片 */
+        .tongue-diagnosis-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tongue-diagnosis-card:active {
+            transform: scale(0.98);
+        }
+
+        .tongue-diagnosis-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tongue-diagnosis-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tongue-diagnosis-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tongue-diagnosis-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* 底部固定操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-bar-features {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .bottom-bar-feature {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-bar-feature-icon {
+            color: #4caf50;
+        }
+
+        .consult-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 100px;
+            transition: all 0.3s;
+        }
+
+        .consult-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 隐私保障 */
+        .privacy-notice {
+            text-align: center;
+            padding: 16px;
+            color: #999;
+            font-size: 11px;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            min-height: 44px;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .modal-close {
+            margin-top: 12px;
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 适配iPhone X及以上 */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-bar {
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航区 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-logo">榕树</div>
+                <div class="brand-name">榕树家互联网医院</div>
+            </div>
+            <h1 class="search-title">孕妇用药安全</h1>
+            <div class="credentials">
+                <span>✓</span>
+                <span>专家审阅</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 人群标签 -->
+    <div class="population-tag">
+        <span class="population-tag-icon">🤰</span>
+        <span>孕妈妈专属服务</span>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 场景共鸣卡片 -->
+        <div class="scenario-card">
+            <div class="scenario-header">
+                <h2 class="scenario-title">您是否也有以下困扰？</h2>
+                <p class="scenario-subtitle">孕期用药安全是每个准妈妈最关心的问题</p>
+            </div>
+
+            <div class="scenario-item" onclick="showModal('感冒了不敢吃药？让AI帮您分析')">
+                <div class="scenario-item-icon">🤧</div>
+                <p class="scenario-item-text">感冒了不敢吃药，担心影响宝宝健康</p>
+            </div>
+
+            <div class="scenario-item" onclick="showModal('头痛失眠怎么办？让AI帮您分析')">
+                <div class="scenario-item-icon">😫</div>
+                <p class="scenario-item-text">头痛失眠，不知道能否服用安眠药</p>
+            </div>
+
+            <div class="scenario-item" onclick="showModal('皮肤过敏怎么办？让AI帮您分析')">
+                <div class="scenario-item-icon">🤒</div>
+                <p class="scenario-item-text">皮肤过敏，担心外用药会影响胎儿</p>
+            </div>
+
+            <div class="scenario-item" onclick="showModal('慢性病用药怎么办？让AI帮您分析')">
+                <div class="scenario-item-icon">💊</div>
+                <p class="scenario-item-text">有慢性病，不知道孕期是否需要停药</p>
+            </div>
+        </div>
+
+        <!-- 紧迫感提示卡片 -->
+        <div class="urgency-card">
+            <div class="urgency-header">
+                <span class="urgency-icon">⚠️</span>
+                <h3 class="urgency-title">及时咨询很重要</h3>
+            </div>
+            <p class="urgency-content">孕期用药不当可能影响胎儿发育，甚至导致流产或畸形。遇到用药问题，请及时咨询专业医生，切勿自行用药或随意停药。</p>
+        </div>
+
+        <!-- 分步引导卡片 -->
+        <div class="step-card">
+            <h3 class="step-card-title">三步获取专业建议</h3>
+
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4 class="step-title">了解您的具体情况</h4>
+                    <p class="step-desc">告诉我们您的孕周、症状、正在服用的药物等信息</p>
+                    <div class="step-action">
+                        <button class="step-btn" onclick="showModal('正在为您打开症状评估...')">开始评估</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4 class="step-title">获取个性化建议</h4>
+                    <p class="step-desc">AI智能分析您的用药风险，提供安全用药方案</p>
+                    <div class="step-action">
+                        <button class="step-btn" onclick="showModal('正在为您生成用药建议...')">查看建议</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4 class="step-title">咨询专家医生</h4>
+                    <p class="step-desc">与专业妇产科医生在线沟通，获得权威指导</p>
+                    <div class="step-action">
+                        <button class="step-btn" onclick="showModal('正在为您连接专家医生...')">咨询专家</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 专业建议卡片 -->
+        <div class="advice-card">
+            <h3 class="advice-card-title">孕期用药安全原则</h3>
+
+            <div class="advice-item">
+                <h4 class="advice-item-title">能不用药就不用</h4>
+                <p class="advice-item-text">孕期尽量避免用药，尤其是孕早期（前3个月），这是胎儿器官发育的关键时期。</p>
+            </div>
+
+            <div class="advice-item">
+                <h4 class="advice-item-title">必须用药时遵医嘱</h4>
+                <p class="advice-item-text">如果必须用药，一定要在医生指导下进行，不要自行购买药物服用。</p>
+            </div>
+
+            <div class="advice-item">
+                <h4 class="advice-item-title">选择安全的药物</h4>
+                <p class="advice-item-text">优先选择经过长期临床验证、对孕妇和胎儿相对安全的药物。</p>
+            </div>
+
+            <div class="advice-item">
+                <h4 class="advice-item-title">定期产检监测</h4>
+                <p class="advice-item-text">用药期间要定期进行产检，密切监测胎儿的发育情况。</p>
+            </div>
+        </div>
+
+        <!-- 服务保障卡片 -->
+        <div class="trust-card">
+            <h3 class="trust-card-title">服务保障</h3>
+            <div class="trust-items">
+                <div class="trust-item">
+                    <div class="trust-item-icon">🏥</div>
+                    <span>卫健委可查</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">👨‍⚕️</div>
+                    <span>妇产科专家</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🔒</div>
+                    <span>隐私保护</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🤖</div>
+                    <span>AI标准化诊疗</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI舌诊服务卡片 -->
+        <div class="tongue-diagnosis-card" onclick="showModal('正在为您打开AI舌诊工具...')">
+            <div class="tongue-diagnosis-content">
+                <h3 class="tongue-diagnosis-title">AI舌诊·智慧中医</h3>
+                <p class="tongue-diagnosis-desc">拍照即可分析体质，获取个性化调理建议</p>
+            </div>
+            <div class="tongue-diagnosis-icon">👅</div>
+        </div>
+
+        <!-- 隐私保障 -->
+        <div class="privacy-notice">
+            <p>统一社会信用代码：91510****X | 隐私政策 | 服务条款</p>
+            <p>本页面内容仅供参考，不构成医疗建议。如有健康问题，请咨询专业医生。</p>
+        </div>
+    </main>
+
+    <!-- 底部固定操作栏 -->
+    <div class="bottom-bar">
+        <div class="bottom-bar-features">
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>免费咨询</span>
+            </div>
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>隐私保障</span>
+            </div>
+        </div>
+        <button class="consult-btn" onclick="showModal('正在为您连接AI健康助手...')">立即咨询</button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="consultModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">温馨提示</h3>
+            <p class="modal-desc" id="modalDesc">正在为您连接AI健康助手...</p>
+            <button class="modal-btn" onclick="enterAgentPage()">进入问诊</button>
+            <button class="modal-close" onclick="closeModal()">稍后再说</button>
+        </div>
+    </div>
+
+    <script>
+        function showModal(message) {
+            const modal = document.getElementById('consultModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDesc');
+            
+            modalTitle.textContent = '温馨提示';
+            modalDesc.textContent = message;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('consultModal');
+            modal.classList.remove('active');
+        }
+
+        function enterAgentPage() {
+            closeModal();
+            alert('即将跳转到问诊agent页面...');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('consultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

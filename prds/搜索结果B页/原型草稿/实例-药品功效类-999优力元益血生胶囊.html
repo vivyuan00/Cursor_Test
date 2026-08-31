@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>999优力元益血生胶囊的功效与作用 - 成都青羊榕树家互联网医院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部导航区 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            flex: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .credentials {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 药品信息卡片 */
+        .medicine-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .medicine-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .medicine-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .medicine-info {
+            flex: 1;
+        }
+
+        .medicine-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .medicine-brand {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .medicine-type {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .medicine-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .medicine-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        /* 结构化内容卡片 */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .content-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #999;
+        }
+
+        .content-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .content-section {
+            margin-bottom: 20px;
+        }
+
+        .content-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .section-content p {
+            margin-bottom: 12px;
+        }
+
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-text {
+            background: #fff3e0;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #e65100;
+        }
+
+        .consult-link {
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 适用症状标签互动区 */
+        .symptom-tags {
+            margin-top: 12px;
+        }
+
+        .symptom-tags-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tag:active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* 相关话题 */
+        .related-topics {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .related-topics-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .topic-item:active {
+            background: #e9ecef;
+        }
+
+        .topic-name {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .topic-arrow {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* 服务保障卡片 */
+        .trust-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .trust-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .trust-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .trust-item-icon {
+            width: 28px;
+            height: 28px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* AI舌诊服务卡片 */
+        .tongue-diagnosis-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tongue-diagnosis-card:active {
+            transform: scale(0.98);
+        }
+
+        .tongue-diagnosis-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tongue-diagnosis-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tongue-diagnosis-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tongue-diagnosis-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* 底部固定操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-bar-features {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .bottom-bar-feature {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-bar-feature-icon {
+            color: #4caf50;
+        }
+
+        .consult-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 100px;
+            transition: all 0.3s;
+        }
+
+        .consult-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 隐私保障 */
+        .privacy-notice {
+            text-align: center;
+            padding: 16px;
+            color: #999;
+            font-size: 11px;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            min-height: 44px;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .modal-close {
+            margin-top: 12px;
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 适配iPhone X及以上 */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-bar {
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航区 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-logo">榕树</div>
+                <div class="brand-name">榕树家互联网医院</div>
+            </div>
+            <h1 class="search-title">999优力元益血生胶囊</h1>
+            <div class="credentials">
+                <span>✓</span>
+                <span>专家审阅</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 药品信息卡片 -->
+        <div class="medicine-card">
+            <div class="medicine-header">
+                <div class="medicine-icon">💊</div>
+                <div class="medicine-info">
+                    <h2 class="medicine-name">999优力元益血生胶囊</h2>
+                    <p class="medicine-brand">华润三九医药股份有限公司</p>
+                    <p class="medicine-type">中成药 · 补血剂</p>
+                    <div class="medicine-tags">
+                        <span class="medicine-tag">OTC甲类</span>
+                        <span class="medicine-tag">医保药品</span>
+                        <span class="medicine-tag">补血养血</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结构化内容卡片 -->
+        <div class="content-card">
+            <div class="content-header">
+                <h2 class="content-title">功效与作用</h2>
+                <div class="content-meta">
+                    <span class="content-badge">阅读5000+</span>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">主要功效</h3>
+                <div class="section-content">
+                    <p>999优力元益血生胶囊是一种中成药，主要功效为<strong>补血养血、益气健脾</strong>。适用于气血两虚所致的面色萎黄、头晕眼花、心悸气短、食欲不振等症状。</p>
+                    <p>该药物通过补充气血、调理脾胃功能，改善因气血不足引起的各种不适症状，<span class="highlight-text">特别适合贫血、产后虚弱、病后恢复期患者使用</span>。</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">主要成分</h3>
+                <div class="section-content">
+                    <p><strong>主要成分包括：</strong>当归、白芍、熟地黄、黄芪、党参、白术、茯苓、甘草等中药材。</p>
+                    <p>这些成分协同作用，当归补血活血，白芍养血柔肝，熟地黄滋阴补血，黄芪益气固表，党参补中益气，共同达到气血双补的效果。</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">适用症状</h3>
+                <div class="section-content">
+                    <p>• 面色萎黄、无光泽<br>• 头晕眼花、记忆力减退<br>• 心悸气短、活动后加重<br>• 食欲不振、消化不良<br>• 月经量少、经期延长<br>• 产后虚弱、乳汁不足</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">用法用量</h3>
+                <div class="section-content">
+                    <p><strong>口服，一次3-4粒，一日3次。</strong>饭后服用效果更佳。</p>
+                    <p>建议在医生或药师指导下使用，严格按照说明书规定的剂量服用，不可超量服用。</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">注意事项</h3>
+                <div class="section-content">
+                    <p><strong>1. 禁忌人群</strong><br>感冒发热患者不宜服用。对本品过敏者禁用。</p>
+                    <p><strong>2. 不良反应</strong><br>个别患者可能出现轻微胃肠道不适，如症状严重应停药并就医。</p>
+                    <p><strong>3. 药物相互作用</strong><br>如正在服用其他药品，使用本品前请咨询医师或药师。</p>
+                    <p>如果您不确定自己是否适合使用此药，建议<span class="consult-link" onclick="showModal('您是否适合使用益血生胶囊？让AI帮您分析')">点击咨询专家</span>进行专业评估。</p>
+                </div>
+            </div>
+
+            <!-- 适用症状标签互动区 -->
+            <div class="symptom-tags">
+                <h4 class="symptom-tags-title">您有以下症状吗？</h4>
+                <div class="tags-container">
+                    <span class="tag" onclick="showModal('面色萎黄 - 让AI为您分析')">面色萎黄</span>
+                    <span class="tag" onclick="showModal('头晕眼花 - 让AI为您分析')">头晕眼花</span>
+                    <span class="tag" onclick="showModal('心悸气短 - 让AI为您分析')">心悸气短</span>
+                    <span class="tag" onclick="showModal('食欲不振 - 让AI为您分析')">食欲不振</span>
+                    <span class="tag" onclick="showModal('月经量少 - 让AI为您分析')">月经量少</span>
+                    <span class="tag" onclick="showModal('产后虚弱 - 让AI为您分析')">产后虚弱</span>
+                </div>
+            </div>
+
+            <!-- 相关话题 -->
+            <div class="related-topics">
+                <h4 class="related-topics-title">相关话题</h4>
+                <div class="topic-item" onclick="showModal('正在为您打开相关话题...')">
+                    <span class="topic-name">气血两虚怎么调理？</span>
+                    <span class="topic-arrow">></span>
+                </div>
+                <div class="topic-item" onclick="showModal('正在为您打开相关话题...')">
+                    <span class="topic-name">贫血吃什么补血最快？</span>
+                    <span class="topic-arrow">></span>
+                </div>
+                <div class="topic-item" onclick="showModal('正在为您打开相关话题...')">
+                    <span class="topic-name">益血生胶囊和阿胶的区别？</span>
+                    <span class="topic-arrow">></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务保障卡片 -->
+        <div class="trust-card">
+            <h3 class="trust-card-title">服务保障</h3>
+            <div class="trust-items">
+                <div class="trust-item">
+                    <div class="trust-item-icon">🏥</div>
+                    <span>卫健委可查</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">👨‍⚕️</div>
+                    <span>执业药师团队</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🔒</div>
+                    <span>隐私保护</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🤖</div>
+                    <span>AI用药指导</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI舌诊服务卡片 -->
+        <div class="tongue-diagnosis-card" onclick="showModal('正在为您打开AI舌诊工具...')">
+            <div class="tongue-diagnosis-content">
+                <h3 class="tongue-diagnosis-title">AI舌诊·智慧中医</h3>
+                <p class="tongue-diagnosis-desc">拍照即可分析体质，获取个性化调理建议</p>
+            </div>
+            <div class="tongue-diagnosis-icon">👅</div>
+        </div>
+
+        <!-- 隐私保障 -->
+        <div class="privacy-notice">
+            <p>统一社会信用代码：91510****X | 隐私政策 | 服务条款</p>
+            <p>本页面内容仅供参考，不构成医疗建议。用药前请咨询专业医生或药师。</p>
+        </div>
+    </main>
+
+    <!-- 底部固定操作栏 -->
+    <div class="bottom-bar">
+        <div class="bottom-bar-features">
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>免费咨询</span>
+            </div>
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>隐私保障</span>
+            </div>
+        </div>
+        <button class="consult-btn" onclick="showModal('正在为您连接AI健康助手...')">立即咨询</button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="consultModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">温馨提示</h3>
+            <p class="modal-desc" id="modalDesc">正在为您连接AI健康助手...</p>
+            <button class="modal-btn" onclick="enterAgentPage()">进入问诊</button>
+            <button class="modal-close" onclick="closeModal()">稍后再说</button>
+        </div>
+    </div>
+
+    <script>
+        function showModal(message) {
+            const modal = document.getElementById('consultModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDesc');
+            
+            modalTitle.textContent = '温馨提示';
+            modalDesc.textContent = message;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('consultModal');
+            modal.classList.remove('active');
+        }
+
+        function enterAgentPage() {
+            closeModal();
+            alert('即将跳转到问诊agent页面...');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('consultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

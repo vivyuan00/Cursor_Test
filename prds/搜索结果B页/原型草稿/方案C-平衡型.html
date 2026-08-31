@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>中医调理 - 成都青羊榕树家互联网医院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部导航区 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            flex: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .credentials {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* AI智能分析卡片 */
+        .ai-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .ai-card-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .ai-card-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .ai-card-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .ai-progress {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            height: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .ai-progress-bar {
+            background: white;
+            height: 100%;
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .ai-progress-text {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .ai-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .ai-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .ai-feature-icon {
+            width: 16px;
+            height: 16px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .ai-consult-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ai-consult-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 内容卡片 */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .content-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #999;
+        }
+
+        .content-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .content-section {
+            margin-bottom: 20px;
+            scroll-margin-top: 100px;
+        }
+
+        .content-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .section-content p {
+            margin-bottom: 12px;
+        }
+
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 锚点导航 */
+        .anchor-nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            margin-bottom: 16px;
+        }
+
+        .anchor-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .anchor-item {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .anchor-item:active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* 服务分类卡片 */
+        .service-categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .service-category {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .service-category:active {
+            transform: scale(0.98);
+        }
+
+        .service-category-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 8px;
+        }
+
+        .service-category-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .service-category-desc {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* 服务保障卡片 */
+        .trust-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .trust-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .trust-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .trust-item-icon {
+            width: 28px;
+            height: 28px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* AI舌诊服务卡片 */
+        .tongue-diagnosis-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tongue-diagnosis-card:active {
+            transform: scale(0.98);
+        }
+
+        .tongue-diagnosis-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tongue-diagnosis-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tongue-diagnosis-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tongue-diagnosis-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* 底部固定操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-bar-features {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .bottom-bar-feature {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-bar-feature-icon {
+            color: #4caf50;
+        }
+
+        .consult-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 100px;
+            transition: all 0.3s;
+        }
+
+        .consult-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 隐私保障 */
+        .privacy-notice {
+            text-align: center;
+            padding: 16px;
+            color: #999;
+            font-size: 11px;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            min-height: 44px;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .modal-close {
+            margin-top: 12px;
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 适配iPhone X及以上 */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-bar {
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航区 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-logo">榕树</div>
+                <div class="brand-name">榕树家互联网医院</div>
+            </div>
+            <h1 class="search-title">中医调理</h1>
+            <div class="credentials">
+                <span>✓</span>
+                <span>专家审阅</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- AI智能分析卡片 -->
+        <div class="ai-card">
+            <div class="ai-card-header">
+                <div class="ai-card-icon">🤖</div>
+                <div>
+                    <h2 class="ai-card-title">AI智能分析</h2>
+                    <p class="ai-card-subtitle">名老中医领衔团队 · AI标准化诊疗体系</p>
+                </div>
+            </div>
+            
+            <div class="ai-progress">
+                <div class="ai-progress-bar" id="progressBar"></div>
+            </div>
+            <p class="ai-progress-text" id="progressText">已了解 0%，继续浏览内容</p>
+            
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <div class="ai-feature-icon">✓</div>
+                    <span>个性化体质分析</span>
+                </div>
+                <div class="ai-feature">
+                    <div class="ai-feature-icon">✓</div>
+                    <span>专业调理方案</span>
+                </div>
+                <div class="ai-feature">
+                    <div class="ai-feature-icon">✓</div>
+                    <span>24小时在线咨询</span>
+                </div>
+            </div>
+            
+            <button class="ai-consult-btn" onclick="showModal('正在为您连接AI健康助手...')">立即咨询专家</button>
+        </div>
+
+        <!-- 锚点导航 -->
+        <div class="anchor-nav">
+            <div class="anchor-item" onclick="scrollToSection('section1')">什么是中医调理</div>
+            <div class="anchor-item" onclick="scrollToSection('section2')">调理方法</div>
+            <div class="anchor-item" onclick="scrollToSection('section3')">适用人群</div>
+            <div class="anchor-item" onclick="scrollToSection('section4')">注意事项</div>
+        </div>
+
+        <!-- 内容卡片 -->
+        <div class="content-card">
+            <div class="content-header">
+                <h2 class="content-title">中医调理科普</h2>
+                <div class="content-meta">
+                    <span class="content-badge">阅读8000+</span>
+                </div>
+            </div>
+
+            <div class="content-section" id="section1">
+                <h3 class="section-title">什么是中医调理</h3>
+                <div class="section-content">
+                    <p>中医调理是运用中医理论和方法，通过中药、针灸、推拿、食疗等多种手段，调节人体阴阳平衡，增强体质，预防和治疗疾病的一种健康管理方式。</p>
+                    <p>中医调理强调"治未病"的理念，即在疾病发生之前进行预防和调理，通过调整生活方式、饮食习惯、情志状态等，达到强身健体、延年益寿的目的。</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="section2">
+                <h3 class="section-title">调理方法</h3>
+                <div class="section-content">
+                    <p><strong>1. 中药调理</strong><br>根据个人体质和症状，选用合适的中药方剂进行调理。</p>
+                    <p><strong>2. 针灸推拿</strong><br>通过刺激穴位，调节经络气血，改善身体机能。</p>
+                    <p><strong>3. 食疗养生</strong><br>根据体质选择合适的食物，达到药食同源的效果。</p>
+                    <p><strong>4. 情志调摄</strong><br>调节情绪，保持心态平和，避免情志内伤。</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="section3">
+                <h3 class="section-title">适用人群</h3>
+                <div class="section-content">
+                    <p>• 亚健康状态人群：经常疲劳、失眠、消化不良等<br>• 慢性病患者：需要长期调理和控制<br>• 体质虚弱者：需要增强体质和免疫力<br>• 养生保健人群：希望预防疾病、延年益寿</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="section4">
+                <h3 class="section-title">注意事项</h3>
+                <div class="section-content">
+                    <p>中医调理需要在专业医师指导下进行，不可盲目自行调理。调理过程中要注意饮食起居，保持良好的生活习惯。如出现不适，应及时就医。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务分类卡片 -->
+        <div class="service-categories">
+            <div class="service-category" onclick="showModal('正在为您打开亚健康调理服务...')">
+                <div class="service-category-icon">💪</div>
+                <h4 class="service-category-name">亚健康调理</h4>
+                <p class="service-category-desc">疲劳、失眠、消化不良</p>
+            </div>
+            <div class="service-category" onclick="showModal('正在为您打开体质调理服务...')">
+                <div class="service-category-icon">🌿</div>
+                <h4 class="service-category-name">体质调理</h4>
+                <p class="service-category-desc">阴虚、阳虚、气虚等</p>
+            </div>
+            <div class="service-category" onclick="showModal('正在为您打开脾胃调理服务...')">
+                <div class="service-category-icon">🍲</div>
+                <h4 class="service-category-name">脾胃调理</h4>
+                <p class="service-category-desc">消化、吸收、运化</p>
+            </div>
+            <div class="service-category" onclick="showModal('正在为您打开情志调理服务...')">
+                <div class="service-category-icon">🧘</div>
+                <h4 class="service-category-name">情志调理</h4>
+                <p class="service-category-desc">情绪、睡眠、压力</p>
+            </div>
+        </div>
+
+        <!-- 服务保障卡片 -->
+        <div class="trust-card">
+            <h3 class="trust-card-title">服务保障</h3>
+            <div class="trust-items">
+                <div class="trust-item">
+                    <div class="trust-item-icon">🏥</div>
+                    <span>卫健委可查</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">👨‍⚕️</div>
+                    <span>名老中医团队</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🔒</div>
+                    <span>隐私保护</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🤖</div>
+                    <span>AI标准化诊疗</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI舌诊服务卡片 -->
+        <div class="tongue-diagnosis-card" onclick="showModal('正在为您打开AI舌诊工具...')">
+            <div class="tongue-diagnosis-content">
+                <h3 class="tongue-diagnosis-title">AI舌诊·智慧中医</h3>
+                <p class="tongue-diagnosis-desc">拍照即可分析体质，获取个性化调理建议</p>
+            </div>
+            <div class="tongue-diagnosis-icon">👅</div>
+        </div>
+
+        <!-- 隐私保障 -->
+        <div class="privacy-notice">
+            <p>统一社会信用代码：91510****X | 隐私政策 | 服务条款</p>
+            <p>本页面内容仅供参考，不构成医疗建议。如有健康问题，请咨询专业医生。</p>
+        </div>
+    </main>
+
+    <!-- 底部固定操作栏 -->
+    <div class="bottom-bar">
+        <div class="bottom-bar-features">
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>免费咨询</span>
+            </div>
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>隐私保障</span>
+            </div>
+        </div>
+        <button class="consult-btn" onclick="showModal('正在为您连接AI健康助手...')">立即咨询</button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="consultModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">温馨提示</h3>
+            <p class="modal-desc" id="modalDesc">正在为您连接AI健康助手...</p>
+            <button class="modal-btn" onclick="enterAgentPage()">进入问诊</button>
+            <button class="modal-close" onclick="closeModal()">稍后再说</button>
+        </div>
+    </div>
+
+    <script>
+        let scrollProgress = 0;
+
+        // 监听滚动，更新进度条
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            scrollProgress = Math.min(100, Math.round((scrollTop / docHeight) * 100));
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = scrollProgress + '%';
+            
+            if (scrollProgress < 30) {
+                progressText.textContent = '已了解 ' + scrollProgress + '%，继续浏览内容';
+            } else if (scrollProgress < 60) {
+                progressText.textContent = '已了解 ' + scrollProgress + '%，建议开始咨询';
+            } else {
+                progressText.textContent = '已了解 ' + scrollProgress + '%，现在可以咨询专家了';
+            }
+        });
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showModal(message) {
+            const modal = document.getElementById('consultModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDesc');
+            
+            modalTitle.textContent = '温馨提示';
+            modalDesc.textContent = message;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('consultModal');
+            modal.classList.remove('active');
+        }
+
+        function enterAgentPage() {
+            closeModal();
+            alert('即将跳转到问诊agent页面...');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('consultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一动满头大汗吃什么药好一招判断风寒还是风热 - 成都青羊榕树家互联网医院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            font-size: 14px;
+            padding-bottom: 80px;
+        }
+
+        /* 顶部导航区 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            flex: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .credentials {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 快速自查卡片 */
+        .self-check-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .self-check-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .self-check-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .self-check-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .question-item {
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-item.selected {
+            background: #e3f2fd;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .option-item:active {
+            transform: scale(0.98);
+        }
+
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected .option-radio {
+            border-color: #667eea;
+            background: #667eea;
+        }
+
+        .option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .option-item.selected .option-radio::after {
+            display: block;
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .check-btn:active {
+            transform: scale(0.98);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 判断结果卡片 */
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: none;
+        }
+
+        .result-card.active {
+            display: block;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .result-type {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-type.cold {
+            color: #2196f3;
+        }
+
+        .result-type.heat {
+            color: #ff5722;
+        }
+
+        .result-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .result-features {
+            margin-bottom: 20px;
+        }
+
+        .result-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .result-feature-icon {
+            width: 32px;
+            height: 32px;
+            background: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .result-feature-text {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .medicine-suggestion {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .medicine-suggestion-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 8px;
+        }
+
+        .medicine-suggestion-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .consult-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .consult-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 对比分析卡片 */
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .comparison-content {
+            display: flex;
+            gap: 12px;
+        }
+
+        .comparison-side {
+            flex: 1;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .comparison-cold {
+            background: #e3f2fd;
+        }
+
+        .comparison-heat {
+            background: #ffebee;
+        }
+
+        .comparison-side-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .comparison-cold .comparison-side-title {
+            color: #1976d2;
+        }
+
+        .comparison-heat .comparison-side-title {
+            color: #d32f2f;
+        }
+
+        .comparison-item {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .comparison-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+
+        /* 相关科普内容折叠 */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .content-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .content-toggle {
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .content-body {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+
+        .content-body.active {
+            display: block;
+        }
+
+        .content-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        /* 服务保障卡片 */
+        .trust-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .trust-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .trust-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .trust-item-icon {
+            width: 28px;
+            height: 28px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* AI舌诊服务卡片 */
+        .tongue-diagnosis-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tongue-diagnosis-card:active {
+            transform: scale(0.98);
+        }
+
+        .tongue-diagnosis-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tongue-diagnosis-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tongue-diagnosis-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .tongue-diagnosis-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* 底部固定操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+
+        .bottom-bar-features {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .bottom-bar-feature {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bottom-bar-feature-icon {
+            color: #4caf50;
+        }
+
+        .consult-btn-fixed {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 100px;
+            transition: all 0.3s;
+        }
+
+        .consult-btn-fixed:active {
+            transform: scale(0.95);
+        }
+
+        /* 隐私保障 */
+        .privacy-notice {
+            text-align: center;
+            padding: 16px;
+            color: #999;
+            font-size: 11px;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            min-height: 44px;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .modal-close {
+            margin-top: 12px;
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 适配iPhone X及以上 */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-bar {
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航区 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-logo">榕树</div>
+                <div class="brand-name">榕树家互联网医院</div>
+            </div>
+            <h1 class="search-title">风寒风热判断</h1>
+            <div class="credentials">
+                <span>✓</span>
+                <span>专家审阅</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 快速自查卡片 -->
+        <div class="self-check-card" id="selfCheckCard">
+            <div class="self-check-header">
+                <h2 class="self-check-title">风寒风热快速判断</h2>
+                <p class="self-check-subtitle">回答5个问题，判断您是风寒还是风热</p>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">1. 您的出汗情况如何？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>一动就满头大汗，出汗多</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>出汗少或无汗</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">2. 您的喉咙感觉如何？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>喉咙红肿疼痛，口干舌燥</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>喉咙痒，不红不肿</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">3. 您的鼻涕是什么颜色？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>鼻涕黄稠</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>鼻涕清稀</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">4. 您是否怕冷？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>不怕冷，甚至觉得热</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>怕冷，需要多穿衣服</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <h3 class="question-title">5. 您的舌苔如何？</h3>
+                <div class="option-group">
+                    <div class="option-item" onclick="selectOption(this, 1)">
+                        <div class="option-radio"></div>
+                        <span>舌苔黄厚</span>
+                    </div>
+                    <div class="option-item" onclick="selectOption(this, 2)">
+                        <div class="option-radio"></div>
+                        <span>舌苔薄白</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="check-btn" id="checkBtn" onclick="showResult()" disabled>查看判断结果</button>
+        </div>
+
+        <!-- 判断结果卡片 -->
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <h2 class="result-title">您的感冒类型</h2>
+                <div class="result-type" id="resultType">风热感冒</div>
+                <p class="result-desc" id="resultDesc">根据您的症状判断，您可能患有风热感冒</p>
+            </div>
+
+            <div class="result-features">
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">🌡️</div>
+                    <span class="result-feature-text">发热明显，体温较高</span>
+                </div>
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">💧</div>
+                    <span class="result-feature-text">出汗多，一动就满头大汗</span>
+                </div>
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">👃</div>
+                    <span class="result-feature-text">鼻涕黄稠，喉咙红肿</span>
+                </div>
+                <div class="result-feature-item">
+                    <div class="result-feature-icon">👅</div>
+                    <span class="result-feature-text">舌苔黄厚，口干舌燥</span>
+                </div>
+            </div>
+
+            <div class="medicine-suggestion">
+                <h4 class="medicine-suggestion-title">用药建议</h4>
+                <p class="medicine-suggestion-text" id="medicineSuggestion">风热感冒宜用清热解毒类药物，如银翘解毒片、连花清瘟胶囊等。多喝温水，注意休息。如症状持续或加重，请及时就医。</p>
+            </div>
+
+            <button class="consult-btn" onclick="showModal('正在为您连接AI健康助手...')">获取详细用药指导</button>
+        </div>
+
+        <!-- 对比分析卡片 -->
+        <div class="comparison-card">
+            <h3 class="comparison-title">风寒 vs 风热 快速对比</h3>
+            <div class="comparison-content">
+                <div class="comparison-side comparison-cold">
+                    <h4 class="comparison-side-title">风寒感冒</h4>
+                    <div class="comparison-item">怕冷明显，发热轻</div>
+                    <div class="comparison-item">无汗或少汗</div>
+                    <div class="comparison-item">鼻涕清稀</div>
+                    <div class="comparison-item">喉咙不红不肿</div>
+                    <div class="comparison-item">舌苔薄白</div>
+                </div>
+                <div class="comparison-side comparison-heat">
+                    <h4 class="comparison-side-title">风热感冒</h4>
+                    <div class="comparison-item">怕冷轻，发热重</div>
+                    <div class="comparison-item">出汗多</div>
+                    <div class="comparison-item">鼻涕黄稠</div>
+                    <div class="comparison-item">喉咙红肿疼痛</div>
+                    <div class="comparison-item">舌苔黄厚</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相关科普内容折叠 -->
+        <div class="content-card">
+            <div class="content-header" onclick="toggleContent()">
+                <h3 class="content-title">了解风寒风热感冒</h3>
+                <span class="content-toggle" id="contentToggle">展开 ▼</span>
+            </div>
+            <div class="content-body" id="contentBody">
+                <div class="content-text">
+                    <p><strong>什么是风寒感冒？</strong><br>风寒感冒多由外感风寒之邪引起，常见于秋冬季节。主要表现为怕冷、发热轻、无汗、鼻塞流清涕、喉咙痒等症状。</p>
+                    <p><strong>什么是风热感冒？</strong><br>风热感冒多由外感风热之邪引起，常见于春夏季节。主要表现为发热重、怕冷轻、有汗、喉咙红肿疼痛、鼻涕黄稠等症状。</p>
+                    <p><strong>一动满头大汗说明什么？</strong><br>一动就满头大汗，通常提示体内有热邪，多见于风热感冒。但也可能是气虚自汗，需要结合其他症状综合判断。</p>
+                    <p><strong>用药原则</strong><br>风寒感冒宜用辛温解表药，如感冒清热颗粒、荆防颗粒等。风热感冒宜用辛凉解表药，如银翘解毒片、连花清瘟胶囊等。用药不对症可能加重病情。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务保障卡片 -->
+        <div class="trust-card">
+            <h3 class="trust-card-title">服务保障</h3>
+            <div class="trust-items">
+                <div class="trust-item">
+                    <div class="trust-item-icon">🏥</div>
+                    <span>卫健委可查</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">👨‍⚕️</div>
+                    <span>中医专家团队</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🔒</div>
+                    <span>隐私保护</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-item-icon">🤖</div>
+                    <span>AI智能诊断</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI舌诊服务卡片 -->
+        <div class="tongue-diagnosis-card" onclick="showModal('正在为您打开AI舌诊工具...')">
+            <div class="tongue-diagnosis-content">
+                <h3 class="tongue-diagnosis-title">AI舌诊·智慧中医</h3>
+                <p class="tongue-diagnosis-desc">拍照即可分析体质，获取个性化调理建议</p>
+            </div>
+            <div class="tongue-diagnosis-icon">👅</div>
+        </div>
+
+        <!-- 隐私保障 -->
+        <div class="privacy-notice">
+            <p>统一社会信用代码：91510****X | 隐私政策 | 服务条款</p>
+            <p>本页面内容仅供参考，不构成医疗建议。如有健康问题，请咨询专业医生。</p>
+        </div>
+    </main>
+
+    <!-- 底部固定操作栏 -->
+    <div class="bottom-bar">
+        <div class="bottom-bar-features">
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>免费咨询</span>
+            </div>
+            <div class="bottom-bar-feature">
+                <span class="bottom-bar-feature-icon">✓</span>
+                <span>隐私保障</span>
+            </div>
+        </div>
+        <button class="consult-btn-fixed" onclick="showModal('正在为您连接AI健康助手...')">立即咨询</button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="consultModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modalTitle">温馨提示</h3>
+            <p class="modal-desc" id="modalDesc">正在为您连接AI健康助手...</p>
+            <button class="modal-btn" onclick="enterAgentPage()">进入问诊</button>
+            <button class="modal-close" onclick="closeModal()">稍后再说</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedOptions = {};
+        let coldScore = 0;
+        let heatScore = 0;
+
+        function selectOption(element, value) {
+            const questionItem = element.closest('.question-item');
+            const options = questionItem.querySelectorAll('.option-item');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const questionIndex = Array.from(document.querySelectorAll('.question-item')).indexOf(questionItem);
+            selectedOptions[questionIndex] = value;
+            
+            checkAllSelected();
+        }
+
+        function checkAllSelected() {
+            const totalQuestions = document.querySelectorAll('.question-item').length;
+            const answeredQuestions = Object.keys(selectedOptions).length;
+            const checkBtn = document.getElementById('checkBtn');
+            
+            if (answeredQuestions === totalQuestions) {
+                checkBtn.disabled = false;
+            }
+        }
+
+        function showResult() {
+            // 计算风寒和风热的得分
+            coldScore = 0;
+            heatScore = 0;
+            
+            // 问题1：出汗情况
+            if (selectedOptions[0] === 1) heatScore += 2; // 出汗多 = 风热
+            if (selectedOptions[0] === 2) coldScore += 2;  // 出汗少 = 风寒
+            
+            // 问题2：喉咙感觉
+            if (selectedOptions[1] === 1) heatScore += 2; // 喉咙红肿 = 风热
+            if (selectedOptions[1] === 2) coldScore += 2;  // 喉咙痒 = 风寒
+            
+            // 问题3：鼻涕颜色
+            if (selectedOptions[2] === 1) heatScore += 2; // 鼻涕黄稠 = 风热
+            if (selectedOptions[2] === 2) coldScore += 2;  // 鼻涕清稀 = 风寒
+            
+            // 问题4：怕冷情况
+            if (selectedOptions[3] === 1) heatScore += 2; // 不怕冷 = 风热
+            if (selectedOptions[3] === 2) coldScore += 2;  // 怕冷 = 风寒
+            
+            // 问题5：舌苔
+            if (selectedOptions[4] === 1) heatScore += 2; // 舌苔黄厚 = 风热
+            if (selectedOptions[4] === 2) coldScore += 2;  // 舌苔薄白 = 风寒
+            
+            document.getElementById('selfCheckCard').style.display = 'none';
+            document.getElementById('resultCard').classList.add('active');
+            
+            const resultType = document.getElementById('resultType');
+            const resultDesc = document.getElementById('resultDesc');
+            const medicineSuggestion = document.getElementById('medicineSuggestion');
+            
+            if (heatScore > coldScore) {
+                resultType.textContent = '风热感冒';
+                resultType.className = 'result-type heat';
+                resultDesc.textContent = '根据您的症状判断，您可能患有风热感冒';
+                medicineSuggestion.textContent = '风热感冒宜用清热解毒类药物，如银翘解毒片、连花清瘟胶囊等。多喝温水，注意休息。如症状持续或加重，请及时就医。';
+            } else {
+                resultType.textContent = '风寒感冒';
+                resultType.className = 'result-type cold';
+                resultDesc.textContent = '根据您的症状判断，您可能患有风寒感冒';
+                medicineSuggestion.textContent = '风寒感冒宜用辛温解表类药物，如感冒清热颗粒、荆防颗粒等。注意保暖，多喝热水。如症状持续或加重，请及时就医。';
+            }
+        }
+
+        function toggleContent() {
+            const contentBody = document.getElementById('contentBody');
+            const contentToggle = document.getElementById('contentToggle');
+            
+            if (contentBody.classList.contains('active')) {
+                contentBody.classList.remove('active');
+                contentToggle.textContent = '展开 ▼';
+            } else {
+                contentBody.classList.add('active');
+                contentToggle.textContent = '收起 ▲';
+            }
+        }
+
+        function showModal(message) {
+            const modal = document.getElementById('consultModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDesc = document.getElementById('modalDesc');
+            
+            modalTitle.textContent = '温馨提示';
+            modalDesc.textContent = message;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('consultModal');
+            modal.classList.remove('active');
+        }
+
+        function enterAgentPage() {
+            closeModal();
+            alert('即将跳转到问诊agent页面...');
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('consultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

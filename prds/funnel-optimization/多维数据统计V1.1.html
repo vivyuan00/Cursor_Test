@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>全链路漏斗优化 · 专业运营看板</title>
+    <title>数据统计 · 专业运营看板</title>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Tailwind CSS -->
@@ -621,9 +621,12 @@
         .aux-charts-row.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         .aux-charts-row.order-charts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); }
         .aux-charts-row .card { min-width: 0; }
-        .order-trend-toggle { display: flex; gap: 6px; margin-bottom: 8px; }
-        .order-trend-toggle button { font-size: 11px; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; }
+        .order-trend-toggle { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .order-trend-toggle button { font-size: 11px; padding: 3px 10px; border-radius: 9999px; border: 1px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; white-space: nowrap; }
         .order-trend-toggle button.active { background: #0d9488; color: #fff; border-color: #0d9488; }
+        .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+        .card-head .chart-title, .card-head > p { margin-bottom: 0; flex: 1; min-width: 0; line-height: 1.4; }
+        .card-head .order-trend-toggle { margin-bottom: 0; flex-shrink: 0; }
         .team-toggle { width: 22px; height: 22px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; color: #475569; font-size: 14px; line-height: 1; cursor: pointer; flex-shrink: 0; }
         .team-toggle:hover { border-color: #0d9488; color: #0d9488; }
         tr.team-row { background: #f8fafc; font-weight: 600; }
@@ -658,6 +661,57 @@
         }
         .metric-help:hover { background: #0d9488; color: #fff; }
         th .metric-help { position: relative; top: -1px; }
+
+        /* 首页数据（移植自移动端首页） */
+        #home-content { padding: 16px 20px 32px; }
+        .home-root { max-width: none; }
+        .home-sec { margin-bottom: 20px; }
+        .home-sec-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .home-sec-h h2 { font-size: 15px; font-weight: 700; color: #1e293b; }
+        .home-link { font-size: 13px; color: #0d9488; font-weight: 600; cursor: pointer; background: none; border: none; padding: 0; }
+        .home-link:hover { text-decoration: underline; }
+        .home-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        @media (max-width: 1100px) { .home-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        .home-kpi { position: relative; text-align: left; padding: 16px 18px; border-radius: 14px; border: 1px solid #e2e8f0; background: linear-gradient(165deg, #fff, #f0fdfa); box-shadow: 0 1px 3px rgba(0,0,0,.04); cursor: pointer; transition: box-shadow .15s, border-color .15s; }
+        .home-kpi:hover { border-color: #99f6e4; box-shadow: 0 4px 12px rgba(13,148,136,.1); }
+        .home-kpi .lab { font-size: 13px; color: #64748b; font-weight: 600; }
+        .home-kpi .val { font-size: 26px; font-weight: 700; color: #0f172a; margin: 8px 0 6px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+        .home-kpi .soft { font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px; }
+        .home-kpi .soft b { font-weight: 700; color: #475569; }
+        .home-yest { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; color: #64748b; margin-top: 4px; }
+        .home-yest b { font-weight: 700; color: #334155; margin-left: 4px; font-variant-numeric: tabular-nums; }
+        .home-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+        .home-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .home-row:last-child { border-bottom: 0; padding-bottom: 0; }
+        .home-badge { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: #ccfbf1; color: #0d9488; flex-shrink: 0; margin-top: 2px; }
+        .home-badge.g { background: #fff4e5; color: #c47a1a; }
+        .home-main { flex: 1; min-width: 0; }
+        .home-main .n { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+        .home-triple { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .home-triple .cell { background: #f8fafc; border-radius: 10px; padding: 10px; }
+        .home-triple .cell .k { font-size: 12px; color: #64748b; font-weight: 600; }
+        .home-triple .cell .x { font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
+        .home-team-scroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 2px; scrollbar-width: thin; }
+        .home-team-metric { flex: 0 0 calc(20% - 8px); min-width: 148px; background: #f8fafc; border-radius: 10px; padding: 10px; scroll-snap-align: start; box-sizing: border-box; }
+        .home-team-metric .k { font-size: 12px; color: #64748b; font-weight: 600; line-height: 1.35; }
+        .home-team-metric .x { font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
+        .home-soft-inline { font-size: 11px; color: #64748b; font-weight: 600; line-height: 1.5; margin-top: 4px; }
+        .home-soft-inline b { font-weight: 700; color: #64748b; }
+        .home-order-item { padding: 12px 14px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .home-order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .home-order-item .t { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e293b; }
+        .home-order-soft { font-size: 12px; color: #64748b; margin-top: 8px; line-height: 1.5; }
+        .home-bar-chart { display: flex; flex-direction: column; gap: 11px; padding: 4px 0; }
+        .home-bar-row { display: grid; grid-template-columns: 22px 80px minmax(0,1fr) 72px; column-gap: 12px; align-items: center; }
+        .home-bar-row .rk { width: 20px; height: 20px; border-radius: 6px; display: grid; place-items: center; font-size: 10px; font-weight: 800; background: #ccfbf1; color: #0d9488; }
+        .home-bar-row .rk.g { background: #fff4e5; color: #c47a1a; }
+        .home-bar-row .nm { font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .home-bar-row .track { height: 8px; border-radius: 99px; background: #edf1f5; overflow: hidden; }
+        .home-bar-row .fill { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #0d9488, #2dd4bf); min-width: 4px; }
+        .home-bar-row .fill.warm { background: linear-gradient(90deg, #d97706, #f5b567); }
+        .home-bar-row .val { font-size: 13px; font-weight: 700; text-align: right; color: #1e293b; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .home-asst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 900px) { .home-triple { grid-template-columns: 1fr; } .home-asst-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -665,29 +719,25 @@
     <div class="main-layout">
         <!-- Left Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-title">全链路漏斗优化</div>
+            <div class="sidebar-title">数据统计</div>
             <div class="nav-menu">
-                <div class="nav-group">
-                    <div class="nav-group-label">📊 全链路漏斗</div>
-                    <div class="nav-submenu">
-                        <div class="nav-item nav-sub active" data-page="funnel" data-funnel-tab="daily">每日转化</div>
-                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="dailyOrder">每日成交</div>
-                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="dailyAi">每日工具转化</div>
-                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="assistant">团队医助</div>
-                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="chTeam">渠道×团队</div>
-                        <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="chApp">渠道×应用</div>
-                    </div>
-                </div>
-                <div class="nav-item" data-page="detail">📋 用户转化明细</div>
+                <div class="nav-item nav-sub" data-page="home">首页数据</div>
+                <div class="nav-item nav-sub active" data-page="funnel" data-funnel-tab="daily">每日转化</div>
+                <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="dailyOrder">每日成交</div>
+                <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="dailyAi">每日工具转化</div>
+                <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="assistant">团队医助</div>
+                <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="chTeam">渠道×团队</div>
+                <div class="nav-item nav-sub" data-page="funnel" data-funnel-tab="chApp">渠道×应用</div>
+                <div class="nav-item nav-sub" data-page="detail">加粉明细</div>
             </div>
         </div>
 
         <!-- Content Area -->
         <div class="content-area">
-            <!-- Page: 用户转化明细 -->
+            <!-- Page: 加粉明细 -->
             <div id="page-detail" class="funnel-page">
     <div class="page-header">
-        <div class="page-title">📊 用户转化数据明细表</div>
+        <div class="page-title">📊 加粉明细</div>
         <div class="page-sub">线索 → 沟通 → 开方 → 成交 · 全链路转化监控（时间筛选基于加粉时间）</div>
     </div>
 
@@ -791,6 +841,11 @@
         </div>
     </div>
     </div>
+
+        <!-- Page: 首页数据 -->
+        <div id="page-home" class="funnel-page">
+            <div id="home-content"></div>
+        </div>
 
         <!-- Page: 全链路漏斗 -->
         <div id="page-funnel" class="funnel-page active">
@@ -1112,9 +1167,9 @@
         '<td class="px-3 py-2 text-right">'+fmt(m.revOrd)+'</td>'+
         '<td class="px-3 py-2 text-right">¥'+fmt(m.revGmv)+'</td>'+
         '<td class="px-3 py-2 text-right">'+_fmtAov(m.revGmv,m.revOrd)+'</td>'+
+        '<td class="px-3 py-2 text-right'+totalCls+'">'+_fmtAov(m.totalGmv,m.totalOrd)+'</td>'+
         '<td class="px-3 py-2 text-right'+totalCls+'">'+fmt(m.totalOrd)+'</td>'+
-        '<td class="px-3 py-2 text-right'+totalCls+'">¥'+fmt(m.totalGmv)+'</td>'+
-        '<td class="px-3 py-2 text-right'+totalCls+'">'+_fmtAov(m.totalGmv,m.totalOrd)+'</td>';
+        '<td class="px-3 py-2 text-right'+totalCls+'">¥'+fmt(m.totalGmv)+'</td>';
     }
     function _chTradeMetrics(addWx,payCnt){
       var fans=dedupeFansCnt(addWx);
@@ -1579,12 +1634,190 @@
     }
 
     function syncSidebarNav(){
+      var homeActive=document.getElementById('page-home').classList.contains('active');
       var funnelActive=document.getElementById('page-funnel').classList.contains('active');
+      var detailActive=document.getElementById('page-detail').classList.contains('active');
+      document.querySelectorAll('.nav-item[data-page="home"]').forEach(function(el){
+        el.classList.toggle('active',homeActive);
+      });
       document.querySelectorAll('.nav-item[data-page="detail"]').forEach(function(el){
-        el.classList.toggle('active',!funnelActive);
+        el.classList.toggle('active',detailActive);
       });
       document.querySelectorAll('.nav-item.nav-sub[data-funnel-tab]').forEach(function(el){
         el.classList.toggle('active',funnelActive&&el.getAttribute('data-funnel-tab')===funnelState.tab);
+      });
+    }
+
+    // ===== 首页数据（移植自移动端首页） =====
+    var HOME_FANS_TODAY=520, HOME_FANS_YDAY=478, HOME_ORD_TODAY=83, HOME_ORD_YDAY=76;
+    var HOME_GMV_TODAY=85770, HOME_GMV_YDAY=81240, HOME_NET_GMV_TODAY=82180, HOME_REFUND_ORD=1;
+    var HOME_FIRST_ORD_TODAY=45, HOME_FIRST_ORD_YDAY=42;
+    var HOME_FIRST_CONV_TODAY=HOME_FIRST_ORD_TODAY/HOME_FANS_TODAY;
+    var HOME_FIRST_CONV_YDAY=HOME_FIRST_ORD_YDAY/HOME_FANS_YDAY;
+    var HOME_CHANNEL_TODAY=[
+      {name:'抖音信息流',add:1510,ydAdd:1380,pay:245,ydPay:220,payRate:245/1510,ydPayRate:220/1380},
+      {name:'百度医生H5',add:1330,ydAdd:1410,pay:205,ydPay:198,payRate:205/1330,ydPayRate:198/1410},
+      {name:'微信公众号',add:730,ydAdd:690,pay:115,ydPay:108,payRate:115/730,ydPayRate:108/690},
+      {name:'快手信息流',add:420,ydAdd:455,pay:62,ydPay:70,payRate:62/420,ydPayRate:70/455},
+      {name:'线下转介绍',add:310,ydAdd:280,pay:48,ydPay:41,payRate:48/310,ydPayRate:41/280}
+    ];
+    var HOME_TEAM_TODAY=[
+      {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200},
+      {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120},
+      {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640}
+    ].map(function(t){
+      return Object.assign({},t,{
+        firstConv:t.fans?t.firstOrd/t.fans:0,
+        ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
+        avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
+        ydAvgFirstOrdPerAsst:t.ydWireAsst?t.ydFirstOrd/t.ydWireAsst:0,
+        firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
+        revAov:t.revOrd?t.revGmv/t.revOrd:0,
+        ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
+        ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0
+      });
+    });
+    var HOME_DEAL_SUMMARY={
+      first:{deco:22,pill:14,granule:9,decoG:16700,pillG:10000,granuleG:6780,cnt:45,gmv:33480},
+      rev:{deco:21,pill:10,granule:7,decoG:20000,pillG:18000,granuleG:14290,cnt:38,gmv:52290}
+    };
+    function _homeFmtY(n){return '¥'+fmt(Math.round(n));}
+    function _homePct(n){return (n*100).toFixed(1)+'%';}
+    function _homeAov(gmv,cnt){return cnt?_homeFmtY(gmv/cnt):'—';}
+    function _homeYest(prev,isPct,isMoney,isDec){
+      if(prev==null||prev==='') return '<span class="home-yest">昨日 <b>—</b></span>';
+      if(isPct) return '<span class="home-yest">昨日 <b>'+_homePct(prev)+'</b></span>';
+      if(isMoney) return '<span class="home-yest">昨日 <b>'+_homeFmtY(prev)+'</b></span>';
+      if(isDec) return '<span class="home-yest">昨日 <b>'+Number(prev).toFixed(1)+'</b></span>';
+      return '<span class="home-yest">昨日 <b>'+fmt(prev)+'</b></span>';
+    }
+    function _homeMedSoftLine(r){
+      function seg(lab,n,g){return lab+' '+fmt(n)+' 单 / '+_homeFmtY(g);}
+      return seg('汤剂',r.deco,r.decoG)+'　·　'+seg('丸剂',r.pill,r.pillG)+'　·　'+seg('颗粒剂',r.granule,r.granuleG);
+    }
+    function _homeTeamMetricCard(k,x,soft,yest){
+      return '<div class="home-team-metric"><div class="k">'+k+'</div><div class="x">'+x+'</div>'+
+        (soft?'<div class="home-soft-inline">'+soft+'</div>':'')+yest+'</div>';
+    }
+    function _homeBarChart(el,items,opts){
+      opts=opts||{};
+      var tone=opts.tone||'';
+      var list=(items||[]).slice(0,5);
+      if(!list.length){el.innerHTML='<div class="text-xs text-slate-400">暂无数据</div>';return;}
+      var max=Math.max.apply(null,list.map(function(i){return i.value;}).concat([1]));
+      el.innerHTML=list.map(function(it,i){
+        var w=Math.max(8,Math.round(it.value/max*100*0.72));
+        return '<div class="home-bar-row"><div class="rk'+(i===0?' g':'')+'">'+(i+1)+'</div>'+
+          '<div class="nm" title="'+h(it.name)+'">'+h(it.name)+'</div>'+
+          '<div class="track"><i class="fill '+tone+'" style="width:'+w+'%"></i></div>'+
+          '<div class="val">'+(it.label!=null?it.label:it.value)+'</div></div>';
+      }).join('');
+    }
+    function _homeBindTeamScrollSync(){
+      var rows=document.querySelectorAll('#homeTeamBlock .home-team-scroll');
+      if(rows.length<2) return;
+      var syncing=false;
+      rows.forEach(function(row){
+        row.addEventListener('scroll',function(){
+          if(syncing) return;
+          syncing=true;
+          var left=row.scrollLeft;
+          rows.forEach(function(r){if(r!==row) r.scrollLeft=left;});
+          syncing=false;
+        },{passive:true});
+      });
+    }
+    function _navToFunnelTab(tab,assistantSub){
+      funnelState.tab=tab;
+      funnelState.chDetailRow=null;
+      if(assistantSub) funnelState.assistantSub=assistantSub;
+      document.querySelectorAll('.funnel-page').forEach(function(p){p.classList.remove('active');});
+      document.getElementById('page-funnel').classList.add('active');
+      syncSidebarNav();
+      renderFunnelPage();
+      window.scrollTo(0,0);
+    }
+    function renderHomePage(){
+      var el=document.getElementById('home-content');
+      if(!el) return;
+      var chTop=HOME_CHANNEL_TODAY.slice().sort(function(a,b){return b.add-a.add;}).slice(0,5);
+      var chHtml=chTop.map(function(c,i){
+        return '<div class="home-row"><div class="home-badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="home-main"><div class="n">'+h(c.name)+'</div>'+
+          '<div class="home-triple">'+
+          '<div class="cell"><div class="k">今日加粉</div><div class="x">'+fmt(c.add)+'</div>'+_homeYest(c.ydAdd)+'</div>'+
+          '<div class="cell"><div class="k">今日初诊成交</div><div class="x">'+fmt(c.pay)+'</div>'+_homeYest(c.ydPay)+'</div>'+
+          '<div class="cell"><div class="k">初诊转化率</div><div class="x">'+_homePct(c.payRate)+'</div>'+_homeYest(c.ydPayRate,true)+'</div>'+
+          '</div></div></div>';
+      }).join('');
+      var teamTop=HOME_TEAM_TODAY.slice().sort(function(a,b){return b.firstConv-a.firstConv;});
+      var teamHtml=teamTop.map(function(t,i){
+        return '<div class="home-row"><div class="home-badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="home-main"><div class="n">'+h(t.team)+'</div>'+
+          '<div class="home-team-scroll">'+
+          _homeTeamMetricCard('初诊转化率',_homePct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',_homeYest(t.ydFirstConv,true))+
+          _homeTeamMetricCard('医助平均初诊成单量',t.wireAsst?t.avgFirstOrdPerAsst.toFixed(1):'—','接诊医助数 <b>'+fmt(t.wireAsst)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',_homeYest(t.ydAvgFirstOrdPerAsst,false,false,true))+
+          _homeTeamMetricCard('初诊客单价',_homeAov(t.firstGmv,t.firstOrd),'',_homeYest(t.ydFirstAov,false,true))+
+          _homeTeamMetricCard('复诊客单价',_homeAov(t.revGmv,t.revOrd),'',_homeYest(t.ydRevAov,false,true))+
+          _homeTeamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+_homeFmtY(t.totalGmv)+'</b>',_homeYest(t.ydTotalOrd))+
+          '</div></div></div>';
+      }).join('');
+      var orderHtml=
+        '<div class="home-order-grid">'+
+        '<div class="home-order-item"><div class="t"><span>初诊 '+HOME_DEAL_SUMMARY.first.cnt+' 单</span><span>'+_homeFmtY(HOME_DEAL_SUMMARY.first.gmv)+'</span></div><div class="home-order-soft">'+_homeMedSoftLine(HOME_DEAL_SUMMARY.first)+'</div></div>'+
+        '<div class="home-order-item"><div class="t"><span>复诊 '+HOME_DEAL_SUMMARY.rev.cnt+' 单</span><span>'+_homeFmtY(HOME_DEAL_SUMMARY.rev.gmv)+'</span></div><div class="home-order-soft">'+_homeMedSoftLine(HOME_DEAL_SUMMARY.rev)+'</div></div>'+
+        '</div>';
+      el.innerHTML=
+        '<div class="home-root space-y-4">'+
+        '<h2 class="text-xl font-bold">首页数据</h2>'+
+        '<p class="text-sm text-slate-500 -mt-2">今日实时经营概览 · 口径与移动端首页一致</p>'+
+        '<div class="home-sec"><div class="home-sec-h"><h2>今日实时</h2></div>'+
+        '<div class="home-kpi-grid">'+
+        '<button type="button" class="home-kpi" data-nav-funnel="daily"><div class="lab">加粉数（全量）</div><div class="val">'+fmt(HOME_FANS_TODAY)+'</div>'+_homeYest(HOME_FANS_YDAY)+'</button>'+
+        '<button type="button" class="home-kpi" data-nav-funnel="dailyOrder"><div class="lab">成交订单数</div><div class="val">'+fmt(HOME_ORD_TODAY)+'</div>'+_homeYest(HOME_ORD_YDAY)+'</button>'+
+        '<button type="button" class="home-kpi" data-nav-funnel="dailyOrder"><div class="lab">初诊转化率</div><div class="val">'+_homePct(HOME_FIRST_CONV_TODAY)+'</div><div class="soft">初诊订单数 <b>'+fmt(HOME_FIRST_ORD_TODAY)+'</b></div>'+_homeYest(HOME_FIRST_CONV_YDAY,true)+'</button>'+
+        '<button type="button" class="home-kpi" data-nav-funnel="dailyOrder"><div class="lab">成交GMV</div><div class="val">'+_homeFmtY(HOME_GMV_TODAY)+'</div><div class="soft">净GMV <b>'+_homeFmtY(HOME_NET_GMV_TODAY)+'</b>（退'+HOME_REFUND_ORD+'单）</div>'+_homeYest(HOME_GMV_YDAY,false,true)+'</button>'+
+        '</div></div>'+
+        '<div class="home-sec"><div class="home-sec-h"><h2>今日订单核心数据</h2><button type="button" class="home-link" data-nav-funnel="dailyOrder">成交 ›</button></div><div class="home-card">'+orderHtml+'</div></div>'+
+        '<div class="home-sec"><div class="home-sec-h"><h2>今日分渠道核心数据</h2><button type="button" class="home-link" data-nav-funnel="chTeam">渠道 ›</button></div><div class="home-card">'+chHtml+'</div></div>'+
+        '<div class="home-sec"><div class="home-sec-h"><h2>今日团队 Top</h2><button type="button" class="home-link" data-nav-funnel="assistant" data-nav-asst="trade">团队 ›</button></div><div class="home-card" id="homeTeamBlock">'+teamHtml+'</div></div>'+
+        '<div class="home-sec"><div class="home-sec-h"><h2>近7天医助成交 Top</h2><button type="button" class="home-link" data-nav-funnel="assistant" data-nav-asst="trade">团队 ›</button></div>'+
+        '<div class="home-asst-grid">'+
+        '<div class="home-card"><div class="text-sm font-semibold mb-3">总订单数 Top5</div><div class="home-bar-chart" id="homeAsstOrd"></div></div>'+
+        '<div class="home-card"><div class="text-sm font-semibold mb-3">总订单金额 Top5</div><div class="home-bar-chart" id="homeAsstGmv"></div></div>'+
+        '</div></div></div>';
+      var asstList=ASSISTANTS.map(function(a){
+        return {name:a.name,totalOrd:(a.firstOrd||0)+(a.revOrd||0),totalGmv:(a.firstGmv||0)+(a.revGmv||0)};
+      });
+      var byO=asstList.slice().sort(function(a,b){return b.totalOrd-a.totalOrd;}).slice(0,5);
+      var byG=asstList.slice().sort(function(a,b){return b.totalGmv-a.totalGmv;}).slice(0,5);
+      _homeBarChart(document.getElementById('homeAsstOrd'),byO.map(function(a){return {name:a.name,value:a.totalOrd,label:fmt(a.totalOrd)};}));
+      _homeBarChart(document.getElementById('homeAsstGmv'),byG.map(function(a){return {name:a.name,value:a.totalGmv,label:_homeFmtY(a.totalGmv)};}),{tone:'warm'});
+      _homeBindTeamScrollSync();
+      el.querySelectorAll('[data-nav-funnel]').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          _navToFunnelTab(btn.getAttribute('data-nav-funnel'),btn.getAttribute('data-nav-asst'));
+        });
+      });
+    }
+
+    // Navigation
+    function bindNavigation(){
+      document.querySelectorAll('.nav-item').forEach(function(el){
+        el.addEventListener('click',function(){
+          var page=el.getAttribute('data-page');
+          var funnelTab=el.getAttribute('data-funnel-tab');
+          if(funnelTab){
+            funnelState.tab=funnelTab;
+            funnelState.chDetailRow=null;
+            page='funnel';
+          }
+          document.querySelectorAll('.nav-item').forEach(function(i){i.classList.remove('active');});
+          document.querySelectorAll('.funnel-page').forEach(function(p){p.classList.remove('active');});
+          document.getElementById('page-'+page).classList.add('active');
+          syncSidebarNav();
+          if(page==='funnel') renderFunnelPage();
+          else if(page==='home') renderHomePage();
+          window.scrollTo(0,0);
+        });
       });
     }
 
@@ -1991,14 +2224,19 @@
       var aovToggle='<div class="order-trend-toggle">'+
         '<button type="button" data-asst-aov-rank="first" class="'+(aovMode==='first'?'active':'')+'">初诊客单价</button>'+
         '<button type="button" data-asst-aov-rank="rev" class="'+(aovMode==='rev'?'active':'')+'">复诊客单价</button>'+
+        '<button type="button" data-asst-aov-rank="total" class="'+(aovMode==='total'?'active':'')+'">总客单价</button>'+
         '</div>';
-      var isFirstAov=aovMode==='first';
       var sortedAov=teams.slice().sort(function(a,b){
-        return isFirstAov?(b.firstAov-a.firstAov):(b.revAov-a.revAov);
+        if(aovMode==='rev') return b.revAov-a.revAov;
+        if(aovMode==='total') return b.totalAov-a.totalAov;
+        return b.firstAov-a.firstAov;
       });
       var aovTop=_top5Bars(sortedAov.slice(0,5).map(function(t){
-        var val=isFirstAov?t.firstAov:t.revAov;
-        return {name:t.team,value:val,label:_fmtAov(isFirstAov?t.firstGmv:t.revGmv,isFirstAov?t.firstOrd:t.revOrd),tone:'bg-emerald-500'};
+        var val,gmv,ord;
+        if(aovMode==='rev'){val=t.revAov;gmv=t.revGmv;ord=t.revOrd;}
+        else if(aovMode==='total'){val=t.totalAov;gmv=t.totalGmv;ord=t.totalOrd;}
+        else{val=t.firstAov;gmv=t.firstGmv;ord=t.firstOrd;}
+        return {name:t.team,value:val,label:_fmtAov(gmv,ord),tone:'bg-emerald-500'};
       }));
       var tableTeams=_sortList(teams,sk,sd,_asstTradeVal);
       var dr=_funnelDateRange();
@@ -2020,15 +2258,16 @@
         _sortableTh('复诊成交数','复诊成交数','revOrd',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('复诊成交额','复诊成交额','revGmv',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('复诊客单价','复诊客单价@团队','revAov',sk,sd,'trade','px-3 py-2 text-right')+
+        _sortableTh('总客单价','总客单价','totalAov',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('总订单数','总订单数@医助','totalOrd',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('总订单额','总订单金额@医助','totalGmv',sk,sd,'trade','px-3 py-2 text-right')+
-        _sortableTh('总客单价','总客单价','totalAov',sk,sd,'trade','px-3 py-2 text-right')+
         '<th class="px-3 py-2 text-center">操作</th>';
       return '<div class="space-y-4">'+
         '<div class="aux-charts-row cols-3">'+
-          '<div class="card req-marker-wrapper min-w-0"><span class="req-marker" data-id="6">6</span><p class="text-xs text-slate-400 mb-2">辅助图表 · 客单价 Top5（团队）</p>'+aovToggle+aovTop+'</div>'+
-          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 团队初诊转化率 Top5</p>'+convTopRows+'</div>'+
-          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 总订单 Top 排行（医助）</p>'+ordToggle+orderTopChart+'</div>'+
+          '<div class="card req-marker-wrapper min-w-0"><span class="req-marker" data-id="6">6</span>'+
+            '<div class="card-head"><p class="text-sm font-semibold text-slate-700">团队客单价 Top5</p>'+aovToggle+'</div>'+aovTop+'</div>'+
+          '<div class="card min-w-0"><div class="card-head"><p class="text-sm font-semibold text-slate-700">团队初诊转化率 Top5</p></div>'+convTopRows+'</div>'+
+          '<div class="card min-w-0"><div class="card-head"><p class="text-sm font-semibold text-slate-700">总订单 Top5（医助）</p>'+ordToggle+'</div>'+orderTopChart+'</div>'+
         '</div>'+
         '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（默认团队聚合，点击 + 展开医助；点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+tradeThead+'</tr></thead><tbody>'+tRows+'</tbody></table></div>'+
       '</div>';
@@ -2722,29 +2961,6 @@
       });
     }
 
-    // Navigation
-    function bindNavigation(){
-      document.querySelectorAll('.nav-item').forEach(function(el){
-        el.addEventListener('click',function(){
-          var page=el.getAttribute('data-page');
-          var funnelTab=el.getAttribute('data-funnel-tab');
-          if(funnelTab){
-            funnelState.tab=funnelTab;
-            funnelState.chDetailRow=null;
-            page='funnel';
-          }
-          document.querySelectorAll('.nav-item[data-page="detail"]').forEach(function(i){i.classList.remove('active');});
-          document.querySelectorAll('.nav-item.nav-sub[data-funnel-tab]').forEach(function(i){i.classList.remove('active');});
-          if(funnelTab) el.classList.add('active');
-          else if(page==='detail') el.classList.add('active');
-          document.querySelectorAll('.funnel-page').forEach(function(p){p.classList.remove('active');});
-          document.getElementById('page-'+page).classList.add('active');
-          if(page==='funnel') renderFunnelPage();
-          else syncSidebarNav();
-        });
-      });
-    }
-
     function formatLocalDate(d){
         var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
         return y+'-'+m+'-'+day;
@@ -3067,7 +3283,7 @@
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">左侧菜单</div>
-  <p>本页为<strong>每日转化</strong>；同组另有 <strong>每日成交</strong>、<strong>每日工具转化</strong> 独立菜单项。</p>
+  <p>本页为<strong>每日转化</strong>；左侧菜单另有 <strong>每日成交</strong>、<strong>每日工具转化</strong> 等独立项。</p>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">筛选项</div>
@@ -3126,7 +3342,7 @@
             content: `
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">左侧二级菜单</div>
-  <p><strong>渠道×团队</strong> | <strong>渠道×应用</strong>（位于「全链路漏斗」分组下，与每日转化、团队医助等并列）</p>
+  <p><strong>渠道×团队</strong> | <strong>渠道×应用</strong>（与每日转化、团队医助等并列于左侧菜单）</p>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">筛选项</div>
@@ -3358,7 +3574,7 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
-    <li><strong>排行榜1</strong>：团队客单价 Top5，支持<strong>初诊客单价 / 复诊客单价</strong> Tab 切换，默认展示初诊客单价（居左）</li>
+    <li><strong>排行榜1</strong>：团队客单价 Top5，支持<strong>初诊客单价 / 复诊客单价 / 总客单价</strong> Tab 切换（位于卡片右上角），默认展示初诊客单价</li>
     <li><strong>排行榜2</strong>：团队初诊转化率 Top5</li>
     <li><strong>排行榜3</strong>：医助总订单 Top10，支持<strong>订单金额 / 订单数</strong> Tab 切换，默认展示订单金额，左 5 + 右 5 双列展示；三图同一行并排、等宽撑满</li>
     <li><strong>数据表</strong>：默认团队聚合，列含加粉、初诊成交数/成交额/客单价/转化率、复诊成交数/成交额/客单价、总订单数/总订单额/总客单价；支持点击表头排序，默认按总订单额倒序；展开后展示医助明细</li>

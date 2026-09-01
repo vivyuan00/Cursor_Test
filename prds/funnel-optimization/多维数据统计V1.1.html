@@ -890,16 +890,16 @@
     };
     const TEAMS=['A组','B组','C组'];
     const ASSISTANTS=[
-      {name:'张医助',team:'A组',wecomId:'zhang_assistant',exposure:1200,f01:820,f02:552,f03:414,f04:276,f05:133,f06:106,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080},
-      {name:'李医助',team:'A组',wecomId:'li_assistant',exposure:1100,f01:760,f02:496,f03:372,f04:248,f05:119,f06:95,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560},
-      {name:'王医助',team:'B组',wecomId:'wang_assistant',exposure:950,f01:680,f02:440,f03:330,f04:220,f05:106,f06:85,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570},
-      {name:'赵医助',team:'B组',wecomId:'zhao_assistant',exposure:880,f01:620,f02:400,f03:300,f04:200,f05:96,f06:77,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060},
-      {name:'刘医助',team:'A组',wecomId:'liu_assistant',exposure:820,f01:580,f02:376,f03:282,f04:188,f05:90,f06:72,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550},
-      {name:'陈医助',team:'C组',wecomId:'chen_assistant',exposure:780,f01:540,f02:350,f03:262,f04:175,f05:84,f06:67,firstOrd:6,firstGmv:4680,revOrd:5,revGmv:6820},
-      {name:'杨医助',team:'C组',wecomId:'yang_assistant',exposure:720,f01:510,f02:331,f03:248,f04:166,f05:80,f06:64,firstOrd:6,firstGmv:4420,revOrd:4,revGmv:6180},
-      {name:'周医助',team:'B组',wecomId:'zhou_assistant',exposure:690,f01:480,f02:312,f03:234,f04:156,f05:75,f06:60,firstOrd:5,firstGmv:3950,revOrd:4,revGmv:5720},
-      {name:'吴医助',team:'B组',wecomId:'wu_assistant',exposure:650,f01:450,f02:292,f03:219,f04:146,f05:70,f06:56,firstOrd:5,firstGmv:3680,revOrd:3,revGmv:4890},
-      {name:'郑医助',team:'C组',wecomId:'zheng_assistant',exposure:610,f01:420,f02:273,f03:205,f04:137,f05:66,f06:53,firstOrd:4,firstGmv:3320,revOrd:3,revGmv:4510}
+      {name:'张医助',team:'A组',wecomId:'zhang_assistant',exposure:1200,f01:820,f02:552,f03:414,dialogRounds:2850,f04:276,f05:133,f06:106,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080},
+      {name:'李医助',team:'A组',wecomId:'li_assistant',exposure:1100,f01:760,f02:496,f03:372,dialogRounds:2660,f04:248,f05:119,f06:95,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560},
+      {name:'王医助',team:'B组',wecomId:'wang_assistant',exposure:950,f01:680,f02:440,f03:330,dialogRounds:2310,f04:220,f05:106,f06:85,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570},
+      {name:'赵医助',team:'B组',wecomId:'zhao_assistant',exposure:880,f01:620,f02:400,f03:300,dialogRounds:2100,f04:200,f05:96,f06:77,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060},
+      {name:'刘医助',team:'A组',wecomId:'liu_assistant',exposure:820,f01:580,f02:376,f03:282,dialogRounds:1960,f04:188,f05:90,f06:72,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550},
+      {name:'陈医助',team:'C组',wecomId:'chen_assistant',exposure:780,f01:540,f02:350,f03:262,dialogRounds:1830,f04:175,f05:84,f06:67,firstOrd:6,firstGmv:4680,revOrd:5,revGmv:6820},
+      {name:'杨医助',team:'C组',wecomId:'yang_assistant',exposure:720,f01:510,f02:331,f03:248,dialogRounds:1720,f04:166,f05:80,f06:64,firstOrd:6,firstGmv:4420,revOrd:4,revGmv:6180},
+      {name:'周医助',team:'B组',wecomId:'zhou_assistant',exposure:690,f01:480,f02:312,f03:234,dialogRounds:1610,f04:156,f05:75,f06:60,firstOrd:5,firstGmv:3950,revOrd:4,revGmv:5720},
+      {name:'吴医助',team:'B组',wecomId:'wu_assistant',exposure:650,f01:450,f02:292,f03:219,dialogRounds:1510,f04:146,f05:70,f06:56,firstOrd:5,firstGmv:3680,revOrd:3,revGmv:4890},
+      {name:'郑医助',team:'C组',wecomId:'zheng_assistant',exposure:610,f01:420,f02:273,f03:205,dialogRounds:1410,f04:137,f05:66,f06:53,firstOrd:4,firstGmv:3320,revOrd:3,revGmv:4510}
     ];
     const CHANNELS=[
       {ch:'baidu_doctor_h5',sub:'SEM投放',product:'舌诊',version:'v3.2',pv:12800,uv:9600,reportCnt:6720,reportUser:5890,addWx:820,payCnt:120},
@@ -1010,6 +1010,8 @@
       '加粉数（报告转化）@医助':'该医助在筛选时段内通过 AI 工具产生报告而新增的加企微人数',
       '开口数':'该医助服务的用户有发送消息的人数',
       '舌象上传数':'该医助服务的用户提交图片的人数',
+      '总对话轮次':'筛选时段内医助与用户完成的对话轮次合计；医助一问用户一答为一轮（连续多问一答、一问连续多答均计为一轮）',
+      '平均对话轮次':'总对话轮次 / 加粉数；加粉数为 0 时展示「—」',
       '开方数':'该医助服务的用户完成初诊病例总结和开方的人数；若一个微信用户有两个就诊人都转化成功算2条',
       '加粉-开方转化率':'开方数 / 加粉数（全量或工具转化，随筛选口径）',
       '支付数@医助':'该医助服务的用户初诊支付成功订单数；若一个微信用户有两个就诊人都转化成功算2条',
@@ -1116,10 +1118,18 @@
       var n=field==='f04'?a.f04:a.f05;
       return scaleAsstConvCount(n);
     }
+    function asstDialogRoundsFromRow(a){
+      return a.dialogRounds||0;
+    }
+    function _fmtAvgDialogRounds(total,fans){
+      return fans?(total/fans).toFixed(1):'—';
+    }
     function _asstEffVal(a,key){
       var fans=asstFansFromRow(a);
       if(key==='exposure') return a.exposure;
       if(key==='f01') return fans;
+      if(key==='dialogRounds') return asstDialogRoundsFromRow(a);
+      if(key==='avgDialogRounds') return fans?asstDialogRoundsFromRow(a)/fans:0;
       if(key==='conv') return fans?asstConvFromRow(a,'f05')/fans:0;
       if(key==='convRx') return fans?asstConvFromRow(a,'f04')/fans:0;
       if(key==='f04') return asstConvFromRow(a,'f04');
@@ -1204,9 +1214,9 @@
     function aggregateTeams(list){
       var map={};
       list.forEach(function(a){
-        if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,f04:0,f05:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,members:[]};
+        if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,dialogRounds:0,f04:0,f05:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,members:[]};
         var t=map[a.team];
-        t.exposure+=a.exposure; t.f01+=a.f01; t.f02+=a.f02; t.f03+=a.f03; t.f04+=a.f04; t.f05+=a.f05;
+        t.exposure+=a.exposure; t.f01+=a.f01; t.f02+=a.f02; t.f03+=a.f03; t.dialogRounds+=a.dialogRounds||0; t.f04+=a.f04; t.f05+=a.f05;
         t.firstOrd+=a.firstOrd; t.firstGmv+=a.firstGmv; t.revOrd+=a.revOrd; t.revGmv+=a.revGmv;
         t.members.push(a);
       });
@@ -1628,7 +1638,7 @@
         '<h2 class="text-xl font-bold">'+h(pageTitle)+'</h2>'+
         (subTabsPre?'<div class="border-b border-slate-100 flex gap-1">'+subTabsPre+'</div>':'')+
         filter+
-        (subTabsPost?'<div class="border-b border-slate-100 flex gap-1">'+subTabsPost+'</div>':'')+
+        (subTabsPost?'<div class="border-b border-slate-100 flex gap-1 justify-center">'+subTabsPost+'</div>':'')+
         content+
       '</div>';
     }
@@ -1662,9 +1672,9 @@
       {name:'线下转介绍',add:310,ydAdd:280,pay:48,ydPay:41,payRate:48/310,ydPayRate:41/280}
     ];
     var HOME_TEAM_TODAY=[
-      {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200},
-      {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120},
-      {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640}
+      {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200,dialogRounds:7020,ydDialogRounds:6630},
+      {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120,dialogRounds:5696,ydDialogRounds:5160},
+      {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640,dialogRounds:3360,ydDialogRounds:2940}
     ].map(function(t){
       return Object.assign({},t,{
         firstConv:t.fans?t.firstOrd/t.fans:0,
@@ -1674,7 +1684,9 @@
         firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
         revAov:t.revOrd?t.revGmv/t.revOrd:0,
         ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
-        ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0
+        ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0,
+        avgDialogRounds:t.fans?t.dialogRounds/t.fans:0,
+        ydAvgDialogRounds:t.ydFans?t.ydDialogRounds/t.ydFans:0
       });
     });
     var HOME_DEAL_SUMMARY={
@@ -1758,6 +1770,7 @@
           _homeTeamMetricCard('初诊客单价',_homeAov(t.firstGmv,t.firstOrd),'',_homeYest(t.ydFirstAov,false,true))+
           _homeTeamMetricCard('复诊客单价',_homeAov(t.revGmv,t.revOrd),'',_homeYest(t.ydRevAov,false,true))+
           _homeTeamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+_homeFmtY(t.totalGmv)+'</b>',_homeYest(t.ydTotalOrd))+
+          _homeTeamMetricCard('平均对话轮次',t.fans?t.avgDialogRounds.toFixed(1):'—','总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>',_homeYest(t.ydAvgDialogRounds,false,false,true))+
           '</div></div></div>';
       }).join('');
       var orderHtml=
@@ -2152,28 +2165,31 @@
       var asstList=filteredAssistants();
       var teams=aggregateTeams(asstList);
       var sortedPayRank=_sortList(asstList,'conv','desc',_asstEffVal);
-      var sortedRxRank=_sortList(asstList,'convRx','desc',_asstEffVal);
+      var avgDialogTopRows=_top5Bars(teams.slice().sort(function(a,b){
+        var af=asstFansFromRow(a),bf=asstFansFromRow(b);
+        var aa=af?asstDialogRoundsFromRow(a)/af:0;
+        var bb=bf?asstDialogRoundsFromRow(b)/bf:0;
+        return bb-aa;
+      }).slice(0,5).map(function(t){
+        var fans=asstFansFromRow(t);
+        var dr=asstDialogRoundsFromRow(t);
+        return {name:t.team,value:fans?dr/fans:0,label:_fmtAvgDialogRounds(dr,fans),tone:'bg-amber-500'};
+      }));
       var payTopRows=sortedPayRank.slice(0,10).map(function(a){var fans=asstFansFromRow(a);var pay=asstConvFromRow(a,'f05');var conv=fans?((pay/fans)*100).toFixed(1):'0.0';var w=Math.round((fans?pay/fans:0)*100/15*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-brand-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
-      var rxTopRows=sortedRxRank.slice(0,10).map(function(a){var fans=asstFansFromRow(a);var rx=asstConvFromRow(a,'f04');var conv=fans?((rx/fans)*100).toFixed(1):'0.0';var w=Math.round((fans?rx/fans:0)*100/40*100);return '<div class="flex items-center gap-2 w-full"><span class="w-16 text-xs font-medium shrink-0">'+h(a.name)+'</span><div class="flex-1 bg-slate-100 rounded h-5 min-w-0"><div class="h-5 rounded bg-emerald-500" style="width:'+Math.min(w,100)+'%"></div></div><span class="w-12 text-xs text-right font-semibold shrink-0">'+conv+'%</span></div>';});
-      var tableTeams=_sortList(teams,sk,sd,function(row,key){
-        if(key==='conv'){var fans=asstFansFromRow(row);return fans?asstConvFromRow(row,'f05')/fans:0;}
-        if(key==='convRx') return row.firstConv;
-        if(key==='f01') return asstFansFromRow(row);
-        if(key==='f04') return asstConvFromRow(row,'f04');
-        if(key==='f05') return asstConvFromRow(row,'f05');
-        return row[key]!=null?row[key]:0;
-      });
+      var tableTeams=_sortList(teams,sk,sd,_asstEffVal);
       var dr=_funnelDateRange();
       var aRows='';
       tableTeams.forEach(function(t){
         var fans=asstFansFromRow(t);
+        var dialogRounds=asstDialogRoundsFromRow(t);
         var rx=asstConvFromRow(t,'f04');
         var pay=asstConvFromRow(t,'f05');
         var conv=fans?((pay/fans)*100).toFixed(1):'0.0';
         var open=!!funnelState.expandedTeams[t.team];
-        aRows+='<tr class="team-row border-t border-slate-100 hover:bg-slate-50">'+_teamToggleCell(t.team,open)+'<td class="px-3 py-2 text-right">'+fmt(t.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(fans)+'</td><td class="px-3 py-2 text-right">'+fmt(t.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(t.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(rx)+'</td><td class="px-3 py-2 text-right">'+fmt(pay)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td><td class="px-3 py-2 text-center">—</td></tr>';
+        aRows+='<tr class="team-row border-t border-slate-100 hover:bg-slate-50">'+_teamToggleCell(t.team,open)+'<td class="px-3 py-2 text-right">'+fmt(fans)+'</td><td class="px-3 py-2 text-right">'+fmt(t.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(t.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(dialogRounds)+'</td><td class="px-3 py-2 text-right">'+_fmtAvgDialogRounds(dialogRounds,fans)+'</td><td class="px-3 py-2 text-right">'+fmt(rx)+'</td><td class="px-3 py-2 text-right">'+fmt(pay)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+conv+'%</td><td class="px-3 py-2 text-center">—</td></tr>';
         _sortList(t.members,sk,sd,_asstEffVal).forEach(function(a){
           var af=asstFansFromRow(a);
+          var adialog=asstDialogRoundsFromRow(a);
           var arx=asstConvFromRow(a,'f04');
           var apay=asstConvFromRow(a,'f05');
           var aconv=af?((apay/af)*100).toFixed(1):'0.0';
@@ -2181,15 +2197,15 @@
             _opsLink(_detailLink('add',dr.start,dr.end,{doctorId:a.wecomId}),'加粉明细')+' '+
             _opsLink(_detailLink('pay',dr.start,dr.end,{doctorId:a.wecomId}),'支付明细')
           );
-          aRows+='<tr class="child-row'+(open?' show':'')+' border-t border-slate-50 hover:bg-slate-50"><td class="px-3 py-2">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(a.exposure)+'</td><td class="px-3 py-2 text-right">'+fmt(af)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(arx)+'</td><td class="px-3 py-2 text-right">'+fmt(apay)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+aconv+'%</td>'+ops+'</tr>';
+          aRows+='<tr class="child-row'+(open?' show':'')+' border-t border-slate-50 hover:bg-slate-50"><td class="px-3 py-2">'+h(a.name)+'</td><td class="px-3 py-2 text-right">'+fmt(af)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f02)+'</td><td class="px-3 py-2 text-right">'+fmt(a.f03)+'</td><td class="px-3 py-2 text-right">'+fmt(adialog)+'</td><td class="px-3 py-2 text-right">'+_fmtAvgDialogRounds(adialog,af)+'</td><td class="px-3 py-2 text-right">'+fmt(arx)+'</td><td class="px-3 py-2 text-right">'+fmt(apay)+'</td><td class="px-3 py-2 text-right font-semibold text-brand-700">'+aconv+'%</td>'+ops+'</tr>';
         });
       });
       return '<div class="space-y-4">'+
         '<div class="aux-charts-row cols-2 req-marker-wrapper"><span class="req-marker" data-id="5">5</span>'+
-          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-开方转化率 Top 排行</p>'+_dualRankBars(rxTopRows)+'</div>'+
+          '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 团队平均对话轮次 Top5</p>'+avgDialogTopRows+'</div>'+
           '<div class="card min-w-0"><p class="text-xs text-slate-400 mb-2">辅助图表 · 加粉-支付转化率 Top 排行</p>'+_dualRankBars(payTopRows)+'</div>'+
         '</div>'+
-        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（默认团队聚合，点击 + 展开医助；点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('团队/医助','团队/医助','px-3 py-2')+_sortableTh('曝光数','曝光数','exposure',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh(addFansColLabel(),addFansAsstTipKey(),'f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数@医助','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'<th class="px-3 py-2 text-center">操作</th></tr></thead><tbody>'+aRows+'</tbody></table></div>'+
+        '<div class="card overflow-x-auto w-full"><h3 class="font-semibold mb-3 text-sm">📋 数据表 <span class="text-xs font-normal text-slate-400">（默认团队聚合，点击 + 展开医助；点击表头指标切换正序/倒序）</span></h3><table class="min-w-full text-sm"><thead><tr class="text-left text-xs text-slate-500 border-b">'+_th('团队/医助','团队/医助','px-3 py-2')+_sortableTh(addFansColLabel(),addFansAsstTipKey(),'f01',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开口数','开口数','f02',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('舌象上传数','舌象上传数','f03',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('总对话轮次','总对话轮次','dialogRounds',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('平均对话轮次','平均对话轮次','avgDialogRounds',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('开方数','开方数','f04',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('支付数','支付数@医助','f05',sk,sd,'eff','px-3 py-2 text-right')+_sortableTh('加粉-支付转化率','加粉-支付转化率','conv',sk,sd,'eff','px-3 py-2 text-right')+'<th class="px-3 py-2 text-center">操作</th></tr></thead><tbody>'+aRows+'</tbody></table></div>'+
       '</div>';
     }
 
@@ -3529,10 +3545,12 @@
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">指标定义</div>
   <ul>
-    <li><strong>曝光数</strong>：企微分配曝光的数量</li>
+    <li><strong>曝光数</strong>：企微分配曝光的数量（<em>数据表不展示</em>）</li>
     <li><strong>加粉数</strong>：该团队/医助在筛选时段内分配到的新加粉好友去重人数</li>
     <li><strong>开口数</strong>：该团队/医助服务的用户主动开口去重人数</li>
     <li><strong>舌象上传数</strong>：该团队/医助服务的用户提交舌象去重人数</li>
+    <li><strong>总对话轮次</strong>：筛选时段内医助与用户完成的对话轮次合计；医助一问用户一答为一轮（连续多问一答、一问连续多答均计为一轮）</li>
+    <li><strong>平均对话轮次</strong>：总对话轮次 / 加粉数；加粉数为 0 时展示「—」</li>
     <li><strong>开方数</strong>：该团队/医助服务的用户完成病例总结和开方的去重人数</li>
     <li><strong>支付数</strong>：该团队/医助服务的用户支付成功去重人数</li>
     <li><strong>加粉-支付转化率</strong>：支付数 / 加粉数</li>
@@ -3542,8 +3560,8 @@
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
     <li><strong>数据表</strong>：默认团队聚合，支持点击表头指标排序（正序/倒序切换），默认按加粉数倒序；展开后展示医助明细</li>
-    <li><strong>排行榜</strong>：医助按加粉-开方转化率、加粉-支付转化率分别排序 Top10，各左 5 + 右 5 双列展示，辅助图表一行两列并排（左开方、右支付）</li>
-    <li><strong>明细表</strong>：团队行汇总曝光数、加粉数、开口数、舌象上传数、开方数、支付数、加粉-支付转化率；展开后每行一个医助</li>
+    <li><strong>排行榜</strong>：团队按 **平均对话轮次** 排序 Top5；医助按 **加粉-支付转化率** 排序 Top10，左 5 + 右 5 双列展示；辅助图表一行两列并排（左平均对话轮次、右支付转化）；<em>不展示</em>加粉-开方转化率 Top 排行</li>
+    <li><strong>明细表</strong>：团队行汇总加粉数、开口数、舌象上传数、总对话轮次、平均对话轮次、开方数、支付数、加粉-支付转化率；展开后每行一个医助（<em>不展示曝光数</em>）</li>
   </ul>
 </div>
 `

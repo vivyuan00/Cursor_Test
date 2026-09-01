@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<!-- deploy: mobile-v1.2-product -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+<title>素灵CRM数据看板 V1.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f4f6f8; --card:#fff; --line:#e6ebf0; --text:#152033; --muted:#708090;
+  --brand:#1f6feb; --brand-soft:#e8f1ff; --up:#0f9d6a; --down:#d94848;
+  --deco:#52c41a; --pill:#1890ff; --granule:#d97706; --amber:#c47a1a;
+  --prebiotic:#8b5cf6; --gut:#06b6d4; --gene:#ec4899; --nutrition:#84cc16;
+  --safe-t:env(safe-area-inset-top,0px);
+  --radius:14px; --shadow:0 6px 18px rgba(21,32,51,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:Manrope,"PingFang SC","Hiragino Sans GB",sans-serif;font-size:12px;line-height:1.5;}
+body{max-width:480px;margin:0 auto;}
+button,input,select{font:inherit;color:inherit;}
+button{border:0;background:none;cursor:pointer;}
+.app{min-height:100vh;padding-bottom:28px;}
+.sticky{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding-top:var(--safe-t);}
+.tabs{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 8px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tabs button{flex:0 0 auto;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;}
+.tabs button.on{background:var(--brand);color:#fff;}
+.page{display:none;padding:12px 12px 8px;animation:fade .2s ease;}
+.page.on{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.sec{margin-bottom:14px;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;}
+.sec-h h2{font-size:14px;font-weight:700;}
+.sec-h .link{font-size:12px;color:var(--brand);font-weight:600;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.kpi{display:block;position:relative;text-align:left;padding:14px 32px 14px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
+.kpi .lab{font-size:12px;color:var(--muted);font-weight:600;padding-right:4px;}
+.kpi .val{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:22px;font-weight:700;margin:8px 0 6px;letter-spacing:-.03em;}
+.kpi-arrow{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:16px;font-weight:800;line-height:22px;text-align:center;pointer-events:none;}
+.kpi .soft{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.4;}
+.triple .cell .soft,.dual .cell .soft{font-size:10px;margin-top:4px;line-height:1.45;color:var(--muted);font-weight:600;}
+.triple .cell .soft b,.dual .cell .soft b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:700;color:var(--muted);}
+.kpi .soft b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:700;color:var(--muted);}
+.team-toggle{width:22px;height:22px;border-radius:6px;background:#f0f4f8;color:var(--brand);font-size:14px;font-weight:800;line-height:22px;text-align:center;flex-shrink:0;cursor:pointer;}
+tr.team-row td:first-child{font-weight:700;background:#f7faff;}
+tr.child-row td:first-child{padding-left:28px;color:var(--muted);font-weight:600;background:#fafbfc;}
+tr.child-row{display:none;}
+tr.child-row.show{display:table-row;}
+tr.child-row td{background:#fafbfc;}
+tr.child-row td:first-child{z-index:2;}
+.delta{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;}
+.delta.up{color:var(--up);background:rgba(15,157,106,.1);}
+.delta.down{color:var(--down);background:rgba(217,72,72,.1);}
+.delta.flat{color:var(--muted);background:#f0f3f6;}
+.yest{display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--muted);margin-top:2px;}
+.yest b{font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--text);margin-left:4px;}
+.filters{display:grid;gap:8px;margin-bottom:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.filters .fg{display:flex;align-items:center;gap:8px;min-width:0;}
+.filters .fg>label{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--muted);width:28px;}
+.filters .fg.fg-grow>label{width:28px;}
+.filters .fg-row{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;min-width:0;padding-bottom:1px;scrollbar-width:none;}
+.filters .fg-row::-webkit-scrollbar{display:none;}
+.filters .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.filters .fg-grid .fg>label{width:28px;}
+.chip{padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:12px;color:var(--muted);font-weight:600;flex:0 0 auto;white-space:nowrap;}
+.chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);}
+.select,.search,.daterange{appearance:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 8px;font-size:12px;width:100%;flex:1;min-width:0;}
+.select{padding-right:22px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23708090' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;}
+.daterange{display:flex;align-items:center;gap:4px;cursor:pointer;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;}
+.daterange .ico{font-size:12px;flex-shrink:0;}
+.daterange .txt{overflow:hidden;text-overflow:ellipsis;}
+.chip-date{display:inline-flex;align-items:center;gap:3px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:12px;color:var(--muted);font-weight:600;flex:0 0 auto;white-space:nowrap;max-width:148px;}
+.chip-date.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);}
+.chip-date .txt{overflow:hidden;text-overflow:ellipsis;}
+.date-modal{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:80;display:none;align-items:flex-end;justify-content:center;}
+.date-modal.on{display:flex;}
+.date-sheet{width:100%;max-width:480px;background:#fff;border-radius:16px 16px 0 0;padding:16px;box-shadow:0 -8px 30px rgba(0,0,0,.12);}
+.date-sheet h3{font-size:15px;margin-bottom:12px;}
+.date-sheet .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.date-sheet label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;}
+.date-sheet input[type=date]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px;}
+.date-actions{display:flex;gap:8px;}
+.date-actions button{flex:1;padding:11px;border-radius:10px;font-weight:700;font-size:12px;}
+.date-actions .cancel{background:#f3f5f7;color:var(--muted);}
+.date-actions .ok{background:var(--brand);color:#fff;}
+.row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:0;}
+.badge{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:800;background:var(--brand-soft);color:var(--brand);flex-shrink:0;}
+.badge.g{background:#fff4e5;color:var(--amber);}
+.main{flex:1;min-width:0;}
+.main .n{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nums{text-align:right;flex-shrink:0;}
+.nums .v{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;}
+.dual{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;}
+.triple{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px;}
+.dual .cell,.triple .cell{background:#f7f9fb;border-radius:10px;padding:8px;}
+.dual .cell .k,.triple .cell .k{font-size:12px;color:var(--muted);}
+.dual .cell .x,.triple .cell .x{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:700;margin-top:4px;letter-spacing:-.02em;}
+.triple .cell .x{font-size:15px;}
+.team-soft-inline{font-size:10px;color:var(--muted);font-weight:600;line-height:1.5;margin-top:4px;white-space:normal;word-break:break-word;}
+.team-soft-inline b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:700;color:var(--muted);}
+.team-metric-scroll{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;margin:6px -12px 0;padding:0 12px 2px;scrollbar-width:none;--team-card-gap:8px;}
+.team-metric-scroll::-webkit-scrollbar{display:none;}
+.team-metric-card{flex:0 0 calc((100% - 2 * var(--team-card-gap)) / 2.5);width:calc((100% - 2 * var(--team-card-gap)) / 2.5);background:#f7f9fb;border-radius:10px;padding:8px;scroll-snap-align:start;box-sizing:border-box;}
+.team-metric-card .k{font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;}
+.team-metric-card .x{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:17px;font-weight:700;margin-top:4px;letter-spacing:-.02em;}
+.team-metric-card .soft.team-soft-inline{font-size:10px;line-height:1.5;}
+.bar{height:6px;border-radius:99px;background:#edf1f5;overflow:hidden;margin-top:6px;}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#6aa4ff);}
+.bar.warm>i{background:linear-gradient(90deg,#d97706,#f5b567);}
+.chart-title{font-size:12px;font-weight:700;margin-bottom:8px;}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.card-head .chart-title{margin-bottom:0;flex:1;min-width:0;line-height:1.4;}
+.card-head .order-trend-toggle{margin-bottom:0;flex-shrink:0;}
+.card-head .order-trend-toggle button{font-size:11px;padding:3px 8px;white-space:nowrap;}
+.mini-rank{padding:6px 18px 4px;overflow:hidden;}
+.bar-chart{padding:6px 18px 4px;overflow:hidden;display:flex;flex-direction:column;gap:11px;}
+.bar-chart .hr{display:grid;grid-template-columns:22px 70px minmax(0,1fr) 58px;column-gap:12px;align-items:center;}
+.bar-chart .hr .rk{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:800;background:var(--brand-soft);color:var(--brand);}
+.bar-chart .hr .rk.g{background:#fff4e5;color:var(--amber);}
+.bar-chart .hr .nm{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-chart .hr .track{width:100%;max-width:132px;height:8px;border-radius:99px;background:#edf1f5;overflow:hidden;}
+.bar-chart .hr .fill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#6aa4ff);min-width:4px;}
+.bar-chart .hr .fill.warm{background:linear-gradient(90deg,#d97706,#f5b567);}
+.bar-chart .hr .fill.teal{background:linear-gradient(90deg,#0d9488,#2dd4bf);}
+.bar-chart .hr .val{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;text-align:right;color:var(--text);white-space:nowrap;}
+.polyline-wrap{height:168px;position:relative;padding:4px 0 0;}
+.polyline-wrap.fullBleed{height:200px;margin:0 -4px;padding:8px 0 0;overflow:visible;}
+.polyline-wrap svg{width:100%;height:100%;display:block;overflow:visible;}
+.polyline-wrap .hit{cursor:pointer;}
+.polyline-wrap .tip{position:absolute;z-index:5;pointer-events:none;background:rgba(21,32,51,.92);color:#fff;font-size:12px;font-weight:700;padding:6px 8px;border-radius:8px;transform:translate(-50%,-120%);white-space:nowrap;opacity:0;transition:opacity .12s;left:50%;top:20%;box-shadow:0 6px 16px rgba(15,23,42,.2);}
+.polyline-wrap .tip.on{opacity:1;}
+.polyline-wrap .tip.multi{white-space:normal;font-weight:600;font-size:12px;transform:translate(-50%,-12%);min-width:120px;max-width:70%;}
+.poly-x{display:flex;justify-content:space-between;margin-top:2px;font-size:10px;color:var(--muted);padding-left:36px;}
+.poly-x.fullBleed{padding-left:40px;padding-right:8px;}
+.h-scroll{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:4px;margin:0 -12px;padding-left:12px;padding-right:12px;scrollbar-width:none;}
+.h-scroll::-webkit-scrollbar{display:none;}
+.h-scroll>.card{flex:0 0 calc(25% - 8px);min-width:200px;scroll-snap-align:start;}
+.vbar-wrap{height:170px;display:flex;align-items:flex-end;justify-content:space-around;gap:8px;padding:8px 4px 0;border-bottom:1px solid var(--line);}
+.vbar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:72px;}
+.vbar-pile{width:100%;max-width:42px;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden;min-height:4px;}
+.vbar-pile .seg{width:100%;position:relative;min-height:4px;}
+.vbar-pile .seg .lbl{position:absolute;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;white-space:nowrap;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.25);}
+.vbar-pile .seg.deco{background:var(--deco);}
+.vbar-pile .seg.pill{background:var(--pill);}
+.vbar-pile .seg.granule{background:var(--granule);}
+.vbar-pile .seg.prebiotic{background:var(--prebiotic);}
+.vbar-pile .seg.gut{background:var(--gut);}
+.vbar-pile .seg.gene{background:var(--gene);}
+.vbar-pile .seg.nutrition{background:var(--nutrition);}
+.vbar-col .xlab{font-size:12px;color:var(--muted);font-weight:600;}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:12px;color:var(--muted);margin-top:8px;justify-content:center;}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle;}
+.stack-col{display:grid;gap:10px;}
+.order-trend-toggle{display:flex;gap:6px;margin-bottom:8px;}
+.order-trend-toggle button{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:600;}
+.order-trend-toggle button.on{background:#0d9488;color:#fff;border-color:#0d9488;}
+.multi-legend{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:12px;color:var(--muted);margin-top:8px;justify-content:center;}
+.multi-legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle;}
+.deal-trend-expand{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--muted);font-weight:600;justify-content:center;}
+.deal-trend-expand input{width:16px;height:16px;accent-color:#0d9488;}
+.mini-rank.full{max-height:none;}
+.table-wrap{overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:#fff;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1280px;}
+.sub-tabs.tabs{padding:0 12px 10px;background:rgba(255,255,255,.96);justify-content:center;}
+table.asst-table{min-width:1980px;}
+table.asst-eff-table{min-width:1320px;}
+th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+th{background:#f7f9fc;color:var(--muted);font-weight:700;position:sticky;top:0;z-index:1;}
+thead tr:nth-child(2) th{top:34px;z-index:1;}
+thead tr:nth-child(3) th{top:68px;z-index:1;}
+th.th-group{text-align:center;}
+th.th-sub{text-align:center;font-size:11px;}
+table.deal-table{min-width:2280px;}
+td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:2;padding-left:10px;}
+th:first-child{background:#f7f9fc;z-index:5;}
+tr:last-child td{border-bottom:0;}
+.hint{font-size:12px;color:var(--muted);margin:6px 2px 0;line-height:1.45;}
+.order-soft{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.order-item{padding:12px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);margin-bottom:8px;}
+.order-item:last-child{margin-bottom:0;}
+.order-item .t{display:flex;justify-content:space-between;font-size:12px;font-weight:700;}
+/* login & profile */
+.auth-gate{min-height:100vh;display:none;padding:calc(28px + var(--safe-t)) 20px 32px;background:linear-gradient(165deg,#f7faff 0%,#eef3f8 45%,#f4f6f8 100%);}
+.auth-gate.on{display:flex;flex-direction:column;justify-content:center;}
+.auth-brand{text-align:center;margin-bottom:28px;}
+.auth-brand .mark{width:56px;height:56px;margin:0 auto 14px;border-radius:16px;background:linear-gradient(145deg,#1f6feb,#4b8fff);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:800;box-shadow:0 10px 24px rgba(31,111,235,.28);}
+.auth-brand h1{font-size:20px;font-weight:800;letter-spacing:-.02em;}
+.auth-brand p{font-size:12px;color:var(--muted);margin-top:6px;}
+.auth-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:var(--shadow);}
+.auth-field{margin-bottom:12px;}
+.auth-field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.auth-field input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;font-size:12px;background:#fafbfc;}
+.auth-field input:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(31,111,235,.12);}
+.auth-row{display:flex;align-items:center;justify-content:space-between;margin:4px 0 16px;}
+.auth-check{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600;cursor:pointer;}
+.auth-check input{width:14px;height:14px;accent-color:var(--brand);}
+.auth-err{display:none;font-size:12px;color:var(--down);margin:-6px 0 10px;font-weight:600;}
+.auth-err.on{display:block;}
+.auth-submit{width:100%;padding:13px;border-radius:12px;background:var(--brand);color:#fff;font-size:14px;font-weight:800;}
+.auth-hint{margin-top:12px;font-size:12px;color:var(--muted);text-align:center;line-height:1.5;}
+.app.hidden{display:none;}
+.sticky-bar{display:flex;align-items:center;gap:6px;padding-right:10px;}
+.sticky-bar .tabs{flex:1;min-width:0;padding-right:0;}
+.user-entry{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#1f6feb,#6aa4ff);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;margin:8px 4px 8px 0;}
+.profile-head{display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(145deg,#1f6feb,#4b8fff);border-radius:16px;color:#fff;margin-bottom:14px;box-shadow:0 10px 24px rgba(31,111,235,.22);}
+.profile-head .avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:18px;font-weight:800;}
+.profile-head .name{font-size:18px;font-weight:800;}
+.profile-head .sub{font-size:12px;opacity:.85;margin-top:4px;}
+.profile-list{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.profile-item{display:flex;justify-content:space-between;align-items:center;padding:14px 14px;border-bottom:1px solid var(--line);font-size:12px;}
+.profile-item:last-child{border-bottom:0;}
+.profile-item .k{color:var(--muted);font-weight:600;}
+.profile-item .v{font-weight:700;text-align:right;}
+.logout-btn{width:100%;margin-top:16px;padding:13px;border-radius:12px;background:#fff;border:1px solid #f0c9c9;color:var(--down);font-size:14px;font-weight:800;}
+.profile-back{font-size:12px;color:var(--brand);font-weight:700;margin-bottom:10px;}
+.th-inner{display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;white-space:nowrap;}
+th:first-child .th-inner{justify-content:flex-start;}
+.th-help{width:16px;height:16px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:10px;font-weight:800;line-height:16px;text-align:center;padding:0;flex-shrink:0;cursor:pointer;}
+.th-help:active{background:var(--brand);color:#fff;}
+.tip-modal{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:90;display:none;align-items:flex-end;justify-content:center;}
+.tip-modal.on{display:flex;}
+.tip-sheet{width:100%;max-width:480px;background:#fff;border-radius:16px 16px 0 0;padding:18px 16px 20px;box-shadow:0 -8px 30px rgba(0,0,0,.12);}
+.tip-sheet h3{font-size:15px;font-weight:800;margin-bottom:10px;color:var(--text);}
+.tip-sheet p{font-size:12px;color:var(--muted);line-height:1.6;white-space:pre-wrap;}
+.tip-sheet .ok{width:100%;margin-top:16px;padding:11px;border-radius:10px;background:var(--brand);color:#fff;font-weight:700;font-size:12px;}
+/* Annotation System */
+.req-marker{display:inline-block;vertical-align:top;background-color:rgb(250,173,20);color:#fff;font-size:10px;font-weight:bold;line-height:14px;padding:0 4px;border-radius:2px;cursor:pointer;position:absolute;top:-8px;right:-4px;z-index:10000;}
+.req-marker.req-marker-inline{position:static;display:inline-block;vertical-align:middle;margin-right:4px;}
+.req-marker-wrapper{position:relative;}
+.req-tooltip{position:absolute;background-color:#f0efef;border-radius:4px;width:450px;max-height:600px;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:9999;padding:16px;line-height:1.6;font-size:13px;}
+.req-tooltip-header{font-weight:bold;font-size:14px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #d0d0d0;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.req-tooltip-close{cursor:pointer;font-weight:bold;color:#666;font-size:16px;line-height:1;padding:4px;flex-shrink:0;}
+.req-tooltip-close:hover{color:#333;}
+.req-tooltip-content p{margin-bottom:12px;}
+.req-tooltip-content strong{font-weight:bold;}
+.req-tooltip-content em{font-style:italic;}
+.req-tooltip-content ul,.req-tooltip-content ol{margin-left:20px;margin-bottom:12px;}
+.req-tooltip-content li{margin-bottom:4px;}
+.req-tooltip-content blockquote{border-left:3px solid #ccc;padding-left:12px;margin:12px 0;color:#666;}
+.req-tooltip-section{margin-bottom:16px;}
+.req-tooltip-section-title{font-weight:bold;margin-bottom:8px;color:#333;}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.status-dot.up{background:var(--up);}
+.status-dot.down{background:var(--down);}
+</style>
+</head>
+<body>
+<div class="auth-gate on" id="loginView">
+  <div class="auth-brand">
+    <div class="mark">素</div>
+    <h1>素灵CRM数据看板</h1>
+    <p>经营数据一站式查看</p>
+  </div>
+  <form class="auth-card req-marker-wrapper" id="loginForm" autocomplete="on">
+    <span class="req-marker" data-id="1">1</span>
+    <div class="auth-field">
+      <label for="loginAccount">账号</label>
+      <input id="loginAccount" name="username" type="text" placeholder="请输入账号" autocomplete="username"/>
+    </div>
+    <div class="auth-field">
+      <label for="loginPwd">密码</label>
+      <input id="loginPwd" name="password" type="password" placeholder="请输入密码" autocomplete="current-password"/>
+    </div>
+    <div class="auth-err" id="loginErr">账号或密码不能为空</div>
+    <div class="auth-row">
+      <label class="auth-check"><input type="checkbox" id="rememberMe"/>记住我</label>
+    </div>
+    <button class="auth-submit" type="submit">登录</button>
+    <div class="auth-hint">演示账号：admin / 123456</div>
+  </form>
+</div>
+
+<div class="app hidden" id="appView">
+  <div class="sticky req-marker-wrapper">
+    <span class="req-marker" data-id="2">2</span>
+    <div class="sticky-bar">
+      <nav class="tabs" id="tabs">
+        <button class="on" data-go="home">首页</button>
+        <button data-go="fans">每日转化</button>
+        <button data-go="deal">成交</button>
+        <button data-go="channel">渠道</button>
+        <button data-go="asst">团队</button>
+      </nav>
+      <button type="button" class="user-entry" id="userEntry" title="个人中心">管</button>
+    </div>
+  </div>
+
+  <section class="page on" data-page="home">
+    <div class="sec req-marker-wrapper">
+      <span class="req-marker" data-id="3">3</span>
+      <div class="sec-h"><h2>今日实时</h2></div>
+      <div class="grid2">
+        <button class="kpi" data-go="fans">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
+          <div class="lab">加粉数（全量）</div>
+          <div class="val" id="hFans">—</div>
+          <span id="hFansD"></span>
+        </button>
+        <button class="kpi" data-go="deal">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
+          <div class="lab">成交订单数</div>
+          <div class="val" id="hOrd">—</div>
+          <span id="hOrdD"></span>
+        </button>
+        <button class="kpi" data-go="deal">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
+          <div class="lab">初诊转化率</div>
+          <div class="val" id="hFirstConv">—</div>
+          <div class="soft" id="hFirstOrd">初诊订单数 <b>—</b></div>
+          <span id="hFirstConvD"></span>
+        </button>
+        <button class="kpi" data-go="deal">
+          <span class="kpi-arrow" aria-hidden="true">›</span>
+          <div class="lab">成交GMV</div>
+          <div class="val" id="hGmv">—</div>
+          <div class="soft" id="hNetGmv">净GMV <b>—</b></div>
+          <span id="hGmvD"></span>
+        </button>
+      </div>
+    </div>
+    <div class="sec req-marker-wrapper">
+      <span class="req-marker" data-id="4">4</span>
+      <div class="sec-h"><h2>今日订单核心数据</h2><button class="link" data-go="deal">成交 ›</button></div>
+      <div class="card" id="hOrders"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>今日分渠道核心数据</h2><button class="link" data-go="channel">渠道 ›</button></div>
+      <div class="card" id="hCh"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>今日团队 Top</h2><button class="link" data-go="asst">团队 ›</button></div>
+      <div class="card" id="hTeam"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>近7天医助成交 Top</h2><button class="link" data-go="asst">团队 ›</button></div>
+      <div class="stack-col">
+        <div class="card"><div class="chart-title">总订单数 Top5 <span style="font-weight:600;color:var(--muted);font-size:11px;">（中药+商品）</span></div><div class="bar-chart" id="hAsstOrd"></div></div>
+        <div class="card"><div class="chart-title">总订单金额 Top5 <span style="font-weight:600;color:var(--muted);font-size:11px;">（中药+商品）</span></div><div class="bar-chart" id="hAsstGmv"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-page="fans">
+    <div class="req-marker-wrapper"><span class="req-marker" data-id="5">5</span><div class="filters" id="fFans"></div></div>
+    <div class="sec card">
+      <div class="chart-title">加粉数趋势 <span style="font-weight:600;color:var(--muted);font-size:11px;">（加粉数·全量）</span></div>
+      <div class="polyline-wrap" id="fansTrend">
+        <div class="tip" id="fansTip"></div>
+      </div>
+      <div class="poly-x" id="fansX"></div>
+    </div>
+    <div class="sec card">
+      <div class="chart-title">平均获客成本趋势</div>
+      <div class="polyline-wrap" id="cacTrend">
+        <div class="tip" id="cacTip"></div>
+      </div>
+      <div class="poly-x" id="cacX"></div>
+    </div>
+    <div class="sec card">
+      <div class="chart-title">初诊转化率趋势</div>
+      <div class="polyline-wrap" id="firstConvTrend">
+        <div class="tip" id="firstConvTip"></div>
+      </div>
+      <div class="poly-x" id="firstConvX"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h req-marker-wrapper"><span class="req-marker" data-id="10">10</span><h2>数据表</h2></div>
+      <div class="table-wrap" id="fansTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="deal">
+    <div class="req-marker-wrapper"><span class="req-marker" data-id="6">6</span><div class="filters" id="fDeal"></div></div>
+    <div class="sec card">
+      <div class="card-head">
+        <div class="chart-title">趋势折线图</div>
+        <div class="order-trend-toggle" id="orderTrendToggle">
+          <button type="button" data-mode="gmv" class="on">订单金额</button>
+          <button type="button" data-mode="cnt">订单数</button>
+        </div>
+      </div>
+      <div class="polyline-wrap fullBleed" id="dealTrend">
+        <div class="tip multi" id="dealTip"></div>
+      </div>
+      <div class="poly-x fullBleed" id="dealX"></div>
+      <div class="multi-legend" id="dealLegend"></div>
+      <label class="deal-trend-expand"><input type="checkbox" id="dealTrendMedDetail"/> 展开剂型数据</label>
+    </div>
+    <div class="sec card">
+      <div class="card-head">
+        <div class="chart-title">订单数据统计</div>
+        <div class="order-trend-toggle" id="dealStackToggle">
+          <button type="button" data-mode="gmv" class="on">订单金额</button>
+          <button type="button" data-mode="cnt">订单数</button>
+        </div>
+      </div>
+      <div class="vbar-wrap" id="dealStack"></div>
+      <div class="legend">
+        <span><i style="background:var(--deco)"></i>汤剂</span><span><i style="background:var(--pill)"></i>丸剂</span><span><i style="background:var(--granule)"></i>颗粒剂</span>
+        <span><i style="background:var(--prebiotic)"></i>益生元</span><span><i style="background:var(--gut)"></i>肠道检测</span><span><i style="background:var(--gene)"></i>基因检测</span><span><i style="background:var(--nutrition)"></i>64款营养剂</span>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="dealTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="channel">
+    <div class="req-marker-wrapper"><span class="req-marker" data-id="7">7</span><div class="filters" id="fCh"></div></div>
+    <div class="sec stack-col">
+      <div class="card"><div class="chart-title">渠道加粉 Top5</div><div class="bar-chart" id="chFansTop"></div></div>
+      <div class="card"><div class="chart-title">初诊成交 Top5</div><div class="bar-chart" id="chPayTop"></div></div>
+      <div class="card"><div class="chart-title">获客成本 Top5</div><div class="bar-chart" id="chCacTop"></div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-h"><h2>数据表</h2></div>
+      <div class="table-wrap" id="chTable"></div>
+    </div>
+  </section>
+
+  <section class="page" data-page="asst">
+    <div class="req-marker-wrapper"><span class="req-marker" data-id="8">8</span><div class="filters" id="fAsst"></div></div>
+    <div class="tabs sub-tabs" id="asstSubTabs">
+      <button type="button" data-asst-sub="trade" class="on">医助成交</button>
+      <button type="button" data-asst-sub="efficiency">医助人效</button>
+    </div>
+    <div id="asstTradePanel">
+      <div class="sec stack-col">
+        <div class="card"><div class="chart-title">团队初诊转化率 Top5</div><div class="bar-chart" id="asstConvTop"></div></div>
+        <div class="card">
+          <div class="card-head">
+            <div class="chart-title">团队客单价 Top5</div>
+            <div class="order-trend-toggle" id="asstAovToggle">
+              <button type="button" data-mode="first" class="on">初诊客单价</button>
+              <button type="button" data-mode="rev">复诊客单价</button>
+            </div>
+          </div>
+          <div class="bar-chart" id="asstAovBar"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="chart-title">总订单 Top5 <span style="font-weight:600;color:var(--muted);font-size:11px;">（中药+商品）</span></div>
+            <div class="order-trend-toggle" id="asstOrdToggle">
+              <button type="button" data-mode="gmv" class="on">订单金额</button>
+              <button type="button" data-mode="cnt">订单数</button>
+            </div>
+          </div>
+          <div class="bar-chart" id="asstOrdBar"></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-h"><h2>数据表</h2></div>
+        <div class="table-wrap" id="asstTradeTable"></div>
+      </div>
+    </div>
+    <div id="asstEffPanel" hidden>
+      <div class="sec stack-col">
+        <div class="card"><div class="chart-title">团队平均对话轮次 Top5</div><div class="bar-chart" id="asstEffDialogTop"></div></div>
+        <div class="card"><div class="chart-title">加粉-支付转化率 Top5</div><div class="bar-chart" id="asstEffPayTop"></div></div>
+      </div>
+      <div class="sec">
+        <div class="sec-h"><h2>数据表</h2></div>
+        <div class="table-wrap" id="asstEffTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" data-page="profile">
+    <div class="req-marker-wrapper"><span class="req-marker" data-id="9">9</span><button type="button" class="profile-back" data-go="home">‹ 返回首页</button></div>
+    <div class="profile-head">
+      <div class="avatar" id="pfAvatar">管</div>
+      <div>
+        <div class="name" id="pfName">—</div>
+        <div class="sub">素灵CRM数据看板</div>
+      </div>
+    </div>
+    <div class="profile-list">
+      <div class="profile-item"><span class="k">用户名</span><span class="v" id="pfUser">—</span></div>
+      <div class="profile-item"><span class="k">手机号</span><span class="v" id="pfPhone">—</span></div>
+      <div class="profile-item"><span class="k">所属部门</span><span class="v" id="pfDept">—</span></div>
+      <div class="profile-item"><span class="k">所属角色</span><span class="v" id="pfRole">—</span></div>
+    </div>
+    <button type="button" class="logout-btn" id="logoutBtn">退出登录</button>
+  </section>
+</div>
+
+<div class="date-modal" id="dateModal">
+  <div class="date-sheet">
+    <h3>选择日期范围</h3>
+    <div class="row2">
+      <div><label>开始日期</label><input type="date" id="dateStart"/></div>
+      <div><label>结束日期</label><input type="date" id="dateEnd"/></div>
+    </div>
+    <div class="date-actions">
+      <button class="cancel" type="button" id="dateCancel">取消</button>
+      <button class="ok" type="button" id="dateOk">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="tip-modal" id="tipModal">
+  <div class="tip-sheet">
+    <h3 id="tipTitle">字段说明</h3>
+    <p id="tipBody"></p>
+    <button type="button" class="ok" id="tipClose">知道了</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const AUTH_KEY='suling_crm_auth_v1';
+  const REMEMBER_KEY='suling_crm_remember_v1';
+  const DEMO_USER={
+    account:'admin',
+    password:'123456',
+    name:'王管理',
+    phone:'138****6688',
+    dept:'经营分析部',
+    role:'老板看板管理员'
+  };
+
+  function loadSession(){
+    try{
+      const raw=sessionStorage.getItem(AUTH_KEY)||localStorage.getItem(AUTH_KEY);
+      return raw?JSON.parse(raw):null;
+    }catch(e){return null;}
+  }
+  function saveSession(user,remember){
+    const payload=JSON.stringify(user);
+    sessionStorage.setItem(AUTH_KEY,payload);
+    if(remember) localStorage.setItem(AUTH_KEY,payload);
+    else localStorage.removeItem(AUTH_KEY);
+  }
+  function clearSession(){
+    sessionStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(AUTH_KEY);
+  }
+  function loadRemember(){
+    try{return JSON.parse(localStorage.getItem(REMEMBER_KEY)||'null');}catch(e){return null;}
+  }
+  function saveRemember(account,password,on){
+    if(on) localStorage.setItem(REMEMBER_KEY,JSON.stringify({account,password}));
+    else localStorage.removeItem(REMEMBER_KEY);
+  }
+
+  const loginView=document.getElementById('loginView');
+  const appView=document.getElementById('appView');
+  let currentUser=loadSession();
+
+  function showApp(){
+    loginView.classList.remove('on');
+    appView.classList.remove('hidden');
+    const short=(currentUser.name||currentUser.account||'用').slice(0,1);
+    document.getElementById('userEntry').textContent=short;
+  }
+  function showLogin(){
+    appView.classList.add('hidden');
+    loginView.classList.add('on');
+    const rem=loadRemember();
+    if(rem){
+      document.getElementById('loginAccount').value=rem.account||'';
+      document.getElementById('loginPwd').value=rem.password||'';
+      document.getElementById('rememberMe').checked=true;
+    }
+  }
+  function doLogin(account,password,remember){
+    const err=document.getElementById('loginErr');
+    if(!account||!password){
+      err.textContent='账号或密码不能为空';
+      err.classList.add('on');
+      return false;
+    }
+    // 原型：admin/123456；其它非空账号也可登录演示
+    if(account===DEMO_USER.account && password!==DEMO_USER.password){
+      err.textContent='账号或密码错误';
+      err.classList.add('on');
+      return false;
+    }
+    err.classList.remove('on');
+    currentUser={
+      account,
+      name:account===DEMO_USER.account?DEMO_USER.name:account,
+      phone:account===DEMO_USER.account?DEMO_USER.phone:'139****0000',
+      dept:account===DEMO_USER.account?DEMO_USER.dept:'未分配部门',
+      role:account===DEMO_USER.account?DEMO_USER.role:'数据查看员'
+    };
+    saveSession(currentUser,remember);
+    saveRemember(account,password,remember);
+    showApp();
+    go('home');
+    return true;
+  }
+  function doLogout(){
+    clearSession();
+    currentUser=null;
+    showLogin();
+  }
+
+  document.getElementById('loginForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    doLogin(
+      document.getElementById('loginAccount').value.trim(),
+      document.getElementById('loginPwd').value,
+      document.getElementById('rememberMe').checked
+    );
+  });
+  document.getElementById('userEntry').addEventListener('click',()=>go('profile'));
+  document.getElementById('logoutBtn').addEventListener('click',()=>{
+    if(confirm('确认退出登录？')) doLogout();
+  });
+
+  function ymd(d){const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());}
+  function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+  const today=new Date(); today.setHours(0,0,0,0);
+  const defaultStart=ymd(addDays(today,-29));
+  const defaultEnd=ymd(today);
+
+  const FANS_TODAY=520, FANS_YDAY=478;
+  const MED_ORD_TODAY=83, MED_ORD_YDAY=76, PROD_ORD_TODAY=28, PROD_ORD_YDAY=24;
+  const ORD_TODAY=MED_ORD_TODAY+PROD_ORD_TODAY, ORD_YDAY=MED_ORD_YDAY+PROD_ORD_YDAY;
+  const MED_GMV_TODAY=85770, MED_GMV_YDAY=81240, PROD_GMV_TODAY=32200, PROD_GMV_YDAY=28800;
+  const GMV_TODAY=MED_GMV_TODAY+PROD_GMV_TODAY, GMV_YDAY=MED_GMV_YDAY+PROD_GMV_YDAY;
+  const NET_GMV_TODAY=82180+PROD_GMV_TODAY*0.98, NET_GMV_YDAY=77890+PROD_GMV_YDAY*0.98, REFUND_ORD_TODAY=1;
+  const FIRST_ORD_TODAY=45, FIRST_ORD_YDAY=42, FIRST_CONV_TODAY=FIRST_ORD_TODAY/FANS_TODAY, FIRST_CONV_YDAY=FIRST_ORD_YDAY/FANS_YDAY;
+  const CHANNELS=[
+    {ch:'douyin_info',name:'抖音信息流',plat:'抖音',add:1510,ydAdd:1380,pay:245,ydPay:220,payGmv:91800,revOrd:198,revGmv:75600,spend:68200,clicks:55100},
+    {ch:'baidu_doctor_h5',name:'百度医生H5',plat:'百度',add:1330,ydAdd:1410,pay:205,ydPay:198,payGmv:76800,revOrd:172,revGmv:62400,spend:52800,clicks:42600},
+    {ch:'weixin_mp',name:'微信公众号',plat:'微信',add:730,ydAdd:690,pay:115,ydPay:108,payGmv:43100,revOrd:96,revGmv:34800,spend:18600,clicks:15200},
+    {ch:'kuaishou_info',name:'快手信息流',plat:'快手',add:420,ydAdd:455,pay:62,ydPay:70,payGmv:23200,revOrd:52,revGmv:18900,spend:12400,clicks:9800},
+    {ch:'offline_intro',name:'线下转介绍',plat:'线下',add:310,ydAdd:280,pay:48,ydPay:41,payGmv:17900,revOrd:38,revGmv:14200,spend:0,clicks:0},
+    {ch:'xiaohongshu',name:'小红书',plat:'小红书',add:260,ydAdd:250,pay:36,ydPay:33,payGmv:13400,revOrd:28,revGmv:9800,spend:8900,clicks:7200}
+  ].map(c=>{
+    const rate=c.clicks?c.add/c.clicks:0, cac=c.add?c.spend/c.add:0, payRate=c.add?c.pay/c.add:0;
+    const ydPayRate=c.ydAdd?c.ydPay/c.ydAdd:0;
+    const totalOrd=c.pay+c.revOrd, totalGmv=c.payGmv+c.revGmv;
+    return Object.assign(c,{rate,cac,payRate,ydPayRate,totalOrd,totalGmv});
+  });
+  function chOptions(){
+    return CHANNELS.map(c=>'<option value="'+c.ch+'">'+c.name+'</option>').join('');
+  }
+  const DATES=Array.from({length:30},(_,i)=>{
+    const d=addDays(today,i-29);
+    const z=n=>String(n).padStart(2,'0');
+    return z(d.getMonth()+1)+'-'+z(d.getDate());
+  });
+  const DAILY_FANS=DATES.map((d,i)=>{
+    const wave=Math.sin(i/2.1)*0.18+Math.cos(i/3.4)*0.1;
+    const s=0.92+wave+(i%5===0?0.08:0)-(i%7===0?0.06:0);
+    const spend=Math.round(19800*(1+wave*0.35));
+    const clicks=Math.round(4600*(1+wave*0.28));
+    const add=Math.round(680*(1+wave*0.42)+(i%4===2?90:-30));
+    const addFull=Math.round(add*1.15+(i%3)*8);
+    const cac=add?Number((spend/add).toFixed(1)):0;
+    const firstOrd=Math.max(8, Math.round(addFull*0.068+(i%4===0?3:-1)));
+    const revOrd=Math.max(6, Math.round(addFull*0.052+(i%5===2?2:-1)));
+    const firstGmv=Math.round(firstOrd*780+(i%3)*120);
+    const revGmv=Math.round(revOrd*920+(i%4)*90);
+    const totalOrd=firstOrd+revOrd, totalGmv=firstGmv+revGmv;
+    const firstConv=addFull?firstOrd/addFull:0;
+    return {d,spend,clicks,add,addFull,rate:clicks?add/clicks:0,cac,firstOrd,firstConv,revOrd,firstGmv,revGmv,totalOrd,totalGmv};
+  });
+
+  const METRIC_TIPS={
+    '日期':'业务日，按自然日统计。',
+    '投流消耗':'当日/该渠道在筛选时段内的投放消耗金额（元）；无投流时展示「—」。',
+    '行为点击':'当日/该渠道在筛选时段内的投放行为点击次数；无投流时展示「—」。',
+    '加粉数（渠道汇总）':'各投放/该渠道新增加企微好友人数（含 AI 工具添加及投放企微卡等）；用于计算投流转化与获客成本。',
+    '加粉数（全量）':'全部渠道新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；按加粉事件计；与加粉数趋势图口径一致。',
+    '行为点击-加粉转化率':'加粉数（渠道汇总）÷ 行为点击；行为点击为 0 时展示「—」。',
+    '平均获客成本':'投流消耗 ÷ 加粉数（渠道汇总）；无投流或加粉为 0 时展示「—」。',
+    '合计单':'当日全部支付成功订单数（初诊 + 复诊）。',
+    '合计额':'当日全部支付成功订单实付金额合计（元）。',
+    '初诊单':'当日/该医助初诊支付成功订单数。',
+    '初诊额':'当日/该医助初诊订单实付金额合计（元）。',
+    '复诊单':'当日/该医助复诊支付成功订单数。',
+    '复诊额':'当日/该医助复诊订单实付金额合计（元）。',
+    '汤剂单':'当日药物类型为汤剂的支付成功订单数。',
+    '汤剂额':'当日汤剂订单实付金额合计（元）。',
+    '丸剂单':'当日药物类型为丸剂的支付成功订单数。',
+    '丸剂额':'当日丸剂订单实付金额合计（元）。',
+    '颗粒剂单':'当日药物类型为颗粒剂的支付成功订单数。',
+    '颗粒剂额':'当日颗粒剂订单实付金额合计（元）。',
+    '渠道':'渠道中文名称。',
+    '初诊成交订单':'该渠道/初诊支付成功订单数。',
+    '加粉-初诊成交转化率':'初诊成交订单 ÷ 加粉数（渠道汇总）；加粉为 0 时展示「—」。',
+    '初诊转化率':'初诊订单数 ÷ 进粉数；进粉为 0 时展示「—」。',
+    '初诊订单数':'初诊支付成功订单数。',
+    '初诊成交额':'初诊订单实付金额合计（元）。',
+    '成交订单数':'当日全部支付成功订单数（初诊中药+复诊中药+商品）；副行展示昨日同口径数值。',
+    '商品订单数':'当日商品类支付成功订单数（益生元、肠道检测、基因检测、64款营养剂）。',
+    '商品订单额':'当日商品类订单实付金额合计（元）。',
+    '中药总订单数':'当日初诊中药订单数 + 复诊中药订单数。',
+    '中药总订单额':'初诊中药 + 复诊中药实付金额合计（元）。',
+    '成交GMV':'全部支付成功订单实付金额合计（中药+商品，元）；弱字段展示净 GMV（扣除退款）。',
+    '团队':'医助所属团队名称。',
+    '医助':'医助姓名。',
+    '加粉':'该医助在筛选时段内加粉好友人数（与权限及筛选范围一致）。',
+    '曝光数':'AI智能体报告中分配企微曝光的数量（仅包含 CRM 医助分配场景，不包含巧仓等第三方分配）。',
+    '开口数':'该医助服务的用户中，有发送消息的去重人数。',
+    '舌象上传数':'该医助服务的用户中，有上传舌象图片的人数。',
+    '总对话轮次':'筛选时段内医助与用户完成的对话轮次合计；医助一问用户一答为一轮（连续多问一答、一问连续多答均计为一轮）。',
+    '平均对话轮次':'总对话轮次 / 加粉数；加粉数为 0 时展示「—」。',
+    '开方数':'该医助服务的用户中，完成初诊病例总结和开方的人数。',
+    '加粉-开方转化率':'开方数 ÷ 加粉数；加粉为 0 时展示「—」。',
+    '支付数':'该医助服务的用户初诊支付成功订单数。',
+    '加粉-支付转化率':'支付数 ÷ 加粉数；加粉为 0 时展示「—」。',
+    '总单':'初诊中药单 + 复诊中药单 + 商品单。',
+    '总额':'初诊中药额 + 复诊中药额 + 商品额。',
+    '净GMV':'扣除退款后的成交 GMV（元，含商品）。',
+    '初诊客单价':'初诊成交额 ÷ 初诊订单数；初诊订单数为 0 时展示「—」。',
+    '复诊客单价':'复诊额 ÷ 复诊单；复诊单为 0 时展示「—」。',
+    '总客单价':'总订单额 ÷ 总订单数；总订单数为 0 时展示「—」。',
+    '接线医助':'当日该团队内有加粉记录的医助人数；仅在团队汇总行展示。',
+    '医助平均初诊成单量':'初诊订单数 ÷ 接粉医助数（有加粉记录的医助人数）；接粉医助数为 0 时展示「—」。'
+  };
+
+  function thHelp(label, tipKey){
+    const key=tipKey||label;
+    return '<th><span class="th-inner">'+label+'<button type="button" class="th-help" data-tip-key="'+key+'" aria-label="'+label+'说明">?</button></span></th>';
+  }
+  function buildThead(cols){
+    return '<thead><tr>'+cols.map(function(c){
+      return Array.isArray(c)?thHelp(c[0],c[1]):thHelp(c,c);
+    }).join('')+'</tr></thead>';
+  }
+  function thCell(label, opts){
+    opts=opts||{};
+    let a='';
+    if(opts.rowspan) a+=' rowspan="'+opts.rowspan+'"';
+    if(opts.colspan) a+=' colspan="'+opts.colspan+'"';
+    if(opts.cls) a+=' class="'+opts.cls+'"';
+    const tip=opts.tip||label;
+    const inner=opts.help!==false
+      ?'<span class="th-inner">'+label+'<button type="button" class="th-help" data-tip-key="'+tip+'" aria-label="'+label+'说明">?</button></span>'
+      :'<span class="th-inner">'+label+'</span>';
+    return '<th'+a+'>'+inner+'</th>';
+  }
+  function buildDealThead(){
+    const medLabels=['汤剂','丸剂','颗粒剂','合计'];
+    const prodLabels=PRODUCT_KEYS.map(p=>p.label).concat(['合计']);
+    const medRow=medLabels.map(l=>thCell(l,{colspan:2,cls:'th-sub',help:false})).join('');
+    const prodRow=prodLabels.map(l=>thCell(l,{colspan:2,cls:'th-sub',help:false})).join('');
+    const leafRow=medLabels.map(()=>
+      thCell('订单数',{tip:'合计单'})+thCell('金额',{tip:'合计额'})
+    ).join('');
+    const prodLeaf=prodLabels.map(()=>
+      thCell('订单数',{tip:'商品订单数'})+thCell('金额',{tip:'商品订单额'})
+    ).join('');
+    return '<thead><tr>'+
+      thCell('日期',{rowspan:3,tip:'日期'})+
+      thCell('初诊（中药）',{colspan:8,cls:'th-group',help:false})+
+      thCell('复诊（中药）',{colspan:8,cls:'th-group',help:false})+
+      thCell('中药合计',{colspan:8,cls:'th-group',help:false})+
+      thCell('商品订单',{colspan:10,cls:'th-group',help:false})+
+      thCell('全部合计',{colspan:2,cls:'th-group',help:false})+
+      '</tr><tr>'+medRow+medRow+medRow+prodRow+'</tr><tr>'+leafRow+leafRow+leafRow+prodLeaf+
+      thCell('订单数',{tip:'总单'})+thCell('金额',{tip:'总额'})+
+      '</tr></thead>';
+  }
+  function dealPair(cnt, gmv){
+    return '<td>'+cnt+'</td><td>'+fmtY(gmv)+'</td>';
+  }
+  function dealProductPairs(x){
+    let h='';
+    PRODUCT_KEYS.forEach(p=>{ h+=dealPair(x[p.key], x[p.key+'G']); });
+    h+=dealPair(x.prodCnt, x.prodG);
+    return h;
+  }
+  function dealTableRow(x){
+    return '<tr><td>'+x.d+'</td>'+
+      dealPair(x.firstDeco,x.firstDecoG)+dealPair(x.firstPill,x.firstPillG)+dealPair(x.firstGranule,x.firstGranuleG)+dealPair(x.first,x.firstG)+
+      dealPair(x.revDeco,x.revDecoG)+dealPair(x.revPill,x.revPillG)+dealPair(x.revGranule,x.revGranuleG)+dealPair(x.rev,x.revG)+
+      dealPair(x.deco,x.decoG)+dealPair(x.pill,x.pillG)+dealPair(x.granule,x.granuleG)+dealPair(x.medTotal,x.medTotalG)+
+      dealProductPairs(x)+
+      dealPair(x.total,x.totalG)+
+      '</tr>';
+  }
+  function openTipModal(key){
+    const title=document.getElementById('tipTitle');
+    const body=document.getElementById('tipBody');
+    title.textContent=key;
+    body.textContent=METRIC_TIPS[key]||'暂无说明';
+    document.getElementById('tipModal').classList.add('on');
+  }
+  function closeTipModal(){
+    document.getElementById('tipModal').classList.remove('on');
+  }
+  const DEAL_SUMMARY={
+    first:{deco:22,pill:14,granule:9,decoG:16700,pillG:10000,granuleG:6780},
+    rev:{deco:21,pill:10,granule:7,decoG:20000,pillG:18000,granuleG:14290},
+    product:{prebiotic:8,gutTest:5,geneTest:3,nutrition:12,prebioticG:3200,gutTestG:4500,geneTestG:8900,nutritionG:15600}
+  };
+  DEAL_SUMMARY.first.cnt=DEAL_SUMMARY.first.deco+DEAL_SUMMARY.first.pill+DEAL_SUMMARY.first.granule;
+  DEAL_SUMMARY.first.gmv=DEAL_SUMMARY.first.decoG+DEAL_SUMMARY.first.pillG+DEAL_SUMMARY.first.granuleG;
+  DEAL_SUMMARY.rev.cnt=DEAL_SUMMARY.rev.deco+DEAL_SUMMARY.rev.pill+DEAL_SUMMARY.rev.granule;
+  DEAL_SUMMARY.rev.gmv=DEAL_SUMMARY.rev.decoG+DEAL_SUMMARY.rev.pillG+DEAL_SUMMARY.rev.granuleG;
+  DEAL_SUMMARY.total={
+    deco:DEAL_SUMMARY.first.deco+DEAL_SUMMARY.rev.deco,
+    pill:DEAL_SUMMARY.first.pill+DEAL_SUMMARY.rev.pill,
+    granule:DEAL_SUMMARY.first.granule+DEAL_SUMMARY.rev.granule,
+    decoG:DEAL_SUMMARY.first.decoG+DEAL_SUMMARY.rev.decoG,
+    pillG:DEAL_SUMMARY.first.pillG+DEAL_SUMMARY.rev.pillG,
+    granuleG:DEAL_SUMMARY.first.granuleG+DEAL_SUMMARY.rev.granuleG
+  };
+  DEAL_SUMMARY.total.cnt=DEAL_SUMMARY.first.cnt+DEAL_SUMMARY.rev.cnt;
+  DEAL_SUMMARY.total.gmv=DEAL_SUMMARY.first.gmv+DEAL_SUMMARY.rev.gmv;
+  DEAL_SUMMARY.product.cnt=DEAL_SUMMARY.product.prebiotic+DEAL_SUMMARY.product.gutTest+DEAL_SUMMARY.product.geneTest+DEAL_SUMMARY.product.nutrition;
+  DEAL_SUMMARY.product.gmv=DEAL_SUMMARY.product.prebioticG+DEAL_SUMMARY.product.gutTestG+DEAL_SUMMARY.product.geneTestG+DEAL_SUMMARY.product.nutritionG;
+  DEAL_SUMMARY.all={cnt:DEAL_SUMMARY.total.cnt+DEAL_SUMMARY.product.cnt, gmv:DEAL_SUMMARY.total.gmv+DEAL_SUMMARY.product.gmv};
+  function splitMed3(total){
+    const deco=Math.round(total*0.5), pill=Math.round(total*0.3), granule=Math.max(0,total-deco-pill);
+    return {deco,pill,granule};
+  }
+  function splitMed3G(total){
+    const decoG=Math.round(total*0.5), pillG=Math.round(total*0.32), granuleG=Math.max(0,total-decoG-pillG);
+    return {decoG,pillG,granuleG};
+  }
+  const PRODUCT_KEYS=[
+    {key:'prebiotic',seg:'prebiotic',label:'益生元'},
+    {key:'gutTest',seg:'gut',label:'肠道检测'},
+    {key:'geneTest',seg:'gene',label:'基因检测'},
+    {key:'nutrition',seg:'nutrition',label:'64款营养剂'}
+  ];
+  function sumProductRow(r){
+    let cnt=0, gmv=0;
+    PRODUCT_KEYS.forEach(p=>{ cnt+=r[p.key]||0; gmv+=r[p.key+'G']||0; });
+    return {cnt, gmv};
+  }
+  function splitProduct4(total){
+    const prebiotic=Math.round(total*0.28), gutTest=Math.round(total*0.18), geneTest=Math.round(total*0.12);
+    const nutrition=Math.max(0, total-prebiotic-gutTest-geneTest);
+    return {prebiotic, gutTest, geneTest, nutrition};
+  }
+  function splitProduct4G(total){
+    const prebioticG=Math.round(total*0.1), gutTestG=Math.round(total*0.14), geneTestG=Math.round(total*0.28);
+    const nutritionG=Math.max(0, total-prebioticG-gutTestG-geneTestG);
+    return {prebioticG, gutTestG, geneTestG, nutritionG};
+  }
+  function enrichAssistant(a){
+    const medOrd=a.firstOrd+a.revOrd, medGmv=a.firstGmv+a.revGmv;
+    const prod=sumProductRow(a);
+    return Object.assign({},a,{
+      medOrd, medGmv,
+      productOrd:prod.cnt, productGmv:prod.gmv,
+      totalOrd:medOrd+prod.cnt, totalGmv:medGmv+prod.gmv
+    });
+  }
+  const DAILY_ORD=DATES.map((d,i)=>{
+    const wave=Math.sin(i/2.4)*0.2+Math.cos(i/4.1)*0.12;
+    const first=Math.max(18, Math.round(36*(1+wave)+(i%6===0?8:-2)));
+    const rev=Math.max(14, Math.round(30*(1+wave*0.9)+(i%5===1?6:-3)));
+    const fm=splitMed3(first), rm=splitMed3(rev);
+    const firstDeco=fm.deco, firstPill=fm.pill, firstGranule=fm.granule;
+    const revDeco=rm.deco, revPill=rm.pill, revGranule=rm.granule;
+    const firstG=Math.round(30000*(1+wave*0.25)+i*120);
+    const revG=Math.round(42000*(1+wave*0.3)+i*160);
+    const prodCnt=Math.max(6, Math.round(22*(1+wave*0.35)+(i%4===1?3:-1)));
+    const prodG=Math.round(prodCnt*1150+(i%5)*180);
+    const fmg=splitMed3G(firstG), rmg=splitMed3G(revG);
+    const pm=splitProduct4(prodCnt), pg=splitProduct4G(prodG);
+    const firstDecoG=fmg.decoG, firstPillG=fmg.pillG, firstGranuleG=fmg.granuleG;
+    const revDecoG=rmg.decoG, revPillG=rmg.pillG, revGranuleG=rmg.granuleG;
+    const medTotal=first+rev, medTotalG=firstG+revG, allTotal=medTotal+prodCnt, allTotalG=medTotalG+prodG;
+    return {
+      d,first,rev,medTotal,medTotalG,prodCnt,prodG,total:allTotal,totalG:allTotalG,
+      firstG,revG,
+      firstDeco,firstPill,firstGranule,revDeco,revPill,revGranule,
+      firstDecoG,firstPillG,firstGranuleG,revDecoG,revPillG,revGranuleG,
+      deco:firstDeco+revDeco,pill:firstPill+revPill,granule:firstGranule+revGranule,
+      decoG:firstDecoG+revDecoG,pillG:firstPillG+revPillG,granuleG:firstGranuleG+revGranuleG,
+      prebiotic:pm.prebiotic,gutTest:pm.gutTest,geneTest:pm.geneTest,nutrition:pm.nutrition,
+      prebioticG:pg.prebioticG,gutTestG:pg.gutTestG,geneTestG:pg.geneTestG,nutritionG:pg.nutritionG
+    };
+  });
+  const ASSISTANTS=[
+    {name:'张医助',team:'A组',wecomId:'zhang_assistant',exposure:1200,f01:820,f02:552,f03:414,dialogRounds:2850,f04:276,f05:133,firstOrd:12,firstGmv:8940,revOrd:8,revGmv:12080,prebiotic:3,gutTest:2,geneTest:1,nutrition:4,prebioticG:1200,gutTestG:1800,geneTestG:2900,nutritionG:5200},
+    {name:'李医助',team:'A组',wecomId:'li_assistant',exposure:1100,f01:760,f02:496,f03:372,dialogRounds:2660,f04:248,f05:119,firstOrd:10,firstGmv:7420,revOrd:9,revGmv:13560,prebiotic:2,gutTest:1,geneTest:1,nutrition:3,prebioticG:800,gutTestG:900,geneTestG:2900,nutritionG:3900},
+    {name:'王医助',team:'B组',wecomId:'wang_assistant',exposure:950,f01:680,f02:440,f03:330,dialogRounds:2310,f04:220,f05:106,firstOrd:9,firstGmv:6690,revOrd:7,revGmv:10570,prebiotic:2,gutTest:2,geneTest:0,nutrition:3,prebioticG:800,gutTestG:1800,geneTestG:0,nutritionG:3900},
+    {name:'赵医助',team:'B组',wecomId:'zhao_assistant',exposure:880,f01:620,f02:400,f03:300,dialogRounds:2100,f04:200,f05:96,firstOrd:8,firstGmv:5960,revOrd:6,revGmv:9060,prebiotic:1,gutTest:1,geneTest:1,nutrition:2,prebioticG:400,gutTestG:900,geneTestG:2900,nutritionG:2600},
+    {name:'刘医助',team:'A组',wecomId:'liu_assistant',exposure:820,f01:580,f02:376,f03:282,dialogRounds:1960,f04:188,f05:90,firstOrd:7,firstGmv:5210,revOrd:5,revGmv:7550,prebiotic:2,gutTest:1,geneTest:0,nutrition:2,prebioticG:800,gutTestG:900,geneTestG:0,nutritionG:2600},
+    {name:'陈医助',team:'C组',wecomId:'chen_assistant',exposure:780,f01:540,f02:350,f03:262,dialogRounds:1830,f04:175,f05:84,firstOrd:6,firstGmv:4680,revOrd:5,revGmv:6820,prebiotic:1,gutTest:1,geneTest:0,nutrition:2,prebioticG:400,gutTestG:900,geneTestG:0,nutritionG:2600},
+    {name:'杨医助',team:'C组',wecomId:'yang_assistant',exposure:720,f01:510,f02:331,f03:248,dialogRounds:1720,f04:166,f05:80,firstOrd:6,firstGmv:4420,revOrd:4,revGmv:6180,prebiotic:1,gutTest:0,geneTest:0,nutrition:2,prebioticG:400,gutTestG:0,geneTestG:0,nutritionG:2600},
+    {name:'周医助',team:'B组',wecomId:'zhou_assistant',exposure:690,f01:480,f02:312,f03:234,dialogRounds:1610,f04:156,f05:75,firstOrd:5,firstGmv:3950,revOrd:4,revGmv:5720,prebiotic:1,gutTest:1,geneTest:0,nutrition:1,prebioticG:400,gutTestG:900,geneTestG:0,nutritionG:1300}
+  ].map(enrichAssistant).map(a=>({...a,firstConv:a.f01?a.firstOrd/a.f01:0}));
+
+  const TEAM_TODAY=[
+    {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,medOrd:52,ydMedOrd:48,medGmv:48560,ydMedGmv:45200,productOrd:14,productGmv:16800,ydProductOrd:12,ydProductGmv:15200,dialogRounds:7020,ydDialogRounds:6630},
+    {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,medOrd:41,ydMedOrd:43,medGmv:39280,ydMedGmv:40120,productOrd:10,productGmv:9800,ydProductOrd:9,ydProductGmv:8900,dialogRounds:5696,ydDialogRounds:5160},
+    {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,medOrd:23,ydMedOrd:21,medGmv:22180,ydMedGmv:20640,productOrd:4,productGmv:5600,ydProductOrd:3,ydProductGmv:4200,dialogRounds:3360,ydDialogRounds:2940}
+  ].map(t=>({
+    ...t,
+    totalOrd:t.medOrd+t.productOrd,
+    ydTotalOrd:t.ydMedOrd+t.ydProductOrd,
+    totalGmv:t.medGmv+t.productGmv,
+    ydTotalGmv:t.ydMedGmv+t.ydProductGmv,
+    firstConv:t.fans?t.firstOrd/t.fans:0,
+    ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
+    avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
+    ydAvgFirstOrdPerAsst:t.ydWireAsst?t.ydFirstOrd/t.ydWireAsst:0,
+    firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
+    revAov:t.revOrd?t.revGmv/t.revOrd:0,
+    ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
+    ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0,
+    avgDialogRounds:t.fans?t.dialogRounds/t.fans:0,
+    ydAvgDialogRounds:t.ydFans?t.ydDialogRounds/t.ydFans:0
+  }));
+
+  const TEAMS=['A组','B组','C组'];
+  const ASST_CH=[];
+  TEAMS.forEach(team=>{
+    const members=ASSISTANTS.filter(a=>a.team===team);
+    CHANNELS.slice(0,4).forEach((ch,ci)=>{
+      const seed=(team.charCodeAt(0)+ci*17)%7;
+      let fans=0, firstOrd=0, revOrd=0, firstGmv=0, revGmv=0;
+      members.forEach((a,ai)=>{
+        const f=Math.round(a.f01*(0.08+seed*0.012+ai*0.015));
+        const fo=Math.max(1, Math.round(f*(0.06+seed*0.008)));
+        const ro=Math.max(0, Math.round(fo*(0.55+seed*0.05)));
+        fans+=f;
+        firstOrd+=fo;
+        revOrd+=ro;
+        firstGmv+=fo*(720+seed*40);
+        revGmv+=ro*(880+seed*30);
+      });
+      ASST_CH.push({
+        team, ch:ch.ch, chName:ch.name,
+        fans, firstOrd, firstGmv, revOrd, revGmv,
+        totalOrd:firstOrd+revOrd, totalGmv:firstGmv+revGmv,
+        firstConv:fans?firstOrd/fans:0
+      });
+    });
+  });
+
+  const state={
+    page:'home',
+    fans:{start:defaultStart,end:defaultEnd,plat:'全部',ch:'全部',team:'全部'},
+    deal:{start:defaultStart,end:defaultEnd,plat:'全部',ch:'全部',team:'全部'},
+    channel:{quick:'today',plat:'全部',ch:'全部',team:'全部',start:defaultStart,end:defaultEnd},
+    asst:{quick:'today',team:'全部',q:'',start:defaultStart,end:defaultEnd},
+    expandedTeams:{},
+    expandedChannels:{},
+    dateTarget:null,
+    orderTrendMode:'gmv',
+    dealStackMode:'gmv',
+    dealTrendMedDetail:false,
+    asstOrdMode:'gmv',
+    asstAovMode:'first',
+    asstSub:'trade'
+  };
+
+  function productSoftLine(r){
+    return PRODUCT_KEYS.map(p=>p.label+' '+fmt(r[p.key]||0)+' 单 / '+fmtY(r[p.key+'G']||0)).join('　·　');
+  }
+  function medSoftLine(r){
+    const seg=(lab,n,g)=>lab+' '+fmt(n)+' 单 / '+fmtY(g);
+    return seg('汤剂',r.deco,r.decoG)+'　·　'+seg('丸剂',r.pill,r.pillG)+'　·　'+seg('颗粒剂',r.granule,r.granuleG);
+  }
+  const fmt=n=>Number(n).toLocaleString('zh-CN');
+  const fmtY=n=>'¥'+fmt(Math.round(n));
+  const aov=(gmv,cnt)=>cnt?fmtY(gmv/cnt):'—';
+  const pct=n=>(n*100).toFixed(1)+'%';
+  const fmtAvgDialog=(total,fans)=>fans?(total/fans).toFixed(1):'—';
+  function yestEl(prev){
+    if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
+    return '<span class="yest">昨日 <b>'+fmt(prev)+'</b></span>';
+  }
+  function yestPct(prev){
+    if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
+    return '<span class="yest">昨日 <b>'+pct(prev)+'</b></span>';
+  }
+  function yestY(prev){
+    if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
+    return '<span class="yest">昨日 <b>'+fmtY(prev)+'</b></span>';
+  }
+  function yestDec(prev, digits){
+    if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
+    return '<span class="yest">昨日 <b>'+Number(prev).toFixed(digits!=null?digits:1)+'</b></span>';
+  }
+  function setYest(id,prev){
+    const el=document.getElementById(id); if(!el) return;
+    const w=document.createElement('div'); w.innerHTML=yestEl(prev);
+    const n=w.firstChild; n.id=id; el.replaceWith(n);
+  }
+  function setYestY(id,prev){
+    const el=document.getElementById(id); if(!el) return;
+    const w=document.createElement('div'); w.innerHTML=yestY(prev);
+    const n=w.firstChild; n.id=id; el.replaceWith(n);
+  }
+  function rankRows(list,labelFn,pctFn,warm){
+    return list.map((a,i)=>'<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+a.name+'</div><div class="bar'+(warm?' warm':'')+'"><i style="width:'+Math.round(pctFn(a)*100)+'%"></i></div></div><div class="nums"><div class="v">'+labelFn(a)+'</div></div></div>').join('');
+  }
+  function barChart(el, items, opts){
+    // 横向条形图：Top 排序、最多 5 条、不滚动；条长受控
+    opts=opts||{};
+    const tone=opts.tone||'';
+    const list=(items||[]).slice(0,5);
+    if(!list.length){el.innerHTML='<div class="hint">暂无数据</div>';return;}
+    const max=Math.max(...list.map(i=>i.value),1);
+    el.innerHTML=list.map((it,i)=>{
+      const w=Math.max(8, Math.round((it.value/max)*100*0.72));
+      return '<div class="hr"><div class="rk'+(i===0?' g':'')+'">'+(i+1)+'</div>'+
+        '<div class="nm" title="'+it.name+'">'+it.name+'</div>'+
+        '<div class="track"><i class="fill '+tone+'" style="width:'+w+'%"></i></div>'+
+        '<div class="val">'+(it.label!=null?it.label:it.value)+'</div></div>';
+    }).join('');
+  }
+  function rangeLabel(st){
+    const short=s=>s&&s.length>=10?s.slice(5): (s||'—');
+    return short(st.start)+' ~ '+short(st.end);
+  }
+  function teamMetricCard(k,x,soft,yest){
+    return '<div class="team-metric-card"><div class="k">'+k+'</div><div class="x">'+x+'</div>'+
+      (soft?'<div class="soft team-soft-inline">'+soft+'</div>':'')+yest+'</div>';
+  }
+  function bindTeamScrollSync(){
+    const rows=document.querySelectorAll('#hTeam .team-metric-scroll');
+    if(rows.length<2) return;
+    let syncing=false;
+    rows.forEach(row=>{
+      row.addEventListener('scroll',()=>{
+        if(syncing) return;
+        syncing=true;
+        const left=row.scrollLeft;
+        rows.forEach(r=>{if(r!==row) r.scrollLeft=left;});
+        syncing=false;
+      },{passive:true});
+    });
+  }
+
+  function go(page){
+    if(!currentUser && page!=='login'){showLogin();return;}
+    state.page=page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.dataset.page===page));
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.go===page));
+    render(); window.scrollTo(0,0);
+  }
+
+  function openDateRange(key){
+    state.dateTarget=key;
+    const st=state[key];
+    document.getElementById('dateStart').value=st.start||defaultStart;
+    document.getElementById('dateEnd').value=st.end||defaultEnd;
+    document.getElementById('dateModal').classList.add('on');
+  }
+  document.getElementById('dateCancel').onclick=()=>document.getElementById('dateModal').classList.remove('on');
+  document.getElementById('dateOk').onclick=()=>{
+    const s=document.getElementById('dateStart').value;
+    const e=document.getElementById('dateEnd').value;
+    if(s&&e&&s>e){alert('开始日期不能晚于结束日期');return;}
+    if(state.dateTarget){
+      const st=state[state.dateTarget];
+      st.start=s; st.end=e;
+      if('quick' in st) st.quick='custom';
+    }
+    document.getElementById('dateModal').classList.remove('on');
+    render();
+  };
+  document.getElementById('dateModal').addEventListener('click',e=>{
+    if(e.target.id==='dateModal') e.currentTarget.classList.remove('on');
+  });
+
+  function filterRange(el,key){
+    const st=state[key];
+    el.innerHTML=
+      '<div class="fg-grid">'+
+      '<div class="fg"><label>时间</label><button type="button" class="daterange" data-open-range="'+key+'"><span class="ico">📅</span><span class="txt">'+rangeLabel(st)+'</span></button></div>'+
+      '<div class="fg"><label>平台</label><select class="select" data-k="plat"><option>全部</option><option>抖音</option><option>百度</option><option>微信</option><option>快手</option><option>小红书</option></select></div>'+
+      '<div class="fg"><label>渠道</label><select class="select" data-k="ch"><option value="全部">全部</option>'+chOptions()+'</select></div>'+
+      '<div class="fg"><label>团队</label><select class="select" data-k="team"><option>全部</option><option>A组</option><option>B组</option><option>C组</option></select></div>'+
+      '</div>';
+    el.querySelector('[data-open-range]').onclick=()=>openDateRange(key);
+    el.querySelectorAll('select[data-k]').forEach(s=>{s.value=st[s.dataset.k]||'全部';s.onchange=()=>{st[s.dataset.k]=s.value;render();};});
+  }
+
+  function customDateLabel(st){
+    return st.quick==='custom' ? rangeLabel(st) : '自定义';
+  }
+
+  function filterQuick(el,key,opts){
+    const st=state[key];
+    let html='<div class="fg fg-grow"><label>时间</label><div class="fg-row">';
+    [['today','今日'],['yest','昨日'],['d7','近7天'],['d30','近30天']].forEach(([k,l])=>{
+      html+='<button type="button" class="chip'+(st.quick===k?' on':'')+'" data-k="quick" data-v="'+k+'">'+l+'</button>';
+    });
+    html+='<button type="button" class="chip-date'+(st.quick==='custom'?' on':'')+'" data-open-range="'+key+'"><span>📅</span><span class="txt">'+customDateLabel(st)+'</span></button></div></div>';
+    const extras=[];
+    if(opts.platform) extras.push('<div class="fg"><label>平台</label><select class="select" data-k="plat"><option>全部</option><option>抖音</option><option>百度</option><option>微信</option><option>快手</option><option>小红书</option></select></div>');
+    if(opts.channel) extras.push('<div class="fg"><label>渠道</label><select class="select" data-k="ch"><option value="全部">全部</option>'+chOptions()+'</select></div>');
+    if(opts.team) extras.push('<div class="fg"><label>团队</label><select class="select" data-k="team"><option>全部</option><option>A组</option><option>B组</option><option>C组</option></select></div>');
+    if(opts.search) extras.push('<div class="fg"><label>医助</label><input class="search" data-k="q" placeholder="搜索医助" value="'+(st.q||'')+'"/></div>');
+    if(extras.length) html+='<div class="fg-grid">'+extras.join('')+'</div>';
+    el.innerHTML=html;
+    el.querySelectorAll('.chip[data-k]').forEach(b=>b.onclick=()=>{st.quick=b.dataset.v;render();});
+    el.querySelector('[data-open-range]').onclick=()=>openDateRange(key);
+    el.querySelectorAll('select[data-k]').forEach(s=>{s.value=st[s.dataset.k]||'全部';s.onchange=()=>{st[s.dataset.k]=s.value;render();};});
+    const q=el.querySelector('input.search'); if(q) q.oninput=()=>{st.q=q.value.trim();render();};
+  }
+
+  function renderHome(){
+    document.getElementById('hFans').textContent=fmt(FANS_TODAY);
+    setYest('hFansD',FANS_YDAY);
+    document.getElementById('hOrd').textContent=fmt(ORD_TODAY);
+    setYest('hOrdD',ORD_YDAY);
+    document.getElementById('hGmv').textContent=fmtY(GMV_TODAY);
+    document.getElementById('hNetGmv').innerHTML='净GMV <b>'+fmtY(NET_GMV_TODAY)+'</b>（退'+REFUND_ORD_TODAY+'单）';
+    setYestY('hGmvD',GMV_YDAY);
+    document.getElementById('hFirstConv').textContent=pct(FIRST_CONV_TODAY);
+    document.getElementById('hFirstOrd').innerHTML='初诊订单数 <b>'+fmt(FIRST_ORD_TODAY)+'</b>';
+    const hfcD=document.getElementById('hFirstConvD');
+    hfcD.outerHTML='<span class="yest" id="hFirstConvD">昨日 <b>'+pct(FIRST_CONV_YDAY)+'</b></span>';
+    const top=CHANNELS.slice().sort((a,b)=>b.add-a.add).slice(0,5);
+    document.getElementById('hCh').innerHTML=top.map((c,i)=>
+      '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+c.name+'</div>'+
+      '<div class="triple">'+
+      '<div class="cell"><div class="k">今日加粉</div><div class="x">'+fmt(c.add)+'</div>'+yestEl(c.ydAdd)+'</div>'+
+      '<div class="cell"><div class="k">今日初诊成交</div><div class="x">'+fmt(c.pay)+'</div>'+yestEl(c.ydPay)+'</div>'+
+      '<div class="cell"><div class="k">初诊转化率</div><div class="x">'+pct(c.payRate)+'</div>'+yestPct(c.ydPayRate)+'</div>'+
+      '</div></div></div>'
+    ).join('');
+    const teamTop=TEAM_TODAY.slice().sort((a,b)=>b.firstConv-a.firstConv);
+    document.getElementById('hTeam').innerHTML=teamTop.map((t,i)=>
+      '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+t.team+'</div>'+
+      '<div class="team-metric-scroll">'+
+      teamMetricCard('初诊转化率',pct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',yestPct(t.ydFirstConv))+
+      teamMetricCard('医助平均初诊成单量',t.wireAsst?t.avgFirstOrdPerAsst.toFixed(1):'—','接诊医助数 <b>'+fmt(t.wireAsst)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',yestDec(t.ydAvgFirstOrdPerAsst,1))+
+      teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'',yestY(t.ydFirstAov))+
+      teamMetricCard('复诊客单价',aov(t.revGmv,t.revOrd),'',yestY(t.ydRevAov))+
+      teamMetricCard('中药总订单数',fmt(t.medOrd),'中药总订单额 <b>'+fmtY(t.medGmv)+'</b>',yestEl(t.ydMedOrd))+
+      teamMetricCard('商品订单数',fmt(t.productOrd),'商品订单金额 <b>'+fmtY(t.productGmv)+'</b>',yestEl(t.ydProductOrd))+
+      teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.fans),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>',yestDec(t.ydAvgDialogRounds,1))+
+      '</div></div></div>'
+    ).join('');
+    bindTeamScrollSync();
+    document.getElementById('hOrders').innerHTML=
+      '<div class="order-item"><div class="t"><span>初诊（中药） '+DEAL_SUMMARY.first.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.first.gmv)+'</span></div><div class="order-soft">'+medSoftLine(DEAL_SUMMARY.first)+'</div></div>'+
+      '<div class="order-item"><div class="t"><span>复诊（中药） '+DEAL_SUMMARY.rev.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.rev.gmv)+'</span></div><div class="order-soft">'+medSoftLine(DEAL_SUMMARY.rev)+'</div></div>'+
+      '<div class="order-item"><div class="t"><span>商品 '+DEAL_SUMMARY.product.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.product.gmv)+'</span></div><div class="order-soft">'+productSoftLine(DEAL_SUMMARY.product)+'</div></div>';
+    const byO=ASSISTANTS.slice().sort((a,b)=>b.totalOrd-a.totalOrd).slice(0,5);
+    const byG=ASSISTANTS.slice().sort((a,b)=>b.totalGmv-a.totalGmv).slice(0,5);
+    barChart(document.getElementById('hAsstOrd'), byO.map(a=>({name:a.name,value:a.totalOrd,label:fmt(a.totalOrd)})));
+    barChart(document.getElementById('hAsstGmv'), byG.map(a=>({name:a.name,value:a.totalGmv,label:fmtY(a.totalGmv)})), {tone:'warm'});
+  }
+
+  function sparseX(labels){
+    const n=labels.length;
+    const step=n>16?Math.ceil(n/6): (n>10?2:1);
+    return labels.map((lab,i)=>{
+      const show=i===0||i===n-1||i%step===0;
+      return '<span>'+(show?lab.slice(3):'')+'</span>';
+    }).join('');
+  }
+
+  function lineChart(el, tipEl, points, opts){
+    // points: [{label, value}]  opts: {money?:boolean, color?:string}
+    opts=opts||{};
+    const color=opts.color||'#1f6feb';
+    const values=points.map(p=>p.value);
+    const w=360, h=150;
+    const padL=36, padR=10, padT=14, padB=10;
+    const max=opts.pct?Math.max(...values,0.001)*1.15:Math.max(...values)*1.12;
+    const min=opts.pct?Math.max(0, Math.min(...values)*0.88):Math.min(0, Math.min(...values)*0.92);
+    const span=max-min||1;
+    const plotW=w-padL-padR, plotH=h-padT-padB;
+    const xy=values.map((v,i)=>{
+      const x=padL+(values.length===1?plotW/2:(i/(values.length-1))*plotW);
+      const y=padT+plotH-((v-min)/span)*plotH;
+      return {x,y,v,label:points[i].label};
+    });
+    const ticks=4;
+    let grid='';
+    for(let i=0;i<=ticks;i++){
+      const t=min+(span*i/ticks);
+      const y=padT+plotH-((t-min)/span)*plotH;
+      grid+='<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'" stroke="#edf1f5" stroke-width="1"/>';
+      const tickLab=opts.pct?(t*100).toFixed(1)+'%':opts.money?('¥'+Math.round(t)):String(Math.round(t));
+      grid+='<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="9" fill="#708090">'+tickLab+'</text>';
+    }
+    const line=xy.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+    const area=line+' L'+xy[xy.length-1].x.toFixed(1)+','+(padT+plotH)+' L'+xy[0].x.toFixed(1)+','+(padT+plotH)+' Z';
+    const dots=xy.map((p,i)=>
+      '<g class="hit" data-i="'+i+'">'+
+      '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="12" fill="transparent"/>'+
+      '<circle class="dot" cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="2.8" fill="'+color+'" stroke="#fff" stroke-width="1.5"/>'+
+      '</g>'
+    ).join('');
+    el.querySelectorAll('svg').forEach(s=>s.remove());
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+    const fill=opts.pct?'rgba(124,58,237,.08)':color==='#1f6feb'?'rgba(31,111,235,.08)':'rgba(13,148,136,.08)';
+    svg.innerHTML=grid+
+      '<path d="'+area+'" fill="'+fill+'"/>'+
+      '<path d="'+line+'" fill="none" stroke="'+color+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'+
+      dots;
+    el.appendChild(svg);
+
+    function fmtVal(v){
+      if(opts.pct) return (v*100).toFixed(1)+'%';
+      if(opts.money) return '¥'+Number(v).toFixed(1);
+      return String(Math.round(v));
+    }
+    function showTip(i){
+      const p=xy[i];
+      const prefix=opts.seriesName?opts.seriesName+' ':'';
+      tipEl.textContent=p.label+'　'+prefix+fmtVal(p.v);
+      tipEl.style.left=((p.x/w)*100)+'%';
+      tipEl.style.top=((p.y/h)*100)+'%';
+      tipEl.classList.add('on');
+      svg.querySelectorAll('.dot').forEach((c,j)=>{
+        c.setAttribute('r', j===i?'5':'2.8');
+      });
+    }
+    tipEl.classList.remove('on');
+    svg.querySelectorAll('.hit').forEach(g=>{
+      g.addEventListener('click',e=>{e.stopPropagation();showTip(+g.dataset.i);});
+    });
+  }
+
+  function multiLineChart(el, tipEl, labels, series, opts){
+    // series: [{name,color,values,fill?}] — 左右撑满 + 点击展示当日各系列数值
+    opts=opts||{};
+    const all=series.reduce((a,s)=>a.concat(s.values),[]);
+    const w=400, h=180;
+    const padL=40, padR=8, padT=16, padB=8;
+    const max=Math.max(...all,1)*1.12;
+    const min=0;
+    const span=max-min||1;
+    const plotW=w-padL-padR, plotH=h-padT-padB;
+    const n=labels.length;
+    const xs=labels.map((_,i)=>padL+(n===1?plotW/2:(i/(n-1))*plotW));
+    const hitW=n>1?Math.max(10, plotW/(n-1)):plotW;
+    const ticks=4;
+    let grid='';
+    for(let i=0;i<=ticks;i++){
+      const t=min+(span*i/ticks);
+      const y=padT+plotH-((t-min)/span)*plotH;
+      grid+='<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'" stroke="#edf1f5" stroke-width="1"/>';
+      const tickLab=opts.money?('¥'+Math.round(t)) : String(Math.round(t));
+      grid+='<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" font-size="9" fill="#708090">'+tickLab+'</text>';
+    }
+    let paths='';
+    const pointYs=series.map(s=>s.values.map(v=>padT+plotH-((v-min)/span)*plotH));
+    series.forEach((s,si)=>{
+      const pts=s.values.map((v,i)=>[xs[i],pointYs[si][i]]);
+      const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+      if(s.fill){
+        const area=d+' L'+pts[pts.length-1][0].toFixed(1)+','+(padT+plotH)+' L'+pts[0][0].toFixed(1)+','+(padT+plotH)+' Z';
+        paths+='<path d="'+area+'" fill="'+s.fill+'" opacity="0.9"/>';
+      }
+      paths+='<path d="'+d+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.fill?'2.4':'1.8')+'" stroke-linejoin="round" stroke-linecap="round"/>';
+      // 默认小圆点，便于识别可点
+      paths+=pts.map((p,i)=>'<circle class="mdot" data-si="'+si+'" data-i="'+i+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.2" fill="'+s.color+'" stroke="#fff" stroke-width="1"/>').join('');
+    });
+    // 全高热区条，提升移动端点击成功率
+    const hits=xs.map((x,i)=>{
+      const left=x-hitW/2;
+      return '<g class="hit" data-i="'+i+'" style="cursor:pointer">'+
+        '<rect x="'+left.toFixed(1)+'" y="'+padT+'" width="'+hitW.toFixed(1)+'" height="'+plotH+'" fill="transparent"/>'+
+        '<line class="guide" x1="'+x.toFixed(1)+'" y1="'+padT+'" x2="'+x.toFixed(1)+'" y2="'+(padT+plotH)+'" stroke="transparent" stroke-width="1.5" stroke-dasharray="3 3"/>'+
+        '</g>';
+    }).join('');
+    el.querySelectorAll('svg').forEach(s=>s.remove());
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    svg.setAttribute('preserveAspectRatio','none');
+    svg.innerHTML=grid+paths+hits;
+    el.appendChild(svg);
+
+    function showTip(i){
+      const parts=series.map(s=>{
+        const v=s.values[i];
+        return '<span style="color:'+s.color+'">●</span> '+s.name+' '+(opts.money?fmtY(v):fmt(v));
+      });
+      tipEl.innerHTML='<div style="margin-bottom:4px">'+labels[i]+'</div>'+parts.join('<br/>');
+      let leftPct=(xs[i]/w)*100;
+      if(leftPct<18) leftPct=18;
+      if(leftPct>82) leftPct=82;
+      tipEl.style.left=leftPct+'%';
+      tipEl.style.top='12%';
+      tipEl.classList.add('on');
+      svg.querySelectorAll('.guide').forEach((g,j)=>{
+        g.setAttribute('stroke', j===i?'rgba(15,23,42,.28)':'transparent');
+      });
+      svg.querySelectorAll('.mdot').forEach(c=>{
+        const on=+c.getAttribute('data-i')===i;
+        c.setAttribute('r', on?'4.5':'2.2');
+      });
+    }
+    tipEl.classList.remove('on');
+    tipEl.style.lineHeight='1.4';
+    svg.querySelectorAll('.hit').forEach(g=>{
+      g.addEventListener('click',e=>{e.stopPropagation();showTip(+g.dataset.i);});
+    });
+  }
+
+  function renderFans(){
+    filterRange(document.getElementById('fFans'),'fans');
+    lineChart(
+      document.getElementById('fansTrend'),
+      document.getElementById('fansTip'),
+      DAILY_FANS.map(x=>({label:x.d, value:x.addFull})),
+      {color:'#1f6feb', seriesName:'加粉数（全量）'}
+    );
+    document.getElementById('fansX').innerHTML=sparseX(DAILY_FANS.map(x=>x.d));
+    lineChart(
+      document.getElementById('cacTrend'),
+      document.getElementById('cacTip'),
+      DAILY_FANS.map(x=>({label:x.d, value:x.cac})),
+      {money:true, color:'#0d9488', seriesName:'平均获客成本'}
+    );
+    document.getElementById('cacX').innerHTML=sparseX(DAILY_FANS.map(x=>x.d));
+    lineChart(
+      document.getElementById('firstConvTrend'),
+      document.getElementById('firstConvTip'),
+      DAILY_FANS.map(x=>({label:x.d, value:x.firstConv})),
+      {color:'#7c3aed', seriesName:'初诊转化率', pct:true}
+    );
+    document.getElementById('firstConvX').innerHTML=sparseX(DAILY_FANS.map(x=>x.d));
+    let t='<table>'+buildThead([
+      ['日期','日期'],['投流消耗','投流消耗'],['行为点击','行为点击'],
+      ['加粉数（渠道汇总）','加粉数（渠道汇总）'],['行为点击-加粉转化率','行为点击-加粉转化率'],
+      ['平均获客成本','平均获客成本'],['加粉数（全量）','加粉数（全量）'],
+      ['初诊单','初诊单'],['初诊转化率','初诊转化率'],['复诊单','复诊单'],['复诊额','复诊额'],['总单','总单'],['总额','总额']
+    ])+'<tbody>';
+    DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>¥'+x.cac.toFixed(1)+'</td><td>'+fmt(x.addFull)+'</td><td>'+x.firstOrd+'</td><td>'+pct(x.firstConv)+'</td><td>'+x.revOrd+'</td><td>'+fmtY(x.revGmv)+'</td><td>'+x.totalOrd+'</td><td>'+fmtY(x.totalGmv)+'</td></tr>';});
+    document.getElementById('fansTable').innerHTML=t+'</tbody></table>';
+  }
+
+  function productStackCols(mode){
+    const S=DEAL_SUMMARY.product;
+    const pick=mode==='cnt'
+      ?{prebiotic:S.prebiotic,gutTest:S.gutTest,geneTest:S.geneTest,nutrition:S.nutrition}
+      :{prebiotic:S.prebioticG,gutTest:S.gutTestG,geneTest:S.geneTestG,nutrition:S.nutritionG};
+    const total=PRODUCT_KEYS.reduce((n,p)=>n+(pick[p.key]||0),0);
+    const max=Math.max(total,1);
+    const fmtSeg=mode==='cnt'?fmt:v=>fmtY(v);
+    const segs=PRODUCT_KEYS.map(p=>({seg:p.seg,val:pick[p.key]||0}));
+    const h=Math.max(16,Math.round(total/max*140));
+    let pile='';
+    segs.forEach(s=>{
+      const pct=total?s.val/total:0;
+      pile+='<div class="seg '+s.seg+'" style="flex:'+pct+'"><span class="lbl" style="top:2px">'+(s.val?fmtSeg(s.val):'')+'</span></div>';
+    });
+    return '<div class="vbar-col"><div class="vbar-pile" style="height:'+h+'px">'+pile+'</div><div class="xlab">商品</div></div>';
+  }
+  function stackCols(mode){
+    const S=DEAL_SUMMARY;
+    const pick=(r)=>mode==='cnt'?{deco:r.deco,pill:r.pill,granule:r.granule}:{deco:r.decoG,pill:r.pillG,granule:r.granuleG};
+    const cats=[
+      {lab:'初诊（中药）', ...pick(S.first)},
+      {lab:'复诊（中药）', ...pick(S.rev)},
+    ];
+    const max=Math.max(...cats.map(c=>c.deco+c.pill+c.granule),1);
+    const fmtSeg=mode==='cnt'?fmt:v=>fmtY(v);
+    return cats.map(c=>{
+      const total=c.deco+c.pill+c.granule;
+      const h=Math.max(16,Math.round(total/max*140));
+      const dPct=total?c.deco/total:0, pPct=total?c.pill/total:0, gPct=total?c.granule/total:0;
+      return '<div class="vbar-col"><div class="vbar-pile" style="height:'+h+'px">'+
+        '<div class="seg granule" style="flex:'+gPct+'"><span class="lbl" style="top:2px">'+(c.granule?fmtSeg(c.granule):'')+'</span></div>'+
+        '<div class="seg pill" style="flex:'+pPct+'"><span class="lbl" style="top:2px">'+(c.pill?fmtSeg(c.pill):'')+'</span></div>'+
+        '<div class="seg deco" style="flex:'+dPct+'"><span class="lbl" style="bottom:2px;top:auto">'+(c.deco?fmtSeg(c.deco):'')+'</span></div>'+
+        '</div><div class="xlab">'+c.lab+'</div></div>';
+    }).join('');
+  }
+
+  function renderDealStack(){
+    document.querySelectorAll('#dealStackToggle button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===state.dealStackMode);
+    });
+    document.getElementById('dealStack').innerHTML=stackCols(state.dealStackMode)+productStackCols(state.dealStackMode);
+  }
+
+  function buildDealTrendSeries(isGmv){
+    const base=isGmv?[
+      {name:'总金额',color:'#0f766e',fill:'rgba(15,118,110,0.08)',values:DAILY_ORD.map(x=>x.totalG)},
+      {name:'初诊中药',color:'#14b8a6',values:DAILY_ORD.map(x=>x.firstG)},
+      {name:'复诊中药',color:'#3b82f6',values:DAILY_ORD.map(x=>x.revG)},
+      {name:'商品',color:'#8b5cf6',values:DAILY_ORD.map(x=>x.prodG)}
+    ]:[
+      {name:'总订单',color:'#0f766e',fill:'rgba(15,118,110,0.08)',values:DAILY_ORD.map(x=>x.total)},
+      {name:'初诊中药',color:'#14b8a6',values:DAILY_ORD.map(x=>x.first)},
+      {name:'复诊中药',color:'#3b82f6',values:DAILY_ORD.map(x=>x.rev)},
+      {name:'商品',color:'#8b5cf6',values:DAILY_ORD.map(x=>x.prodCnt)}
+    ];
+    if(!state.dealTrendMedDetail) return base;
+    const detail=isGmv?[
+      {name:'初诊汤剂',color:'#5eead4',values:DAILY_ORD.map(x=>x.firstDecoG)},
+      {name:'初诊丸剂',color:'#2dd4bf',values:DAILY_ORD.map(x=>x.firstPillG)},
+      {name:'初诊颗粒剂',color:'#f59e0b',values:DAILY_ORD.map(x=>x.firstGranuleG)},
+      {name:'复诊汤剂',color:'#60a5fa',values:DAILY_ORD.map(x=>x.revDecoG)},
+      {name:'复诊丸剂',color:'#818cf8',values:DAILY_ORD.map(x=>x.revPillG)},
+      {name:'复诊颗粒剂',color:'#fb923c',values:DAILY_ORD.map(x=>x.revGranuleG)}
+    ]:[
+      {name:'初诊汤剂',color:'#5eead4',values:DAILY_ORD.map(x=>x.firstDeco)},
+      {name:'初诊丸剂',color:'#2dd4bf',values:DAILY_ORD.map(x=>x.firstPill)},
+      {name:'初诊颗粒剂',color:'#f59e0b',values:DAILY_ORD.map(x=>x.firstGranule)},
+      {name:'复诊汤剂',color:'#60a5fa',values:DAILY_ORD.map(x=>x.revDeco)},
+      {name:'复诊丸剂',color:'#818cf8',values:DAILY_ORD.map(x=>x.revPill)},
+      {name:'复诊颗粒剂',color:'#fb923c',values:DAILY_ORD.map(x=>x.revGranule)}
+    ];
+    return base.concat(detail);
+  }
+
+  function renderDealTrend(){
+    const isGmv=state.orderTrendMode==='gmv';
+    document.querySelectorAll('#orderTrendToggle button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===state.orderTrendMode);
+    });
+    const cb=document.getElementById('dealTrendMedDetail');
+    if(cb) cb.checked=!!state.dealTrendMedDetail;
+    const series=buildDealTrendSeries(isGmv);
+    multiLineChart(
+      document.getElementById('dealTrend'),
+      document.getElementById('dealTip'),
+      DAILY_ORD.map(x=>x.d),
+      series,
+      {money:isGmv}
+    );
+    document.getElementById('dealX').innerHTML=sparseX(DAILY_ORD.map(x=>x.d));
+    document.getElementById('dealLegend').innerHTML=series.map(s=>'<span><i style="background:'+s.color+'"></i>'+s.name+'</span>').join('');
+  }
+
+  function renderDeal(){
+    filterRange(document.getElementById('fDeal'),'deal');
+    renderDealStack();
+    renderDealTrend();
+    let t='<table class="deal-table">'+buildDealThead()+'<tbody>';
+    DAILY_ORD.forEach(x=>{t+=dealTableRow(x);});
+    document.getElementById('dealTable').innerHTML=t+'</tbody></table>';
+  }
+
+  function filteredChannels(){
+    let list=CHANNELS.slice();
+    const st=state.channel;
+    if(st.plat&&st.plat!=='全部') list=list.filter(c=>c.plat===st.plat);
+    if(st.ch&&st.ch!=='全部') list=list.filter(c=>c.ch===st.ch);
+    return list;
+  }
+  function filteredAsstChForChannel(){
+    const st=state.channel;
+    let list=ASST_CH.slice();
+    if(st.team&&st.team!=='全部') list=list.filter(r=>r.team===st.team);
+    if(st.ch&&st.ch!=='全部') list=list.filter(r=>r.ch===st.ch);
+    return list;
+  }
+  function isChExpanded(ch){
+    return state.expandedChannels[ch]!==false;
+  }
+  function chRowCells(c){
+    return '<td>'+(c.spend?fmtY(c.spend):'—')+'</td><td>'+(c.clicks?fmt(c.clicks):'—')+'</td><td>'+fmt(c.add)+'</td><td>'+(c.clicks?pct(c.rate):'—')+'</td><td>'+(c.cac?fmtY(c.cac):'—')+'</td><td>'+fmt(c.pay)+'</td><td>'+fmtY(c.payGmv)+'</td><td>'+pct(c.payRate)+'</td><td>'+fmt(c.revOrd)+'</td><td>'+fmtY(c.revGmv)+'</td><td>'+fmt(c.totalOrd)+'</td><td>'+fmtY(c.totalGmv)+'</td>';
+  }
+  function chTeamRowCells(r){
+    const dash='—';
+    if(!r) return '<td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+dash+'</td>';
+    return '<td>'+dash+'</td><td>'+dash+'</td><td>'+fmt(r.fans)+'</td><td>'+dash+'</td><td>'+dash+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+pct(r.firstConv)+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td>';
+  }
+  function renderChannel(){
+    filterQuick(document.getElementById('fCh'),'channel',{platform:1,channel:1,team:1});
+    const list=filteredChannels();
+    const asstChList=filteredAsstChForChannel();
+    const byAdd=list.slice().sort((a,b)=>b.add-a.add).slice(0,5);
+    const byPay=list.slice().sort((a,b)=>b.pay-a.pay).slice(0,5);
+    const byCac=list.filter(c=>c.cac>0).sort((a,b)=>a.cac-b.cac).slice(0,5);
+    barChart(document.getElementById('chFansTop'), byAdd.map(c=>({name:c.name,value:c.add,label:fmt(c.add)})));
+    barChart(document.getElementById('chPayTop'), byPay.map(c=>({name:c.name,value:c.pay,label:fmt(c.pay)})), {tone:'teal'});
+    barChart(document.getElementById('chCacTop'), byCac.map(c=>({name:c.name,value:c.cac,label:fmtY(c.cac)})), {tone:'warm'});
+    const teamIdx=t=>{const i=TEAMS.indexOf(t);return i<0?999:i;};
+    let t='<table>'+buildThead([
+      ['渠道/团队','渠道'],['投流消耗','投流消耗'],['行为点击','行为点击'],['加粉数（渠道汇总）','加粉数（渠道汇总）'],
+      ['行为点击-加粉转化率','行为点击-加粉转化率'],['平均获客成本','平均获客成本'],
+      ['初诊成交订单','初诊成交订单'],['初诊成交额','初诊成交额'],['加粉-初诊成交转化率','加粉-初诊成交转化率'],
+      ['复诊单','复诊单'],['复诊额','复诊额'],['总单','总单'],['总额','总额']
+    ])+'<tbody>';
+    list.slice().sort((a,b)=>b.add-a.add).forEach(c=>{
+      const open=isChExpanded(c.ch);
+      const teamMap={};
+      asstChList.filter(r=>r.ch===c.ch).forEach(r=>{teamMap[r.team]=r;});
+      const teams=(state.channel.team&&state.channel.team!=='全部'?[state.channel.team]:TEAMS.slice()).sort((a,b)=>teamIdx(a)-teamIdx(b));
+      const hasTeams=teams.some(tm=>teamMap[tm]);
+      t+='<tr class="team-row" data-ch="'+c.ch+'"><td><span style="display:inline-flex;align-items:center;gap:6px;">'+(hasTeams?'<button type="button" class="team-toggle" data-toggle-ch="'+c.ch+'">'+(open?'−':'+')+'</button>':'')+c.name+'</span></td>'+chRowCells(c)+'</tr>';
+      if(hasTeams){
+        teams.forEach(tm=>{
+          t+='<tr class="child-row'+(open?' show':'')+'" data-parent-ch="'+c.ch+'"><td>'+tm+'</td>'+chTeamRowCells(teamMap[tm])+'</tr>';
+        });
+      }
+    });
+    document.getElementById('chTable').innerHTML=t+'</tbody></table>';
+    document.getElementById('chTable').querySelectorAll('[data-toggle-ch]').forEach(btn=>{
+      btn.onclick=e=>{
+        e.stopPropagation();
+        const ch=btn.dataset.toggleCh;
+        state.expandedChannels[ch]=!isChExpanded(ch);
+        renderChannel();
+      };
+    });
+  }
+
+  function filteredAsst(){
+    const st=state.asst; let list=ASSISTANTS.slice();
+    if(st.team&&st.team!=='全部') list=list.filter(a=>a.team===st.team);
+    if(st.q) list=list.filter(a=>a.name.indexOf(st.q)>=0);
+    return list;
+  }
+  function aggregateTeam(list){
+    const map={};
+    list.forEach(a=>{
+      if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,f04:0,f05:0,dialogRounds:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,medOrd:0,medGmv:0,productOrd:0,productGmv:0,totalOrd:0,totalGmv:0,wireAsst:0,members:[]};
+      const t=map[a.team];
+      t.exposure+=a.exposure||0;
+      t.f01+=a.f01; t.f02+=a.f02||0; t.f03+=a.f03||0; t.f04+=a.f04||0; t.f05+=a.f05||0;
+      t.dialogRounds+=a.dialogRounds||0;
+      t.firstOrd+=a.firstOrd; t.firstGmv+=a.firstGmv;
+      t.revOrd+=a.revOrd; t.revGmv+=a.revGmv;
+      t.medOrd+=a.medOrd; t.medGmv+=a.medGmv;
+      t.productOrd+=a.productOrd; t.productGmv+=a.productGmv;
+      t.totalOrd+=a.totalOrd; t.totalGmv+=a.totalGmv;
+      if(a.f01>0) t.wireAsst+=1;
+      t.members.push(a);
+    });
+    return Object.values(map).map(t=>({
+      ...t,
+      firstConv:t.f01?t.firstOrd/t.f01:0,
+      firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
+      revAov:t.revOrd?t.revGmv/t.revOrd:0,
+      avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
+      avgDialogRounds:t.f01?t.dialogRounds/t.f01:0
+    })).sort((a,b)=>b.totalGmv-a.totalGmv);
+  }
+  function asstRowCells(r, isTeam){
+    const wireCell=isTeam?fmt(r.wireAsst):'—';
+    const avgFirstCell=isTeam?(r.wireAsst?(r.firstOrd/r.wireAsst).toFixed(1):'—'):'—';
+    return '<td>'+fmt(r.f01)+'</td><td>'+wireCell+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+aov(r.firstGmv,r.firstOrd)+'</td><td>'+pct(r.firstConv)+'</td><td>'+avgFirstCell+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+aov(r.revGmv,r.revOrd)+'</td><td>'+fmt(r.medOrd)+'</td><td>'+fmtY(r.medGmv)+'</td><td>'+aov(r.medGmv,r.medOrd)+'</td><td>'+fmt(r.productOrd)+'</td><td>'+fmtY(r.productGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td><td>'+aov(r.totalGmv,r.totalOrd)+'</td>';
+  }
+  function asstEffRowCells(r){
+    const fans=r.f01||0;
+    const dr=r.dialogRounds||0;
+    const payConv=fans?pct(r.f05/fans):'—';
+    return '<td>'+fmt(fans)+'</td><td>'+fmt(r.f02||0)+'</td><td>'+fmt(r.f03||0)+'</td><td>'+fmt(dr)+'</td><td>'+fmtAvgDialog(dr,fans)+'</td><td>'+fmt(r.f04||0)+'</td><td>'+fmt(r.f05||0)+'</td><td>'+payConv+'</td>';
+  }
+  function bindAsstTeamToggle(container, rerender){
+    container.querySelectorAll('[data-toggle-team]').forEach(btn=>{
+      btn.onclick=e=>{
+        e.stopPropagation();
+        const team=btn.dataset.toggleTeam;
+        state.expandedTeams[team]=!state.expandedTeams[team];
+        rerender();
+      };
+    });
+  }
+  function renderAsstOrdBar(){
+    document.querySelectorAll('#asstOrdToggle button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===state.asstOrdMode);
+    });
+    const list=filteredAsst();
+    const isGmv=state.asstOrdMode==='gmv';
+    const sorted=list.slice().sort((a,b)=>isGmv?b.totalGmv-a.totalGmv:b.totalOrd-a.totalOrd).slice(0,5);
+    barChart(document.getElementById('asstOrdBar'), sorted.map(a=>({
+      name:a.name,
+      value:isGmv?a.totalGmv:a.totalOrd,
+      label:isGmv?fmtY(a.totalGmv):fmt(a.totalOrd)
+    })), isGmv?{tone:'warm'}:{});
+  }
+  function renderAsstAovBar(teams){
+    document.querySelectorAll('#asstAovToggle button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.mode===state.asstAovMode);
+    });
+    const isFirst=state.asstAovMode==='first';
+    const sorted=teams.slice().sort((a,b)=>isFirst?b.firstAov-a.firstAov:b.revAov-a.revAov).slice(0,5);
+    barChart(document.getElementById('asstAovBar'), sorted.map(t=>({
+      name:t.team,
+      value:isFirst?t.firstAov:t.revAov,
+      label:isFirst?aov(t.firstGmv,t.firstOrd):aov(t.revGmv,t.revOrd)
+    })), isFirst?{tone:'warm'}:{});
+  }
+  function renderAsstEffDialogTop(teams){
+    const sorted=teams.slice().sort((a,b)=>b.avgDialogRounds-a.avgDialogRounds).slice(0,5);
+    barChart(document.getElementById('asstEffDialogTop'), sorted.map(t=>({
+      name:t.team,
+      value:t.avgDialogRounds,
+      label:fmtAvgDialog(t.dialogRounds,t.f01)
+    })), {tone:'warm'});
+  }
+  function renderAsstEffPayBar(list){
+    const sorted=list.slice().sort((a,b)=>(b.f01?b.f05/b.f01:0)-(a.f01?a.f05/a.f01:0)).slice(0,5);
+    barChart(document.getElementById('asstEffPayTop'), sorted.map(a=>({
+      name:a.name,
+      value:a.f01?a.f05/a.f01:0,
+      label:a.f01?pct(a.f05/a.f01):'—'
+    })), {tone:'warm'});
+  }
+  function renderAsstTrade(){
+    const list=filteredAsst();
+    const teams=aggregateTeam(list);
+    const byConv=teams.slice().sort((a,b)=>b.firstConv-a.firstConv).slice(0,5);
+    barChart(document.getElementById('asstConvTop'), byConv.map(t=>({name:t.team,value:t.firstConv,label:pct(t.firstConv)})), {tone:'teal'});
+    renderAsstAovBar(teams);
+    renderAsstOrdBar();
+    const teamRows=teams.slice().sort((a,b)=>b.firstConv-a.firstConv);
+    let t='<table class="asst-table">'+buildThead([
+      ['团队/医助','团队'],['加粉','加粉'],['接线医助','接线医助'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊客单价','初诊客单价'],['初诊转化率','初诊转化率'],['医助平均初诊成单量','医助平均初诊成单量'],
+      ['复诊单','复诊单'],['复诊额','复诊额'],['复诊客单价','复诊客单价'],
+      ['中药总单','中药总订单数'],['中药总额','中药总订单额'],['中药总客单价','总客单价'],
+      ['商品单','商品订单数'],['商品额','商品订单额'],
+      ['总单','总单'],['总额','总额'],['总客单价','总客单价']
+    ])+'<tbody>';
+    teamRows.forEach(tm=>{
+      const open=!!state.expandedTeams[tm.team];
+      t+='<tr class="team-row" data-team="'+tm.team+'"><td><span style="display:inline-flex;align-items:center;gap:6px;"><button type="button" class="team-toggle" data-toggle-team="'+tm.team+'">'+(open?'−':'+')+'</button>'+tm.team+'</span></td>'+asstRowCells(tm,true)+'</tr>';
+      tm.members.sort((a,b)=>b.totalGmv-a.totalGmv).forEach(a=>{
+        t+='<tr class="child-row'+(open?' show':'')+'" data-parent="'+tm.team+'"><td>'+a.name+'</td>'+asstRowCells(a,false)+'</tr>';
+      });
+    });
+    const wrap=document.getElementById('asstTradeTable');
+    wrap.innerHTML=t+'</tbody></table>';
+    bindAsstTeamToggle(wrap, renderAsst);
+  }
+  function renderAsstEfficiency(){
+    const list=filteredAsst();
+    const teams=aggregateTeam(list);
+    renderAsstEffDialogTop(teams);
+    renderAsstEffPayBar(list);
+    const teamRows=teams.slice().sort((a,b)=>b.f01-a.f01);
+    let t='<table class="asst-eff-table">'+buildThead([
+      ['团队/医助','团队'],['加粉数','加粉'],['开口数','开口数'],['舌象上传数','舌象上传数'],
+      ['总对话轮次','总对话轮次'],['平均对话轮次','平均对话轮次'],['开方数','开方数'],['支付数','支付数'],['加粉-支付转化率','加粉-支付转化率']
+    ])+'<tbody>';
+    teamRows.forEach(tm=>{
+      const open=!!state.expandedTeams[tm.team];
+      t+='<tr class="team-row" data-team="'+tm.team+'"><td><span style="display:inline-flex;align-items:center;gap:6px;"><button type="button" class="team-toggle" data-toggle-team="'+tm.team+'">'+(open?'−':'+')+'</button>'+tm.team+'</span></td>'+asstEffRowCells(tm)+'</tr>';
+      tm.members.sort((a,b)=>b.f01-a.f01).forEach(a=>{
+        t+='<tr class="child-row'+(open?' show':'')+'" data-parent="'+tm.team+'"><td>'+a.name+'</td>'+asstEffRowCells(a)+'</tr>';
+      });
+    });
+    const wrap=document.getElementById('asstEffTable');
+    wrap.innerHTML=t+'</tbody></table>';
+    bindAsstTeamToggle(wrap, renderAsst);
+  }
+  function renderAsst(){
+    filterQuick(document.getElementById('fAsst'),'asst',{team:1,search:1});
+    document.querySelectorAll('#asstSubTabs button').forEach(b=>{
+      b.classList.toggle('on', b.dataset.asstSub===state.asstSub);
+    });
+    document.getElementById('asstTradePanel').hidden=state.asstSub!=='trade';
+    document.getElementById('asstEffPanel').hidden=state.asstSub!=='efficiency';
+    if(state.asstSub==='efficiency') renderAsstEfficiency();
+    else renderAsstTrade();
+  }
+  function renderProfile(){
+    if(!currentUser) return;
+    const short=(currentUser.name||currentUser.account||'用').slice(0,1);
+    document.getElementById('pfAvatar').textContent=short;
+    document.getElementById('pfName').textContent=currentUser.name||currentUser.account;
+    document.getElementById('pfUser').textContent=currentUser.account;
+    document.getElementById('pfPhone').textContent=currentUser.phone||'—';
+    document.getElementById('pfDept').textContent=currentUser.dept||'—';
+    document.getElementById('pfRole').textContent=currentUser.role||'—';
+  }
+
+  function render(){
+    if(state.page==='home') renderHome();
+    else if(state.page==='fans') renderFans();
+    else if(state.page==='deal') renderDeal();
+    else if(state.page==='channel') renderChannel();
+    else if(state.page==='asst') renderAsst();
+    else if(state.page==='profile') renderProfile();
+  }
+
+  document.getElementById('orderTrendToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.orderTrendMode=btn.dataset.mode;
+    if(state.page==='deal') renderDealTrend();
+  });
+  document.getElementById('dealStackToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.dealStackMode=btn.dataset.mode;
+    if(state.page==='deal') renderDealStack();
+  });
+  document.getElementById('dealTrendMedDetail').addEventListener('change',e=>{
+    state.dealTrendMedDetail=e.target.checked;
+    if(state.page==='deal') renderDealTrend();
+  });
+  document.getElementById('asstOrdToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.asstOrdMode=btn.dataset.mode;
+    if(state.page==='asst'&&state.asstSub==='trade') renderAsstOrdBar();
+  });
+  document.getElementById('asstAovToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn) return;
+    state.asstAovMode=btn.dataset.mode;
+    if(state.page==='asst'&&state.asstSub==='trade') renderAsstAovBar(aggregateTeam(filteredAsst()));
+  });
+  document.getElementById('asstSubTabs').addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-asst-sub]');
+    if(!btn) return;
+    state.asstSub=btn.dataset.asstSub;
+    if(state.page==='asst') renderAsst();
+  });
+  document.getElementById('appView').addEventListener('click',e=>{
+    const help=e.target.closest('.th-help');
+    if(help){
+      e.preventDefault();
+      e.stopPropagation();
+      openTipModal(help.dataset.tipKey);
+      return;
+    }
+  });
+  document.getElementById('tipClose').onclick=closeTipModal;
+  document.getElementById('tipModal').addEventListener('click',e=>{
+    if(e.target.id==='tipModal') closeTipModal();
+  });
+  document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
+  if(currentUser){showApp();render();}
+  else showLogin();
+})();
+
+// Annotation System
+(function(){
+  const annotationData={
+    '1':{
+      moduleName:'登录页',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">显示样式</div>
+<p>系统名称展示为<strong>素灵CRM数据看板</strong>；副标题「经营数据一站式查看」。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">交互与校验</div>
+<ul>
+<li><strong>账号</strong>：必填输入</li>
+<li><strong>密码</strong>：必填输入</li>
+<li><strong>记住我</strong>：勾选后下次自动带出账号（及现网策略允许的记住项）</li>
+<li><strong>登录</strong>：提交校验；账号或密码为空时阻止登录，提示「账号或密码不能为空」</li>
+<li>账号密码错误时阻止登录，提示「账号或密码错误」</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">业务定义</div>
+<p>对应功能 <strong>F01 登录与会话</strong>：账号密码登录、记住我、会话保持。未登录访问业务页时跳转登录页。</p></div>`
+    },
+    '2':{
+      moduleName:'顶栏导航',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">页面结构</div>
+<p>登录成功后展示顶栏 Tab + 右侧头像入口：</p>
+<ul>
+<li><strong>首页</strong></li>
+<li><strong>每日转化</strong>（V1.1，原「加粉」）</li>
+<li><strong>成交</strong></li>
+<li><strong>渠道</strong></li>
+<li><strong>团队</strong>（V1.1）：含 <strong>医助成交</strong> | <strong>医助人效</strong> 二级 Tab（位于筛选栏下方）</li>
+</ul>
+<p>右侧头像点击进入<strong>个人中心</strong>；支持返回首页。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">权限矩阵（摘要）</div>
+<ul>
+<li>老板看板管理员 / 运营管理员：可查看首页、加粉、成交、渠道、医助相关页</li>
+<li>流量组长：不可查看首页、渠道；可查看本团队及以下医助数据</li>
+</ul>
+<blockquote>未在本文单独改写的指标定义，一律以《多维度数据统计》PRD 为准。</blockquote></div>`
+    },
+    '3':{
+      moduleName:'首页-今日实时',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">昨日数值展示规则</div>
+<p>首页各指标<strong>主值展示今日数据</strong>；副行展示<strong>昨日该字段的实际数值</strong>，口径与主值一致；昨日无数据时展示「—」。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">KPI 卡片</div>
+<ul>
+<li><strong>加粉数（全量）</strong>：全部渠道新增企微好友人数（含非 AI 工具来源）；副行昨日加粉数；点击进入「每日转化」</li>
+<li><strong>成交订单数</strong>（V1.2）：当日全部支付成功订单数（初诊中药+复诊中药+商品）；副行昨日；点击进入「成交」</li>
+<li><strong>初诊转化率</strong>（V1.1）：初诊订单数÷进粉数；弱字段展示初诊订单数；副行昨日转化率；点击进入「成交」</li>
+<li><strong>成交GMV</strong>（V1.2）：全部支付成功订单实付金额（中药+商品）；弱字段展示净 GMV（扣除退款）；副行昨日 GMV；点击进入「成交」</li>
+</ul></div>`
+    },
+    '4':{
+      moduleName:'首页-经营模块',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">今日订单核心数据</div>
+<ul>
+<li>初诊（中药）：订单数/金额，拆分<strong>汤剂、丸剂、颗粒剂</strong></li>
+<li>复诊（中药）：订单数/金额，拆分汤剂、丸剂、颗粒剂</li>
+<li><strong>商品</strong>（V1.2）：订单数/金额，拆分<strong>益生元、肠道检测、基因检测、64款营养剂</strong></li>
+<li>总订单 = 初诊中药 + 复诊中药 + 商品订单</li>
+<li>入口：「成交 ›」</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">今日分渠道核心数据</div>
+<ul>
+<li>按渠道加粉倒序；每渠道展示：今日加粉、今日初诊成交、初诊转化率</li>
+<li>各指标下方展示昨日同字段数值</li>
+<li>入口：「渠道 ›」</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">今日团队 Top（V1.1）</div>
+<ul>
+<li>按团队初诊转化率倒序；每团队 7 张指标卡横向滑动（一屏 2.5 张），多团队行<strong>同步联动滑动</strong></li>
+<li>指标卡：初诊转化率、医助平均初诊成单量、初诊客单价、复诊客单价、<strong>中药总订单数</strong>、<strong>商品订单数</strong>、平均对话轮次</li>
+<li>弱字段：初诊转化率卡→加粉数/初诊订单数；成单量卡→接诊医助数/初诊订单数；中药总订单数卡→中药总订单额；商品订单数卡→商品订单金额；平均对话轮次卡→总对话轮次</li>
+<li>医助平均初诊成单量 = 初诊订单数 ÷ 接粉医助数；平均对话轮次 = 总对话轮次 ÷ 加粉数</li>
+<li>入口：「团队 ›」</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">近7天医助成交 Top</div>
+<ul>
+<li><strong>总订单数 Top5</strong>（V1.2）：近 7 天医助总订单数（中药+商品），横向条形图</li>
+<li><strong>总订单金额 Top5</strong>（V1.2）：近 7 天医助总订单金额（中药+商品），横向条形图</li>
+<li>约束：最多 5 条、不滚动、条长受控</li>
+<li>入口：「团队 ›」</li>
+</ul></div>`
+    },
+    '5':{
+      moduleName:'每日转化',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">筛选项</div>
+<ul>
+<li><strong>时间</strong>：日期范围，默认近一个月；点击弹出开始/结束日期</li>
+<li><strong>平台</strong>：全部 / 抖音 / 百度 / 微信 / 快手 / 小红书</li>
+<li><strong>渠道</strong>：全部；选项展示中文名</li>
+<li><strong>团队</strong>：全部 / A组 / B组 / C组</li>
+</ul>
+<p>两列紧凑布局；筛选变更后<strong>即时刷新</strong>图表与表。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">图表</div>
+<ul>
+<li><strong>加粉数趋势</strong>：按日加粉数（全量）折线；点击数据点展示当日数值</li>
+<li><strong>平均获客成本趋势</strong>：按日平均获客成本折线；点击数据点展示当日数值</li>
+<li><strong>初诊转化率趋势</strong>（V1.1）：按日初诊转化率折线</li>
+</ul>
+<blockquote>加粉数趋势与首页「加粉数（全量）」口径一致；表中仍保留加粉数（渠道汇总）用于投流转化与获客成本计算。</blockquote></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">数据表</div>
+<p>列含：日期、投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、加粉数（全量）、初诊单、初诊转化率、复诊单、复诊额、总单、总额等。支持横向滚动。</p>
+<p>无投流时消耗/点击/获客成本展示「—」；筛选后无数据图表展示「暂无数据」。</p></div>`
+    },
+    '6':{
+      moduleName:'成交',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">筛选项</div>
+<p>与「每日转化」一致：时间（默认近一个月）、平台、渠道、团队；即时刷新。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">图表</div>
+<ul>
+<li><strong>趋势折线图</strong>：位于筛选栏下方<strong>第一屏</strong>；Tab 切换「订单金额/订单数」；<strong>默认</strong>展示总金额/总订单、初诊中药、复诊中药、商品四条线；卡片下方勾选「展开剂型数据」后追加初诊/复诊各剂型（汤剂、丸剂、颗粒剂）共 6 条系列</li>
+<li><strong>订单数据统计</strong>（V1.2）：趋势图下方；一张卡片合并展示初诊（中药）、复诊（中药）、商品三类堆叠柱；Tab 切换「订单金额/订单数」；中药按汤剂/丸剂/颗粒剂堆叠，商品按益生元/肠道检测/基因检测/64款营养剂堆叠</li>
+</ul>
+<p>图例：中药剂型与四类商品颜色区分；趋势图系列图例在图下方。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">数据表</div>
+<p>按日期展示初诊（中药）/复诊（中药）/中药合计/商品订单/全部合计；商品含四类明细+合计；总订单=初诊中药+复诊中药+商品；支持横向滚动。</p></div>`
+    },
+    '7':{
+      moduleName:'渠道',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">筛选项</div>
+<ul>
+<li><strong>时间</strong>：快捷标签（今日/昨日/近7天/近30天）+ 自定义日期范围，默认今日</li>
+<li><strong>平台</strong>、<strong>渠道</strong>、<strong>团队</strong>：下拉，默认全部</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">图表（纵向依次）</div>
+<ul>
+<li><strong>渠道加粉 Top5</strong>：加粉数倒序，横向条形图+序号</li>
+<li><strong>初诊成交 Top5</strong>：初诊成交订单倒序</li>
+<li><strong>获客成本 Top5</strong>：平均获客成本升序（越低越好）</li>
+</ul>
+<p>约束：最多 5 条、不滚动、条长受控。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">数据表</div>
+<p>渠道汇总行可展开查看各<strong>团队</strong>维度数据（V1.1）；列含投流消耗、行为点击、加粉、转化率、初诊成交、复诊、总单/总额等。渠道展示中文名，禁止暴露无映射英文编码。</p></div>`
+    },
+    '8':{
+      moduleName:'团队',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">二级 Tab（筛选栏下方）</div>
+<p><strong>医助成交</strong> | <strong>医助人效</strong>；筛选栏同时控制两个 Tab 的数据。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">筛选项</div>
+<ul>
+<li><strong>时间</strong>：快捷+自定义，默认今日</li>
+<li><strong>团队</strong>：全部 / A组 / B组 / C组</li>
+<li><strong>医助</strong>：姓名模糊搜索</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">医助成交 · 图表</div>
+<ul>
+<li><strong>团队初诊转化率 Top5</strong>：团队维度，转化率倒序</li>
+<li><strong>团队客单价 Top5</strong>：Tab 切换初诊/复诊客单价，Tab 在卡片右上角</li>
+<li><strong>总订单 Top5</strong>（V1.2）：Tab 切换订单金额/订单数，统计<strong>中药+商品</strong>合计；Tab 在卡片右上角</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">医助成交 · 数据表</div>
+<p>团队汇总行可展开查看医助明细；默认按初诊转化率倒序。</p>
+<ul>
+<li><strong>接线医助</strong>：当日该团队内有加粉记录的医助人数；<em>仅团队汇总行展示</em></li>
+<li><strong>医助平均初诊成单量</strong>：初诊订单数 ÷ 接粉医助数；仅团队汇总行展示</li>
+<li>其余列：加粉、初诊成交单/额/客单价/转化率、复诊单/额/客单价、<strong>中药总单/额/客单价</strong>、<strong>商品单/额</strong>（V1.2）、总单/额/客单价（中药+商品）</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">医助人效 · 图表</div>
+<ul>
+<li><strong>团队平均对话轮次 Top5</strong>：团队维度，平均对话轮次（总对话轮次/加粉数）倒序</li>
+<li><strong>加粉-支付转化率 Top5</strong>：医助维度，支付数/加粉数倒序</li>
+<li><em>不展示</em>「加粉-开方转化率 Top5」统计卡片</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">医助人效 · 数据表</div>
+<p>团队汇总行可展开查看医助明细；默认按加粉数倒序。</p>
+<ul>
+<li>列含：加粉数、开口数、舌象上传数、总对话轮次、平均对话轮次、开方数、支付数、加粉-支付转化率（<em>不展示曝光数</em>）</li>
+<li>总对话轮次、平均对话轮次位于开方数前；平均对话轮次 = 总对话轮次 / 加粉数</li>
+</ul></div>`
+    },
+    '9':{
+      moduleName:'个人中心',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">展示字段</div>
+<ul>
+<li><strong>用户名</strong>：登录账号或展示名</li>
+<li><strong>手机号</strong>：脱敏展示（如 138****6688）</li>
+<li><strong>所属部门</strong>：组织架构部门名</li>
+<li><strong>所属角色</strong>：如老板看板管理员</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">交互</div>
+<ul>
+<li>入口：顶栏右侧头像</li>
+<li>支持「‹ 返回首页」</li>
+<li><strong>退出登录</strong>：二次确认「确认退出登录？」后退出并返回登录页</li>
+</ul></div>`
+    },
+    '10':{
+      moduleName:'数据表字段说明',
+      content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">适用范围</div>
+<p>每日转化、成交、渠道、团队四类业务页的<strong>数据表</strong>。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">交互</div>
+<ul>
+<li>表头列名旁展示 <strong>「?」</strong> 图标</li>
+<li><strong>点击「?」</strong>自底部弹出说明面板，展示该字段口径</li>
+<li>点击遮罩或「知道了」关闭</li>
+</ul></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">内容规则</div>
+<p>与各页数据表「口径说明」列文案一致；加粉为 0 时转化率/成本类字段展示「—」；无投流时消耗/点击展示「—」。</p></div>
+<div class="req-tooltip-section"><div class="req-tooltip-section-title">异常处理（通用）</div>
+<ul>
+<li>时间范围非法（开始晚于结束）：阻止确认，提示「开始日期不能晚于结束日期」</li>
+<li>筛选后无数据：图表「暂无数据」，表为空态</li>
+</ul></div>`
+    }
+  };
+
+  let activeTooltip=null,isDragging=false,dragOffset={x:0,y:0};
+
+  function createTooltip(markerId,data){
+    const tooltip=document.createElement('div');
+    tooltip.className='req-tooltip';
+    tooltip.id='tooltip-'+markerId;
+    tooltip.innerHTML='<div class="req-tooltip-header"><span><span class="req-marker req-marker-inline">'+markerId+'</span>需求描述：'+data.moduleName+'</span><span class="req-tooltip-close" data-close="'+markerId+'">×</span></div><div class="req-tooltip-content">'+data.content+'</div>';
+    const marker=document.querySelector('.req-marker[data-id="'+markerId+'"]');
+    if(marker){
+      const r=marker.getBoundingClientRect();
+      let left=r.left-8, top=r.bottom+8;
+      if(left+450>window.innerWidth) left=window.innerWidth-450-16;
+      if(top+400>window.innerHeight) top=r.top-400-8;
+      if(left<8) left=8;
+      if(top<8) top=8;
+      tooltip.style.position='fixed';
+      tooltip.style.left=left+'px';
+      tooltip.style.top=top+'px';
+    }
+    tooltip.addEventListener('mousedown',e=>{
+      if(e.target.classList.contains('req-tooltip-close')) return;
+      isDragging=true; activeTooltip=tooltip;
+      dragOffset.x=e.clientX-tooltip.offsetLeft;
+      dragOffset.y=e.clientY-tooltip.offsetTop;
+      e.preventDefault(); e.stopPropagation();
+    });
+    tooltip.addEventListener('click',e=>{
+      if(e.target.classList.contains('req-tooltip-close')){
+        closeTooltip(e.target.getAttribute('data-close'));
+      }
+      e.stopPropagation();
+    });
+    return tooltip;
+  }
+
+  window.closeTooltip=function(markerId){
+    const el=document.getElementById('tooltip-'+markerId);
+    if(el) el.remove();
+    if(activeTooltip&&activeTooltip.id==='tooltip-'+markerId) activeTooltip=null;
+  };
+
+  function showTooltip(markerId){
+    closeTooltip(markerId);
+    const data=annotationData[markerId];
+    if(!data) return;
+    const tooltip=createTooltip(markerId,data);
+    document.body.appendChild(tooltip);
+    activeTooltip=tooltip;
+  }
+
+  document.addEventListener('mousemove',e=>{
+    if(isDragging&&activeTooltip){
+      activeTooltip.style.left=(e.clientX-dragOffset.x)+'px';
+      activeTooltip.style.top=(e.clientY-dragOffset.y)+'px';
+    }
+  });
+  document.addEventListener('mouseup',()=>{isDragging=false;});
+
+  document.body.addEventListener('mouseenter',e=>{
+    if(e.target.classList.contains('req-marker')){
+      showTooltip(e.target.getAttribute('data-id'));
+    }
+  },true);
+})();
+</script>
+</body>
+</html>

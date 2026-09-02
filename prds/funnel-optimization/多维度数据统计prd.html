@@ -138,6 +138,7 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <li><strong>待验证</strong>：加粉来源仅选「获客链接」时，加粉数（来源）与加粉数（渠道汇总）是否相等</li>
 <li><strong>数据表</strong>：加粉来源不含「获客链接」时，隐藏 AI 工具转化全部列及辅助图表</li>
 </ul>
+<p>9、<strong>医助人效</strong>数据表增加 <strong>总对话轮次</strong>、<strong>平均对话轮次</strong>（展示位置在 <strong>开方数</strong> 前）：总对话轮次不含系统消息，按一问一答计为一轮；平均对话轮次 = 总对话轮次 / 有效对话关系数（有效对话关系 = 产生对话轮次的加粉数）；辅助图表增加 <strong>团队平均对话轮次 Top5</strong></p>
 <h2 id="1需求背景与目标">1. 需求背景与目标</h2>
 <h3 id="11业务背景">1.1 业务背景</h3>
 <p>平台以AI智能体工具引流、企微私域转化、医助服务、支付履约为核心闭环。当前缺少统一的全链路转化漏斗分析能力，无法稳定支撑运营决策优化。</p>
@@ -744,6 +745,18 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <td>该医助服务的用户提交图片的人数</td>
 </tr>
 <tr>
+<td>总对话轮次</td>
+<td>筛选时段内医助与用户完成的对话轮次合计；<strong>不含系统消息</strong>，按一问一答计为一轮（连续多问一答、一问连续多答均计为一轮）</td>
+</tr>
+<tr>
+<td>有效对话关系数</td>
+<td>产生对话轮次的加粉数（筛选时段内至少产生一轮对话的加粉用户去重计）</td>
+</tr>
+<tr>
+<td>平均对话轮次</td>
+<td>总对话轮次 / 有效对话关系数；有效对话关系数为 0 时展示「—」</td>
+</tr>
+<tr>
 <td>开方数</td>
 <td>该医助服务的用户完成初诊病例总结和开方数，若一个微信用户有两个就诊人都转化成果算2条；<strong>受加粉来源筛选控制</strong></td>
 </tr>
@@ -766,12 +779,12 @@ tbody tr:nth-child(even){background:#fbfcff;}
 <tbody>
 <tr>
 <td>排行榜</td>
-<td>医助按 <strong>加粉-支付转化率</strong> / <strong>加粉-开方转化率</strong> 排序 Top <strong>10</strong>，左 5 + 右 5 双列展示</td>
+<td>团队按 <strong>平均对话轮次</strong> 排序 Top5（总对话轮次 / 有效对话关系数）；医助按 <strong>加粉-支付转化率</strong> 排序 Top <strong>10</strong>，左 5 + 右 5 双列展示</td>
 <td>水平条形图</td>
 </tr>
 <tr>
 <td>明细表</td>
-<td>每行一个医助，列出曝光数、当前加粉字段、开口数、舌象上传数、开方数、支付数、加粉-开方/支付转化率</td>
+<td>默认团队聚合，点击「+」展开医助明细；列含当前加粉字段、开口数、舌象上传数、<strong>总对话轮次</strong>、<strong>平均对话轮次</strong>（位于开方数前）、开方数、支付数、加粉-支付转化率；<strong>不展示曝光数</strong></td>
 <td>表格</td>
 </tr>
 <tr>

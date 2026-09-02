@@ -685,8 +685,9 @@ th:first-child .th-inner{justify-content:flex-start;}
     '曝光数':'AI智能体报告中分配企微曝光的数量（仅包含 CRM 医助分配场景，不包含巧仓等第三方分配）。',
     '开口数':'该医助服务的用户中，有发送消息的去重人数。',
     '舌象上传数':'该医助服务的用户中，有上传舌象图片的人数。',
-    '总对话轮次':'筛选时段内医助与用户完成的对话轮次合计；不含系统消息，从医助开口起按一问一答计为一轮（连续多问一答、一问连续多答均计为一轮）。',
-    '平均对话轮次':'总对话轮次 / 加粉数；加粉数为 0 时展示「—」。',
+    '总对话轮次':'筛选时段内医助与用户完成的对话轮次合计；不含系统消息，按一问一答计为一轮（连续多问一答、一问连续多答均计为一轮）。',
+    '有效对话关系数':'产生对话轮次的加粉数（筛选时段内至少产生一轮对话的加粉用户去重计）。',
+    '平均对话轮次':'总对话轮次 / 有效对话关系数；有效对话关系数为 0 时展示「—」。',
     '开方数':'该医助服务的用户中，完成初诊病例总结和开方的人数。',
     '加粉-开方转化率':'开方数 ÷ 加粉数；加粉为 0 时展示「—」。',
     '支付数':'该医助服务的用户初诊支付成功订单数。',
@@ -810,12 +811,12 @@ th:first-child .th-inner{justify-content:flex-start;}
     {name:'陈医助',team:'C组',wecomId:'chen_assistant',exposure:780,f01:540,f02:350,f03:262,dialogRounds:1830,f04:175,f05:84,firstOrd:6,firstGmv:4680,revOrd:5,revGmv:6820},
     {name:'杨医助',team:'C组',wecomId:'yang_assistant',exposure:720,f01:510,f02:331,f03:248,dialogRounds:1720,f04:166,f05:80,firstOrd:6,firstGmv:4420,revOrd:4,revGmv:6180},
     {name:'周医助',team:'B组',wecomId:'zhou_assistant',exposure:690,f01:480,f02:312,f03:234,dialogRounds:1610,f04:156,f05:75,firstOrd:5,firstGmv:3950,revOrd:4,revGmv:5720}
-  ].map(a=>({...a,totalOrd:a.firstOrd+a.revOrd,totalGmv:a.firstGmv+a.revGmv,firstConv:a.f01?a.firstOrd/a.f01:0}));
+  ].map(a=>({...a,dialogRels:a.f02,totalOrd:a.firstOrd+a.revOrd,totalGmv:a.firstGmv+a.revGmv,firstConv:a.f01?a.firstOrd/a.f01:0}));
 
   const TEAM_TODAY=[
-    {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200,dialogRounds:7020,ydDialogRounds:6630},
-    {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120,dialogRounds:5696,ydDialogRounds:5160},
-    {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640,dialogRounds:3360,ydDialogRounds:2940}
+    {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200,dialogRounds:7020,ydDialogRounds:6630,dialogRels:1424,ydDialogRels:1350},
+    {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120,dialogRounds:5696,ydDialogRounds:5160,dialogRels:1152,ydDialogRels:1096},
+    {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640,dialogRounds:3360,ydDialogRounds:2940,dialogRels:681,ydDialogRels:647}
   ].map(t=>({
     ...t,
     firstConv:t.fans?t.firstOrd/t.fans:0,
@@ -828,8 +829,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     revAov:t.revOrd?t.revGmv/t.revOrd:0,
     ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
     ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0,
-    avgDialogRounds:t.fans?t.dialogRounds/t.fans:0,
-    ydAvgDialogRounds:t.ydFans?t.ydDialogRounds/t.ydFans:0
+    avgDialogRounds:t.dialogRels?t.dialogRounds/t.dialogRels:0,
+    ydAvgDialogRounds:t.ydDialogRels?t.ydDialogRounds/t.ydDialogRels:0
   }));
 
   const TEAMS=['A组','B组','C组'];
@@ -882,7 +883,7 @@ th:first-child .th-inner{justify-content:flex-start;}
   const fmtY=n=>'¥'+fmt(Math.round(n));
   const aov=(gmv,cnt)=>cnt?fmtY(gmv/cnt):'—';
   const pct=n=>(n*100).toFixed(1)+'%';
-  const fmtAvgDialog=(total,fans)=>fans?(total/fans).toFixed(1):'—';
+  const fmtAvgDialog=(total,rels)=>rels?(total/rels).toFixed(1):'—';
   function yestEl(prev){
     if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
     return '<span class="yest">昨日 <b>'+fmt(prev)+'</b></span>';
@@ -1049,7 +1050,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'',yestY(t.ydFirstAov))+
       teamMetricCard('复诊客单价',aov(t.revGmv,t.revOrd),'',yestY(t.ydRevAov))+
       teamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+fmtY(t.totalGmv)+'</b>',yestEl(t.ydTotalOrd))+
-      teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.fans),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>',yestDec(t.ydAvgDialogRounds,1))+
+      teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.dialogRels),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>',yestDec(t.ydAvgDialogRounds,1))+
       '</div></div></div>'
     ).join('');
     bindTeamScrollSync();
@@ -1393,11 +1394,12 @@ th:first-child .th-inner{justify-content:flex-start;}
   function aggregateTeam(list){
     const map={};
     list.forEach(a=>{
-      if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,f04:0,f05:0,dialogRounds:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,totalOrd:0,totalGmv:0,wireAsst:0,members:[]};
+      if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,f04:0,f05:0,dialogRounds:0,dialogRels:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,totalOrd:0,totalGmv:0,wireAsst:0,members:[]};
       const t=map[a.team];
       t.exposure+=a.exposure||0;
       t.f01+=a.f01; t.f02+=a.f02||0; t.f03+=a.f03||0; t.f04+=a.f04||0; t.f05+=a.f05||0;
       t.dialogRounds+=a.dialogRounds||0;
+      t.dialogRels+=a.dialogRels||0;
       t.firstOrd+=a.firstOrd; t.firstGmv+=a.firstGmv;
       t.revOrd+=a.revOrd; t.revGmv+=a.revGmv; t.totalOrd+=a.totalOrd; t.totalGmv+=a.totalGmv;
       if(a.f01>0) t.wireAsst+=1;
@@ -1410,7 +1412,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       revAov:t.revOrd?t.revGmv/t.revOrd:0,
       avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
       avgFansPerAsst:t.wireAsst?t.f01/t.wireAsst:0,
-      avgDialogRounds:t.f01?t.dialogRounds/t.f01:0
+      avgDialogRounds:t.dialogRels?t.dialogRounds/t.dialogRels:0
     })).sort((a,b)=>b.totalGmv-a.totalGmv);
   }
   function asstRowCells(r, isTeam){
@@ -1422,8 +1424,9 @@ th:first-child .th-inner{justify-content:flex-start;}
   function asstEffRowCells(r){
     const fans=r.f01||0;
     const dr=r.dialogRounds||0;
+    const rels=r.dialogRels||0;
     const payConv=fans?pct(r.f05/fans):'—';
-    return '<td>'+fmt(fans)+'</td><td>'+fmt(r.f02||0)+'</td><td>'+fmt(r.f03||0)+'</td><td>'+fmt(dr)+'</td><td>'+fmtAvgDialog(dr,fans)+'</td><td>'+fmt(r.f04||0)+'</td><td>'+fmt(r.f05||0)+'</td><td>'+payConv+'</td>';
+    return '<td>'+fmt(fans)+'</td><td>'+fmt(r.f02||0)+'</td><td>'+fmt(r.f03||0)+'</td><td>'+fmt(dr)+'</td><td>'+fmtAvgDialog(dr,rels)+'</td><td>'+fmt(r.f04||0)+'</td><td>'+fmt(r.f05||0)+'</td><td>'+payConv+'</td>';
   }
   function bindAsstTeamToggle(container, rerender){
     container.querySelectorAll('[data-toggle-team]').forEach(btn=>{
@@ -1465,7 +1468,7 @@ th:first-child .th-inner{justify-content:flex-start;}
     barChart(document.getElementById('asstEffDialogTop'), sorted.map(t=>({
       name:t.team,
       value:t.avgDialogRounds,
-      label:fmtAvgDialog(t.dialogRounds,t.f01)
+      label:fmtAvgDialog(t.dialogRounds,t.dialogRels)
     })), {tone:'warm'});
   }
   function renderAsstEffPayBar(list){
@@ -1665,8 +1668,8 @@ th:first-child .th-inner{justify-content:flex-start;}
 <ul>
 <li>按团队初诊转化率倒序；每团队 6 张指标卡横向滑动（一屏 2.5 张），多团队行<strong>同步联动滑动</strong></li>
 <li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、总订单数、<strong>平均对话轮次</strong>（位于总订单数后）</li>
-<li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；平均对话轮次卡→总对话轮次</li>
-<li>医助人均接粉量 = 团队接粉总数 ÷ 接线医助数；平均对话轮次 = 总对话轮次 ÷ 加粉数</li>
+<li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；平均对话轮次卡→总对话轮次/有效对话关系数</li>
+<li>医助人均接粉量 = 团队接粉总数 ÷ 接线医助数；平均对话轮次 = 总对话轮次 ÷ 有效对话关系数（有效对话关系 = 产生对话轮次的加粉数）</li>
 <li>入口：「团队 ›」</li>
 </ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">近7天医助成交 Top</div>
@@ -1754,7 +1757,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 </ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">医助人效 · 图表</div>
 <ul>
-<li><strong>团队平均对话轮次 Top5</strong>：团队维度，平均对话轮次（总对话轮次/加粉数）倒序</li>
+<li><strong>团队平均对话轮次 Top5</strong>：团队维度，平均对话轮次（总对话轮次/有效对话关系数）倒序</li>
 <li><strong>加粉-支付转化率 Top5</strong>：医助维度，支付数/加粉数倒序</li>
 <li><em>不展示</em>「加粉-开方转化率 Top5」统计卡片</li>
 </ul></div>
@@ -1762,7 +1765,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 <p>团队汇总行可展开查看医助明细；默认按加粉数倒序。</p>
 <ul>
 <li>列含：加粉数、开口数、舌象上传数、总对话轮次、平均对话轮次、开方数、支付数、加粉-支付转化率（<em>不展示曝光数</em>）</li>
-<li>总对话轮次、平均对话轮次位于开方数前；总对话轮次不含系统消息，从医助开口起按一问一答计轮；平均对话轮次 = 总对话轮次 / 加粉数</li>
+<li>总对话轮次、平均对话轮次位于开方数前；总对话轮次不含系统消息，按一问一答计轮；平均对话轮次 = 总对话轮次 / 有效对话关系数（有效对话关系 = 产生对话轮次的加粉数）</li>
 </ul></div>`
     },
     '9':{

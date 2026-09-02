@@ -167,7 +167,7 @@ tr.child-row td:first-child{z-index:2;}
 .table-wrap{overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:#fff;}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:1280px;}
 .sub-tabs.tabs{padding:0 12px 10px;background:rgba(255,255,255,.96);justify-content:center;}
-table.asst-table{min-width:1980px;}
+table.asst-table{min-width:2080px;}
 table.asst-eff-table{min-width:1320px;}
 th,td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
 th{background:#f7f9fc;color:var(--muted);font-weight:700;position:sticky;top:0;z-index:1;}
@@ -717,7 +717,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     '复诊客单价':'复诊额 ÷ 复诊单；复诊单为 0 时展示「—」。',
     '总客单价':'总订单额 ÷ 总订单数；总订单数为 0 时展示「—」。',
     '接线医助':'当日该团队内有加粉记录的医助人数；仅在团队汇总行展示。',
-    '医助平均初诊成单量':'初诊订单数 ÷ 接粉医助数（有加粉记录的医助人数）；接粉医助数为 0 时展示「—」。'
+    '医助人均接粉量':'团队接粉总数 ÷ 接线医助数；接线医助数为 0 时展示「—」。',
+    '医助人均初诊成单量':'初诊订单数 ÷ 接粉医助数（有加粉记录的医助人数）；接粉医助数为 0 时展示「—」。'
   };
 
   function thHelp(label, tipKey){
@@ -903,6 +904,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
     avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
     ydAvgFirstOrdPerAsst:t.ydWireAsst?t.ydFirstOrd/t.ydWireAsst:0,
+    avgFansPerAsst:t.wireAsst?t.fans/t.wireAsst:0,
+    ydAvgFansPerAsst:t.ydWireAsst?t.ydFans/t.ydWireAsst:0,
     firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
     revAov:t.revOrd?t.revGmv/t.revOrd:0,
     ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
@@ -1128,7 +1131,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+t.team+'</div>'+
       '<div class="team-metric-scroll">'+
       teamMetricCard('初诊转化率',pct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',yestPct(t.ydFirstConv))+
-      teamMetricCard('医助平均初诊成单量',t.wireAsst?t.avgFirstOrdPerAsst.toFixed(1):'—','接诊医助数 <b>'+fmt(t.wireAsst)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',yestDec(t.ydAvgFirstOrdPerAsst,1))+
+      teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',yestDec(t.ydAvgFansPerAsst,1))+
       teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'',yestY(t.ydFirstAov))+
       teamMetricCard('复诊客单价',aov(t.revGmv,t.revOrd),'',yestY(t.ydRevAov))+
       teamMetricCard('中药总订单数',fmt(t.medOrd),'中药总订单额 <b>'+fmtY(t.medGmv)+'</b>',yestEl(t.ydMedOrd))+
@@ -1530,13 +1533,15 @@ th:first-child .th-inner{justify-content:flex-start;}
       firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
       revAov:t.revOrd?t.revGmv/t.revOrd:0,
       avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
+      avgFansPerAsst:t.wireAsst?t.f01/t.wireAsst:0,
       avgDialogRounds:t.f01?t.dialogRounds/t.f01:0
     })).sort((a,b)=>b.totalGmv-a.totalGmv);
   }
   function asstRowCells(r, isTeam){
     const wireCell=isTeam?fmt(r.wireAsst):'—';
+    const avgFansCell=isTeam?(r.wireAsst?(r.f01/r.wireAsst).toFixed(1):'—'):'—';
     const avgFirstCell=isTeam?(r.wireAsst?(r.firstOrd/r.wireAsst).toFixed(1):'—'):'—';
-    return '<td>'+fmt(r.f01)+'</td><td>'+wireCell+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+aov(r.firstGmv,r.firstOrd)+'</td><td>'+pct(r.firstConv)+'</td><td>'+avgFirstCell+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+aov(r.revGmv,r.revOrd)+'</td><td>'+fmt(r.medOrd)+'</td><td>'+fmtY(r.medGmv)+'</td><td>'+aov(r.medGmv,r.medOrd)+'</td><td>'+fmt(r.productOrd)+'</td><td>'+fmtY(r.productGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td><td>'+aov(r.totalGmv,r.totalOrd)+'</td>';
+    return '<td>'+fmt(r.f01)+'</td><td>'+wireCell+'</td><td>'+avgFansCell+'</td><td>'+fmt(r.firstOrd)+'</td><td>'+fmtY(r.firstGmv)+'</td><td>'+aov(r.firstGmv,r.firstOrd)+'</td><td>'+pct(r.firstConv)+'</td><td>'+avgFirstCell+'</td><td>'+fmt(r.revOrd)+'</td><td>'+fmtY(r.revGmv)+'</td><td>'+aov(r.revGmv,r.revOrd)+'</td><td>'+fmt(r.medOrd)+'</td><td>'+fmtY(r.medGmv)+'</td><td>'+aov(r.medGmv,r.medOrd)+'</td><td>'+fmt(r.productOrd)+'</td><td>'+fmtY(r.productGmv)+'</td><td>'+fmt(r.totalOrd)+'</td><td>'+fmtY(r.totalGmv)+'</td><td>'+aov(r.totalGmv,r.totalOrd)+'</td>';
   }
   function asstEffRowCells(r){
     const fans=r.f01||0;
@@ -1604,7 +1609,7 @@ th:first-child .th-inner{justify-content:flex-start;}
     renderAsstOrdBar();
     const teamRows=teams.slice().sort((a,b)=>b.firstConv-a.firstConv);
     let t='<table class="asst-table">'+buildThead([
-      ['团队/医助','团队'],['加粉','加粉'],['接线医助','接线医助'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊客单价','初诊客单价'],['初诊转化率','初诊转化率'],['医助平均初诊成单量','医助平均初诊成单量'],
+      ['团队/医助','团队'],['加粉','加粉'],['接线医助','接线医助'],['医助人均接粉量','医助人均接粉量'],['初诊成交单','初诊单'],['初诊成交额','初诊成交额'],['初诊客单价','初诊客单价'],['初诊转化率','初诊转化率'],['医助人均初诊成单量','医助人均初诊成单量'],
       ['复诊单','复诊单'],['复诊额','复诊额'],['复诊客单价','复诊客单价'],
       ['中药总单','中药总订单数'],['中药总额','中药总订单额'],['中药总客单价','总客单价'],
       ['商品单','商品订单数'],['商品额','商品订单额'],
@@ -1792,9 +1797,9 @@ th:first-child .th-inner{justify-content:flex-start;}
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">今日团队 Top（V1.1）</div>
 <ul>
 <li>按团队初诊转化率倒序；每团队 7 张指标卡横向滑动（一屏 2.5 张），多团队行<strong>同步联动滑动</strong></li>
-<li>指标卡：初诊转化率、医助平均初诊成单量、初诊客单价、复诊客单价、<strong>中药总订单数</strong>、<strong>商品订单数</strong>、平均对话轮次</li>
-<li>弱字段：初诊转化率卡→加粉数/初诊订单数；成单量卡→接诊医助数/初诊订单数；中药总订单数卡→中药总订单额；商品订单数卡→商品订单金额；平均对话轮次卡→总对话轮次</li>
-<li>医助平均初诊成单量 = 初诊订单数 ÷ 接粉医助数；平均对话轮次 = 总对话轮次 ÷ 加粉数</li>
+<li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、<strong>中药总订单数</strong>、<strong>商品订单数</strong>、平均对话轮次</li>
+<li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；中药总订单数卡→中药总订单额；商品订单数卡→商品订单金额；平均对话轮次卡→总对话轮次</li>
+<li>医助人均接粉量 = 团队接粉总数 ÷ 接线医助数；平均对话轮次 = 总对话轮次 ÷ 加粉数</li>
 <li>入口：「团队 ›」</li>
 </ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">近7天医助成交 Top</div>
@@ -1876,7 +1881,8 @@ th:first-child .th-inner{justify-content:flex-start;}
 <p>团队汇总行可展开查看医助明细；默认按初诊转化率倒序。</p>
 <ul>
 <li><strong>接线医助</strong>：当日该团队内有加粉记录的医助人数；<em>仅团队汇总行展示</em></li>
-<li><strong>医助平均初诊成单量</strong>：初诊订单数 ÷ 接粉医助数；仅团队汇总行展示</li>
+<li><strong>医助人均接粉量</strong>：团队接粉总数 ÷ 接线医助数；<em>仅团队汇总行展示</em></li>
+<li><strong>医助人均初诊成单量</strong>：初诊订单数 ÷ 接粉医助数；仅团队汇总行展示</li>
 <li>其余列：加粉、初诊成交单/额/客单价/转化率、复诊单/额/客单价、<strong>中药总单/额/客单价</strong>、<strong>商品单/额</strong>（V1.2）、总单/额/客单价（中药+商品）</li>
 </ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">医助人效 · 图表</div>

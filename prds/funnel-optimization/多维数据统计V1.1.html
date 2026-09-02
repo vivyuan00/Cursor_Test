@@ -1010,7 +1010,7 @@
       '加粉数（报告转化）@医助':'该医助在筛选时段内通过 AI 工具产生报告而新增的加企微人数',
       '开口数':'该医助服务的用户有发送消息的人数',
       '舌象上传数':'该医助服务的用户提交图片的人数',
-      '总对话轮次':'筛选时段内医助与用户完成的对话轮次合计；医助一问用户一答为一轮（连续多问一答、一问连续多答均计为一轮）',
+      '总对话轮次':'筛选时段内医助与用户完成的对话轮次合计；不含系统消息，从医助开口起按一问一答计为一轮（连续多问一答、一问连续多答均计为一轮）',
       '平均对话轮次':'总对话轮次 / 加粉数；加粉数为 0 时展示「—」',
       '开方数':'该医助服务的用户完成初诊病例总结和开方的人数；若一个微信用户有两个就诊人都转化成功算2条',
       '加粉-开方转化率':'开方数 / 加粉数（全量或工具转化，随筛选口径）',
@@ -1029,6 +1029,9 @@
       '总订单数@医助':'初诊订单数 + 复诊订单数',
       '总订单金额@医助':'初诊金额 + 复诊金额',
       '总客单价':'总订单金额 / 总订单数；总订单数为 0 时展示「—」',
+      '接线医助':'当日该团队内有加粉记录的医助人数；仅在团队汇总行展示',
+      '医助人均接粉量':'团队接粉总数 ÷ 接线医助数；接线医助数为 0 时展示「—」',
+      '医助人均初诊单量':'初诊订单数 ÷ 接粉医助数（有加粉记录的医助人数）；接粉医助数为 0 时展示「—」',
       '初诊成交数':'该团队/医助服务的初诊用户支付成功订单数',
       '初诊成交额':'该团队/医助服务的初诊订单实付金额合计',
       '复诊成交数':'该团队/医助服务的复诊用户支付成功订单数',
@@ -1145,6 +1148,9 @@
       if(key==='totalAov') return m.totalAov;
       if(key==='firstAov') return m.firstAov;
       if(key==='revAov') return m.revAov;
+      if(key==='wireAsst') return a.wireAsst||0;
+      if(key==='avgFansPerAsst') return a.wireAsst?m.fans/a.wireAsst:0;
+      if(key==='avgFirstOrdPerAsst') return a.wireAsst?m.firstOrd/a.wireAsst:0;
       return a[key]!=null?a[key]:0;
     }
     function _asstTradeMetrics(row){
@@ -1169,11 +1175,17 @@
     function _asstTradeRowCells(row,boldTotal){
       var m=_asstTradeMetrics(row);
       var totalCls=boldTotal?' font-semibold':'';
+      var wireCell=boldTotal?fmt(row.wireAsst||0):'—';
+      var avgFansCell=boldTotal?(row.wireAsst?(m.fans/row.wireAsst).toFixed(1):'—'):'—';
+      var avgFirstCell=boldTotal?(row.wireAsst?(m.firstOrd/row.wireAsst).toFixed(1):'—'):'—';
       return '<td class="px-3 py-2 text-right">'+fmt(m.fans)+'</td>'+
+        '<td class="px-3 py-2 text-right">'+wireCell+'</td>'+
+        '<td class="px-3 py-2 text-right">'+avgFansCell+'</td>'+
         '<td class="px-3 py-2 text-right">'+fmt(m.firstOrd)+'</td>'+
         '<td class="px-3 py-2 text-right">¥'+fmt(m.firstGmv)+'</td>'+
         '<td class="px-3 py-2 text-right">'+_fmtAov(m.firstGmv,m.firstOrd)+'</td>'+
         '<td class="px-3 py-2 text-right text-brand-700">'+_fmtConvRate(m.firstOrd,m.fans)+'</td>'+
+        '<td class="px-3 py-2 text-right">'+avgFirstCell+'</td>'+
         '<td class="px-3 py-2 text-right">'+fmt(m.revOrd)+'</td>'+
         '<td class="px-3 py-2 text-right">¥'+fmt(m.revGmv)+'</td>'+
         '<td class="px-3 py-2 text-right">'+_fmtAov(m.revGmv,m.revOrd)+'</td>'+
@@ -1214,10 +1226,11 @@
     function aggregateTeams(list){
       var map={};
       list.forEach(function(a){
-        if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,dialogRounds:0,f04:0,f05:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,members:[]};
+        if(!map[a.team]) map[a.team]={team:a.team,exposure:0,f01:0,f02:0,f03:0,dialogRounds:0,f04:0,f05:0,firstOrd:0,firstGmv:0,revOrd:0,revGmv:0,wireAsst:0,members:[]};
         var t=map[a.team];
         t.exposure+=a.exposure; t.f01+=a.f01; t.f02+=a.f02; t.f03+=a.f03; t.dialogRounds+=a.dialogRounds||0; t.f04+=a.f04; t.f05+=a.f05;
         t.firstOrd+=a.firstOrd; t.firstGmv+=a.firstGmv; t.revOrd+=a.revOrd; t.revGmv+=a.revGmv;
+        if(a.f01>0) t.wireAsst+=1;
         t.members.push(a);
       });
       return Object.keys(map).map(function(k){
@@ -1228,6 +1241,8 @@
         t.firstAov=t.firstOrd?t.firstGmv/t.firstOrd:0;
         t.revAov=t.revOrd?t.revGmv/t.revOrd:0;
         t.totalAov=t.totalOrd?t.totalGmv/t.totalOrd:0;
+        t.avgFansPerAsst=t.wireAsst?t.f01/t.wireAsst:0;
+        t.avgFirstOrdPerAsst=t.wireAsst?t.firstOrd/t.wireAsst:0;
         return t;
       }).sort(function(a,b){return TEAMS.indexOf(a.team)-TEAMS.indexOf(b.team);});
     }
@@ -1681,6 +1696,8 @@
         ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
         avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
         ydAvgFirstOrdPerAsst:t.ydWireAsst?t.ydFirstOrd/t.ydWireAsst:0,
+        avgFansPerAsst:t.wireAsst?t.fans/t.wireAsst:0,
+        ydAvgFansPerAsst:t.ydWireAsst?t.ydFans/t.ydWireAsst:0,
         firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
         revAov:t.revOrd?t.revGmv/t.revOrd:0,
         ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
@@ -1766,7 +1783,7 @@
         return '<div class="home-row"><div class="home-badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="home-main"><div class="n">'+h(t.team)+'</div>'+
           '<div class="home-team-scroll">'+
           _homeTeamMetricCard('初诊转化率',_homePct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',_homeYest(t.ydFirstConv,true))+
-          _homeTeamMetricCard('医助平均初诊成单量',t.wireAsst?t.avgFirstOrdPerAsst.toFixed(1):'—','接诊医助数 <b>'+fmt(t.wireAsst)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',_homeYest(t.ydAvgFirstOrdPerAsst,false,false,true))+
+          _homeTeamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',_homeYest(t.ydAvgFansPerAsst,false,false,true))+
           _homeTeamMetricCard('初诊客单价',_homeAov(t.firstGmv,t.firstOrd),'',_homeYest(t.ydFirstAov,false,true))+
           _homeTeamMetricCard('复诊客单价',_homeAov(t.revGmv,t.revOrd),'',_homeYest(t.ydRevAov,false,true))+
           _homeTeamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+_homeFmtY(t.totalGmv)+'</b>',_homeYest(t.ydTotalOrd))+
@@ -2267,10 +2284,13 @@
       });
       var tradeThead=_th('团队/医助','团队/医助','px-3 py-2')+
         _sortableTh('加粉',addFansAsstTipKey(),'f01',sk,sd,'trade','px-3 py-2 text-right')+
+        _sortableTh('接线医助','接线医助','wireAsst',sk,sd,'trade','px-3 py-2 text-right')+
+        _sortableTh('医助人均接粉量','医助人均接粉量','avgFansPerAsst',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('初诊成交数','初诊成交数','firstOrd',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('初诊成交额','初诊成交额','firstGmv',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('初诊客单价','初诊客单价@团队','firstAov',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('初诊转化率','初诊转化率@团队','firstConv',sk,sd,'trade','px-3 py-2 text-right')+
+        _sortableTh('医助人均初诊单量','医助人均初诊单量','avgFirstOrdPerAsst',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('复诊成交数','复诊成交数','revOrd',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('复诊成交额','复诊成交额','revGmv',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('复诊客单价','复诊客单价@团队','revAov',sk,sd,'trade','px-3 py-2 text-right')+
@@ -3549,7 +3569,7 @@
     <li><strong>加粉数</strong>：该团队/医助在筛选时段内分配到的新加粉好友去重人数</li>
     <li><strong>开口数</strong>：该团队/医助服务的用户主动开口去重人数</li>
     <li><strong>舌象上传数</strong>：该团队/医助服务的用户提交舌象去重人数</li>
-    <li><strong>总对话轮次</strong>：筛选时段内医助与用户完成的对话轮次合计；医助一问用户一答为一轮（连续多问一答、一问连续多答均计为一轮）</li>
+    <li><strong>总对话轮次</strong>：筛选时段内医助与用户完成的对话轮次合计；不含系统消息，从医助开口起按一问一答计为一轮（连续多问一答、一问连续多答均计为一轮）</li>
     <li><strong>平均对话轮次</strong>：总对话轮次 / 加粉数；加粉数为 0 时展示「—」</li>
     <li><strong>开方数</strong>：该团队/医助服务的用户完成病例总结和开方的去重人数</li>
     <li><strong>支付数</strong>：该团队/医助服务的用户支付成功去重人数</li>
@@ -3577,10 +3597,13 @@
   <div class="req-tooltip-section-title">指标定义</div>
   <ul>
     <li><strong>加粉</strong>：该团队/医助在筛选时段内新增企微好友人数（口径同加粉数（来源））</li>
+    <li><strong>接线医助</strong>：当日该团队内有加粉记录的医助人数；<em>仅团队汇总行展示</em></li>
+    <li><strong>医助人均接粉量</strong>：团队接粉总数 ÷ 接线医助数；<em>仅团队汇总行展示</em></li>
     <li><strong>初诊成交数</strong>：该团队/医助服务的初诊用户支付成功订单数</li>
     <li><strong>初诊成交额</strong>：该团队/医助服务的初诊订单实付金额合计</li>
     <li><strong>初诊客单价</strong>：初诊成交额 / 初诊成交数</li>
     <li><strong>初诊转化率</strong>：初诊成交数 / 加粉数</li>
+    <li><strong>医助人均初诊单量</strong>：初诊订单数 ÷ 接粉医助数；<em>仅团队汇总行展示</em></li>
     <li><strong>复诊成交数</strong>：该团队/医助服务的复诊用户支付成功订单数</li>
     <li><strong>复诊成交额</strong>：该团队/医助服务的复诊订单实付金额合计</li>
     <li><strong>复诊客单价</strong>：复诊成交额 / 复诊成交数</li>
@@ -3595,7 +3618,7 @@
     <li><strong>排行榜1</strong>：团队客单价 Top5，支持<strong>初诊客单价 / 复诊客单价 / 总客单价</strong> Tab 切换（位于卡片右上角），默认展示初诊客单价</li>
     <li><strong>排行榜2</strong>：团队初诊转化率 Top5</li>
     <li><strong>排行榜3</strong>：医助总订单 Top10，支持<strong>订单金额 / 订单数</strong> Tab 切换，默认展示订单金额，左 5 + 右 5 双列展示；三图同一行并排、等宽撑满</li>
-    <li><strong>数据表</strong>：默认团队聚合，列含加粉、初诊成交数/成交额/客单价/转化率、复诊成交数/成交额/客单价、总订单数/总订单额/总客单价；支持点击表头排序，默认按总订单额倒序；展开后展示医助明细</li>
+    <li><strong>数据表</strong>：默认团队聚合，列含加粉、接线医助、医助人均接粉量、初诊成交数/成交额/客单价/转化率、医助人均初诊单量、复诊成交数/成交额/客单价、总订单数/总订单额/总客单价；支持点击表头排序，默认按总订单额倒序；展开后展示医助明细</li>
   </ul>
 </div>
 `

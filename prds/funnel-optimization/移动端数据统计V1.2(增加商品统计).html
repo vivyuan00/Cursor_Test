@@ -661,9 +661,11 @@ th:first-child .th-inner{justify-content:flex-start;}
     const revOrd=Math.max(6, Math.round(addFull*0.052+(i%5===2?2:-1)));
     const firstGmv=Math.round(firstOrd*780+(i%3)*120);
     const revGmv=Math.round(revOrd*920+(i%4)*90);
-    const totalOrd=firstOrd+revOrd, totalGmv=firstGmv+revGmv;
+    const prodOrd=Math.max(3, Math.round(addFull*0.022+(i%3===1?2:-1)));
+    const prodGmv=Math.round(prodOrd*1150+(i%5)*80);
+    const totalOrd=firstOrd+revOrd+prodOrd, totalGmv=firstGmv+revGmv+prodGmv;
     const firstConv=addFull?firstOrd/addFull:0;
-    return {d,spend,clicks,add,addFull,rate:clicks?add/clicks:0,cac,firstOrd,firstConv,revOrd,firstGmv,revGmv,totalOrd,totalGmv};
+    return {d,spend,clicks,add,addFull,rate:clicks?add/clicks:0,cac,firstOrd,firstConv,revOrd,firstGmv,revGmv,prodOrd,prodGmv,totalOrd,totalGmv};
   });
 
   const METRIC_TIPS={
@@ -674,8 +676,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     '加粉数（全量）':'全部渠道新增企微好友人数（含非 AI 工具来源，如线下转介绍等）；按加粉事件计；与加粉数趋势图口径一致。',
     '行为点击-加粉转化率':'加粉数（渠道汇总）÷ 行为点击；行为点击为 0 时展示「—」。',
     '平均获客成本':'投流消耗 ÷ 加粉数（渠道汇总）；无投流或加粉为 0 时展示「—」。',
-    '合计单':'当日全部支付成功订单数（初诊 + 复诊）。',
-    '合计额':'当日全部支付成功订单实付金额合计（元）。',
+    '合计单':'当日全部支付成功订单数（初诊中药 + 复诊中药 + 商品）。',
+    '合计额':'当日全部支付成功订单实付金额合计（元，含商品）。',
     '初诊单':'当日/该医助初诊支付成功订单数。',
     '初诊额':'当日/该医助初诊订单实付金额合计（元）。',
     '复诊单':'当日/该医助复诊支付成功订单数。',
@@ -1330,9 +1332,10 @@ th:first-child .th-inner{justify-content:flex-start;}
       ['日期','日期'],['投流消耗','投流消耗'],['行为点击','行为点击'],
       ['加粉数（渠道汇总）','加粉数（渠道汇总）'],['行为点击-加粉转化率','行为点击-加粉转化率'],
       ['平均获客成本','平均获客成本'],['加粉数（全量）','加粉数（全量）'],
-      ['初诊单','初诊单'],['初诊转化率','初诊转化率'],['复诊单','复诊单'],['复诊额','复诊额'],['总单','总单'],['总额','总额']
+      ['初诊单','初诊单'],['初诊转化率','初诊转化率'],['复诊单','复诊单'],['复诊额','复诊额'],
+      ['商品订单','商品订单数'],['商品总额','商品订单额'],['总单','总单'],['总额','总额']
     ])+'<tbody>';
-    DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>¥'+x.cac.toFixed(1)+'</td><td>'+fmt(x.addFull)+'</td><td>'+x.firstOrd+'</td><td>'+pct(x.firstConv)+'</td><td>'+x.revOrd+'</td><td>'+fmtY(x.revGmv)+'</td><td>'+x.totalOrd+'</td><td>'+fmtY(x.totalGmv)+'</td></tr>';});
+    DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>¥'+x.cac.toFixed(1)+'</td><td>'+fmt(x.addFull)+'</td><td>'+x.firstOrd+'</td><td>'+pct(x.firstConv)+'</td><td>'+x.revOrd+'</td><td>'+fmtY(x.revGmv)+'</td><td>'+x.prodOrd+'</td><td>'+fmtY(x.prodGmv)+'</td><td>'+x.totalOrd+'</td><td>'+fmtY(x.totalGmv)+'</td></tr>';});
     document.getElementById('fansTable').innerHTML=t+'</tbody></table>';
   }
 
@@ -1831,7 +1834,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 </ul>
 <blockquote>加粉数趋势与首页「加粉数（全量）」口径一致；表中仍保留加粉数（渠道汇总）用于投流转化与获客成本计算。</blockquote></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">数据表</div>
-<p>列含：日期、投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、加粉数（全量）、初诊单、初诊转化率、复诊单、复诊额、总单、总额等。支持横向滚动。</p>
+<p>列含：日期、投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、加粉数（全量）、初诊单、初诊转化率、复诊单、复诊额、<strong>商品订单、商品总额</strong>（V1.2）、总单、总额等。总单/总额 = 初诊中药 + 复诊中药 + 商品。支持横向滚动。</p>
 <p>无投流时消耗/点击/获客成本展示「—」；筛选后无数据图表展示「暂无数据」。</p></div>`
     },
     '6':{

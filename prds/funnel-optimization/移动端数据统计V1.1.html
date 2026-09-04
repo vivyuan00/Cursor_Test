@@ -39,6 +39,13 @@ button{border:0;background:none;cursor:pointer;}
 .kpi{display:block;position:relative;text-align:left;padding:14px 32px 14px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
 .kpi .lab{font-size:12px;color:var(--muted);font-weight:600;padding-right:4px;}
 .kpi .val{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:22px;font-weight:700;margin:8px 0 6px;letter-spacing:-.03em;}
+.val-row,.x-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;}
+.kpi .val-row{margin:8px 0 4px;}
+.kpi .val-row .val-main{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:22px;font-weight:700;letter-spacing:-.03em;}
+.triple .cell .x-row{margin-top:4px;}
+.triple .cell .x-row .val-main{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700;letter-spacing:-.02em;}
+.team-metric-card .x-row{margin-top:4px;}
+.team-metric-card .x-row .val-main{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:17px;font-weight:700;letter-spacing:-.02em;}
 .kpi-arrow{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:16px;font-weight:800;line-height:22px;text-align:center;pointer-events:none;}
 .kpi .soft{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.4;}
 .triple .cell .soft,.dual .cell .soft{font-size:10px;margin-top:4px;line-height:1.45;color:var(--muted);font-weight:600;}
@@ -55,8 +62,17 @@ tr.child-row td:first-child{z-index:2;}
 .delta.up{color:var(--up);background:rgba(15,157,106,.1);}
 .delta.down{color:var(--down);background:rgba(217,72,72,.1);}
 .delta.flat{color:var(--muted);background:#f0f3f6;}
-.yest{display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--muted);margin-top:2px;}
+.yest{display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--muted);}
 .yest b{font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--text);margin-left:4px;}
+.yest-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:2px;}
+.yest-dual{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:4px;}
+.yest-sep{color:var(--muted);font-size:11px;font-weight:600;}
+.yest-total{color:var(--muted);}
+.yest-chg{font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;font-family:"IBM Plex Mono",monospace;line-height:1.35;flex-shrink:0;}
+.yest-chg.up{color:#d94848;background:rgba(217,72,72,.1);}
+.yest-chg.down{color:#0f9d6a;background:rgba(15,157,106,.1);}
+.yest-chg.flat{color:var(--muted);background:#f0f3f6;}
+.kpi .yest-dual,.triple .cell .yest-dual,.team-metric-card .yest-dual{margin-top:4px;}
 .filters{display:grid;gap:8px;margin-bottom:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
 .filters .fg{display:flex;align-items:center;gap:8px;min-width:0;}
 .filters .fg>label{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--muted);width:28px;}
@@ -291,28 +307,28 @@ th:first-child .th-inner{justify-content:flex-start;}
         <button class="kpi" data-go="fans">
           <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">加粉数（全量）</div>
-          <div class="val" id="hFans">—</div>
-          <span id="hFansD"></span>
+          <div class="val-row" id="hFans"></div>
+          <div id="hFansD"></div>
         </button>
         <button class="kpi" data-go="deal">
           <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">成交订单数</div>
-          <div class="val" id="hOrd">—</div>
-          <span id="hOrdD"></span>
+          <div class="val-row" id="hOrd"></div>
+          <div id="hOrdD"></div>
         </button>
         <button class="kpi" data-go="deal">
           <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">初诊转化率</div>
-          <div class="val" id="hFirstConv">—</div>
+          <div class="val-row" id="hFirstConv"></div>
           <div class="soft" id="hFirstOrd">初诊订单数 <b>—</b></div>
-          <span id="hFirstConvD"></span>
+          <div id="hFirstConvD"></div>
         </button>
         <button class="kpi" data-go="deal">
           <span class="kpi-arrow" aria-hidden="true">›</span>
           <div class="lab">成交GMV</div>
-          <div class="val" id="hGmv">—</div>
+          <div class="val-row" id="hGmv"></div>
           <div class="soft" id="hNetGmv">净GMV <b>—</b></div>
-          <span id="hGmvD"></span>
+          <div id="hGmvD"></div>
         </button>
       </div>
     </div>
@@ -610,9 +626,14 @@ th:first-child .th-inner{justify-content:flex-start;}
   const defaultStart=ymd(addDays(today,-29));
   const defaultEnd=ymd(today);
 
-  const FANS_TODAY=520, FANS_YDAY=478, ORD_TODAY=83, ORD_YDAY=76;
-  const GMV_TODAY=85770, GMV_YDAY=81240, NET_GMV_TODAY=82180, NET_GMV_YDAY=77890, REFUND_ORD_TODAY=1;
-  const FIRST_ORD_TODAY=45, FIRST_ORD_YDAY=42, FIRST_CONV_TODAY=FIRST_ORD_TODAY/FANS_TODAY, FIRST_CONV_YDAY=FIRST_ORD_YDAY/FANS_YDAY;
+  const FANS_TODAY=520, FANS_YDAY=478, FANS_YDAY_SP=465;
+  const ORD_TODAY=83, ORD_YDAY=76, ORD_YDAY_SP=71;
+  const GMV_TODAY=85770, GMV_YDAY=81240, GMV_YDAY_SP=79800;
+  const NET_GMV_TODAY=82180, NET_GMV_YDAY=77890, REFUND_ORD_TODAY=1;
+  const FIRST_ORD_TODAY=45, FIRST_ORD_YDAY=42, FIRST_ORD_YDAY_SP=40;
+  const FIRST_CONV_TODAY=FIRST_ORD_TODAY/FANS_TODAY;
+  const FIRST_CONV_YDAY=FIRST_ORD_YDAY/FANS_YDAY;
+  const FIRST_CONV_YDAY_SP=FIRST_ORD_YDAY_SP/FANS_YDAY_SP;
   const CHANNELS=[
     {ch:'douyin_info',name:'抖音信息流',plat:'抖音',add:1510,ydAdd:1380,pay:245,ydPay:220,payGmv:91800,revOrd:198,revGmv:75600,spend:68200,clicks:55100},
     {ch:'baidu_doctor_h5',name:'百度医生H5',plat:'百度',add:1330,ydAdd:1410,pay:205,ydPay:198,payGmv:76800,revOrd:172,revGmv:62400,spend:52800,clicks:42600},
@@ -623,8 +644,11 @@ th:first-child .th-inner{justify-content:flex-start;}
   ].map(c=>{
     const rate=c.clicks?c.add/c.clicks:0, cac=c.add?c.spend/c.add:0, payRate=c.add?c.pay/c.add:0;
     const ydPayRate=c.ydAdd?c.ydPay/c.ydAdd:0;
+    const ydAddSp=Math.round(c.ydAdd*0.94);
+    const ydPaySp=Math.round(c.ydPay*0.93);
+    const ydPayRateSp=ydAddSp?ydPaySp/ydAddSp:0;
     const totalOrd=c.pay+c.revOrd, totalGmv=c.payGmv+c.revGmv;
-    return Object.assign(c,{rate,cac,payRate,ydPayRate,totalOrd,totalGmv});
+    return Object.assign(c,{rate,cac,payRate,ydPayRate,ydAddSp,ydPaySp,ydPayRateSp,totalOrd,totalGmv});
   });
   function chOptions(){
     return CHANNELS.map(c=>'<option value="'+c.ch+'">'+c.name+'</option>').join('');
@@ -817,21 +841,36 @@ th:first-child .th-inner{justify-content:flex-start;}
     {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200,dialogRounds:7020,ydDialogRounds:6630,dialogRels:1424,ydDialogRels:1350},
     {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120,dialogRounds:5696,ydDialogRounds:5160,dialogRels:1152,ydDialogRels:1096},
     {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640,dialogRounds:3360,ydDialogRounds:2940,dialogRels:681,ydDialogRels:647}
-  ].map(t=>({
+  ].map(t=>{
+    const ydFansSp=Math.round(t.ydFans*0.94);
+    const ydFirstOrdSp=Math.round(t.ydFirstOrd*0.93);
+    const ydRevOrdSp=Math.round(t.ydRevOrd*0.93);
+    const ydFirstGmvSp=Math.round(t.ydFirstGmv*0.93);
+    const ydRevGmvSp=Math.round(t.ydRevGmv*0.93);
+    const ydTotalOrdSp=Math.round(t.ydTotalOrd*0.93);
+    const ydDialogRoundsSp=Math.round(t.ydDialogRounds*0.94);
+    const ydDialogRelsSp=Math.round(t.ydDialogRels*0.94);
+    return {
     ...t,
+    ydFansSp,ydFirstOrdSp,ydRevOrdSp,ydFirstGmvSp,ydRevGmvSp,ydTotalOrdSp,ydDialogRoundsSp,ydDialogRelsSp,
     firstConv:t.fans?t.firstOrd/t.fans:0,
     ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
+    ydFirstConvSp:ydFansSp?ydFirstOrdSp/ydFansSp:0,
     avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
     ydAvgFirstOrdPerAsst:t.ydWireAsst?t.ydFirstOrd/t.ydWireAsst:0,
     avgFansPerAsst:t.wireAsst?t.fans/t.wireAsst:0,
     ydAvgFansPerAsst:t.ydWireAsst?t.ydFans/t.ydWireAsst:0,
+    ydAvgFansPerAsstSp:t.ydWireAsst?ydFansSp/t.ydWireAsst:0,
     firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
     revAov:t.revOrd?t.revGmv/t.revOrd:0,
     ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
     ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0,
+    ydFirstAovSp:ydFirstOrdSp?ydFirstGmvSp/ydFirstOrdSp:0,
+    ydRevAovSp:ydRevOrdSp?ydRevGmvSp/ydRevOrdSp:0,
     avgDialogRounds:t.dialogRels?t.dialogRounds/t.dialogRels:0,
-    ydAvgDialogRounds:t.ydDialogRels?t.ydDialogRounds/t.ydDialogRels:0
-  }));
+    ydAvgDialogRounds:t.ydDialogRels?t.ydDialogRounds/t.ydDialogRels:0,
+    ydAvgDialogRoundsSp:ydDialogRelsSp?ydDialogRoundsSp/ydDialogRelsSp:0
+  };});
 
   const TEAMS=['A组','B组','C组'];
   const ASST_CH=[];
@@ -884,6 +923,55 @@ th:first-child .th-inner{justify-content:flex-start;}
   const aov=(gmv,cnt)=>cnt?fmtY(gmv/cnt):'—';
   const pct=n=>(n*100).toFixed(1)+'%';
   const fmtAvgDialog=(total,rels)=>rels?(total/rels).toFixed(1):'—';
+  function fmtMetric(v,opts){
+    opts=opts||{};
+    if(v==null||v==='') return '—';
+    if(opts.pct) return pct(v);
+    if(opts.money) return fmtY(v);
+    if(opts.dec!=null) return Number(v).toFixed(opts.dec);
+    return fmt(v);
+  }
+  function formatDelta(diff,opts){
+    opts=opts||{};
+    if(!isFinite(diff)||Math.abs(diff)<0.00005) return '0';
+    if(opts.pct) return (diff>=0?'+':'')+(diff*100).toFixed(1)+'%';
+    if(opts.money) return (diff>=0?'+':'-')+fmtY(Math.abs(diff));
+    if(opts.dec!=null) return (diff>=0?'+':'')+diff.toFixed(opts.dec);
+    return (diff>=0?'+':'')+fmt(Math.abs(diff));
+  }
+  function chgHtml(today,yestSp,opts){
+    opts=opts||{};
+    if(today==null||today===''||yestSp==null||yestSp==='') return '';
+    var diff=today-yestSp;
+    if(!isFinite(diff)) return '';
+    var label=formatDelta(diff,opts);
+    if(label==='0') return '<span class="yest-chg flat">0</span>';
+    var up=diff>0;
+    return '<span class="yest-chg '+(up?'up':'down')+'">'+label+'</span>';
+  }
+  function todayRowHtml(today,yestSp,opts){
+    opts=opts||{};
+    var main=(today==null||today==='')?'—':fmtMetric(today,opts);
+    return '<span class="val-main">'+main+'</span>'+chgHtml(today,yestSp,opts);
+  }
+  function yestDualHtml(yestSp,yestTotal,opts){
+    return '<div class="yest-dual">'+
+      '<span class="yest">昨日 <b>'+fmtMetric(yestSp,opts)+'</b></span>'+
+      '<span class="yest-sep">·</span>'+
+      '<span class="yest yest-total">昨日总计 <b>'+fmtMetric(yestTotal,opts)+'</b></span>'+
+      '</div>';
+  }
+  function yestCompare(today,yestSp,opts){
+    opts=opts||{};
+    var fmtVal=opts.fmtVal||(opts.money?fmtY:(opts.pct?pct:(opts.dec!=null?function(v){return Number(v).toFixed(opts.dec);}:fmt)));
+    var yestPart=(yestSp==null||yestSp==='')?'<span class="yest">昨日 <b>—</b></span>':'<span class="yest">昨日 <b>'+fmtVal(yestSp)+'</b></span>';
+    if(yestSp==null||yestSp===''||yestSp===0) return '<span class="yest-wrap">'+yestPart+'</span>';
+    var chg=(today-yestSp)/yestSp;
+    if(!isFinite(chg)) return '<span class="yest-wrap">'+yestPart+'</span>';
+    if(Math.abs(chg)<0.00005) return '<span class="yest-wrap">'+yestPart+'<span class="yest-chg flat">0.0%</span></span>';
+    var up=chg>0, sign=up?'+':'';
+    return '<span class="yest-wrap">'+yestPart+'<span class="yest-chg '+(up?'up':'down')+'">'+sign+(chg*100).toFixed(1)+'%</span></span>';
+  }
   function yestEl(prev){
     if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
     return '<span class="yest">昨日 <b>'+fmt(prev)+'</b></span>';
@@ -899,6 +987,14 @@ th:first-child .th-inner{justify-content:flex-start;}
   function yestDec(prev, digits){
     if(prev==null||prev==='') return '<span class="yest">昨日 <b>—</b></span>';
     return '<span class="yest">昨日 <b>'+Number(prev).toFixed(digits!=null?digits:1)+'</b></span>';
+  }
+  function setYestCmp(id,today,yestSp,opts){
+    const el=document.getElementById(id); if(!el) return;
+    const tmp=document.createElement('div');
+    tmp.innerHTML=yestCompare(today,yestSp,opts);
+    const n=tmp.firstChild;
+    n.id=id;
+    el.replaceWith(n);
   }
   function setYest(id,prev){
     const el=document.getElementById(id); if(!el) return;
@@ -932,9 +1028,10 @@ th:first-child .th-inner{justify-content:flex-start;}
     const short=s=>s&&s.length>=10?s.slice(5): (s||'—');
     return short(st.start)+' ~ '+short(st.end);
   }
-  function teamMetricCard(k,x,soft,yest){
-    return '<div class="team-metric-card"><div class="k">'+k+'</div><div class="x">'+x+'</div>'+
-      (soft?'<div class="soft team-soft-inline">'+soft+'</div>':'')+yest+'</div>';
+  function teamMetricCard(k,today,yestSp,yestTotal,soft,opts){
+    opts=opts||{};
+    return '<div class="team-metric-card"><div class="k">'+k+'</div><div class="x-row">'+todayRowHtml(today,yestSp,opts)+'</div>'+
+      (soft?'<div class="soft team-soft-inline">'+soft+'</div>':'')+yestDualHtml(yestSp,yestTotal,opts)+'</div>';
   }
   function bindTeamScrollSync(){
     const rows=document.querySelectorAll('#hTeam .team-metric-scroll');
@@ -1021,36 +1118,35 @@ th:first-child .th-inner{justify-content:flex-start;}
   }
 
   function renderHome(){
-    document.getElementById('hFans').textContent=fmt(FANS_TODAY);
-    setYest('hFansD',FANS_YDAY);
-    document.getElementById('hOrd').textContent=fmt(ORD_TODAY);
-    setYest('hOrdD',ORD_YDAY);
-    document.getElementById('hGmv').textContent=fmtY(GMV_TODAY);
+    document.getElementById('hFans').innerHTML=todayRowHtml(FANS_TODAY,FANS_YDAY_SP);
+    document.getElementById('hFansD').innerHTML=yestDualHtml(FANS_YDAY_SP,FANS_YDAY);
+    document.getElementById('hOrd').innerHTML=todayRowHtml(ORD_TODAY,ORD_YDAY_SP);
+    document.getElementById('hOrdD').innerHTML=yestDualHtml(ORD_YDAY_SP,ORD_YDAY);
+    document.getElementById('hGmv').innerHTML=todayRowHtml(GMV_TODAY,GMV_YDAY_SP,{money:true});
     document.getElementById('hNetGmv').innerHTML='净GMV <b>'+fmtY(NET_GMV_TODAY)+'</b>（退'+REFUND_ORD_TODAY+'单）';
-    setYestY('hGmvD',GMV_YDAY);
-    document.getElementById('hFirstConv').textContent=pct(FIRST_CONV_TODAY);
+    document.getElementById('hGmvD').innerHTML=yestDualHtml(GMV_YDAY_SP,GMV_YDAY,{money:true});
+    document.getElementById('hFirstConv').innerHTML=todayRowHtml(FIRST_CONV_TODAY,FIRST_CONV_YDAY_SP,{pct:true});
     document.getElementById('hFirstOrd').innerHTML='初诊订单数 <b>'+fmt(FIRST_ORD_TODAY)+'</b>';
-    const hfcD=document.getElementById('hFirstConvD');
-    hfcD.outerHTML='<span class="yest" id="hFirstConvD">昨日 <b>'+pct(FIRST_CONV_YDAY)+'</b></span>';
+    document.getElementById('hFirstConvD').innerHTML=yestDualHtml(FIRST_CONV_YDAY_SP,FIRST_CONV_YDAY,{pct:true});
     const top=CHANNELS.slice().sort((a,b)=>b.add-a.add).slice(0,5);
     document.getElementById('hCh').innerHTML=top.map((c,i)=>
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+c.name+'</div>'+
       '<div class="triple">'+
-      '<div class="cell"><div class="k">今日加粉</div><div class="x">'+fmt(c.add)+'</div>'+yestEl(c.ydAdd)+'</div>'+
-      '<div class="cell"><div class="k">今日初诊成交</div><div class="x">'+fmt(c.pay)+'</div>'+yestEl(c.ydPay)+'</div>'+
-      '<div class="cell"><div class="k">初诊转化率</div><div class="x">'+pct(c.payRate)+'</div>'+yestPct(c.ydPayRate)+'</div>'+
+      '<div class="cell"><div class="k">今日加粉</div><div class="x-row">'+todayRowHtml(c.add,c.ydAddSp)+'</div>'+yestDualHtml(c.ydAddSp,c.ydAdd)+'</div>'+
+      '<div class="cell"><div class="k">今日初诊成交</div><div class="x-row">'+todayRowHtml(c.pay,c.ydPaySp)+'</div>'+yestDualHtml(c.ydPaySp,c.ydPay)+'</div>'+
+      '<div class="cell"><div class="k">初诊转化率</div><div class="x-row">'+todayRowHtml(c.payRate,c.ydPayRateSp,{pct:true})+'</div>'+yestDualHtml(c.ydPayRateSp,c.ydPayRate,{pct:true})+'</div>'+
       '</div></div></div>'
     ).join('');
     const teamTop=TEAM_TODAY.slice().sort((a,b)=>b.firstConv-a.firstConv);
     document.getElementById('hTeam').innerHTML=teamTop.map((t,i)=>
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+t.team+'</div>'+
       '<div class="team-metric-scroll">'+
-      teamMetricCard('初诊转化率',pct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',yestPct(t.ydFirstConv))+
-      teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',yestDec(t.ydAvgFansPerAsst,1))+
-      teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'',yestY(t.ydFirstAov))+
-      teamMetricCard('复诊客单价',aov(t.revGmv,t.revOrd),'',yestY(t.ydRevAov))+
-      teamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+fmtY(t.totalGmv)+'</b>',yestEl(t.ydTotalOrd))+
-      teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.dialogRels),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>',yestDec(t.ydAvgDialogRounds,1))+
+      teamMetricCard('初诊转化率',t.firstConv,t.ydFirstConvSp,t.ydFirstConv,'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',{pct:true})+
+      teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst:null,t.ydAvgFansPerAsstSp,t.ydAvgFansPerAsst,'加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',{dec:1})+
+      teamMetricCard('初诊客单价',t.firstOrd?t.firstAov:null,t.ydFirstAovSp,t.ydFirstAov,'',{money:true})+
+      teamMetricCard('复诊客单价',t.revOrd?t.revAov:null,t.ydRevAovSp,t.ydRevAov,'',{money:true})+
+      teamMetricCard('总订单数',t.totalOrd,t.ydTotalOrdSp,t.ydTotalOrd,'总订单额 <b>'+fmtY(t.totalGmv)+'</b>')+
+      teamMetricCard('平均对话轮次',t.dialogRels?t.avgDialogRounds:null,t.ydAvgDialogRoundsSp,t.ydAvgDialogRounds,'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>',{dec:1})+
       '</div></div></div>'
     ).join('');
     bindTeamScrollSync();
@@ -1641,13 +1737,18 @@ th:first-child .th-inner{justify-content:flex-start;}
     '3':{
       moduleName:'首页-今日实时',
       content:`<div class="req-tooltip-section"><div class="req-tooltip-section-title">昨日数值展示规则</div>
-<p>首页各指标<strong>主值展示今日数据</strong>；副行展示<strong>昨日该字段的实际数值</strong>，口径与主值一致；昨日无数据时展示「—」。</p></div>
+<p>首页各指标<strong>主值展示今日数据</strong>（截至当前时刻累计）；主值<strong>右侧</strong>展示相对昨日同期的<strong>差值</strong>（今日 − 昨日同期，<span style="color:#d94848">红增</span> / <span style="color:#0f9d6a">绿减</span>）。</p>
+<ul>
+<li><strong>昨日</strong>：昨日<strong>同期</strong>累计值（昨日同一时刻口径）</li>
+<li><strong>昨日总计</strong>：昨日<strong>全天</strong>累计值；与「昨日」并列展示，中间以「·」分隔</li>
+<li>差值基准 = 昨日同期；计数类展示 ±数量，金额类展示 ±¥，转化率类展示 ±百分点（如 +1.2%）</li>
+</ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">KPI 卡片</div>
 <ul>
-<li><strong>加粉数（全量）</strong>：全部渠道新增企微好友人数（含非 AI 工具来源）；副行昨日加粉数；点击进入「每日转化」</li>
-<li><strong>成交订单数</strong>：当日全部支付成功订单数（初诊+复诊）；副行昨日；点击进入「成交」</li>
-<li><strong>初诊转化率</strong>（V1.1）：初诊订单数÷进粉数；弱字段展示初诊订单数；副行昨日转化率；点击进入「成交」</li>
-<li><strong>成交GMV</strong>（V1.1）：全部支付成功订单实付金额；弱字段展示净GMV（扣除退款）；副行昨日 GMV；点击进入「成交」</li>
+<li><strong>加粉数（全量）</strong>：全部渠道新增企微好友人数；主值旁差值；副行昨日 + 昨日总计；点击进入「每日转化」</li>
+<li><strong>成交订单数</strong>：当日全部支付成功订单数（初诊+复诊）；同上；点击进入「成交」</li>
+<li><strong>初诊转化率</strong>（V1.1）：初诊订单数÷进粉数；弱字段初诊订单数；同上；点击进入「成交」</li>
+<li><strong>成交GMV</strong>（V1.1）：全部支付成功订单实付金额；弱字段净GMV；同上；点击进入「成交」</li>
 </ul></div>`
     },
     '4':{
@@ -1661,7 +1762,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">今日分渠道核心数据</div>
 <ul>
 <li>按渠道加粉倒序；每渠道展示：今日加粉、今日初诊成交、初诊转化率</li>
-<li>各指标下方展示昨日同字段数值</li>
+<li>各指标：主值旁展示差值（今日 − 昨日同期）；副行并列<strong>昨日</strong>（同期）与<strong>昨日总计</strong></li>
 <li>入口：「渠道 ›」</li>
 </ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">今日团队 Top（V1.1）</div>
@@ -1669,6 +1770,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 <li>按团队初诊转化率倒序；每团队 6 张指标卡横向滑动（一屏 2.5 张），多团队行<strong>同步联动滑动</strong></li>
 <li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、总订单数、<strong>平均对话轮次</strong>（位于总订单数后）</li>
 <li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；平均对话轮次卡→总对话轮次/有效对话关系数</li>
+<li>各指标卡：主值旁差值；副行<strong>昨日</strong> + <strong>昨日总计</strong></li>
 <li>医助人均接粉量 = 团队接粉总数 ÷ 接线医助数；平均对话轮次 = 总对话轮次 ÷ 有效对话关系数（有效对话关系 = 产生对话轮次的加粉数）</li>
 <li>入口：「团队 ›」</li>
 </ul></div>

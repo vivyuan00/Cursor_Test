@@ -841,36 +841,21 @@ th:first-child .th-inner{justify-content:flex-start;}
     {team:'A组',fans:2160,ydFans:2040,wireAsst:3,ydWireAsst:3,firstOrd:29,firstGmv:23200,revOrd:23,revGmv:25360,ydFirstOrd:26,ydFirstGmv:20800,ydRevOrd:22,ydRevGmv:24400,totalOrd:52,ydTotalOrd:48,totalGmv:48560,ydTotalGmv:45200,dialogRounds:7020,ydDialogRounds:6630,dialogRels:1424,ydDialogRels:1350},
     {team:'B组',fans:1780,ydFans:1720,wireAsst:3,ydWireAsst:3,firstOrd:22,firstGmv:17600,revOrd:19,revGmv:21680,ydFirstOrd:24,ydFirstGmv:19200,ydRevOrd:19,ydRevGmv:20920,totalOrd:41,ydTotalOrd:43,totalGmv:39280,ydTotalGmv:40120,dialogRounds:5696,ydDialogRounds:5160,dialogRels:1152,ydDialogRels:1096},
     {team:'C组',fans:1050,ydFans:980,wireAsst:2,ydWireAsst:2,firstOrd:12,firstGmv:9600,revOrd:11,revGmv:12580,ydFirstOrd:11,ydFirstGmv:8800,ydRevOrd:10,ydRevGmv:11840,totalOrd:23,ydTotalOrd:21,totalGmv:22180,ydTotalGmv:20640,dialogRounds:3360,ydDialogRounds:2940,dialogRels:681,ydDialogRels:647}
-  ].map(t=>{
-    const ydFansSp=Math.round(t.ydFans*0.94);
-    const ydFirstOrdSp=Math.round(t.ydFirstOrd*0.93);
-    const ydRevOrdSp=Math.round(t.ydRevOrd*0.93);
-    const ydFirstGmvSp=Math.round(t.ydFirstGmv*0.93);
-    const ydRevGmvSp=Math.round(t.ydRevGmv*0.93);
-    const ydTotalOrdSp=Math.round(t.ydTotalOrd*0.93);
-    const ydDialogRoundsSp=Math.round(t.ydDialogRounds*0.94);
-    const ydDialogRelsSp=Math.round(t.ydDialogRels*0.94);
-    return {
+  ].map(t=>({
     ...t,
-    ydFansSp,ydFirstOrdSp,ydRevOrdSp,ydFirstGmvSp,ydRevGmvSp,ydTotalOrdSp,ydDialogRoundsSp,ydDialogRelsSp,
     firstConv:t.fans?t.firstOrd/t.fans:0,
     ydFirstConv:t.ydFans?t.ydFirstOrd/t.ydFans:0,
-    ydFirstConvSp:ydFansSp?ydFirstOrdSp/ydFansSp:0,
     avgFirstOrdPerAsst:t.wireAsst?t.firstOrd/t.wireAsst:0,
     ydAvgFirstOrdPerAsst:t.ydWireAsst?t.ydFirstOrd/t.ydWireAsst:0,
     avgFansPerAsst:t.wireAsst?t.fans/t.wireAsst:0,
     ydAvgFansPerAsst:t.ydWireAsst?t.ydFans/t.ydWireAsst:0,
-    ydAvgFansPerAsstSp:t.ydWireAsst?ydFansSp/t.ydWireAsst:0,
     firstAov:t.firstOrd?t.firstGmv/t.firstOrd:0,
     revAov:t.revOrd?t.revGmv/t.revOrd:0,
     ydFirstAov:t.ydFirstOrd?t.ydFirstGmv/t.ydFirstOrd:0,
     ydRevAov:t.ydRevOrd?t.ydRevGmv/t.ydRevOrd:0,
-    ydFirstAovSp:ydFirstOrdSp?ydFirstGmvSp/ydFirstOrdSp:0,
-    ydRevAovSp:ydRevOrdSp?ydRevGmvSp/ydRevOrdSp:0,
     avgDialogRounds:t.dialogRels?t.dialogRounds/t.dialogRels:0,
-    ydAvgDialogRounds:t.ydDialogRels?t.ydDialogRounds/t.ydDialogRels:0,
-    ydAvgDialogRoundsSp:ydDialogRelsSp?ydDialogRoundsSp/ydDialogRelsSp:0
-  };});
+    ydAvgDialogRounds:t.ydDialogRels?t.ydDialogRounds/t.ydDialogRels:0
+  }));
 
   const TEAMS=['A组','B组','C组'];
   const ASST_CH=[];
@@ -1028,10 +1013,9 @@ th:first-child .th-inner{justify-content:flex-start;}
     const short=s=>s&&s.length>=10?s.slice(5): (s||'—');
     return short(st.start)+' ~ '+short(st.end);
   }
-  function teamMetricCard(k,today,yestSp,yestTotal,soft,opts){
-    opts=opts||{};
-    return '<div class="team-metric-card"><div class="k">'+k+'</div><div class="x-row">'+todayRowHtml(today,yestSp,opts)+'</div>'+
-      (soft?'<div class="soft team-soft-inline">'+soft+'</div>':'')+yestDualHtml(yestSp,yestTotal,opts)+'</div>';
+  function teamMetricCard(k,x,soft){
+    return '<div class="team-metric-card"><div class="k">'+k+'</div><div class="x">'+x+'</div>'+
+      (soft?'<div class="soft team-soft-inline">'+soft+'</div>':'')+'</div>';
   }
   function bindTeamScrollSync(){
     const rows=document.querySelectorAll('#hTeam .team-metric-scroll');
@@ -1141,12 +1125,12 @@ th:first-child .th-inner{justify-content:flex-start;}
     document.getElementById('hTeam').innerHTML=teamTop.map((t,i)=>
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+t.team+'</div>'+
       '<div class="team-metric-scroll">'+
-      teamMetricCard('初诊转化率',t.firstConv,t.ydFirstConvSp,t.ydFirstConv,'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',{pct:true})+
-      teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst:null,t.ydAvgFansPerAsstSp,t.ydAvgFansPerAsst,'加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',{dec:1})+
-      teamMetricCard('初诊客单价',t.firstOrd?t.firstAov:null,t.ydFirstAovSp,t.ydFirstAov,'',{money:true})+
-      teamMetricCard('复诊客单价',t.revOrd?t.revAov:null,t.ydRevAovSp,t.ydRevAov,'',{money:true})+
-      teamMetricCard('总订单数',t.totalOrd,t.ydTotalOrdSp,t.ydTotalOrd,'总订单额 <b>'+fmtY(t.totalGmv)+'</b>')+
-      teamMetricCard('平均对话轮次',t.dialogRels?t.avgDialogRounds:null,t.ydAvgDialogRoundsSp,t.ydAvgDialogRounds,'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>',{dec:1})+
+      teamMetricCard('初诊转化率',pct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>')+
+      teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>')+
+      teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'')+
+      teamMetricCard('复诊客单价',aov(t.revGmv,t.revOrd),'')+
+      teamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+fmtY(t.totalGmv)+'</b>')+
+      teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.dialogRels),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>')+
       '</div></div></div>'
     ).join('');
     bindTeamScrollSync();
@@ -1770,7 +1754,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 <li>按团队初诊转化率倒序；每团队 6 张指标卡横向滑动（一屏 2.5 张），多团队行<strong>同步联动滑动</strong></li>
 <li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、总订单数、<strong>平均对话轮次</strong>（位于总订单数后）</li>
 <li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；平均对话轮次卡→总对话轮次/有效对话关系数</li>
-<li>各指标卡：主值旁差值；副行<strong>昨日</strong> + <strong>昨日总计</strong></li>
+<li><em>不展示</em>昨日同期、昨日总计及差值对比（与今日实时/分渠道模块区分）</li>
 <li>医助人均接粉量 = 团队接粉总数 ÷ 接线医助数；平均对话轮次 = 总对话轮次 ÷ 有效对话关系数（有效对话关系 = 产生对话轮次的加粉数）</li>
 <li>入口：「团队 ›」</li>
 </ul></div>

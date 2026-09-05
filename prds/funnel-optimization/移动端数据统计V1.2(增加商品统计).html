@@ -32,9 +32,10 @@ button{border:0;background:none;cursor:pointer;}
 .page.on{display:block;}
 @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 .sec{margin-bottom:14px;}
-.sec-h{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;}
-.sec-h h2{font-size:14px;font-weight:700;}
-.sec-h .link{font-size:12px;color:var(--brand);font-weight:600;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;gap:8px;}
+.sec-h h2{font-size:14px;font-weight:700;flex-shrink:0;}
+.sec-h .link{font-size:12px;color:var(--brand);font-weight:600;flex-shrink:0;}
+.sec-h .team-scroll-toggle{margin-left:auto;margin-right:8px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .kpi{display:block;position:relative;text-align:left;padding:14px 32px 14px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
@@ -105,10 +106,17 @@ tr.child-row td:first-child{z-index:2;}
 .team-soft-inline b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:700;color:var(--muted);}
 .team-metric-scroll{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;margin:6px -12px 0;padding:0 12px 2px;scrollbar-width:none;--team-card-gap:8px;}
 .team-metric-scroll::-webkit-scrollbar{display:none;}
-.team-metric-card{flex:0 0 calc((100% - 2 * var(--team-card-gap)) / 2.5);width:calc((100% - 2 * var(--team-card-gap)) / 2.5);background:#f7f9fb;border-radius:10px;padding:8px;scroll-snap-align:start;box-sizing:border-box;}
+.team-metric-scroll.single-row{flex-wrap:nowrap;}
+.team-metric-scroll.multi-row{flex-wrap:wrap;}
+.team-metric-card{flex:0 0 calc((100% - 2 * var(--team-card-gap)) / 3);width:calc((100% - 2 * var(--team-card-gap)) / 3);background:#f7f9fb;border-radius:10px;padding:8px;scroll-snap-align:start;box-sizing:border-box;}
+.team-metric-scroll.single-row .team-metric-card{flex:0 0 auto;min-width:120px;}
 .team-metric-card .k{font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;}
 .team-metric-card .x{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:17px;font-weight:700;margin-top:4px;letter-spacing:-.02em;}
 .team-metric-card .soft.team-soft-inline{font-size:10px;line-height:1.5;}
+.team-scroll-toggle-switch{position:relative;width:36px;height:20px;background:#e2e8f0;border-radius:20px;cursor:pointer;transition:background 0.2s;}
+.team-scroll-toggle-switch.on{background:var(--brand);}
+.team-scroll-toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.team-scroll-toggle-switch.on::after{transform:translateX(16px);}
 .bar{height:6px;border-radius:99px;background:#edf1f5;overflow:hidden;margin-top:6px;}
 .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#6aa4ff);}
 .bar.warm>i{background:linear-gradient(90deg,#d97706,#f5b567);}
@@ -333,7 +341,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       <div class="card" id="hCh"></div>
     </div>
     <div class="sec">
-      <div class="sec-h"><h2>今日团队 Top</h2><button class="link" data-go="asst">团队 ›</button></div>
+      <div class="sec-h"><h2>今日团队 Top</h2><div class="team-scroll-toggle"><span>单行联动</span><div class="team-scroll-toggle-switch" id="teamScrollToggle"></div></div><button class="link" data-go="asst">团队 ›</button></div>
       <div class="card" id="hTeam"></div>
     </div>
     <div class="sec">
@@ -713,8 +721,8 @@ th:first-child .th-inner{justify-content:flex-start;}
     '加粉-开方转化率':'开方数 ÷ 加粉数；加粉为 0 时展示「—」。',
     '支付数':'该医助服务的用户初诊支付成功订单数。',
     '加粉-支付转化率':'支付数 ÷ 加粉数；加粉为 0 时展示「—」。',
-    '总单':'初诊中药单 + 复诊中药单 + 商品单。',
-    '总额':'初诊中药额 + 复诊中药额 + 商品额。',
+    '总订单数':'初诊中药单 + 复诊中药单 + 商品单。',
+    '总订单额':'初诊中药额 + 复诊中药额 + 商品额。',
     '净GMV':'扣除退款后的成交 GMV（元，含商品）。',
     '初诊客单价':'初诊成交额 ÷ 初诊订单数；初诊订单数为 0 时展示「—」。',
     '复诊客单价':'复诊额 ÷ 复诊单；复诊单为 0 时展示「—」。',
@@ -764,7 +772,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       thCell('商品订单',{colspan:10,cls:'th-group',help:false})+
       thCell('全部合计',{colspan:2,cls:'th-group',help:false})+
       '</tr><tr>'+medRow+medRow+medRow+prodRow+'</tr><tr>'+leafRow+leafRow+leafRow+prodLeaf+
-      thCell('订单数',{tip:'总单'})+thCell('金额',{tip:'总额'})+
+      thCell('订单数',{tip:'总订单数'})+thCell('金额',{tip:'总订单额'})+
       '</tr></thead>';
   }
   function dealPair(cnt, gmv){
@@ -1038,6 +1046,23 @@ th:first-child .th-inner{justify-content:flex-start;}
       },{passive:true});
     });
   }
+  function initTeamScrollToggle(){
+    const toggle=document.getElementById('teamScrollToggle');
+    if(!toggle) return;
+    let isSingleRow=false;
+    toggle.addEventListener('click',()=>{
+      isSingleRow=!isSingleRow;
+      toggle.classList.toggle('on',isSingleRow);
+      const rows=document.querySelectorAll('#hTeam .team-metric-scroll');
+      rows.forEach(row=>{
+        row.classList.toggle('single-row',isSingleRow);
+        row.classList.toggle('multi-row',!isSingleRow);
+      });
+      if(isSingleRow){
+        bindTeamScrollSync();
+      }
+    });
+  }
 
   function go(page){
     if(!currentUser && page!=='login'){showLogin();return;}
@@ -1132,17 +1157,16 @@ th:first-child .th-inner{justify-content:flex-start;}
     const teamTop=TEAM_TODAY.slice().sort((a,b)=>b.firstConv-a.firstConv);
     document.getElementById('hTeam').innerHTML=teamTop.map((t,i)=>
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+t.team+'</div>'+
-      '<div class="team-metric-scroll">'+
+      '<div class="team-metric-scroll multi-row">'+
       teamMetricCard('初诊转化率',pct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>',yestPct(t.ydFirstConv))+
       teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',yestDec(t.ydAvgFansPerAsst,1))+
       teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'',yestY(t.ydFirstAov))+
       teamMetricCard('复诊客单价',aov(t.revGmv,t.revOrd),'',yestY(t.ydRevAov))+
-      teamMetricCard('中药总订单数',fmt(t.medOrd),'中药总订单额 <b>'+fmtY(t.medGmv)+'</b>',yestEl(t.ydMedOrd))+
-      teamMetricCard('商品订单数',fmt(t.productOrd),'商品订单金额 <b>'+fmtY(t.productGmv)+'</b>',yestEl(t.ydProductOrd))+
+      teamMetricCard('总订单数',fmt(t.totalOrd),'总订单额 <b>'+fmtY(t.totalGmv)+'</b>',yestEl(t.ydTotalOrd))+
       teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.dialogRels),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>',yestDec(t.ydAvgDialogRounds,1))+
       '</div></div></div>'
     ).join('');
-    bindTeamScrollSync();
+    initTeamScrollToggle();
     document.getElementById('hOrders').innerHTML=
       '<div class="order-item"><div class="t"><span>初诊（中药） '+DEAL_SUMMARY.first.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.first.gmv)+'</span></div><div class="order-soft">'+medSoftLine(DEAL_SUMMARY.first)+'</div></div>'+
       '<div class="order-item"><div class="t"><span>复诊（中药） '+DEAL_SUMMARY.rev.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.rev.gmv)+'</span></div><div class="order-soft">'+medSoftLine(DEAL_SUMMARY.rev)+'</div></div>'+
@@ -1333,7 +1357,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       ['加粉数（渠道汇总）','加粉数（渠道汇总）'],['行为点击-加粉转化率','行为点击-加粉转化率'],
       ['平均获客成本','平均获客成本'],['加粉数（全量）','加粉数（全量）'],
       ['初诊单','初诊单'],['初诊转化率','初诊转化率'],['复诊单','复诊单'],['复诊额','复诊额'],
-      ['商品订单','商品订单数'],['商品总额','商品订单额'],['总单','总单'],['总额','总额']
+      ['商品订单','商品订单数'],['商品总额','商品订单额'],['中药总单','中药总订单数'],['中药总额','中药总订单额']
     ])+'<tbody>';
     DAILY_FANS.forEach(x=>{t+='<tr><td>'+x.d+'</td><td>'+fmtY(x.spend)+'</td><td>'+fmt(x.clicks)+'</td><td>'+fmt(x.add)+'</td><td>'+pct(x.rate)+'</td><td>¥'+x.cac.toFixed(1)+'</td><td>'+fmt(x.addFull)+'</td><td>'+x.firstOrd+'</td><td>'+pct(x.firstConv)+'</td><td>'+x.revOrd+'</td><td>'+fmtY(x.revGmv)+'</td><td>'+x.prodOrd+'</td><td>'+fmtY(x.prodGmv)+'</td><td>'+x.totalOrd+'</td><td>'+fmtY(x.totalGmv)+'</td></tr>';});
     document.getElementById('fansTable').innerHTML=t+'</tbody></table>';
@@ -1483,7 +1507,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       ['渠道/团队','渠道'],['投流消耗','投流消耗'],['行为点击','行为点击'],['加粉数（渠道汇总）','加粉数（渠道汇总）'],
       ['行为点击-加粉转化率','行为点击-加粉转化率'],['平均获客成本','平均获客成本'],
       ['初诊成交订单','初诊成交订单'],['初诊成交额','初诊成交额'],['加粉-初诊成交转化率','加粉-初诊成交转化率'],
-      ['复诊单','复诊单'],['复诊额','复诊额'],['总单','总单'],['总额','总额']
+      ['复诊单','复诊单'],['复诊额','复诊额'],['中药总单','中药总订单数'],['中药总额','中药总订单额']
     ])+'<tbody>';
     list.slice().sort((a,b)=>b.add-a.add).forEach(c=>{
       const open=isChExpanded(c.ch);
@@ -1619,7 +1643,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       ['复诊单','复诊单'],['复诊额','复诊额'],['复诊客单价','复诊客单价'],
       ['中药总单','中药总订单数'],['中药总额','中药总订单额'],['中药总客单价','总客单价'],
       ['商品单','商品订单数'],['商品额','商品订单额'],
-      ['总单','总单'],['总额','总额'],['总客单价','总客单价']
+      ['总订单数','总订单数'],['总订单额','总订单额'],['总客单价','总客单价']
     ])+'<tbody>';
     teamRows.forEach(tm=>{
       const open=!!state.expandedTeams[tm.team];
@@ -1803,8 +1827,8 @@ th:first-child .th-inner{justify-content:flex-start;}
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">今日团队 Top（V1.1）</div>
 <ul>
 <li>按团队初诊转化率倒序；每团队 7 张指标卡横向滑动（一屏 2.5 张），多团队行<strong>同步联动滑动</strong></li>
-<li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、<strong>中药总订单数</strong>、<strong>商品订单数</strong>、平均对话轮次</li>
-<li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；中药总订单数卡→中药总订单额；商品订单数卡→商品订单金额；平均对话轮次卡→总对话轮次/有效对话关系数</li>
+<li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、<strong>总订单数</strong>、平均对话轮次</li>
+<li>弱字段：初诊转化率卡→加粉数/初诊订单数；人均接粉量卡→加粉数/接线医助数；总订单数卡→总订单额；平均对话轮次卡→总对话轮次/有效对话关系数</li>
 <li>医助人均接粉量 = 团队接粉总数 ÷ 接线医助数；平均对话轮次 = 总对话轮次 ÷ 有效对话关系数（有效对话关系 = 产生对话轮次的加粉数）</li>
 <li>入口：「团队 ›」</li>
 </ul></div>
@@ -1834,7 +1858,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 </ul>
 <blockquote>加粉数趋势与首页「加粉数（全量）」口径一致；表中仍保留加粉数（渠道汇总）用于投流转化与获客成本计算。</blockquote></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">数据表</div>
-<p>列含：日期、投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、加粉数（全量）、初诊单、初诊转化率、复诊单、复诊额、<strong>商品订单、商品总额</strong>（V1.2）、总单、总额等。总单/总额 = 初诊中药 + 复诊中药 + 商品。支持横向滚动。</p>
+<p>列含：日期、投流消耗、行为点击、加粉数（渠道汇总）、行为点击-加粉转化率、平均获客成本、加粉数（全量）、初诊单、初诊转化率、复诊单、复诊额、<strong>商品订单、商品总额</strong>（V1.2）、中药总单、中药总额等。中药总单/中药总额 = 初诊中药 + 复诊中药。支持横向滚动。</p>
 <p>无投流时消耗/点击/获客成本展示「—」；筛选后无数据图表展示「暂无数据」。</p></div>`
     },
     '6':{
@@ -1865,7 +1889,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 </ul>
 <p>约束：最多 5 条、不滚动、条长受控。</p></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">数据表</div>
-<p>渠道汇总行可展开查看各<strong>团队</strong>维度数据（V1.1）；列含投流消耗、行为点击、加粉、转化率、初诊成交、复诊、总单/总额等。渠道展示中文名，禁止暴露无映射英文编码。</p></div>`
+<p>渠道汇总行可展开查看各<strong>团队</strong>维度数据（V1.1）；列含投流消耗、行为点击、加粉、转化率、初诊成交、复诊、中药总单/中药总额等。渠道展示中文名，禁止暴露无映射英文编码。</p></div>`
     },
     '8':{
       moduleName:'团队',
@@ -1889,7 +1913,7 @@ th:first-child .th-inner{justify-content:flex-start;}
 <li><strong>接线医助</strong>：当日该团队内有加粉记录的医助人数；<em>仅团队汇总行展示</em></li>
 <li><strong>医助人均接粉量</strong>：团队接粉总数 ÷ 接线医助数；<em>仅团队汇总行展示</em></li>
 <li><strong>医助人均初诊单量</strong>：初诊订单数 ÷ 接粉医助数；仅团队汇总行展示</li>
-<li>其余列：加粉、初诊成交单/额/客单价/转化率、复诊单/额/客单价、<strong>中药总单/额/客单价</strong>、<strong>商品单/额</strong>（V1.2）、总单/额/客单价（中药+商品）</li>
+<li>其余列：加粉、初诊成交单/额/客单价/转化率、复诊单/额/客单价、<strong>中药总单/额/客单价</strong>、<strong>商品单/额</strong>（V1.2）、总订单数/总订单额/总客单价（中药+商品）</li>
 </ul></div>
 <div class="req-tooltip-section"><div class="req-tooltip-section-title">医助人效 · 图表</div>
 <ul>

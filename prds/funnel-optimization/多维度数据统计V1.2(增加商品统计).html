@@ -692,7 +692,7 @@
         .home-triple .cell .k { font-size: 12px; color: #64748b; font-weight: 600; }
         .home-triple .cell .x { font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
         .home-team-scroll { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 2px; scrollbar-width: thin; }
-        .home-team-metric { flex: 0 0 calc(20% - 8px); min-width: 148px; background: #f8fafc; border-radius: 10px; padding: 10px; scroll-snap-align: start; box-sizing: border-box; }
+        .home-team-metric { flex: 0 0 calc(16.666% - 8px); min-width: 120px; background: #f8fafc; border-radius: 10px; padding: 10px; scroll-snap-align: start; box-sizing: border-box; }
         .home-team-metric .k { font-size: 12px; color: #64748b; font-weight: 600; line-height: 1.35; }
         .home-team-metric .x { font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
         .home-soft-inline { font-size: 11px; color: #64748b; font-weight: 600; line-height: 1.5; margin-top: 4px; }
@@ -1887,8 +1887,7 @@
           _homeTeamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>',_homeYest(t.ydAvgFansPerAsst,false,false,true))+
           _homeTeamMetricCard('初诊客单价',_homeAov(t.firstGmv,t.firstOrd),'',_homeYest(t.ydFirstAov,false,true))+
           _homeTeamMetricCard('复诊客单价',_homeAov(t.revGmv,t.revOrd),'',_homeYest(t.ydRevAov,false,true))+
-          _homeTeamMetricCard('中药总订单数',fmt(t.medOrd),'中药总订单额 <b>'+_homeFmtY(t.medGmv)+'</b>',_homeYest(t.ydMedOrd))+
-          _homeTeamMetricCard('商品订单数',fmt(t.productOrd),'商品订单金额 <b>'+_homeFmtY(t.productGmv)+'</b>',_homeYest(t.ydProductOrd))+
+          _homeTeamMetricCard('总订单数',fmt(t.totalOrd),'总订单金额 <b>'+_homeFmtY(t.totalGmv)+'</b>',_homeYest(t.ydTotalOrd))+
           _homeTeamMetricCard('平均对话轮次',t.dialogRels?t.avgDialogRounds.toFixed(1):'—','总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>',_homeYest(t.ydAvgDialogRounds,false,false,true))+
           '</div></div></div>';
       }).join('');
@@ -2176,8 +2175,8 @@
         _th('复诊额','复诊金额','px-3 py-2 text-right')+
         _th('商品订单','商品订单数','px-3 py-2 text-right')+
         _th('商品总额','商品订单额','px-3 py-2 text-right')+
-        _th('总单','总订单数','px-3 py-2 text-right')+
-        _th('总额','总订单金额','px-3 py-2 text-right')+
+        _th('中药总单','中药总订单数','px-3 py-2 text-right')+
+        _th('中药总额','中药总订单金额','px-3 py-2 text-right')+
         '</tr>';
       return '<div class="daily-panel space-y-4 req-marker-wrapper"><span class="req-marker" data-id="4-fans">4</span>'+
         '<div class="aux-charts-row '+(showAd?'cols-3':'cols-2')+'">'+
@@ -2435,8 +2434,8 @@
         _sortableTh('中药总客单价','总客单价','medAov',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('商品单','商品订单数','productOrd',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('商品额','商品订单额','productGmv',sk,sd,'trade','px-3 py-2 text-right')+
-        _sortableTh('总单','总订单数@医助','totalOrd',sk,sd,'trade','px-3 py-2 text-right')+
-        _sortableTh('总额','总订单金额@医助','totalGmv',sk,sd,'trade','px-3 py-2 text-right')+
+        _sortableTh('中药总单','中药总订单数','totalOrd',sk,sd,'trade','px-3 py-2 text-right')+
+        _sortableTh('中药总额','中药总订单金额','totalGmv',sk,sd,'trade','px-3 py-2 text-right')+
         _sortableTh('总客单价','总客单价','totalAov',sk,sd,'trade','px-3 py-2 text-right')+
         '<th class="px-3 py-2 text-center">操作</th>';
       return '<div class="space-y-4 req-marker-wrapper"><span class="req-marker" data-id="6">6</span>'+
@@ -2524,8 +2523,8 @@
         _th('加粉-初诊成交转化率','加粉-初诊成交转化率@渠道','px-3 py-2 text-right text-brand-700')+
         _th('复诊单','复诊订单数@渠道','px-3 py-2 text-right')+
         _th('复诊额','复诊金额@渠道','px-3 py-2 text-right')+
-        _th('总单','总订单数@渠道','px-3 py-2 text-right')+
-        _th('总额','总订单金额@渠道','px-3 py-2 text-right')+
+        _th('中药总单','中药总订单数@渠道','px-3 py-2 text-right')+
+        _th('中药总额','中药总订单金额@渠道','px-3 py-2 text-right')+
         '</tr>';
       var rows=list.map(function(c){
         var open=_isChExpanded(c.ch);
@@ -2623,8 +2622,8 @@
         _th('加粉-初诊成交转化率','加粉-初诊成交转化率@渠道','px-2 py-2 text-right text-brand-700')+
         _th('复诊单','复诊订单数@渠道','px-2 py-2 text-right')+
         _th('复诊额','复诊金额@渠道','px-2 py-2 text-right')+
-        _th('总单','总订单数@渠道','px-2 py-2 text-right')+
-        _th('总额','总订单金额@渠道','px-2 py-2 text-right');
+        _th('中药总单','中药总订单数','px-2 py-2 text-right')+
+        _th('中药总额','中药总订单金额','px-2 py-2 text-right');
 
       return '<div class="space-y-4 req-marker-wrapper"><span class="req-marker" data-id="7-ai">7</span>'+
         '<div class="aux-charts-row cols-2">'+
@@ -2916,7 +2915,7 @@
         return;
       }
       if(funnelState.tab==='daily'){
-          exportFunnelTableMock('每日转化_'+ts+'.xlsx','每日转化',['日期','加粉数（全量）','初诊单','初诊转化率','复诊单','复诊额','商品订单','商品总额','总单','总额'],['05-16','782','53','6.8%','41','¥37,820','18','¥21,600','112','¥100,880']);
+          exportFunnelTableMock('每日转化_'+ts+'.xlsx','每日转化',['日期','加粉数（全量）','初诊单','初诊转化率','复诊单','复诊额','商品订单','商品总额','中药总单','中药总额'],['05-16','782','53','6.8%','41','¥37,820','18','¥21,600','94','¥79,280']);
       }else if(funnelState.tab==='dailyOrder'){
           exportFunnelTableMock('每日成交_'+ts+'.xlsx','每日成交',['日期','汤剂订单数','丸剂订单数','颗粒剂订单数','总订单金额'],['05-16','52','31','12','97770']);
       }else if(funnelState.tab==='dailyAi'){
@@ -2925,7 +2924,7 @@
         var name=funnelState.assistantSub==='efficiency'?'医助人效':'医助成交';
         exportFunnelTableMock(name+'_'+ts+'.xlsx',name,['医助','示例指标'],[ASSISTANTS[0].name,'示例值']);
       }else if(funnelState.tab==='chTeam'){
-          exportFunnelTableMock('渠道团队_'+ts+'.xlsx','渠道×团队',['渠道','加粉数','初诊成交订单','初诊成交额','总单','总额'],[CH_CHANNEL_LIST[0].name,fmt(CH_CHANNEL_LIST[0].add),fmt(CH_CHANNEL_LIST[0].pay),fmtMoney(CH_CHANNEL_LIST[0].payGmv),fmt(CH_CHANNEL_LIST[0].totalOrd),fmtMoney(CH_CHANNEL_LIST[0].totalGmv)]);
+          exportFunnelTableMock('渠道团队_'+ts+'.xlsx','渠道×团队',['渠道','加粉数','初诊成交订单','初诊成交额','中药总单','中药总额'],[CH_CHANNEL_LIST[0].name,fmt(CH_CHANNEL_LIST[0].add),fmt(CH_CHANNEL_LIST[0].pay),fmtMoney(CH_CHANNEL_LIST[0].payGmv),fmt(CH_CHANNEL_LIST[0].medOrd),fmtMoney(CH_CHANNEL_LIST[0].medGmv)]);
       }else if(funnelState.tab==='chApp'){
           exportFunnelTableMock('渠道应用_'+ts+'.xlsx','渠道×应用',['渠道','产品','首页PV','加粉数'],[CHANNELS[0].ch,CHANNELS[0].product,CHANNELS[0].pv,CHANNELS[0].addWx]);
       }
@@ -3481,7 +3480,7 @@
   <div class="req-tooltip-section-title">相对 V1.1 的核心变更</div>
   <ul>
     <li><strong>订单口径</strong>：总订单/成交 GMV = 中药 + 商品（益生元、肠道检测、基因检测、64款营养剂）</li>
-    <li><strong>首页</strong>：成交主值含商品；订单核心数据新增商品块；团队 Top 改为中药总单 + 商品单</li>
+    <li><strong>首页</strong>：成交主值含商品；订单核心数据新增商品块；团队 Top 改为总订单数（中药+商品累加）</li>
     <li><strong>每日成交</strong>：趋势图 + 堆叠柱并排；默认 4 线趋势，可展开 6 条剂型线</li>
     <li><strong>每日转化</strong>：数据表新增商品订单/商品总额；总单/总额含商品</li>
     <li><strong>医助成交</strong>：数据表拆分中药/商品/总单；Top 图统计中药+商品</li>
@@ -3496,7 +3495,7 @@
   <ul>
     <li>首页成交订单数 = 初诊中药单 + 复诊中药单 + 商品单</li>
     <li>首页成交 GMV = 三块金额之和</li>
-    <li>团队中药总单 + 商品单 = 团队总单</li>
+    <li>团队总订单数 = 中药总单 + 商品单（合并展示）</li>
     <li>成交表「全部合计」= 中药合计 + 商品合计</li>
   </ul>
 </div>
@@ -3541,8 +3540,8 @@
   <div class="req-tooltip-section-title">今日团队 Top（V1.2）</div>
   <ul>
     <li>按团队<strong>初诊转化率</strong>倒序；每团队 7 张指标卡横向滑动，多团队行同步联动</li>
-    <li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、<strong>中药总订单数</strong>、<strong>商品订单数</strong>、平均对话轮次</li>
-    <li>弱字段：转化率卡→加粉/初诊单；人均接粉量→加粉/接线医助；中药总单卡→中药总额；商品单卡→商品金额；对话轮次→总轮次/有效对话关系数</li>
+    <li>指标卡：初诊转化率、<strong>医助人均接粉量</strong>、初诊客单价、复诊客单价、<strong>总订单数</strong>、平均对话轮次</li>
+    <li>弱字段：转化率卡→加粉/初诊单；人均接粉量→加粉/接线医助；总订单数卡→总订单额；对话轮次→总轮次/有效对话关系数</li>
     <li><em>不展示</em>「医助人均初诊单量」（仅团队 Tab 数据表展示）</li>
     <li>入口：「团队 ›」→ 团队医助 · 医助成交</li>
   </ul>
@@ -3582,7 +3581,7 @@
   <div class="req-tooltip-section-title">展示内容</div>
   <ul>
     <li><strong>加粉数趋势</strong>、<strong>初诊转化率趋势</strong>、<strong>平均获客成本趋势</strong>（深维度筛选后隐藏投流相关图）</li>
-    <li><strong>数据表</strong>：加粉数（全量）+ 初诊/复诊/<strong>商品订单/商品总额</strong>（V1.2）/总单/总额等；总单/总额含商品；支持横向滚动、导出</li>
+    <li><strong>数据表</strong>：加粉数（全量）+ 初诊/复诊/<strong>商品订单/商品总额</strong>（V1.2）/中药总单/中药总额等；中药总单/中药总额为中药合计；支持横向滚动、导出</li>
   </ul>
 </div>
 `
@@ -3650,7 +3649,7 @@
   <ul>
     <li><strong>渠道加粉 Top5</strong>、<strong>初诊成交 Top5</strong>、<strong>获客成本 Top5</strong></li>
     <li><strong>数据表（渠道×团队合并）</strong>：默认渠道汇总行，点击 + 展开团队；投流消耗/行为点击/行为点击-加粉转化率/平均获客成本仅渠道汇总行展示，团队行对应列为「—」（加粉数仍展示团队加粉）</li>
-    <li>成交列：初诊成交订单/初诊成交额/加粉-初诊成交转化率/复诊单/复诊额/总单/总额</li>
+    <li>成交列：初诊成交订单/初诊成交额/加粉-初诊成交转化率/复诊单/复诊额/中药总单/中药总额</li>
   </ul>
 </div>
 `
@@ -3742,7 +3741,7 @@
     <li><strong>初诊单 / 初诊转化率</strong>：初诊支付成功订单数；初诊转化率 = 初诊单 ÷ 加粉数（全量）</li>
     <li><strong>复诊单 / 复诊额</strong>：复诊中药支付成功订单数与实付金额</li>
     <li><strong>商品订单 / 商品总额</strong>（V1.2）：四类商品支付成功订单数与实付金额合计</li>
-    <li><strong>总单 / 总额</strong>（V1.2）：初诊中药 + 复诊中药 + 商品；与首页成交订单数/GMV 同口径</li>
+    <li><strong>中药总单 / 中药总额</strong>（V1.2）：初诊中药 + 复诊中药；仅中药合计</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
@@ -3760,7 +3759,7 @@
     <li><strong>加粉数趋势图</strong>：加粉数（全量）折线图</li>
     <li><strong>平均获客成本趋势图</strong>：投流消耗 / 加粉数（渠道汇总）折线图；深维度筛选后隐藏</li>
     <li><strong>初诊转化率趋势图</strong>：初诊转化率折线图</li>
-    <li><strong>数据表</strong>：日期 + 投流指标（可选）+ 加粉数（全量）+ 初诊单/初诊转化率/复诊单/复诊额/<strong>商品订单/商品总额</strong>/总单/总额；支持横向滚动、导出</li>
+    <li><strong>数据表</strong>：日期 + 投流指标（可选）+ 加粉数（全量）+ 初诊单/初诊转化率/复诊单/复诊额/<strong>商品订单/商品总额</strong>/中药总单/中药总额；支持横向滚动、导出</li>
   </ul>
 </div>
 `
@@ -3849,7 +3848,7 @@
   <ul>
     <li><strong>中药总单/额/客单价</strong>：仅中药（初诊+复诊）</li>
     <li><strong>商品单/额</strong>：四类商品合计</li>
-    <li><strong>总单/额/客单价</strong>：中药 + 商品；客单价 = 总额 ÷ 总单</li>
+    <li><strong>总订单数/总订单额/总客单价</strong>：中药 + 商品；客单价 = 总订单额 ÷ 总订单数</li>
     <li><strong>医助人均接粉量</strong>：团队接粉总数 ÷ 接线医助数；<em>仅团队行</em></li>
     <li><strong>医助人均初诊单量</strong>：初诊订单数 ÷ 接粉医助数；<em>仅团队行</em></li>
     <li>初诊/复诊成交数、成交额、客单价、转化率口径同 V1.1</li>
@@ -3861,12 +3860,12 @@
     <li><strong>团队客单价 Top5</strong>：Tab 切换初诊/复诊/总客单价</li>
     <li><strong>团队初诊转化率 Top5</strong></li>
     <li><strong>总订单 Top5</strong>（V1.2）：Tab 订单金额/订单数；统计<strong>中药+商品</strong></li>
-    <li><strong>数据表列顺序</strong>：加粉 → 接线医助 → 人均接粉量 → 初诊单/额/客单价/转化率/人均初诊单量 → 复诊单/额/客单价 → 中药总单/额/客单价 → 商品单/额 → 总单/额/客单价</li>
+    <li><strong>数据表列顺序</strong>：加粉 → 接线医助 → 人均接粉量 → 初诊单/额/客单价/转化率/人均初诊单量 → 复诊单/额/客单价 → 中药总单/额/客单价 → 商品单/额</li>
   </ul>
 </div>
 <div class="req-tooltip-section">
   <div class="req-tooltip-section-title">对账</div>
-  <p>团队维度：中药总单 + 商品单 = 总单；中药总额 + 商品额 = 总额。</p>
+  <p>团队维度：中药总单 + 商品单 = 总订单数；中药总额 + 商品额 = 总订单额。</p>
 </div>
 `
         },

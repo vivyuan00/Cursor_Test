@@ -31,9 +31,10 @@ button{border:0;background:none;cursor:pointer;}
 .page.on{display:block;}
 @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 .sec{margin-bottom:14px;}
-.sec-h{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;}
-.sec-h h2{font-size:14px;font-weight:700;}
-.sec-h .link{font-size:12px;color:var(--brand);font-weight:600;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 8px;gap:8px;}
+.sec-h h2{font-size:14px;font-weight:700;flex-shrink:0;}
+.sec-h .link{font-size:12px;color:var(--brand);font-weight:600;flex-shrink:0;}
+.sec-h .team-scroll-toggle{margin-left:auto;margin-right:8px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .kpi{display:block;position:relative;text-align:left;padding:14px 32px 14px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg,#fff,#f7faff);box-shadow:var(--shadow);width:100%;}
@@ -120,10 +121,18 @@ tr.child-row td:first-child{z-index:2;}
 .team-soft-inline b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:700;color:var(--muted);}
 .team-metric-scroll{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;margin:6px -12px 0;padding:0 12px 2px;scrollbar-width:none;--team-card-gap:8px;}
 .team-metric-scroll::-webkit-scrollbar{display:none;}
-.team-metric-card{flex:0 0 calc((100% - 2 * var(--team-card-gap)) / 2.5);width:calc((100% - 2 * var(--team-card-gap)) / 2.5);background:#f7f9fb;border-radius:10px;padding:8px;scroll-snap-align:start;box-sizing:border-box;}
+.team-metric-scroll.single-row{flex-wrap:nowrap;}
+.team-metric-scroll.multi-row{flex-wrap:wrap;}
+.team-metric-card{flex:0 0 calc((100% - 2 * var(--team-card-gap)) / 3);width:calc((100% - 2 * var(--team-card-gap)) / 3);background:#f7f9fb;border-radius:10px;padding:8px;scroll-snap-align:start;box-sizing:border-box;}
+.team-metric-scroll.single-row .team-metric-card{flex:0 0 auto;min-width:120px;}
 .team-metric-card .k{font-size:12px;color:var(--muted);font-weight:600;line-height:1.35;}
 .team-metric-card .x{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:17px;font-weight:700;margin-top:4px;letter-spacing:-.02em;}
 .team-metric-card .soft.team-soft-inline{font-size:10px;line-height:1.5;}
+.team-scroll-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-weight:600;flex-shrink:0;}
+.team-scroll-toggle-switch{position:relative;width:36px;height:20px;background:#e2e8f0;border-radius:20px;cursor:pointer;transition:background 0.2s;}
+.team-scroll-toggle-switch.on{background:var(--brand);}
+.team-scroll-toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.team-scroll-toggle-switch.on::after{transform:translateX(16px);}
 .bar{height:6px;border-radius:99px;background:#edf1f5;overflow:hidden;margin-top:6px;}
 .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#6aa4ff);}
 .bar.warm>i{background:linear-gradient(90deg,#d97706,#f5b567);}
@@ -342,7 +351,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       <div class="card" id="hCh"></div>
     </div>
     <div class="sec">
-      <div class="sec-h"><h2>今日团队 Top</h2><button class="link" data-go="asst">团队 ›</button></div>
+      <div class="sec-h"><h2>今日团队 Top</h2><div class="team-scroll-toggle"><span>单行联动</span><div class="team-scroll-toggle-switch" id="teamScrollToggle"></div></div><button class="link" data-go="asst">团队 ›</button></div>
       <div class="card" id="hTeam"></div>
     </div>
     <div class="sec">
@@ -1031,6 +1040,23 @@ th:first-child .th-inner{justify-content:flex-start;}
       },{passive:true});
     });
   }
+  function initTeamScrollToggle(){
+    const toggle=document.getElementById('teamScrollToggle');
+    if(!toggle) return;
+    let isSingleRow=false;
+    toggle.addEventListener('click',()=>{
+      isSingleRow=!isSingleRow;
+      toggle.classList.toggle('on',isSingleRow);
+      const rows=document.querySelectorAll('#hTeam .team-metric-scroll');
+      rows.forEach(row=>{
+        row.classList.toggle('single-row',isSingleRow);
+        row.classList.toggle('multi-row',!isSingleRow);
+      });
+      if(isSingleRow){
+        bindTeamScrollSync();
+      }
+    });
+  }
 
   function go(page){
     if(!currentUser && page!=='login'){showLogin();return;}
@@ -1124,7 +1150,7 @@ th:first-child .th-inner{justify-content:flex-start;}
     const teamTop=TEAM_TODAY.slice().sort((a,b)=>b.firstConv-a.firstConv);
     document.getElementById('hTeam').innerHTML=teamTop.map((t,i)=>
       '<div class="row"><div class="badge'+(i===0?' g':'')+'">'+(i+1)+'</div><div class="main"><div class="n">'+t.team+'</div>'+
-      '<div class="team-metric-scroll">'+
+      '<div class="team-metric-scroll multi-row">'+
       teamMetricCard('初诊转化率',pct(t.firstConv),'加粉数 <b>'+fmt(t.fans)+'</b>　初诊订单数 <b>'+fmt(t.firstOrd)+'</b>')+
       teamMetricCard('医助人均接粉量',t.wireAsst?t.avgFansPerAsst.toFixed(1):'—','加粉数 <b>'+fmt(t.fans)+'</b>　接线医助数 <b>'+fmt(t.wireAsst)+'</b>')+
       teamMetricCard('初诊客单价',aov(t.firstGmv,t.firstOrd),'')+
@@ -1133,7 +1159,7 @@ th:first-child .th-inner{justify-content:flex-start;}
       teamMetricCard('平均对话轮次',fmtAvgDialog(t.dialogRounds,t.dialogRels),'总对话轮次 <b>'+fmt(t.dialogRounds)+'</b>　有效对话关系数 <b>'+fmt(t.dialogRels)+'</b>')+
       '</div></div></div>'
     ).join('');
-    bindTeamScrollSync();
+    initTeamScrollToggle();
     document.getElementById('hOrders').innerHTML=
       '<div class="order-item"><div class="t"><span>初诊 '+DEAL_SUMMARY.first.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.first.gmv)+'</span></div><div class="order-soft">'+medSoftLine(DEAL_SUMMARY.first)+'</div></div>'+
       '<div class="order-item"><div class="t"><span>复诊 '+DEAL_SUMMARY.rev.cnt+' 单</span><span>'+fmtY(DEAL_SUMMARY.rev.gmv)+'</span></div><div class="order-soft">'+medSoftLine(DEAL_SUMMARY.rev)+'</div></div>';

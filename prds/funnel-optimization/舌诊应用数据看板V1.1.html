@@ -1729,28 +1729,8 @@ window.TD = (function () {
         return `<span class="o-chip"><b>${i + 1}</b>${ev.name}${it.metric === '-' ? '' : `<em>${it.metric.toUpperCase()}</em>`}<button type="button" class="x" data-rm="${i}" title="移除">×</button></span>`;
       }).join('');
     }
-    function selectOptions() {
-      const list = tplList(kind, app).filter(t => !t.isFallback);
-      let html = list.map(t =>
-        `<option value="${t.id}"${t.id === draft.id ? ' selected' : ''}>${esc(t.name)}${t.isDefault ? '（默认）' : ''}</option>`).join('');
-      if (!list.some(t => t.id === draft.id)) html = `<option value="${draft.id}" selected>${esc(draft.name)}（未保存）</option>` + html;
-      const fb = tplFallback(kind);
-      if (fb) html += `<option value="${fb.id}"${fb.id === draft.id ? ' selected' : ''}>${esc(fb.name)}（兜底）</option>`;
-      return html;
-    }
     function editHTML() {
-      const cur = tplStore.get(draft.id);
-      return `<div class="cfg-bar">
-        <span class="lbl">应用</span><span class="badge-product">${app}</span>
-        <span class="lbl" style="margin-left:10px">当前模版</span>
-        <select id="cfg-sel">${selectOptions()}</select>
-        <span class="badge-default" ${cur && cur.isDefault ? '' : 'hidden'}>默认模版</span>
-        <span class="spacer"></span>
-        <button class="btn" data-act="new">新建模版</button>
-        <button class="btn" data-act="copy">复制</button>
-        <button class="btn" data-act="setdefault">设为默认</button>
-      </div>
-      <div class="cfg-name-row"><label>模版名称</label>
+      return `<div class="cfg-name-row" style="margin-top:0"><label>模版名称</label>
         <input id="cfg-name" maxlength="20" value="${esc(draft.name)}" placeholder="如：${app}默认${meta.label}"></div>
       <div class="cfg-sec-title">已选 <b>${draft.items.length}</b> / ${meta.max} ${meta.unit}
         <span class="hint">按勾选先后顺序生效，点序号可移除</span></div>
@@ -1767,8 +1747,7 @@ window.TD = (function () {
         ? `<button data-mact="use" data-id="${t.id}">使用</button><button data-mact="edit" data-id="${t.id}">基于此编辑</button>`
         : `<button data-mact="use" data-id="${t.id}">使用</button>
            <button data-mact="edit" data-id="${t.id}">编辑</button>
-           <button data-mact="rename" data-id="${t.id}">重命名</button>
-           ${t.isDefault ? '' : `<button data-mact="default" data-id="${t.id}">设为默认</button>`}
+           <button data-mact="rename" data-id="${t.id}">修改</button>
            <button data-mact="del" data-id="${t.id}" class="danger">删除</button>`;
       return `<div class="tpl-row">
         ${nameCell}
@@ -1780,7 +1759,7 @@ window.TD = (function () {
     function manageHTML() {
       const own = tplOwn(kind, app);
       const fb = tplFallback(kind);
-      let html = `<p class="cfg-tip">「${app}」的${meta.label}保存在当前账号（${state.user}）下，可新建、重命名、设为默认或删除；每个应用一个默认模版，未设置的应用自动使用兜底模版。</p>
+      let html = `<p class="cfg-tip">「${app}」的${meta.label}保存在当前账号（${state.user}）下，可新建、修改或删除；每个应用一个默认模版，未设置的应用自动使用兜底模版。</p>
         <div class="tpl-table">
         <div class="tpl-row head"><span>模版名称</span><span>关联应用</span><span>更新</span><span style="text-align:right">操作</span></div>`;
       own.forEach(t => { html += rowHTML(t, false); });
@@ -1816,6 +1795,7 @@ window.TD = (function () {
       foot.innerHTML = `<span class="counter${n >= meta.max ? ' max' : ''}">已选 <b>${n}</b> / ${meta.max} ${meta.unit}${meta.min > 1 ? ` · 至少 ${meta.min} ${meta.unit}` : ''}</span>
         <span class="spacer"></span>
         <button class="btn" data-act="cancel">取消</button>
+        <button class="btn" data-act="save"${ok ? '' : ' disabled'}>保存</button>
         <button class="btn primary" data-act="apply"${ok ? '' : ' disabled'}>保存并应用</button>`;
     }
     function refresh() {
@@ -1898,13 +1878,7 @@ window.TD = (function () {
           if (v) tplStore.save(Object.assign({}, t, { name: v }));
           renaming = null;
           renderPane();
-          toast('已重命名');
-          return;
-        }
-        if (a === 'default' && t) {
-          setTplDefault(kind, app, t.id);
-          toast(`已将「${t.name}」设为${app}的默认${meta.label}`);
-          renderPane();
+          toast('已修改');
           return;
         }
         if (a === 'del' && t) {
@@ -1935,22 +1909,6 @@ window.TD = (function () {
           if (inp) { inp.focus(); inp.select(); }
           return;
         }
-        if (a === 'copy') {
-          draft = { id: tplNewId(kind), kind, app, name: draft.name + ' 副本', items: draft.items.map(it => Object.assign({}, it)) };
-          fromFallback = false;
-          tab = 'edit';
-          renderPane();
-          return;
-        }
-        if (a === 'setdefault') {
-          if (draft.items.length < meta.min) { toast(`请至少选择 ${meta.min} ${meta.unit}`); return; }
-          const saved = saveDraft();
-          setTplDefault(kind, app, saved.id);
-          toast(`已将「${saved.name}」设为${app}的默认${meta.label}`);
-          renderPane();
-          applyState(saved.id);
-          return;
-        }
         return;
       }
       const cb = e.target.closest('.mcb');
@@ -1965,13 +1923,6 @@ window.TD = (function () {
       refresh();
     });
 
-    body.addEventListener('change', e => {
-      if (e.target.id !== 'cfg-sel') return;
-      const t = tplStore.get(e.target.value);
-      loadDraft(t);
-      tab = 'edit';
-      renderPane();
-    });
     body.addEventListener('input', e => {
       if (e.target.id === 'cfg-name') draft.name = e.target.value;
     });
@@ -1996,6 +1947,14 @@ window.TD = (function () {
           const inp = body.querySelector('#cfg-name');
           if (inp) { inp.focus(); inp.select(); }
         }
+        return;
+      }
+      if (a === 'save') {
+        if (draft.items.length < meta.min) { toast(`请至少选择 ${meta.min} ${meta.unit}`); return; }
+        const saved = saveDraft();
+        draft.id = saved.id;
+        renderPane();
+        toast(`模版「${saved.name}」已保存`);
         return;
       }
       if (a === 'apply') {

@@ -232,7 +232,9 @@ select.is-empty { color: var(--ink-4); }
 .fold-bar button { width: 100%; height: 26px; border: 0; background: #fafbfc; font-size: 11.5px; color: var(--brand); }
 .fold-bar button:hover { background: var(--brand-soft); }
 .order-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 10px; background: #fafbfc; border: 1px dashed var(--line); border-radius: 6px; min-height: 38px; }
-.o-chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 3px 0 6px; background: #fff; border: 1px solid #d6e2ff; border-radius: 11px; font-size: 11px; color: #2f5fe8; }
+.o-chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 3px 0 6px; background: #fff; border: 1px solid #d6e2ff; border-radius: 11px; font-size: 11px; color: #2f5fe8; cursor: grab; }
+.o-chip:active { cursor: grabbing; }
+.o-chip.dragging { opacity: .45; border-style: dashed; }
 .o-chip b { font-weight: 600; color: #7c9cf5; }
 .o-chip em { font-style: normal; font-size: 9.5px; color: #7c9cf5; }
 .o-chip .x { width: 15px; height: 15px; border: 0; border-radius: 50%; background: none; color: #9db6f5; font-size: 12px; line-height: 1; display: grid; place-items: center; }
@@ -244,8 +246,12 @@ select.is-empty { color: var(--ink-4); }
 .tpl-row { display: grid; grid-template-columns: minmax(0,1fr) 88px 128px 216px; align-items: center; gap: 8px; padding: 9px 12px; border-top: 1px solid var(--line-soft); font-size: 12px; }
 .tpl-row:first-child { border-top: 0; }
 .tpl-row.head { background: #fafbfc; font-size: 11px; color: var(--ink-4); }
-.tpl-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.tpl-name > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tpl-name { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+.tpl-name .row1 { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.tpl-name .row1 > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tpl-name .rename-row { display: flex; align-items: center; gap: 6px; width: 100%; }
+.tpl-sub { max-width: 100%; font-size: 11px; color: var(--ink-4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tpl-sub b { font-weight: 400; color: var(--ink-3); }
 .tpl-meta { color: var(--ink-4); font-size: 11.5px; }
 .tpl-row .acts { display: flex; gap: 2px; justify-content: flex-end; flex-wrap: wrap; }
 .tpl-row .acts button { border: 0; background: none; color: var(--brand); font-size: 11.5px; padding: 2px 5px; border-radius: 3px; }
@@ -1726,40 +1732,46 @@ window.TD = (function () {
       if (!draft.items.length) return `<span class="o-empty">尚未选择，按下方勾选先后顺序生效</span>`;
       return draft.items.map((it, i) => {
         const ev = byKey[it.key] || { name: it.key };
-        return `<span class="o-chip"><b>${i + 1}</b>${ev.name}${it.metric === '-' ? '' : `<em>${it.metric.toUpperCase()}</em>`}<button type="button" class="x" data-rm="${i}" title="移除">×</button></span>`;
+        return `<span class="o-chip" draggable="true" data-idx="${i}"><b>${i + 1}</b>${ev.name}${it.metric === '-' ? '' : `<em>${it.metric.toUpperCase()}</em>`}<button type="button" class="x" data-rm="${i}" title="移除">×</button></span>`;
       }).join('');
     }
     function editHTML() {
       return `<div class="cfg-name-row" style="margin-top:0"><label>模版名称</label>
         <input id="cfg-name" maxlength="20" value="${esc(draft.name)}" placeholder="如：${app}默认${meta.label}"></div>
       <div class="cfg-sec-title">已选 <b>${draft.items.length}</b> / ${meta.max} ${meta.unit}
-        <span class="hint">按勾选先后顺序生效，点序号可移除</span></div>
+        <span class="hint">按勾选先后顺序生效，可左右拖拽调整顺序，点 × 移除</span></div>
       <div class="order-strip" id="order-strip">${orderStrip()}</div>
       ${fromFallback ? `<p class="tpl-note">当前为系统兜底模版，修改后保存为「${app}」的自定义模版。</p>` : ''}
       ${meta.cats.map(catHTML).join('')}`;
     }
     /* ---------------- 管理 tab ---------------- */
     function rowHTML(t, isFb) {
+      const itemsDesc = t.items.length
+        ? t.items.map(it => { const ev = byKey[it.key] || { name: it.key }; return ev.name + (it.metric === '-' ? '' : it.metric.toUpperCase()); }).join(' → ')
+        : '暂未配置';
       const nameCell = renaming === t.id
-        ? `<div class="tpl-name"><input id="tpl-rename" maxlength="20" value="${esc(t.name)}"><button class="btn" data-mact="rename-ok" data-id="${t.id}" style="height:24px;padding:0 8px">保存</button></div>`
-        : `<div class="tpl-name"><span>${esc(t.name)}</span>${t.isDefault ? '<span class="tpl-badge">默认</span>' : ''}${isFb ? '<span class="tpl-badge gray">兜底</span>' : ''}<span class="tpl-badge gray">${t.items.length} ${meta.unit}</span></div>`;
+        ? `<div class="tpl-name"><div class="rename-row"><input id="tpl-rename" maxlength="20" value="${esc(t.name)}"><button class="btn" data-mact="rename-ok" data-id="${t.id}" style="height:24px;padding:0 8px">保存</button></div></div>`
+        : `<div class="tpl-name">
+            <div class="row1"><span>${esc(t.name)}</span>${t.isDefault ? '<span class="tpl-badge">默认</span>' : ''}${isFb ? '<span class="tpl-badge gray">兜底</span>' : ''}<span class="tpl-badge gray">${t.items.length} ${meta.unit}</span></div>
+            <div class="tpl-sub" title="${esc(itemsDesc)}">${esc(itemsDesc)}</div>
+          </div>`;
       const acts = isFb
         ? `<button data-mact="use" data-id="${t.id}">使用</button><button data-mact="edit" data-id="${t.id}">基于此编辑</button>`
         : `<button data-mact="use" data-id="${t.id}">使用</button>
            <button data-mact="edit" data-id="${t.id}">编辑</button>
-           <button data-mact="rename" data-id="${t.id}">修改</button>
+           <button data-mact="rename" data-id="${t.id}">重命名</button>
            <button data-mact="del" data-id="${t.id}" class="danger">删除</button>`;
       return `<div class="tpl-row">
         ${nameCell}
         <span class="tpl-meta">${isFb ? '全部应用' : esc(t.app)}</span>
-        <span class="tpl-meta">${esc(t.owner || '—')} · ${fmtDateShort(t.updated_at)}</span>
+        <span class="tpl-meta">${fmtDateShort(t.updated_at)}</span>
         <span class="acts">${acts}</span>
       </div>`;
     }
     function manageHTML() {
       const own = tplOwn(kind, app);
       const fb = tplFallback(kind);
-      let html = `<p class="cfg-tip">「${app}」的${meta.label}保存在当前账号（${state.user}）下，可新建、修改或删除；每个应用一个默认模版，未设置的应用自动使用兜底模版。</p>
+      let html = `<p class="cfg-tip">「${app}」的${meta.label}保存在当前账号（${state.user}）下，可新建、重命名或删除；每个应用一个默认模版，未设置的应用自动使用兜底模版。</p>
         <div class="tpl-table">
         <div class="tpl-row head"><span>模版名称</span><span>关联应用</span><span>更新</span><span style="text-align:right">操作</span></div>`;
       own.forEach(t => { html += rowHTML(t, false); });
@@ -1772,7 +1784,7 @@ window.TD = (function () {
     function renderPane() {
       body.innerHTML = `<div class="cfg-tabs">
           <button type="button" data-tab="edit" class="${tab === 'edit' ? 'active' : ''}">${tabLabel}</button>
-          <button type="button" data-tab="manage" class="${tab === 'manage' ? 'active' : ''}">管理模版</button>
+          <button type="button" data-tab="manage" class="${tab === 'manage' ? 'active' : ''}">配置列表</button>
         </div><div id="cfg-pane"></div>`;
       body.querySelector('#cfg-pane').innerHTML = tab === 'edit' ? editHTML() : manageHTML();
       updateFoot();
@@ -1835,6 +1847,42 @@ window.TD = (function () {
       }
     }
     function gotoManage() { tab = 'manage'; renaming = null; renderPane(); }
+
+    /* ---------------- 已选顺序拖拽 ---------------- */
+    let dragChip = null;
+    body.addEventListener('dragstart', e => {
+      const chip = e.target.closest('.o-chip');
+      if (!chip) return;
+      dragChip = chip;
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', ''); } catch (_) {}
+    });
+    body.addEventListener('dragover', e => {
+      if (!dragChip) return;
+      if (!e.target.closest('#order-strip')) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.target.closest('.o-chip');
+      if (!target || target === dragChip) return;
+      const r = target.getBoundingClientRect();
+      const after = e.clientX - r.left > r.width / 2;
+      if (after) target.after(dragChip); else target.before(dragChip);
+    });
+    body.addEventListener('drop', e => { if (dragChip) e.preventDefault(); });
+    body.addEventListener('dragend', () => {
+      if (!dragChip) return;
+      dragChip.classList.remove('dragging');
+      const strip = body.querySelector('#order-strip');
+      if (strip) {
+        const order = Array.from(strip.querySelectorAll('.o-chip')).map(c => Number(c.dataset.idx));
+        if (order.length === draft.items.length && order.some((v, i) => v !== i)) {
+          draft.items = order.map(i => draft.items[i]);
+          refresh();
+        }
+      }
+      dragChip = null;
+    });
 
     /* ---------------- 事件 ---------------- */
     body.addEventListener('click', e => {

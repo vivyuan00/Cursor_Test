@@ -170,6 +170,83 @@ select.is-empty { color: var(--ink-4); }
 .btn:active { transform: translateY(.5px); }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
 
+/* ---------- 应用类型 chips ---------- */
+.field-full { display: block; }
+.field-full > label { display: block; margin-bottom: 7px; font-size: 12px; color: var(--ink-3); }
+.app-chips-wrap { display: flex; align-items: flex-start; gap: 10px; }
+.app-chips {
+  display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0;
+  max-height: 28px; overflow: hidden; transition: max-height .22s ease;
+}
+.app-chips.open { max-height: 400px; }
+.chip {
+  height: 28px; padding: 0 12px; border: 1px solid #dcdfe6; background: #fff; border-radius: 14px;
+  font-size: 12px; color: var(--ink-2); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px; transition: all .15s;
+}
+.chip:hover { border-color: #b9caf7; color: var(--brand); }
+.chip.active { background: var(--brand-soft); border-color: #b9caf7; color: var(--brand); font-weight: 600; }
+.chips-fold { height: 26px; flex: none; border: 0; background: none; color: var(--brand); font-size: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 0 2px; }
+.chips-fold[hidden] { display: none; }
+.chips-fold .chev { width: 6px; height: 6px; border-right: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); margin-top: -3px; transition: transform .16s; }
+.chips-fold.open .chev { transform: rotate(-135deg); margin-top: 2px; }
+
+/* ---------- 配置模版 ---------- */
+.tpl-select { display: inline-flex; align-items: center; gap: 6px; }
+.tpl-badge { font-size: 10px; padding: 1px 5px; border-radius: 3px; background: #eef3ff; color: #2f5fe8; border: 1px solid #d6e2ff; white-space: nowrap; }
+.tpl-badge.gray { background: #f2f3f5; color: var(--ink-3); border-color: var(--line); }
+
+/* ---------- 配置模版弹窗 ---------- */
+.ev-cat { margin-top: 16px; }
+.ev-cat > h4 { display: flex; align-items: center; gap: 7px; margin: 0 0 7px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.ev-cat > h4 .count { font-size: 11px; color: var(--ink-4); font-weight: 400; }
+.ev-cat > h4 .tag { font-size: 10px; font-weight: 500; color: #0e9f9a; background: #e6f7f5; border-radius: 3px; padding: 1px 5px; }
+.ev-list { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.ev-head, .ev-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 64px; align-items: center; }
+.ev-head { background: #fafbfc; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--ink-4); }
+.ev-head > span { padding: 6px 12px; }
+.ev-head > span + span { text-align: center; padding: 6px 0; border-left: 1px solid var(--line-soft); }
+.ev-row { border-top: 1px solid var(--line-soft); }
+.ev-head + .ev-row { border-top: 0; }
+.ev-row.hide { display: none; }
+.ev-row > .nm { padding: 6px 12px; font-size: 12px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; min-width: 0; }
+.ev-row > .nm span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-row > .nm em { font-style: normal; font-size: 10px; color: var(--ink-4); background: #f2f3f5; padding: 1px 4px; border-radius: 3px; flex: none; }
+.ev-row > .mc { display: flex; justify-content: center; padding: 6px 0; border-left: 1px solid var(--line-soft); }
+.cb {
+  width: 18px; height: 18px; border: 1.3px solid #c9cdd4; border-radius: 4px; background: #fff;
+  display: grid; place-items: center; color: #fff; transition: all .12s;
+}
+.cb svg { opacity: 0; }
+.cb:hover { border-color: var(--brand); }
+.cb.on { background: var(--brand); border-color: var(--brand); }
+.cb.on svg { opacity: 1; }
+.cb-na { font-size: 11px; color: #c9cdd4; }
+.fold-bar { border-top: 1px solid var(--line-soft); }
+.fold-bar button { width: 100%; height: 26px; border: 0; background: #fafbfc; font-size: 11.5px; color: var(--brand); }
+.fold-bar button:hover { background: var(--brand-soft); }
+.order-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 10px; background: #fafbfc; border: 1px dashed var(--line); border-radius: 6px; min-height: 38px; }
+.o-chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 3px 0 6px; background: #fff; border: 1px solid #d6e2ff; border-radius: 11px; font-size: 11px; color: #2f5fe8; }
+.o-chip b { font-weight: 600; color: #7c9cf5; }
+.o-chip em { font-style: normal; font-size: 9.5px; color: #7c9cf5; }
+.o-chip .x { width: 15px; height: 15px; border: 0; border-radius: 50%; background: none; color: #9db6f5; font-size: 12px; line-height: 1; display: grid; place-items: center; }
+.o-chip .x:hover { background: #eef3ff; color: #2f5fe8; }
+.o-empty { font-size: 11.5px; color: var(--ink-4); }
+.tpl-note { font-size: 11.5px; color: #b8860b; background: #fff8e6; border: 1px solid #ffe3a8; border-radius: 5px; padding: 6px 10px; margin: 10px 0 0; }
+.tpl-table { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.tpl-row { display: grid; grid-template-columns: minmax(0,1fr) 88px 128px 216px; align-items: center; gap: 8px; padding: 9px 12px; border-top: 1px solid var(--line-soft); font-size: 12px; }
+.tpl-row:first-child { border-top: 0; }
+.tpl-row.head { background: #fafbfc; font-size: 11px; color: var(--ink-4); }
+.tpl-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tpl-name > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tpl-meta { color: var(--ink-4); font-size: 11.5px; }
+.tpl-row .acts { display: flex; gap: 2px; justify-content: flex-end; flex-wrap: wrap; }
+.tpl-row .acts button { border: 0; background: none; color: var(--brand); font-size: 11.5px; padding: 2px 5px; border-radius: 3px; }
+.tpl-row .acts button:hover { background: var(--brand-soft); }
+.tpl-row .acts button.danger { color: #e5484d; }
+.tpl-row .acts button.danger:hover { background: #fdecec; }
+.tpl-row input { height: 26px; border: 1px solid var(--brand); border-radius: 4px; padding: 0 6px; font-size: 12px; width: 100%; }
+
 /* ---------- more filter ---------- */
 .more-filter { margin-top: 11px; padding-top: 10px; border-top: 1px dashed var(--line); }
 .more-toggle {
@@ -604,13 +681,15 @@ tfoot .sticky-col { background: #fafbfc; }
   <section class="page" id="page-events">
     <div class="filter-card">
       <div class="filter-row">
-        <div class="field">
+        <div class="field-full">
           <label>应用类型</label>
-          <div class="segment" id="e-product">
-            <button type="button" data-v="舌诊" class="active">舌诊</button>
-            <button type="button" data-v="快测">快测</button>
+          <div class="app-chips-wrap">
+            <div class="app-chips" id="e-product"></div>
+            <button type="button" class="chips-fold" id="e-app-fold" hidden>展开更多<i class="chev"></i></button>
           </div>
         </div>
+      </div>
+      <div class="filter-row" style="margin-top:12px">
         <div class="field">
           <label>渠道</label>
           <div class="select-wrap"><select id="e-channel" class="is-empty">
@@ -629,6 +708,13 @@ tfoot .sticky-col { background: #fafbfc; }
           <div class="select-wrap"><select id="e-version">
             <option value="">全部版本</option>
           </select></div>
+        </div>
+        <div class="field">
+          <label>配置模版</label>
+          <div class="tpl-select">
+            <div class="select-wrap"><select id="e-tpl"></select></div>
+            <button class="btn ghost" id="e-tpl-manage" style="padding:0 6px" title="管理配置模版">管理</button>
+          </div>
         </div>
         <div class="field">
           <label>时间段</label>
@@ -701,13 +787,15 @@ tfoot .sticky-col { background: #fafbfc; }
   <section class="page" id="page-funnel" hidden>
     <div class="filter-card">
       <div class="filter-row">
-        <div class="field">
+        <div class="field-full">
           <label>应用类型</label>
-          <div class="segment" id="f-product">
-            <button data-v="舌诊" class="active">舌诊</button>
-            <button data-v="快测">快测</button>
+          <div class="app-chips-wrap">
+            <div class="app-chips" id="f-product"></div>
+            <button type="button" class="chips-fold" id="f-app-fold" hidden>展开更多<i class="chev"></i></button>
           </div>
         </div>
+      </div>
+      <div class="filter-row" style="margin-top:12px">
         <div class="field">
           <label>场景值</label>
           <div class="segment" id="f-scene">
@@ -783,6 +871,13 @@ tfoot .sticky-col { background: #fafbfc; }
               </div>
             </div>
             <div class="field">
+              <label>配置模版</label>
+              <div class="tpl-select">
+                <div class="select-wrap"><select id="f-tpl"></select></div>
+                <button class="btn ghost" id="f-tpl-manage" style="padding:0 6px" title="管理配置模版">管理</button>
+              </div>
+            </div>
+            <div class="field">
               <label>时间段</label>
               <div class="date-range">
                 <input type="date" class="date-input" id="f-start">
@@ -793,7 +888,6 @@ tfoot .sticky-col { background: #fafbfc; }
           </div>
         </div>
       </div>
-
       <div class="filter-row ops">
         <button class="btn primary" id="f-query">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4 14 14" stroke-linecap="round"/></svg>
@@ -993,11 +1087,27 @@ window.TD = (function () {
   const TODAY = startOfDay(new Date());
   function defaultRange() { return [addDays(TODAY, -6), TODAY]; }
 
-  /* ---------------- 维度 ---------------- */
-  const PRODUCTS = [
-    { v: '舌诊', label: '舌诊类应用' },
-    { v: '快测', label: '快测类应用' }
+  /* ---------------- 应用列表 ---------------- */
+  const APP_LIST = [
+    { v: '舌诊', factor: 1.00 },
+    { v: '快测', factor: 0.42 },
+    { v: '中医体质', factor: 0.66 },
+    { v: '舌象辨识', factor: 0.55 },
+    { v: '皮肤检测', factor: 0.48 },
+    { v: '视力自测', factor: 0.34 },
+    { v: '睡眠评估', factor: 0.29 },
+    { v: '体重管理', factor: 0.38 },
+    { v: '慢病随访', factor: 0.22 },
+    { v: '排卵测算', factor: 0.26 },
+    { v: '儿童生长发育', factor: 0.19 },
+    { v: '心理测评', factor: 0.24 }
   ];
+  const APP_NAMES = APP_LIST.map(a => a.v);
+  function appFactor(app) {
+    const a = APP_LIST.find(x => x.v === app);
+    return a ? a.factor : 0.3;
+  }
+
   const VERSIONS = ['v1.0.0', 'v1.1.2', 'v2.0.0'];
   const VERSION_SHARE = { 'v1.0.0': 0.26, 'v1.1.2': 0.39, 'v2.0.0': 0.35 };
   const CHANNELS = {
@@ -1010,82 +1120,79 @@ window.TD = (function () {
 
   /* ---------------- 指标字典 ---------------- */
   const CATALOG = [
-    // ===== 行为事件 · 页面浏览（有 PV / UV 两个值）=====
-    { key: 'home',         name: '首页',                 group: '页面浏览', kind: 'behavior', type: 'count', base: 214000, uv: 0.70, stage: 1,     color: '#2f6bff' },
-    { key: 'capture',      name: '拍摄页',               group: '页面浏览', kind: 'behavior', type: 'count', base: 126000, uv: 0.69, stage: 0.58,  color: '#1a9fd4' },
-    { key: 'reporting',    name: '报告生成中',           group: '页面浏览', kind: 'behavior', type: 'count', base: 67000,  uv: 0.72, stage: 0.31,  color: '#6b8afd' },
-    { key: 'agentPage',    name: '医生agent',            group: '页面浏览', kind: 'behavior', type: 'count', base: 51000,  uv: 0.75, stage: 0.24,  color: '#4f7ff0' },
-    { key: 'qrPage',       name: '二维码加v页',          group: '页面浏览', kind: 'behavior', type: 'count', base: 17600,  uv: 0.80, stage: 0.078, color: '#19b8a6' },
-    { key: 'historyPage',  name: '历史报告详情页',       group: '页面浏览', kind: 'behavior', type: 'count', base: 45000,  uv: 0.77, stage: 0.12,  color: '#7c9cf5' },
-    // ===== 行为事件 · 元素曝光和点击 =====
-    { key: 'allRecords',   name: '全部记录',             group: '元素曝光和点击 · 首页', kind: 'behavior', type: 'count', base: 95000,  uv: 0.73, stage: 0.62, color: '#f59e0b' },
-    { key: 'healthGoal',   name: '健康目标选择',         group: '元素曝光和点击 · 首页', kind: 'behavior', type: 'count', base: 139000, uv: 0.70, stage: 0.64, color: '#f97316' },
-    { key: 'startDiag',    name: '开始舌诊',             group: '元素曝光和点击 · 首页', kind: 'behavior', type: 'count', base: 119000, uv: 0.70, stage: 0.56, color: '#eab308' },
-    { key: 'clickShoot',   name: '点击拍摄',             group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 106000, uv: 0.69, stage: 0.52, color: '#f59e0b' },
-    { key: 'albumUpload',  name: '相册上传',             group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 41000,  uv: 0.71, stage: 0.20, color: '#f97316' },
-    { key: 'switchCam',    name: '切换摄像头',           group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 23500,  uv: 0.72, stage: 0.11, color: '#eab308' },
-    { key: 'upload',       name: '舌象上传',             group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 94000,  uv: 0.70, stage: 0.49, color: '#8b5cf6' },
-    { key: 'reportCard',   name: '舌诊报告留资卡',       group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 23400, uv: 0.86, stage: 0.08,  color: '#ec4899' },
-    { key: 'consultCard',  name: '问诊报告留资卡',       group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 14900, uv: 0.87, stage: 0.055, color: '#f97316' },
-    { key: 'doctorBubble', name: '医生加v气泡胶囊',      group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 30500, uv: 0.84, stage: 0.068, color: '#d946ef' },
-    { key: 'continueChat', name: '继续对话',             group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 57000, uv: 0.76, stage: 0.23,  color: '#a855f7' },
-    { key: 'leadCard',     name: '留资卡',               group: '元素曝光和点击 · 历史报告详情页', kind: 'behavior', type: 'count', base: 12400, uv: 0.88, stage: 0.05, color: '#f43f5e' },
-    // ===== 计算值 · 行为转化 =====
-    { key: 'homeCaptureRate', name: '舌诊首页-拍摄转化率', group: '计算值 · 行为转化', kind: 'calc', type: 'ratio', calc: ['capture', 'home'], stage: 0.58 },
-    { key: 'uploadRate',      name: '舌象上传率',          group: '计算值 · 行为转化', kind: 'calc', type: 'ratio', calc: ['upload', 'capture'], stage: 0.49 },
-    { key: 'uploadLossRate',  name: '上传折损率',          group: '计算值 · 行为转化', kind: 'calc', type: 'ratioInv', calc: ['upload', 'capture'], stage: 0.51 },
+    // ===== 行为事件 · 页面浏览 =====
+    { key: 'home',         name: '首页',                 cat: 'page',   kind: 'behavior', type: 'count', base: 214000, uv: 0.70, stage: 1,     color: '#2f6bff' },
+    { key: 'capture',      name: '拍摄页',               cat: 'page',   kind: 'behavior', type: 'count', base: 126000, uv: 0.69, stage: 0.58,  color: '#1a9fd4' },
+    { key: 'reporting',    name: '报告生成中',           cat: 'page',   kind: 'behavior', type: 'count', base: 67000,  uv: 0.72, stage: 0.31,  color: '#6b8afd' },
+    { key: 'agentPage',    name: '医生agent',            cat: 'page',   kind: 'behavior', type: 'count', base: 51000,  uv: 0.75, stage: 0.24,  color: '#4f7ff0' },
+    { key: 'qrPage',       name: '二维码加v页',          cat: 'page',   kind: 'behavior', type: 'count', base: 17600,  uv: 0.80, stage: 0.078, color: '#19b8a6' },
+    { key: 'historyPage',  name: '历史报告详情页',       cat: 'page',   kind: 'behavior', type: 'count', base: 45000,  uv: 0.77, stage: 0.12,  color: '#7c9cf5' },
+    // ===== 行为事件 · 元素曝光 =====
+    { key: 'allRecords',   name: '全部记录入口曝光',     cat: 'expose', kind: 'behavior', type: 'count', base: 95000,  uv: 0.73, stage: 0.62, color: '#f59e0b' },
+    { key: 'healthGoal',   name: '健康目标选择曝光',     cat: 'expose', kind: 'behavior', type: 'count', base: 139000, uv: 0.70, stage: 0.64, color: '#f97316' },
+    { key: 'reportCard',   name: '舌诊报告留资卡曝光',   cat: 'expose', kind: 'behavior', type: 'count', base: 23400,  uv: 0.86, stage: 0.08,  color: '#ec4899' },
+    { key: 'consultCard',  name: '问诊报告留资卡曝光',   cat: 'expose', kind: 'behavior', type: 'count', base: 14900,  uv: 0.87, stage: 0.055, color: '#f97316' },
+    { key: 'doctorBubble', name: '医生加v气泡曝光',      cat: 'expose', kind: 'behavior', type: 'count', base: 30500,  uv: 0.84, stage: 0.068, color: '#d946ef' },
+    { key: 'leadCard',     name: '留资卡曝光',           cat: 'expose', kind: 'behavior', type: 'count', base: 12400,  uv: 0.88, stage: 0.05,  color: '#f43f5e' },
+    // ===== 行为事件 · 元素点击 =====
+    { key: 'startDiag',    name: '开始舌诊点击',         cat: 'click',  kind: 'behavior', type: 'count', base: 119000, uv: 0.70, stage: 0.56, color: '#eab308' },
+    { key: 'clickShoot',   name: '点击拍摄',             cat: 'click',  kind: 'behavior', type: 'count', base: 106000, uv: 0.69, stage: 0.52, color: '#f59e0b' },
+    { key: 'albumUpload',  name: '相册上传点击',         cat: 'click',  kind: 'behavior', type: 'count', base: 41000,  uv: 0.71, stage: 0.20, color: '#f97316' },
+    { key: 'switchCam',    name: '切换摄像头点击',       cat: 'click',  kind: 'behavior', type: 'count', base: 23500,  uv: 0.72, stage: 0.11, color: '#eab308' },
+    { key: 'upload',       name: '舌象上传',             cat: 'click',  kind: 'behavior', type: 'count', base: 94000,  uv: 0.70, stage: 0.49, color: '#8b5cf6' },
+    { key: 'continueChat', name: '继续对话点击',         cat: 'click',  kind: 'behavior', type: 'count', base: 57000,  uv: 0.76, stage: 0.23, color: '#a855f7' },
+    // ===== 行为事件 · 计算转化 =====
+    { key: 'homeCaptureRate', name: '舌诊首页-拍摄转化率', cat: 'bconv', kind: 'calc', type: 'ratio', calc: ['capture', 'home'], stage: 0.58 },
+    { key: 'uploadRate',      name: '舌象上传率',          cat: 'bconv', kind: 'calc', type: 'ratio', calc: ['upload', 'capture'], stage: 0.49 },
+    { key: 'uploadLossRate',  name: '上传折损率',          cat: 'bconv', kind: 'calc', type: 'ratioInv', calc: ['upload', 'capture'], stage: 0.51 },
+    { key: 'agentEnterRate',  name: '报告页-医生agent进入率', cat: 'bconv', kind: 'calc', type: 'ratio', calc: ['agentPage', 'reporting'], stage: 0.24 },
+    { key: 'cardExposeRate',  name: '医生agent-留资卡曝光率', cat: 'bconv', kind: 'calc', type: 'ratio', calc: ['reportCard', 'agentPage'], stage: 0.08 },
     // ===== 结果事件 · 报告 =====
-    { key: 'reportPv',       name: '舌诊成功报告数（PV）', group: '结果事件 · 报告', kind: 'result', type: 'count', base: 26800, uv: 0.74, stage: 0.125, color: '#0e9f9a' },
-    { key: 'reportUv',       name: '舌诊成功报告数（UV）', group: '结果事件 · 报告', kind: 'result', type: 'count', base: 19800, uv: 1,    stage: 0.092, color: '#12b3ad' },
-    { key: 'consultSummary', name: '问诊小结数',           group: '结果事件 · 报告', kind: 'result', type: 'count', base: 9100,  uv: 0.94, stage: 0.043, color: '#0d9488' },
+    { key: 'reportPv',       name: '舌诊成功报告数（PV）', group: '报告', kind: 'result', type: 'count', base: 26800, uv: 0.74, stage: 0.125, color: '#0e9f9a' },
+    { key: 'reportUv',       name: '舌诊成功报告数（UV）', group: '报告', kind: 'result', type: 'count', base: 19800, uv: 1,    stage: 0.092, color: '#12b3ad' },
+    { key: 'consultSummary', name: '问诊小结数',           group: '报告', kind: 'result', type: 'count', base: 9100,  uv: 0.94, stage: 0.043, color: '#0d9488' },
     // ===== 结果事件 · 医生agent会话 =====
-    { key: 'agentSession',     name: '医生agent会话数（舌诊报告）', group: '结果事件 · 医生agent会话', kind: 'result', type: 'count', base: 17600, uv: 0.90, stage: 0.083, color: '#0e9f9a' },
-    { key: 'openSession',      name: '开口会话数',                  group: '结果事件 · 医生agent会话', kind: 'result', type: 'count', base: 11200, uv: 0.92, stage: 0.052, color: '#14b8a6' },
-    { key: 'openRate',         name: '会话开口率',                  group: '结果事件 · 医生agent会话', kind: 'calc', type: 'ratio', calc: ['openSession', 'agentSession'], stage: 0.62 },
-    { key: 'avgRounds',        name: '平均对话轮次',                group: '结果事件 · 医生agent会话', kind: 'result', type: 'avg', base: 4.8, stage: 0.083 },
-    { key: 'avgSummaryRounds', name: '平均出小结轮次',              group: '结果事件 · 医生agent会话', kind: 'result', type: 'avg', base: 6.3, stage: 0.05 },
+    { key: 'agentSession',     name: '医生agent会话数（舌诊报告）', group: '会话', kind: 'result', type: 'count', base: 17600, uv: 0.90, stage: 0.083, color: '#0e9f9a' },
+    { key: 'openSession',      name: '开口会话数',                  group: '会话', kind: 'result', type: 'count', base: 11200, uv: 0.92, stage: 0.052, color: '#14b8a6' },
+    { key: 'avgRounds',        name: '平均对话轮次',                group: '会话', kind: 'result', type: 'avg', base: 4.8, stage: 0.083 },
+    { key: 'avgSummaryRounds', name: '平均出小结轮次',              group: '会话', kind: 'result', type: 'avg', base: 6.3, stage: 0.05 },
     // ===== 结果事件 · 加粉 =====
-    { key: 'addFriend', name: '加粉数（报告转化）', group: '结果事件 · 加粉', kind: 'result', type: 'count', base: 7200, uv: 0.96, stage: 0.034, color: '#00a870' },
-    // ===== 计算值 · 结果转化 =====
-    { key: 'reportPerUser',     name: '人均舌诊报告数',          group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['reportPv', 'reportUv'], stage: 0.125 },
-    { key: 'reportSummaryRate', name: '舌诊报告-小结转化率',      group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['consultSummary', 'reportPv'], stage: 0.043 },
-    { key: 'summaryAddRate',    name: '问诊小结-加粉转化率',      group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'consultSummary'], stage: 0.034 },
-    { key: 'reportAddRate',     name: '舌诊报告-加粉转化率',      group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'reportPv'], stage: 0.034 },
-    { key: 'homeAddRate',       name: '首页PV-加粉转化率',        group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'home'], stage: 0.034 },
-    { key: 'captureAddRate',    name: '舌诊拍摄页PV-加粉转化率',  group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'capture'], stage: 0.034 }
+    { key: 'addFriend', name: '加粉数（报告转化）', group: '加粉', kind: 'result', type: 'count', base: 7200, uv: 0.96, stage: 0.034, color: '#00a870' },
+    // ===== 计算转化 =====
+    { key: 'openRate',          name: '会话开口率',                cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['openSession', 'agentSession'], stage: 0.62 },
+    { key: 'reportPerUser',     name: '人均舌诊报告数',            cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['reportPv', 'reportUv'], stage: 0.125 },
+    { key: 'reportSummaryRate', name: '舌诊报告-小结转化率',        cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['consultSummary', 'reportPv'], stage: 0.043 },
+    { key: 'summaryAddRate',    name: '问诊小结-加粉转化率',        cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['addFriend', 'consultSummary'], stage: 0.034 },
+    { key: 'reportAddRate',     name: '舌诊报告-加粉转化率',        cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['addFriend', 'reportPv'], stage: 0.034 },
+    { key: 'homeAddRate',       name: '首页PV-加粉转化率',          cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['addFriend', 'home'], stage: 0.034 },
+    { key: 'captureAddRate',    name: '舌诊拍摄页PV-加粉转化率',    cat: 'rconv', kind: 'calc', type: 'ratio', calc: ['addFriend', 'capture'], stage: 0.034 }
   ];
   const byKey = Object.fromEntries(CATALOG.map(e => [e.key, e]));
 
-  const BEHAVIOR_GROUPS = [
-    { name: '页面浏览', keys: ['home', 'capture', 'reporting', 'agentPage', 'qrPage', 'historyPage'] },
-    { name: '元素曝光和点击 · 首页', keys: ['allRecords', 'healthGoal', 'startDiag'] },
-    { name: '元素曝光和点击 · 拍摄页', keys: ['clickShoot', 'albumUpload', 'switchCam', 'upload'] },
-    { name: '元素曝光和点击 · 医生agent', keys: ['reportCard', 'consultCard', 'doctorBubble', 'continueChat'] },
-    { name: '元素曝光和点击 · 历史报告详情页', keys: ['leadCard'] },
-    { name: '计算值 · 行为转化', keys: ['homeCaptureRate', 'uploadRate', 'uploadLossRate'], tag: '计算值' }
+  const BEHAVIOR_CATS = [
+    { id: 'page',   name: '页面浏览', keys: ['home', 'capture', 'reporting', 'agentPage', 'qrPage', 'historyPage'] },
+    { id: 'expose', name: '元素曝光', keys: ['allRecords', 'healthGoal', 'reportCard', 'consultCard', 'doctorBubble', 'leadCard'] },
+    { id: 'click',  name: '元素点击', keys: ['startDiag', 'clickShoot', 'albumUpload', 'switchCam', 'upload', 'continueChat'] },
+    { id: 'bconv',  name: '计算转化', calc: true, keys: ['homeCaptureRate', 'uploadRate', 'uploadLossRate', 'agentEnterRate', 'cardExposeRate'] }
   ];
-  const RESULT_GROUPS = [
-    { name: '结果事件 · 报告', keys: ['reportPv', 'reportUv', 'consultSummary'] },
-    { name: '结果事件 · 医生agent会话', keys: ['agentSession', 'openSession', 'openRate', 'avgRounds', 'avgSummaryRounds'] },
-    { name: '结果事件 · 加粉', keys: ['addFriend'] },
-    { name: '计算值 · 结果转化', keys: ['reportPerUser', 'reportSummaryRate', 'summaryAddRate', 'reportAddRate', 'homeAddRate', 'captureAddRate'], tag: '计算值' }
+  const RESULT_CATS = [
+    { id: 'result', name: '结果事件', keys: ['reportPv', 'reportUv', 'consultSummary', 'agentSession', 'openSession', 'avgRounds', 'avgSummaryRounds', 'addFriend'] },
+    { id: 'rconv',  name: '计算转化', calc: true, keys: ['openRate', 'reportPerUser', 'reportSummaryRate', 'summaryAddRate', 'reportAddRate', 'homeAddRate', 'captureAddRate'] }
   ];
-  // 漏斗步骤池：前端埋点行为事件 + 后端业务结果事件（不含计算值 / 均值）
-  const FUNNEL_GROUPS = [
-    { name: '页面浏览', keys: ['home', 'capture', 'reporting', 'agentPage', 'qrPage', 'historyPage'] },
-    { name: '元素曝光和点击 · 首页', keys: ['allRecords', 'healthGoal', 'startDiag'] },
-    { name: '元素曝光和点击 · 拍摄页', keys: ['clickShoot', 'albumUpload', 'switchCam', 'upload'] },
-    { name: '元素曝光和点击 · 医生agent', keys: ['reportCard', 'consultCard', 'doctorBubble', 'continueChat'] },
-    { name: '元素曝光和点击 · 历史报告详情页', keys: ['leadCard'] },
-    { name: '结果事件 · 报告', keys: ['reportPv', 'reportUv', 'consultSummary'] },
-    { name: '结果事件 · 医生agent会话', keys: ['agentSession', 'openSession'] },
-    { name: '结果事件 · 加粉', keys: ['addFriend'] }
+  const FUNNEL_CATS = [
+    { id: 'page',   name: '页面浏览', keys: ['home', 'capture', 'reporting', 'agentPage', 'qrPage', 'historyPage'] },
+    { id: 'expose', name: '元素曝光', keys: ['allRecords', 'healthGoal', 'reportCard', 'consultCard', 'doctorBubble', 'leadCard'] },
+    { id: 'click',  name: '元素点击', keys: ['startDiag', 'clickShoot', 'albumUpload', 'switchCam', 'upload', 'continueChat'] },
+    { id: 'result', name: '结果事件', keys: ['reportPv', 'reportUv', 'consultSummary', 'agentSession', 'openSession', 'addFriend'] }
   ];
+  // 行为事件（次数型）有 PV / UV 两个口径；结果事件、均值、计算值只有一个值
+  function singleValue(ev) { return !(ev && ev.kind === 'behavior' && ev.type === 'count'); }
+  function normMetric(ev, m) { return singleValue(ev) ? '-' : (m === 'uv' ? 'uv' : 'pv'); }
 
-  /* ---------------- 默认配置 ---------------- */
-  const MAX_COLS = 10;
-  const MAX_STEPS = 10;
-  const DEFAULT_EVENT_COLS = [
+  /* ---------------- 配置模版 ---------------- */
+  const MAX_ITEMS = 10;
+
+  const DEFAULT_EVENT_ITEMS = [
     { key: 'home', metric: 'pv' },
     { key: 'capture', metric: 'pv' },
     { key: 'upload', metric: 'pv' },
@@ -1095,7 +1202,40 @@ window.TD = (function () {
     { key: 'consultCard', metric: 'pv' },
     { key: 'addFriend', metric: '-' }
   ];
-  const DEFAULT_STEPS = ['home', 'capture', 'agentSession', 'consultSummary', 'addFriend'];
+  const DEFAULT_FUNNEL_ITEMS = [
+    { key: 'home', metric: 'pv' },
+    { key: 'capture', metric: 'pv' },
+    { key: 'agentSession', metric: '-' },
+    { key: 'consultSummary', metric: '-' },
+    { key: 'addFriend', metric: '-' }
+  ];
+  const CORE_EVENT_ITEMS = [
+    { key: 'home', metric: 'pv' },
+    { key: 'home', metric: 'uv' },
+    { key: 'capture', metric: 'uv' },
+    { key: 'reportPv', metric: '-' },
+    { key: 'addFriend', metric: '-' },
+    { key: 'homeAddRate', metric: '-' }
+  ];
+  const LEAD_FUNNEL_ITEMS = [
+    { key: 'home', metric: 'pv' },
+    { key: 'agentPage', metric: 'pv' },
+    { key: 'reportCard', metric: 'pv' },
+    { key: 'consultCard', metric: '-' },
+    { key: 'leadCard', metric: '-' },
+    { key: 'addFriend', metric: '-' }
+  ];
+  const FALLBACK_EVENT_ITEMS = [
+    { key: 'home', metric: 'pv' },
+    { key: 'capture', metric: 'pv' },
+    { key: 'upload', metric: 'pv' },
+    { key: 'addFriend', metric: '-' }
+  ];
+  const FALLBACK_FUNNEL_ITEMS = [
+    { key: 'home', metric: 'pv' },
+    { key: 'capture', metric: 'pv' },
+    { key: 'addFriend', metric: '-' }
+  ];
 
   function makeStore(key, seedFn) {
     let mem = null;
@@ -1111,9 +1251,8 @@ window.TD = (function () {
     const all = () => read() || [];
     return {
       all,
-      list: product => all().filter(c => !product || c.product === product),
       get: id => all().find(c => c.id === id) || null,
-      newId: pfx => pfx + Math.random().toString(36).slice(2, 9),
+      write,
       save(cfg) {
         const list = all().slice();
         const i = list.findIndex(c => c.id === cfg.id);
@@ -1122,56 +1261,53 @@ window.TD = (function () {
         write(list);
         return cfg;
       },
+      update(fn) { const list = all().slice(); fn(list); write(list); },
       remove(id) { write(all().filter(c => c.id !== id)); },
-      setDefault(product, id) {
-        const list = all().slice();
-        list.forEach(c => { if (c.product === product) c.isDefault = (c.id === id); });
-        write(list);
-      },
       reset() { write(seedFn()); }
     };
   }
 
-  const evCfgStore = makeStore('td_events_cfg_v3', function () {
+  function seedTemplates() {
     const now = Date.now(), day = 86400000;
+    const copy = arr => arr.map(it => Object.assign({}, it));
     return [
-      { id: 'ev_zd_default', product: '舌诊', name: '默认指标配置', isDefault: true, owner: 'system',
-        cols: DEFAULT_EVENT_COLS.map(c => Object.assign({}, c)), created_at: now - 10 * day, updated_at: now - 1 * day },
-      { id: 'ev_zd_core', product: '舌诊', name: '核心转化监控', isDefault: false, owner: '陈晨',
-        cols: [{ key: 'home', metric: 'pv' }, { key: 'home', metric: 'uv' }, { key: 'capture', metric: 'uv' },
-               { key: 'reportPv', metric: '-' }, { key: 'addFriend', metric: '-' }, { key: 'homeAddRate', metric: '-' }],
-        created_at: now - 6 * day, updated_at: now - 2 * day },
-      { id: 'ev_kc_default', product: '快测', name: '默认指标配置', isDefault: true, owner: 'system',
-        cols: [{ key: 'home', metric: 'pv' }, { key: 'capture', metric: 'pv' }, { key: 'upload', metric: 'pv' }],
-        created_at: now - 10 * day, updated_at: now - 1 * day }
+      { id: 'tpl_zd_ev', kind: 'events', app: '舌诊', name: '舌诊默认指标模版', isDefault: true, owner: '系统',
+        items: copy(DEFAULT_EVENT_ITEMS), created_at: now - 30 * day, updated_at: now - 1 * day },
+      { id: 'tpl_zd_core', kind: 'events', app: '舌诊', name: '核心转化监控', owner: '陈晨',
+        items: copy(CORE_EVENT_ITEMS), created_at: now - 8 * day, updated_at: now - 2 * day },
+      { id: 'tpl_zd_fn', kind: 'funnel', app: '舌诊', name: '舌诊默认漏斗模版', isDefault: true, owner: '系统',
+        items: copy(DEFAULT_FUNNEL_ITEMS), created_at: now - 30 * day, updated_at: now - 1 * day },
+      { id: 'tpl_zd_lead', kind: 'funnel', app: '舌诊', name: '留资转化专项', owner: '陈晨',
+        items: copy(LEAD_FUNNEL_ITEMS), created_at: now - 8 * day, updated_at: now - 3 * day },
+      { id: 'tpl_fb_ev', kind: 'events', app: '*', name: '兜底指标模版', isFallback: true, owner: '系统',
+        items: copy(FALLBACK_EVENT_ITEMS), created_at: now - 60 * day, updated_at: now - 20 * day },
+      { id: 'tpl_fb_fn', kind: 'funnel', app: '*', name: '兜底漏斗模版', isFallback: true, owner: '系统',
+        items: copy(FALLBACK_FUNNEL_ITEMS), created_at: now - 60 * day, updated_at: now - 20 * day }
     ];
-  });
-
-  const fnCfgStore = makeStore('td_funnel_cfg_v3', function () {
-    const now = Date.now(), day = 86400000;
-    return [
-      { id: 'fn_default', product: '舌诊', name: '默认转化漏斗', isDefault: true, owner: 'system', metric: 'pv',
-        paths: { pv: DEFAULT_STEPS.slice(), uv: DEFAULT_STEPS.slice() },
-        created_at: now - 10 * day, updated_at: now - 1 * day },
-      { id: 'fn_lead', product: '舌诊', name: '留资转化专项', isDefault: false, owner: '陈晨', metric: 'pv',
-        paths: { pv: ['home', 'agentPage', 'reportCard', 'consultCard', 'leadCard', 'addFriend'],
-                 uv: ['home', 'agentPage', 'reportCard', 'consultCard', 'leadCard', 'addFriend'] },
-        created_at: now - 8 * day, updated_at: now - 3 * day },
-      { id: 'fn_kc', product: '快测', name: '默认转化漏斗', isDefault: true, owner: 'system', metric: 'pv',
-        paths: { pv: DEFAULT_STEPS.slice(), uv: DEFAULT_STEPS.slice() },
-        created_at: now - 10 * day, updated_at: now - 1 * day }
-    ];
-  });
-
-  function evCfgDefault(product) {
-    return evCfgStore.list(product).find(c => c.isDefault) || evCfgStore.list(product)[0] || null;
   }
-  function fnCfgDefault(product) {
-    return fnCfgStore.list(product).find(c => c.isDefault) || fnCfgStore.list(product)[0] || null;
+  const tplStore = makeStore('td_tpl_v1', seedTemplates);
+
+  function tplAll(kind) { return tplStore.all().filter(t => t.kind === kind); }
+  function tplOwn(kind, app) { return tplAll(kind).filter(t => t.app === app); }
+  function tplFallback(kind) { return tplAll(kind).find(t => t.isFallback) || null; }
+  function tplList(kind, app) { return tplAll(kind).filter(t => t.app === app || t.isFallback); }
+  function tplDefault(kind, app) { return tplOwn(kind, app).find(t => t.isDefault) || null; }
+  function tplEffective(kind, app) { return tplDefault(kind, app) || tplFallback(kind) || tplOwn(kind, app)[0] || null; }
+  function tplNewId(kind) { return (kind === 'funnel' ? 'tpl_fn_' : 'tpl_ev_') + Math.random().toString(36).slice(2, 8); }
+  function itemsOf(id) {
+    const t = tplStore.get(id);
+    return t ? t.items.map(it => Object.assign({}, it)) : [];
+  }
+  function setTplDefault(kind, app, id) {
+    tplStore.update(list => {
+      list.forEach(t => { if (t.kind === kind && t.app === app) t.isDefault = (t.id === id); });
+    });
   }
 
   /* ---------------- state ---------------- */
   const [defStart, defEnd] = defaultRange();
+  const initEvTpl = tplEffective('events', '舌诊');
+  const initFnTpl = tplEffective('funnel', '舌诊');
   const state = {
     tab: 'events',
     tick: 1,
@@ -1181,7 +1317,8 @@ window.TD = (function () {
       start: defStart, end: defEnd,
       product: '舌诊',
       channel: '', subchannel: '', version: '',
-      cfgId: 'ev_zd_default'
+      tplId: initEvTpl ? initEvTpl.id : '',
+      cols: initEvTpl ? initEvTpl.items.map(it => Object.assign({}, it)) : []
     },
     f: {
       start: defStart, end: defEnd,
@@ -1189,14 +1326,15 @@ window.TD = (function () {
       sceneType: 'none',
       channel: '', subchannel: '', version: '',
       channels: [], subchannels: [], versions: [],
-      cfgId: 'fn_default'
+      tplId: initFnTpl ? initFnTpl.id : '',
+      steps: initFnTpl ? initFnTpl.items.map(it => Object.assign({}, it)) : []
     },
     last: { events: null, funnel: null }
   };
 
   /* ---------------- 数据引擎 ---------------- */
   function dimensionFactor(dim) {
-    let f = 1;
+    let f = appFactor(dim.app || dim.product);
     if (dim.channel && CHANNELS[dim.channel]) {
       f *= CHANNELS[dim.channel].share;
       if (dim.subchannel) f *= (CHANNELS[dim.channel].subShare[dim.subchannel] || 1);
@@ -1209,22 +1347,23 @@ window.TD = (function () {
     const ev = byKey[key];
     if (!ev) return 0;
     metric = metric || 'pv';
+    const appKey = dim.app || dim.product || '';
 
     if (ev.type === 'ratio' || ev.type === 'ratioInv') {
       const a = eventValue(ev.calc[0], date, dim, 'pv', tick);
       const b = eventValue(ev.calc[1], date, dim, 'pv', tick);
       if (!b) return 0;
       const v = ev.type === 'ratioInv' ? 1 - a / b : a / b;
-      const r = rngOf(['calc', key, dateKey(date), tick || 1].join('|'));
+      const r = rngOf(['calc', key, appKey, dateKey(date), tick || 1].join('|'));
       return Math.max(0, v * (0.98 + r() * 0.04));
     }
     if (ev.type === 'avg') {
-      const r = rngOf(['avg', key, dateKey(date), dim.channel, dim.version, tick || 1].join('|'));
+      const r = rngOf(['avg', key, appKey, dateKey(date), dim.channel, dim.version, tick || 1].join('|'));
       return parseFloat((ev.base * (0.92 + r() * 0.16)).toFixed(1));
     }
 
     const dk = dateKey(date);
-    const r = rngOf([key, dk, dim.channel || '', dim.subchannel || '', dim.version || '', metric, tick || 1].join('|'));
+    const r = rngOf([key, appKey, dk, dim.channel || '', dim.subchannel || '', dim.version || '', metric, tick || 1].join('|'));
     const weekday = date.getDay();
     const weekend = (weekday === 0 || weekday === 6) ? 0.88 : 1;
     const wave = 1 + Math.sin((hashStr(dk) % 97) / 97 * Math.PI * 2 + hashStr(key) % 31) * 0.045;
@@ -1242,12 +1381,14 @@ window.TD = (function () {
     return clamp(rate, 0.02, 0.95);
   }
 
-  function funnelCountsForDate(date, dim, steps, metric, tick) {
-    const counts = [eventValue(steps[0], date, dim, metric, tick)];
+  function funnelCountsForDate(date, dim, items, tick) {
+    const first = items[0] || { key: 'home', metric: 'pv' };
+    const firstMetric = first.metric && first.metric !== '-' ? first.metric : 'pv';
+    const counts = [eventValue(first.key, date, dim, firstMetric, tick)];
     const conv = dim.channel && CHANNELS[dim.channel] ? CHANNELS[dim.channel].conv : 1;
-    for (let i = 1; i < steps.length; i++) {
-      const r = rngOf(['fr', steps[i - 1], steps[i], dateKey(date), dim.channel || '', dim.subchannel || '', dim.version || '', tick || 1].join('|'));
-      const rate = clamp(funnelRate(steps[i - 1], steps[i]) * conv * (0.97 + r() * 0.06), 0.015, 0.95);
+    for (let i = 1; i < items.length; i++) {
+      const r = rngOf(['fr', items[i - 1].key, items[i].key, dateKey(date), dim.channel || '', dim.subchannel || '', dim.version || '', tick || 1].join('|'));
+      const rate = clamp(funnelRate(items[i - 1].key, items[i].key) * conv * (0.97 + r() * 0.06), 0.015, 0.95);
       counts.push(Math.max(1, Math.round(counts[i - 1] * rate)));
     }
     return counts;
@@ -1257,22 +1398,25 @@ window.TD = (function () {
   function buildEvents(cfg, tick) {
     const dates = eachDay(cfg.start, cfg.end);
     const cols = cfg.cols || [];
+    const dim = { app: cfg.product, channel: cfg.channel, subchannel: cfg.subchannel, version: cfg.version };
     const asc = dates.map(d => ({
       date: d,
-      vals: cols.map(c => eventValue(c.key, d, cfg, c.metric, tick))
+      vals: cols.map(c => eventValue(c.key, d, dim, c.metric, tick))
     }));
     return { dates, rows: asc.slice().reverse(), cols, cfg };
   }
 
   function buildFunnel(cfg, tick) {
     const dates = eachDay(cfg.start, cfg.end);
-    const steps = cfg.steps;
-    const metric = cfg.metric || 'pv';
+    const items = (cfg.steps || []).map(s => (typeof s === 'string' ? { key: s, metric: 'pv' } : { key: s.key, metric: s.metric || 'pv' }));
+    const steps = items.map(s => s.key);
+    const metrics = items.map(s => s.metric);
     const sceneType = cfg.sceneType || 'none';
+    const base = { app: cfg.product };
 
     function dateCounts(dim, date) {
       const subs = (dim.subs && dim.subs.length) ? dim.subs : [''];
-      const parts = subs.map(sub => funnelCountsForDate(date, { channel: dim.channel, subchannel: sub, version: dim.version }, steps, metric, tick));
+      const parts = subs.map(sub => funnelCountsForDate(date, Object.assign({}, base, dim, { subchannel: sub }), items, tick));
       return parts[0].map((_, i) => parts.reduce((s, a) => s + a[i], 0));
     }
     function aggregate(dim) {
@@ -1288,7 +1432,6 @@ window.TD = (function () {
 
     let groups = [];
     if (sceneType === 'channel') {
-      // 分渠道：按「渠道 / 子渠道」逐一展开，每个子渠道一个漏斗 + 一行明细
       groups = [];
       (cfg.channels || []).forEach(ch => {
         subsOf(ch).forEach(sub => {
@@ -1334,7 +1477,7 @@ window.TD = (function () {
     const rates = totals.slice(1).map((v, i) => (totals[i] ? v / totals[i] : 0));
     const overall = totals[0] ? totals[totals.length - 1] / totals[0] : 0;
 
-    return { dates, steps, metric, sceneType, groups, rows, totals, rates, overall, axisLabel, cfg };
+    return { dates, steps, items, metrics, sceneType, groups, rows, totals, rates, overall, axisLabel, cfg };
   }
 
   /* ---------------- 文案 ---------------- */
@@ -1342,8 +1485,7 @@ window.TD = (function () {
     return `${dateKey(cfg.start)} ~ ${dateKey(cfg.end)}`;
   }
   function dimensionLabel(cfg) {
-    const productName = cfg.product === '快测' ? '快测类应用' : '舌诊类应用';
-    const parts = [productName, rangeLabel(cfg)];
+    const parts = [cfg.product || '全部应用', rangeLabel(cfg)];
     if (cfg.channels && cfg.channels.length) {
       parts.push(cfg.channels.length > 2 ? `渠道 ${cfg.channels.length} 个` : cfg.channels.join('、'));
     } else {
@@ -1363,24 +1505,40 @@ window.TD = (function () {
   function colMetricTag(col) {
     const ev = byKey[col.key];
     if (ev && ev.kind === 'calc') return '计算值';
+    if (ev && ev.kind === 'result') return '业务';
     if (col.metric === 'uv') return 'UV';
-    if (col.metric === 'pv') return 'PV';
-    return '业务';
+    return 'PV';
   }
   function colLabel(col) {
     const ev = byKey[col.key];
     return ev ? ev.name : col.key;
   }
+  function describeMetrics(items) {
+    const set = new Set((items || []).map(it => {
+      const ev = byKey[it.key];
+      return singleValue(ev) ? 'value' : (it.metric === 'uv' ? 'UV' : 'PV');
+    }));
+    if (set.size === 1 && set.has('value')) return '业务值';
+    const arr = [];
+    if (set.has('PV')) arr.push('PV');
+    if (set.has('UV')) arr.push('UV');
+    if (set.has('value')) arr.push('业务值');
+    return arr.join(' + ');
+  }
+  function fmtDateShort(ts) {
+    const d = new Date(ts || Date.now());
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  }
 
   return {
     $, $$, WEEK, pad, startOfDay, addDays, dateKey, parseKey, fmtInt, fmtShort, fmtRate, clamp,
     hashStr, rngOf, eachDay, TODAY, defaultRange,
-    CATALOG, byKey, BEHAVIOR_GROUPS, RESULT_GROUPS, FUNNEL_GROUPS,
-    PRODUCTS, VERSIONS, VERSION_SHARE, CHANNELS, CHANNEL_NAMES,
-    MAX_COLS, MAX_STEPS, DEFAULT_STEPS,
-    evCfgStore, fnCfgStore, evCfgDefault, fnCfgDefault,
+    CATALOG, byKey, BEHAVIOR_CATS, RESULT_CATS, FUNNEL_CATS, singleValue, normMetric,
+    APP_LIST, APP_NAMES, appFactor, VERSIONS, VERSION_SHARE, CHANNELS, CHANNEL_NAMES,
+    MAX_ITEMS,
+    tplStore, tplAll, tplOwn, tplList, tplDefault, tplFallback, tplEffective, tplNewId, itemsOf, setTplDefault,
     state, eventValue, funnelRate, funnelCountsForDate, buildEvents, buildFunnel,
-    rangeLabel, dimensionLabel, fmtByType, colMetricTag, colLabel
+    rangeLabel, dimensionLabel, fmtByType, colMetricTag, colLabel, describeMetrics, fmtDateShort
   };
 })();
 
@@ -1389,10 +1547,10 @@ window.TD = (function () {
 (function () {
   'use strict';
   const {
-    $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtRate, clamp,
-    BEHAVIOR_GROUPS, RESULT_GROUPS, FUNNEL_GROUPS,
-    MAX_COLS, MAX_STEPS, DEFAULT_STEPS,
-    evCfgStore, fnCfgStore, evCfgDefault, fnCfgDefault
+    $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtRate, clamp, fmtDateShort,
+    BEHAVIOR_CATS, RESULT_CATS, FUNNEL_CATS, singleValue,
+    MAX_ITEMS, APP_NAMES,
+    tplStore, tplOwn, tplList, tplFallback, tplEffective, tplNewId, itemsOf, setTplDefault
   } = window.TD;
 
   /* ---------------- toast ---------------- */
@@ -1460,377 +1618,372 @@ window.TD = (function () {
 
   const CHECK_SVG = '<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m3 8.4 3.1 3.1L13 4.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  /* ---------------- 配置 · 应用事件统计 ---------------- */
-  function openEventsConfig() {
-    const product = state.e.product;
-    const productLabel = product === '快测' ? '快测类应用' : '舌诊类应用';
-    let cfg = evCfgStore.get(state.e.cfgId) || evCfgDefault(product);
-    let draft = { id: cfg.id, product, name: cfg.name, cols: cfg.cols.map(c => Object.assign({}, c)) };
-    let tab = 'pv';
-    let isNew = false;
+  /* ---------------- 配置模版：事件 / 漏斗 通用 ---------------- */
+  const FOLD_LIMIT = 4;
+
+  function tplKindMeta(kind) {
+    return kind === 'funnel'
+      ? { label: '漏斗模版', cats: FUNNEL_CATS, unit: '步骤', max: MAX_ITEMS, min: 2 }
+      : { label: '指标模版', cats: BEHAVIOR_CATS.concat(RESULT_CATS), unit: '指标', max: MAX_ITEMS, min: 1 };
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+  function tplOptionsHTML(kind, app, selectedId) {
+    const list = tplList(kind, app).filter(t => !t.isFallback);
+    const fb = tplFallback(kind);
+    let html = list.map(t =>
+      `<option value="${t.id}"${t.id === selectedId ? ' selected' : ''}>${esc(t.name)}${t.isDefault ? '（默认）' : ''}</option>`).join('');
+    if (fb) html += `<option value="${fb.id}"${fb.id === selectedId ? ' selected' : ''}>${esc(fb.name)}（兜底）</option>`;
+    return html;
+  }
+  function refreshTplSelect(sel, kind, app, id) {
+    if (!sel) return;
+    sel.innerHTML = tplOptionsHTML(kind, app, id);
+  }
+  window.TD.tplOptionsHTML = tplOptionsHTML;
+  window.TD.refreshTplSelect = refreshTplSelect;
+
+  function openConfig(kind) {
+    const meta = tplKindMeta(kind);
+    const st = kind === 'funnel' ? state.f : state.e;
+    const app = st.product;
+    const base = tplStore.get(st.tplId) || tplEffective(kind, app);
+    let fromFallback = !!(base && base.isFallback);
+    let draft = fromFallback
+      ? { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(base.id) }
+      : { id: base.id, kind, app, name: base.name, items: itemsOf(base.id) };
 
     const modal = openModal({
-      title: '配置统计指标',
-      subtitle: `按应用维护默认配置与自定义配置；行为事件分 PV / UV 两类，用两个 tab 切换选择，结果事件与计算值在下方直接勾选。最多 ${MAX_COLS} 项。`,
-      width: 900
+      title: `配置${meta.label}`,
+      subtitle: `模版与「${app}」关联并保存在当前账号下；每个应用一个默认模版，未设置时使用兜底模版。行为事件分「页面浏览 / 元素曝光 / 元素点击 / 计算转化」，每个分类最多展示 4 行，可展开更多。勾选先后顺序决定${kind === 'funnel' ? '漏斗步骤' : '表格横坐标'}顺序。最多 ${meta.max} ${meta.unit}。`,
+      width: 880
     });
+    const body = modal.body, foot = modal.foot;
 
-    function cfgOptions() {
-      return evCfgStore.list(product).map(c =>
-        `<option value="${c.id}"${c.id === draft.id ? ' selected' : ''}>${c.name}${c.isDefault ? '（默认）' : ''}</option>`).join('');
+    function idxOf(key, metric) {
+      return draft.items.findIndex(it => it.key === key && it.metric === metric);
     }
-
-    function effMetric(key, t) {
-      return byKey[key].kind === 'calc' ? '-' : (t || '-');
-    }
-    function isChecked(key, t) {
-      const m = effMetric(key, t);
-      return draft.cols.some(c => c.key === key && c.metric === m);
-    }
-    function tabCount(t) {
-      return draft.cols.filter(c => c.metric === t).length;
-    }
-
-    function groupHTML(g, t) {
-      let html = `<div class="opt-group"><h4>${g.name}<span class="count">${g.keys.length} 项</span>${g.tag ? `<span class="soon">${g.tag}</span>` : ''}</h4><div class="opt-grid">`;
-      g.keys.forEach(k => {
+    function catHTML(cat) {
+      const rows = cat.keys.map(k => {
         const ev = byKey[k];
-        const on = isChecked(k, t);
-        const tag = ev.kind === 'calc' ? '计算' : ev.kind === 'result' ? '业务' : (ev.group === '页面浏览' ? '页面' : '元素');
-        html += `<button type="button" class="opt${on ? ' checked' : ''}" data-key="${k}" data-metric="${effMetric(k, t)}">
-          <span class="box">${CHECK_SVG}</span>
-          <span class="o-name">${ev.name}</span><span class="o-tag">${tag}</span>
-        </button>`;
+        const single = singleValue(ev);
+        const cell = m => {
+          if (single && m === 'uv') return `<div class="mc"><span class="cb-na">—</span></div>`;
+          const metric = single ? '-' : m;
+          const on = idxOf(k, metric) >= 0;
+          return `<div class="mc"><button type="button" class="cb${on ? ' on' : ''}" data-key="${k}" data-metric="${metric}" title="${esc(ev.name)}">${CHECK_SVG}</button></div>`;
+        };
+        return `<div class="ev-row"><div class="nm"><span>${ev.name}</span>${single ? `<em>${ev.kind === 'calc' ? '计算值' : '单值'}</em>` : ''}</div>${cell('pv')}${cell('uv')}</div>`;
       });
-      html += '</div></div>';
+      const more = rows.length - FOLD_LIMIT;
+      const inner = rows.map((r, i) => (i >= FOLD_LIMIT ? r.replace('class="ev-row"', 'class="ev-row hide"') : r)).join('');
+      return `<div class="ev-cat" data-cat="${cat.id}">
+        <h4>${cat.name}<span class="count">${cat.keys.length} 项</span>${cat.calc ? '<span class="tag">计算值</span>' : ''}</h4>
+        <div class="ev-list">
+          <div class="ev-head"><span>事件</span><span>${cat.calc ? '选择' : 'PV'}</span><span>${cat.calc ? '—' : 'UV'}</span></div>
+          ${inner}
+          ${more > 0 ? `<div class="fold-bar"><button type="button" data-fold="${cat.id}">展开更多（${more}）</button></div>` : ''}
+        </div>
+      </div>`;
+    }
+    function orderStrip() {
+      if (!draft.items.length) return `<span class="o-empty">尚未选择，按下方勾选先后顺序生效</span>`;
+      return draft.items.map((it, i) => {
+        const ev = byKey[it.key] || { name: it.key };
+        return `<span class="o-chip"><b>${i + 1}</b>${ev.name}${it.metric === '-' ? '' : `<em>${it.metric.toUpperCase()}</em>`}<button type="button" class="x" data-rm="${i}" title="移除">×</button></span>`;
+      }).join('');
+    }
+    function selectOptions() {
+      const list = tplList(kind, app).filter(t => !t.isFallback);
+      let html = list.map(t =>
+        `<option value="${t.id}"${t.id === draft.id ? ' selected' : ''}>${esc(t.name)}${t.isDefault ? '（默认）' : ''}</option>`).join('');
+      if (!list.some(t => t.id === draft.id)) html = `<option value="${draft.id}" selected>${esc(draft.name)}（未保存）</option>` + html;
+      const fb = tplFallback(kind);
+      if (fb) html += `<option value="${fb.id}"${fb.id === draft.id ? ' selected' : ''}>${esc(fb.name)}（兜底）</option>`;
       return html;
     }
-
     function renderBody() {
-      const cur = evCfgStore.get(draft.id) || cfg;
+      const cur = tplStore.get(draft.id);
       let html = `<div class="cfg-bar">
-        <span class="lbl">应用</span><span class="badge-product">${productLabel}</span>
-        <span class="lbl" style="margin-left:10px">当前配置</span>
-        <select id="cfg-sel">${cfgOptions()}</select>
-        <span class="badge-default" data-def-badge ${cur.isDefault ? '' : 'hidden'}>默认配置</span>
+        <span class="lbl">应用</span><span class="badge-product">${app}</span>
+        <span class="lbl" style="margin-left:10px">配置模版</span>
+        <select id="cfg-sel">${selectOptions()}</select>
+        <span class="badge-default" ${cur && cur.isDefault ? '' : 'hidden'}>默认模版</span>
         <span class="spacer"></span>
-        <button class="btn" data-act="new">新建配置</button>
+        <button class="btn" data-act="new">新建模版</button>
+        <button class="btn" data-act="copy">复制</button>
         <button class="btn" data-act="setdefault">设为默认</button>
         <button class="btn" data-act="del">删除</button>
       </div>
-      <div class="cfg-name-row"><label>配置名称</label>
-        <input id="cfg-name" maxlength="20" value="${draft.name.replace(/"/g, '&quot;')}" placeholder="如：默认指标配置"></div>
-      <div class="fm-tabs">
-        <button type="button" data-tab="pv" class="${tab === 'pv' ? 'active' : ''}">行为事件 · PV<span class="cnt">${tabCount('pv')}</span></button>
-        <button type="button" data-tab="uv" class="${tab === 'uv' ? 'active' : ''}">行为事件 · UV<span class="cnt">${tabCount('uv')}</span></button>
-      </div>
-      <div id="tab-area">${BEHAVIOR_GROUPS.map(g => groupHTML(g, tab)).join('')}</div>
-      <div class="cfg-sec-title">结果事件 / 计算值 <span class="hint">后端业务库口径，无需区分 PV / UV</span></div>
-      <div id="res-area">${RESULT_GROUPS.map(g => groupHTML(g, null)).join('')}</div>`;
-      modal.body.innerHTML = html;
+      <div class="cfg-name-row"><label>模版名称</label>
+        <input id="cfg-name" maxlength="20" value="${esc(draft.name)}" placeholder="如：${app}默认${meta.label}"></div>
+      <div class="cfg-sec-title">已选 <b>${draft.items.length}</b> / ${meta.max} ${meta.unit}
+        <span class="hint">按勾选先后顺序生效，点序号可移除</span></div>
+      <div class="order-strip" id="order-strip">${orderStrip()}</div>
+      ${fromFallback ? `<p class="tpl-note">当前为系统兜底模版，修改后保存为「${app}」的自定义模版。</p>` : ''}
+      ${meta.cats.map(catHTML).join('')}`;
+      body.innerHTML = html;
       updateFoot();
     }
-
     function updateFoot() {
-      const n = draft.cols.length;
-      modal.foot.innerHTML = `<span class="counter${n >= MAX_COLS ? ' max' : ''}">已选 <b>${n}</b> / ${MAX_COLS} 项</span>
+      const n = draft.items.length;
+      const ok = n >= meta.min;
+      foot.innerHTML = `<span class="counter${n >= meta.max ? ' max' : ''}">已选 <b>${n}</b> / ${meta.max} ${meta.unit}${meta.min > 1 ? ` · 至少 ${meta.min} ${meta.unit}` : ''}</span>
         <span class="spacer"></span>
         <button class="btn" data-act="cancel">取消</button>
-        <button class="btn primary" data-act="apply">保存并应用</button>`;
+        <button class="btn primary" data-act="apply"${ok ? '' : ' disabled'}>保存并应用</button>`;
     }
-
-    function refreshChecks() {
-      modal.body.querySelectorAll('.opt').forEach(btn => {
-        const key = btn.dataset.key;
-        const m = btn.dataset.metric;
-        const on = draft.cols.some(c => c.key === key && c.metric === m);
-        btn.classList.toggle('checked', on);
-        btn.classList.toggle('locked', !on && draft.cols.length >= MAX_COLS);
+    function refresh() {
+      body.querySelectorAll('.cb').forEach(b => {
+        const on = idxOf(b.dataset.key, b.dataset.metric) >= 0;
+        b.classList.toggle('on', on);
       });
-      modal.body.querySelectorAll('.fm-tabs .cnt').forEach((el, i) => {
-        el.textContent = tabCount(i === 0 ? 'pv' : 'uv');
-      });
+      const strip = body.querySelector('#order-strip');
+      if (strip) strip.innerHTML = orderStrip();
       updateFoot();
     }
+    function saveDraft() {
+      draft.name = (draft.name || '').trim() || (app + meta.label);
+      draft.items = draft.items.map(it => Object.assign({}, it));
+      const saved = tplStore.save(draft);
+      fromFallback = false;
+      return saved;
+    }
+    function applyState(id) {
+      if (kind === 'funnel') {
+        state.f.tplId = id;
+        state.f.steps = itemsOf(id);
+        window.TD.renderFunnel();
+      } else {
+        state.e.tplId = id;
+        state.e.cols = itemsOf(id);
+        window.TD.renderEvents();
+      }
+    }
 
-    modal.body.addEventListener('click', e => {
-      const tabBtn = e.target.closest('[data-tab]');
-      if (tabBtn) {
-        tab = tabBtn.dataset.tab;
-        renderBody();
+    body.addEventListener('click', e => {
+      const fold = e.target.closest('[data-fold]');
+      if (fold) {
+        const cat = fold.closest('.ev-cat');
+        const open = cat.classList.toggle('open');
+        cat.querySelectorAll('.ev-row').forEach((r, i) => r.classList.toggle('hide', !open && i >= FOLD_LIMIT));
+        fold.textContent = open ? '收起' : `展开更多（${cat.querySelectorAll('.ev-row').length - FOLD_LIMIT}）`;
         return;
       }
+      const rm = e.target.closest('[data-rm]');
+      if (rm) { draft.items.splice(Number(rm.dataset.rm), 1); refresh(); return; }
+
       const act = e.target.closest('[data-act]');
-      if (act && modal.body.contains(act)) {
+      if (act && body.contains(act)) {
         const a = act.dataset.act;
         if (a === 'new') {
-          draft = { id: evCfgStore.newId('ev_'), product, name: '新建配置', cols: [] };
-          isNew = true;
+          draft = { id: tplNewId(kind), kind, app, name: app + meta.label, items: [] };
+          fromFallback = false;
           renderBody();
-          const input = modal.body.querySelector('#cfg-name');
-          if (input) { input.focus(); input.select(); }
+          const inp = body.querySelector('#cfg-name');
+          if (inp) { inp.focus(); inp.select(); }
+          return;
+        }
+        if (a === 'copy') {
+          draft = { id: tplNewId(kind), kind, app, name: draft.name + ' 副本', items: draft.items.map(it => Object.assign({}, it)) };
+          fromFallback = false;
+          renderBody();
           return;
         }
         if (a === 'setdefault') {
-          if (!draft.cols.length) { toast('请先选择指标'); return; }
-          evCfgStore.save(draft);
-          evCfgStore.setDefault(product, draft.id);
-          isNew = false;
-          toast(`已将「${draft.name}」设为${productLabel}的默认配置`);
+          if (draft.items.length < meta.min) { toast(`请至少选择 ${meta.min} ${meta.unit}`); return; }
+          const saved = saveDraft();
+          setTplDefault(kind, app, saved.id);
+          toast(`已将「${saved.name}」设为${app}的默认${meta.label}`);
           renderBody();
-          applyToState();
+          applyState(saved.id);
           return;
         }
         if (a === 'del') {
-          const list = evCfgStore.list(product);
-          if (list.length <= 1) { toast('每个应用至少保留一个配置'); return; }
+          if (tplOwn(kind, app).length <= 1) { toast('每个应用至少保留一个模版'); return; }
           if (act.dataset.confirm !== '1') { act.dataset.confirm = '1'; act.textContent = '确认删除'; return; }
-          evCfgStore.remove(draft.id);
-          const next = evCfgDefault(product) || evCfgStore.list(product)[0];
-          draft = { id: next.id, product, name: next.name, cols: next.cols.map(c => Object.assign({}, c)) };
-          state.e.cfgId = next.id;
+          tplStore.remove(draft.id);
+          const next = tplEffective(kind, app);
+          draft = next.isFallback
+            ? { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(next.id) }
+            : { id: next.id, kind, app, name: next.name, items: itemsOf(next.id) };
+          fromFallback = !!next.isFallback;
           toast(`已删除，当前切换为「${next.name}」`);
           renderBody();
-          applyToState();
+          applyState(next.id);
           return;
         }
         return;
       }
-      const opt = e.target.closest('.opt');
-      if (!opt) return;
-      const key = opt.dataset.key;
-      const m = opt.dataset.metric;
-      const idx = draft.cols.findIndex(c => c.key === key && c.metric === m);
-      if (idx >= 0) draft.cols.splice(idx, 1);
+      const cb = e.target.closest('.cb');
+      if (!cb) return;
+      const key = cb.dataset.key, metric = cb.dataset.metric;
+      const idx = idxOf(key, metric);
+      if (idx >= 0) draft.items.splice(idx, 1);
       else {
-        if (draft.cols.length >= MAX_COLS) { toast(`最多选择 ${MAX_COLS} 项指标`); return; }
-        draft.cols.push({ key, metric: m });
+        if (draft.items.length >= meta.max) { toast(`最多选择 ${meta.max} ${meta.unit}`); return; }
+        draft.items.push({ key, metric });
       }
-      refreshChecks();
+      refresh();
     });
 
-    modal.body.addEventListener('change', e => {
-      if (e.target.id === 'cfg-sel') {
-        const c = evCfgStore.get(e.target.value);
-        if (!c) return;
-        draft = { id: c.id, product, name: c.name, cols: c.cols.map(x => Object.assign({}, x)) };
-        isNew = false;
-        renderBody();
+    body.addEventListener('change', e => {
+      if (e.target.id !== 'cfg-sel') return;
+      const t = tplStore.get(e.target.value);
+      if (!t) return;
+      if (t.isFallback) {
+        draft = { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(t.id) };
+        fromFallback = true;
+      } else {
+        draft = { id: t.id, kind, app, name: t.name, items: itemsOf(t.id) };
+        fromFallback = false;
       }
+      renderBody();
     });
-    modal.body.addEventListener('input', e => {
+    body.addEventListener('input', e => {
       if (e.target.id === 'cfg-name') draft.name = e.target.value;
     });
-
-    function applyToState() {
-      state.e.cfgId = draft.id;
-      state.e.cols = draft.cols.map(c => Object.assign({}, c));
-      window.TD.renderEvents();
-    }
-
-    modal.foot.addEventListener('click', e => {
+    foot.addEventListener('click', e => {
       const act = e.target.closest('[data-act]');
       if (!act) return;
       if (act.dataset.act === 'cancel') { modal.close(); return; }
       if (act.dataset.act === 'apply') {
-        if (!draft.cols.length) { toast('请至少选择 1 个指标'); return; }
-        draft.name = (draft.name || '').trim() || '未命名配置';
-        const saved = evCfgStore.save(draft);
-        if (isNew) evCfgStore.setDefault(product, saved.id);
-        state.e.cfgId = saved.id;
-        state.e.cols = saved.cols.map(c => Object.assign({}, c));
+        if (draft.items.length < meta.min) { toast(`请至少选择 ${meta.min} ${meta.unit}`); return; }
+        const saved = saveDraft();
         modal.close();
-        window.TD.renderEvents();
-        toast(`配置「${saved.name}」已保存并应用`);
+        applyState(saved.id);
+        toast(`模版「${saved.name}」已保存并应用`);
       }
     });
 
     renderBody();
   }
+  window.TD.openConfig = openConfig;
 
-  /* ---------------- 配置 · 漏斗步骤 ---------------- */
-  function currentFunnelConf() {
-    const c = fnCfgStore.get(state.f.cfgId) || fnCfgDefault(state.f.product);
-    const metric = c.metric || 'pv';
-    return { cfg: c, steps: (c.paths[metric] || []).slice(), metric };
-  }
-  window.TD.currentFunnelConf = currentFunnelConf;
-
-  function openFunnelConfig() {
-    const product = state.f.product;
-    const productLabel = product === '快测' ? '快测类应用' : '舌诊类应用';
-    let cfg = fnCfgStore.get(state.f.cfgId) || fnCfgDefault(product);
-    let draft = {
-      id: cfg.id, product, name: cfg.name, metric: cfg.metric || 'pv',
-      paths: { pv: (cfg.paths.pv || []).slice(), uv: (cfg.paths.uv || []).slice() }
-    };
-    let isNew = false;
+  /* ---------------- 配置模版管理（增删改查） ---------------- */
+  function openTplManager(kind) {
+    const meta = tplKindMeta(kind);
+    const st = kind === 'funnel' ? state.f : state.e;
+    const app = st.product;
+    let renaming = null;
+    let renameVal = '';
 
     const modal = openModal({
-      title: '配置漏斗步骤',
-      subtitle: `行为事件分 PV / UV 两个口径，用两个 tab 切换配置；最少 2 步、最多 ${MAX_STEPS} 步，向下转化率与整体转化率自动计算。`,
-      width: 820
+      title: `${meta.label}管理`,
+      subtitle: `模版与「${app}」关联，保存在当前账号（${state.user}）下；每个应用可设置一个默认模版，未设置的应用自动使用兜底模版。`,
+      width: 780
     });
+    const body = modal.body, foot = modal.foot;
 
-    const steps = () => draft.paths[draft.metric];
-
-    function cfgOptions() {
-      return fnCfgStore.list(product).map(c =>
-        `<option value="${c.id}"${c.id === draft.id ? ' selected' : ''}>${c.name}${c.isDefault ? '（默认）' : ''}</option>`).join('');
+    function rowHTML(t, isFb) {
+      const nameCell = renaming === t.id
+        ? `<div class="tpl-name"><input id="tpl-rename" maxlength="20" value="${esc(t.name)}"><button class="btn" data-act="rename-ok" data-id="${t.id}" style="height:24px;padding:0 8px">保存</button></div>`
+        : `<div class="tpl-name"><span>${esc(t.name)}</span>${t.isDefault ? '<span class="tpl-badge">默认</span>' : ''}${isFb ? '<span class="tpl-badge gray">兜底</span>' : ''}<span class="tpl-badge gray">${t.items.length} ${meta.unit}</span></div>`;
+      const acts = isFb
+        ? `<button data-act="use" data-id="${t.id}">使用</button>`
+        : `<button data-act="use" data-id="${t.id}">使用</button>
+           <button data-act="rename" data-id="${t.id}">重命名</button>
+           ${t.isDefault ? '' : `<button data-act="default" data-id="${t.id}">设为默认</button>`}
+           <button data-act="del" data-id="${t.id}" class="danger">删除</button>`;
+      return `<div class="tpl-row">
+        ${nameCell}
+        <span class="tpl-meta">${isFb ? '全部应用' : esc(t.app)}</span>
+        <span class="tpl-meta">${esc(t.owner || '—')} · ${fmtDateShort(t.updated_at)}</span>
+        <span class="acts">${acts}</span>
+      </div>`;
+    }
+    function render() {
+      const own = tplOwn(kind, app);
+      const fb = tplFallback(kind);
+      let html = `<div class="tpl-table">
+        <div class="tpl-row head"><span>模版名称</span><span>关联应用</span><span>更新</span><span style="text-align:right">操作</span></div>`;
+      own.forEach(t => { html += rowHTML(t, false); });
+      if (fb) html += rowHTML(fb, true);
+      html += '</div>';
+      if (!own.length) html += `<p class="tpl-note">「${app}」暂无自定义模版，当前使用兜底模版。</p>`;
+      body.innerHTML = html;
+      foot.innerHTML = `<span class="counter">共 <b>${own.length}</b> 个自定义模版 · 1 个兜底模版</span>
+        <span class="spacer"></span>
+        <button class="btn" data-act="close">关闭</button>
+        <button class="btn primary" data-act="new">新建模版</button>`;
     }
 
-    function renderBody() {
-      const cur = fnCfgStore.get(draft.id) || cfg;
-      const list = steps();
-      let html = `<div class="cfg-bar">
-        <span class="lbl">应用</span><span class="badge-product">${productLabel}</span>
-        <span class="lbl" style="margin-left:10px">当前配置</span>
-        <select id="fn-cfg-sel">${cfgOptions()}</select>
-        <span class="badge-default" ${cur.isDefault ? '' : 'hidden'}>默认配置</span>
-        <span class="spacer"></span>
-        <button class="btn" data-act="new">新建配置</button>
-        <button class="btn" data-act="setdefault">设为默认</button>
-        <button class="btn" data-act="del">删除</button>
-      </div>
-      <div class="cfg-name-row"><label>配置名称</label>
-        <input id="fn-cfg-name" maxlength="20" value="${draft.name.replace(/"/g, '&quot;')}" placeholder="如：默认转化漏斗"></div>
-      <div class="fm-tabs">
-        <button type="button" data-tab="pv" class="${draft.metric === 'pv' ? 'active' : ''}">PV 口径<span class="cnt">${draft.paths.pv.length}</span></button>
-        <button type="button" data-tab="uv" class="${draft.metric === 'uv' ? 'active' : ''}">UV 口径<span class="cnt">${draft.paths.uv.length}</span></button>
-      </div>
-      <h4 style="font-size:12px;color:var(--ink-3);margin:14px 0 0;font-weight:500">已选步骤
-        <span style="color:var(--ink-4);font-weight:400">（${list.length} / ${MAX_STEPS}）</span></h4>
-      <div class="order-list">`;
-      list.forEach((k, i) => {
-        html += `<div class="order-item">
-          <span class="oi-idx">${i + 1}</span>
-          <span>${byKey[k] ? byKey[k].name : k}</span>
-          <span class="oi-move">
-            <button class="oi-btn" data-act="up" data-i="${i}" ${i === 0 ? 'disabled' : ''} title="上移">
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m4 10 4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="oi-btn" data-act="down" data-i="${i}" ${i === list.length - 1 ? 'disabled' : ''} title="下移">
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m4 6 4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="oi-btn" data-act="remove" data-i="${i}" ${list.length <= 2 ? 'disabled' : ''} title="移除">
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m4 4 8 8M12 4l-8 8" stroke-linecap="round"/></svg>
-            </button>
-          </span>
-        </div>`;
-      });
-      html += `</div><h4 style="font-size:12px;color:var(--ink-3);margin:18px 0 0;font-weight:500">添加步骤
-        <span style="color:var(--ink-4);font-weight:400">（点击添加到漏斗末尾）</span></h4>`;
-      FUNNEL_GROUPS.forEach(g => {
-        html += `<div style="margin-top:12px"><div style="font-size:11.5px;color:var(--ink-4);margin-bottom:6px">${g.name}</div><div class="pool-picker">`;
-        g.keys.forEach(k => {
-          const used = list.includes(k);
-          html += `<button type="button" class="pool-chip${used ? ' used' : ''}" data-add="${k}" ${used || list.length >= MAX_STEPS ? 'disabled' : ''}>
-            ${used ? '<span style="font-size:10px">✓</span>' : '<span class="plus">＋</span>'}${byKey[k].name}</button>`;
-        });
-        html += '</div></div>';
-      });
-      html += `<p style="font-size:11.5px;color:var(--ink-3);margin-top:16px">说明：漏斗步骤只支持「次数型」指标（行为事件 / 后端业务结果），计算值与均值型指标不可作为步骤。原型数据为模拟生成。</p>`;
-      modal.body.innerHTML = html;
-
-      modal.foot.innerHTML = `<span class="counter">共 <b>${list.length}</b> 步 · 上限 ${MAX_STEPS} 步 · 当前 ${draft.metric.toUpperCase()} 口径</span>
-        <span class="spacer"></span>
-        <button class="btn" data-act="cancel">取消</button>
-        <button class="btn primary" data-act="apply">保存并应用</button>`;
-    }
-
-    modal.body.addEventListener('click', e => {
-      const tabBtn = e.target.closest('[data-tab]');
-      if (tabBtn) { draft.metric = tabBtn.dataset.tab; renderBody(); return; }
-
-      const act = e.target.closest('[data-act]');
-      if (act && modal.body.contains(act)) {
-        const a = act.dataset.act;
-        if (a === 'new') {
-          draft = { id: fnCfgStore.newId('fn_'), product, name: '新建漏斗', metric: draft.metric, paths: { pv: [], uv: [] } };
-          isNew = true;
-          renderBody();
-          const input = modal.body.querySelector('#fn-cfg-name');
-          if (input) { input.focus(); input.select(); }
-          return;
+    body.addEventListener('click', e => {
+      const btn = e.target.closest('[data-act]');
+      if (!btn) return;
+      const a = btn.dataset.act;
+      const id = btn.dataset.id;
+      const t = id ? tplStore.get(id) : null;
+      if (a === 'use' && t) {
+        if (t.isFallback) {
+          state[kind === 'funnel' ? 'f' : 'e'].tplId = t.id;
+        } else {
+          state[kind === 'funnel' ? 'f' : 'e'].tplId = t.id;
         }
-        if (a === 'setdefault') {
-          if (steps().length < 2) { toast('漏斗至少需要 2 个步骤'); return; }
-          fnCfgStore.save(draft);
-          fnCfgStore.setDefault(product, draft.id);
-          isNew = false;
-          toast(`已将「${draft.name}」设为${productLabel}的默认配置`);
-          renderBody();
-          applyToState();
-          return;
-        }
-        if (a === 'del') {
-          if (fnCfgStore.list(product).length <= 1) { toast('每个应用至少保留一个配置'); return; }
-          if (act.dataset.confirm !== '1') { act.dataset.confirm = '1'; act.textContent = '确认删除'; return; }
-          fnCfgStore.remove(draft.id);
-          const next = fnCfgDefault(product) || fnCfgStore.list(product)[0];
-          draft = { id: next.id, product, name: next.name, metric: next.metric || 'pv', paths: { pv: next.paths.pv.slice(), uv: next.paths.uv.slice() } };
-          state.f.cfgId = next.id;
-          toast(`已删除，当前切换为「${next.name}」`);
-          renderBody();
-          applyToState();
-          return;
-        }
-        if (a === 'up' || a === 'down' || a === 'remove') {
-          const i = Number(act.dataset.i);
-          const l = steps();
-          if (a === 'up' && i > 0) { [l[i - 1], l[i]] = [l[i], l[i - 1]]; }
-          if (a === 'down' && i < l.length - 1) { [l[i + 1], l[i]] = [l[i], l[i + 1]]; }
-          if (a === 'remove' && l.length > 2) l.splice(i, 1);
-          renderBody();
-          return;
-        }
+        if (kind === 'funnel') { state.f.steps = itemsOf(t.id); window.TD.renderFunnel(); }
+        else { state.e.cols = itemsOf(t.id); window.TD.renderEvents(); }
+        toast(`已切换为「${t.name}」`);
+        modal.close();
         return;
       }
-      const add = e.target.closest('[data-add]');
-      if (add && !add.disabled) {
-        if (steps().length >= MAX_STEPS) { toast(`最多 ${MAX_STEPS} 步`); return; }
-        steps().push(add.dataset.add);
-        renderBody();
+      if (a === 'rename' && t) { renaming = t.id; render(); const inp = body.querySelector('#tpl-rename'); if (inp) { inp.focus(); inp.select(); } return; }
+      if (a === 'rename-ok') {
+        const inp = body.querySelector('#tpl-rename');
+        const v = (inp ? inp.value : '').trim();
+        if (v) tplStore.save(Object.assign({}, t, { name: v }));
+        renaming = null;
+        render();
+        toast('已重命名');
+        return;
+      }
+      if (a === 'default' && t) {
+        setTplDefault(kind, app, t.id);
+        toast(`已将「${t.name}」设为${app}的默认${meta.label}`);
+        render();
+        return;
+      }
+      if (a === 'del' && t) {
+        if (btn.dataset.confirm !== '1') { btn.dataset.confirm = '1'; btn.textContent = '确认删除'; return; }
+        tplStore.remove(t.id);
+        const next = tplEffective(kind, app);
+        st.tplId = next.id;
+        if (kind === 'funnel') { state.f.steps = itemsOf(next.id); window.TD.renderFunnel(); }
+        else { state.e.cols = itemsOf(next.id); window.TD.renderEvents(); }
+        toast(`已删除「${t.name}」`);
+        render();
+        return;
       }
     });
-
-    modal.body.addEventListener('change', e => {
-      if (e.target.id === 'fn-cfg-sel') {
-        const c = fnCfgStore.get(e.target.value);
-        if (!c) return;
-        draft = { id: c.id, product, name: c.name, metric: c.metric || 'pv', paths: { pv: c.paths.pv.slice(), uv: c.paths.uv.slice() } };
-        isNew = false;
-        renderBody();
+    body.addEventListener('keydown', e => {
+      if (e.target.id === 'tpl-rename' && e.key === 'Enter') {
+        e.preventDefault();
+        const btn = body.querySelector('[data-act="rename-ok"]');
+        if (btn) btn.click();
       }
     });
-    modal.body.addEventListener('input', e => {
-      if (e.target.id === 'fn-cfg-name') draft.name = e.target.value;
-    });
-
-    function applyToState() {
-      state.f.cfgId = draft.id;
-      window.TD.renderFunnel();
-    }
-
-    modal.foot.addEventListener('click', e => {
-      const act = e.target.closest('[data-act]');
-      if (!act) return;
-      if (act.dataset.act === 'cancel') { modal.close(); return; }
-      if (act.dataset.act === 'apply') {
-        if (steps().length < 2) { toast('漏斗至少需要 2 个步骤'); return; }
-        draft.name = (draft.name || '').trim() || '未命名配置';
-        const saved = fnCfgStore.save(draft);
-        if (isNew) fnCfgStore.setDefault(product, saved.id);
-        state.f.cfgId = saved.id;
+    foot.addEventListener('click', e => {
+      const btn = e.target.closest('[data-act]');
+      if (!btn) return;
+      if (btn.dataset.act === 'close') { modal.close(); return; }
+      if (btn.dataset.act === 'new') {
+        const fb = tplFallback(kind);
+        const t = tplStore.save({
+          id: tplNewId(kind), kind, app, name: app + meta.label,
+          owner: state.user, items: fb ? itemsOf(fb.id) : []
+        });
+        st.tplId = t.id;
+        if (kind === 'funnel') { state.f.steps = itemsOf(t.id); window.TD.renderFunnel(); }
+        else { state.e.cols = itemsOf(t.id); window.TD.renderEvents(); }
         modal.close();
-        window.TD.renderFunnel();
-        toast(`配置「${saved.name}」已保存并应用（${draft.metric.toUpperCase()} 口径）`);
+        openConfig(kind);
       }
     });
-
-    renderBody();
+    render();
   }
-  window.TD.openFunnelConfig = openFunnelConfig;
+  window.TD.openTplManager = openTplManager;
+  window.TD.openEventsConfig = () => openConfig('events');
+  window.TD.openFunnelConfig = () => openConfig('funnel');
 
   /* ---------------- 多选组件 ---------------- */
   function makeMSel(rootEl, opts) {
@@ -2025,10 +2178,10 @@ window.TD = (function () {
     if (go) switchTab(go.dataset.goto);
   });
 
-  $('#e-config').addEventListener('click', openEventsConfig);
-  $('#e-cfg-chip').addEventListener('click', openEventsConfig);
-  $('#f-config').addEventListener('click', openFunnelConfig);
-  $('#f-cfg-chip').addEventListener('click', openFunnelConfig);
+  $('#e-config').addEventListener('click', () => window.TD.openConfig('events'));
+  $('#e-cfg-chip').addEventListener('click', () => window.TD.openConfig('events'));
+  $('#f-config').addEventListener('click', () => window.TD.openConfig('funnel'));
+  $('#f-cfg-chip').addEventListener('click', () => window.TD.openConfig('funnel'));
   $('#e-export').addEventListener('click', exportEvents);
   $('#f-export').addEventListener('click', exportFunnel);
 
@@ -2064,7 +2217,8 @@ window.TD = (function () {
   const {
     $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtShort, fmtRate, clamp,
     CHANNELS, buildEvents, addDays, startOfDay, TODAY, parseKey,
-    evCfgStore, evCfgDefault, fmtByType, colMetricTag, colLabel, MAX_COLS
+    APP_NAMES, tplStore, tplEffective, itemsOf, fmtByType, colMetricTag, colLabel,
+    refreshTplSelect
   } = window.TD;
 
   function setActive(container, attr, value) {
@@ -2109,13 +2263,44 @@ window.TD = (function () {
     setSelectEmpty(sel, false);
   }
 
+  function markChip(box, v) {
+    Array.from(box.children).forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  }
+
+  function renderAppChips() {
+    const box = $('#e-product');
+    box.innerHTML = APP_NAMES.map(a =>
+      `<button type="button" class="chip${a === state.e.product ? ' active' : ''}" data-v="${a}">${a}</button>`).join('');
+    updateFoldHint();
+  }
+
+  function updateFoldHint() {
+    const box = $('#e-product');
+    const btn = $('#e-app-fold');
+    if (!box || !btn || !box.children.length) return;
+    const top0 = box.children[0].offsetTop;
+    const wraps = Array.from(box.children).some(k => k.offsetTop > top0 + 2);
+    btn.hidden = !wraps;
+  }
+
+  function selectApp(app) {
+    state.e.product = app;
+    markChip($('#e-product'), app);
+    const t = tplEffective('events', app);
+    state.e.tplId = t ? t.id : '';
+    state.e.cols = t ? itemsOf(t.id) : [];
+    refreshTplSelect($('#e-tpl'), 'events', app, state.e.tplId);
+    renderEvents();
+  }
+
   function syncControls() {
-    setActive($('#e-product'), 'v', state.e.product);
+    markChip($('#e-product'), state.e.product);
     $('#e-channel').value = state.e.channel;
     setSelectEmpty($('#e-channel'), !state.e.channel);
     fillSubchannels();
     $('#e-subchannel').value = state.e.subchannel;
     fillVersions();
+    refreshTplSelect($('#e-tpl'), 'events', state.e.product, state.e.tplId);
     syncDateInputs();
   }
 
@@ -2150,36 +2335,25 @@ window.TD = (function () {
   /* ---------------- render ---------------- */
   function renderEvents() {
     const cfg = state.e;
-    const productEmpty = cfg.product === '快测';
-    const ready = !productEmpty && !!cfg.channel;
+    const ready = !!cfg.channel;
 
     $('#e-view').hidden = !ready;
     $('#e-empty').hidden = ready;
     if (!ready) {
-      if (productEmpty) {
-        setEmptyUI('快测类应用数据即将开放', '当前版本先支持舌诊类应用，其他应用敬请期待。', '切回舌诊', () => {
-          state.e.product = '舌诊';
-          state.e.cfgId = (evCfgDefault('舌诊') || {}).id || state.e.cfgId;
-          state.e.cols = ((evCfgDefault('舌诊') || {}).cols || []).slice();
-          setActive($('#e-product'), 'v', '舌诊');
-          renderEvents();
-        });
-      } else {
-        setEmptyUI(
-          '请先选择筛选条件',
-          '筛选默认不选中，因此暂无数据；选择「渠道」后即展示数据，子渠道、应用版本可按需细化。',
-          '去选择渠道',
-          () => { $('#e-channel').focus(); }
-        );
-      }
+      setEmptyUI(
+        '请先选择筛选条件',
+        '渠道默认不选中，因此暂无数据；选择「渠道」后即展示数据，子渠道、应用版本可按需细化。',
+        '去选择渠道',
+        () => { $('#e-channel').focus(); }
+      );
       state.last.events = null;
       return;
     }
 
-    const curCfg = evCfgStore.get(cfg.cfgId);
-    if (curCfg && (!cfg.cols || !cfg.cols.length)) cfg.cols = curCfg.cols.slice();
     if (!cfg.cols || !cfg.cols.length) {
-      cfg.cols = (evCfgDefault(cfg.product) || { cols: [] }).cols.slice();
+      const t = tplEffective('events', cfg.product);
+      cfg.tplId = t ? t.id : cfg.tplId;
+      cfg.cols = t ? itemsOf(t.id) : [];
     }
 
     const data = buildEvents(cfg, state.tick);
@@ -2187,8 +2361,11 @@ window.TD = (function () {
     const cols = data.cols;
 
     $('#e-meta').textContent = window.TD.dimensionLabel(cfg) + ` · 共 ${data.rows.length} 天 · ${cols.length} 个指标`;
-    const shownCfg = evCfgStore.get(cfg.cfgId) || evCfgDefault(cfg.product);
-    $('#e-cfg-name').textContent = (shownCfg ? shownCfg.name : '自定义指标') + (shownCfg && shownCfg.isDefault ? '（默认）' : '');
+    const shownCfg = tplStore.get(cfg.tplId) || tplEffective('events', cfg.product);
+    $('#e-cfg-name').textContent = (shownCfg ? shownCfg.name : '自定义模版')
+      + (shownCfg && shownCfg.isDefault ? '（默认）' : '')
+      + (shownCfg && shownCfg.isFallback ? '（兜底）' : '');
+    refreshTplSelect($('#e-tpl'), 'events', cfg.product, shownCfg ? shownCfg.id : cfg.tplId);
 
     const view = state.eventsView;
     $('#e-legend').innerHTML = view === 'chart'
@@ -2206,15 +2383,15 @@ window.TD = (function () {
     if (view === 'chart') renderChart(data);
     else renderTable(data);
 
-    $('#e-footnote').innerHTML = `口径说明：行为事件按配置里的 <b>PV / UV</b> tab 分别取数（列名带 PV / UV）；结果事件取后端业务成功数；计算值为派生指标（比率类保留 1 位小数）。
-      筛选说明：渠道 / 子渠道不默认选中，选中渠道后展示数据；应用版本默认全部，可选具体版本。配置支持「每个应用一个默认配置 + 若干自定义配置，可设为默认」。原型数据为模拟生成。`;
+    $('#e-footnote').innerHTML = `口径说明：行为事件可分别勾选 <b>PV / UV</b>（列名带口径标记）；结果事件取后端业务成功数；计算值为派生指标（比率类保留 1 位小数）。
+      列顺序：按配置中的勾选先后顺序展示（列头序号即顺序）。配置模版：每个应用一个默认模版，未配置的应用使用兜底模版；模版与账号绑定，可增删改查。原型数据为模拟生成。`;
   }
 
   function renderTable(data) {
     const cols = data.cols;
     let html = '<table class="grid"><thead><tr><th class="sticky-col" style="width:150px">日期</th>';
-    cols.forEach(c => {
-      html += `<th>${colLabel(c)}<small>${colMetricTag(c)}</small></th>`;
+    cols.forEach((c, i) => {
+      html += `<th>${colLabel(c)}<small>${i + 1} · ${colMetricTag(c)}</small></th>`;
     });
     html += '</tr></thead><tbody>';
     data.rows.forEach(r => {
@@ -2324,8 +2501,10 @@ window.TD = (function () {
     $('#e-end').max = dateKey(TODAY);
     syncDateInputs();
 
-    const def = evCfgDefault('舌诊');
-    if (def) { state.e.cfgId = def.id; state.e.cols = def.cols.map(c => Object.assign({}, c)); }
+    renderAppChips();
+    const initT = tplEffective('events', state.e.product);
+    state.e.tplId = initT ? initT.id : '';
+    state.e.cols = initT ? itemsOf(initT.id) : [];
     syncControls();
 
     ['e-start', 'e-end'].forEach(id => {
@@ -2333,14 +2512,26 @@ window.TD = (function () {
     });
 
     $('#e-product').addEventListener('click', e => {
-      const btn = e.target.closest('button[data-v]');
-      if (!btn || btn.dataset.v === state.e.product) return;
-      state.e.product = btn.dataset.v;
-      setActive($('#e-product'), 'v', state.e.product);
-      const d = evCfgDefault(state.e.product);
-      if (d) { state.e.cfgId = d.id; state.e.cols = d.cols.map(c => Object.assign({}, c)); }
+      const chip = e.target.closest('.chip');
+      if (!chip || chip.dataset.v === state.e.product) return;
+      selectApp(chip.dataset.v);
+    });
+    $('#e-app-fold').addEventListener('click', () => {
+      const box = $('#e-product');
+      const open = box.classList.toggle('open');
+      const btn = $('#e-app-fold');
+      btn.classList.toggle('open', open);
+      btn.firstChild.textContent = open ? '收起' : '展开更多';
+    });
+    window.addEventListener('resize', () => { if (!$('#e-product').classList.contains('open')) updateFoldHint(); });
+    $('#e-tpl').addEventListener('change', e => {
+      const t = tplStore.get(e.target.value);
+      if (!t) return;
+      state.e.tplId = t.id;
+      state.e.cols = itemsOf(t.id);
       renderEvents();
     });
+    $('#e-tpl-manage').addEventListener('click', () => window.TD.openTplManager('events'));
     $('#e-channel').addEventListener('change', e => {
       state.e.channel = e.target.value;
       state.e.subchannel = '';
@@ -2366,7 +2557,7 @@ window.TD = (function () {
     });
 
     $('#e-query').addEventListener('click', () => {
-      if (!state.e.channel && state.e.product !== '快测') {
+      if (!state.e.channel) {
         window.TD.toast('请先选择渠道');
         $('#e-channel').focus();
         return;
@@ -2389,7 +2580,7 @@ window.TD = (function () {
       state.e = {
         start: s, end: en, product: '舌诊',
         channel: '', subchannel: '', version: '',
-        cfgId: state.e.cfgId, cols
+        tplId: state.e.tplId, cols
       };
       state.tick++;
       state.eventsView = 'table';
@@ -2410,7 +2601,7 @@ window.TD = (function () {
   const {
     $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtRate, clamp,
     CHANNELS, buildFunnel, addDays, TODAY, parseKey,
-    fnCfgStore, fnCfgDefault, currentFunnelConf, makeMSel
+    APP_NAMES, tplStore, tplEffective, itemsOf, makeMSel, refreshTplSelect
   } = window.TD;
 
   let msChannels = null, msSubchannels = null, msVersions = null;
@@ -2499,8 +2690,38 @@ window.TD = (function () {
     el.textContent = bits.join(' · ');
   }
 
+  function markChip(box, v) {
+    Array.from(box.children).forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  }
+
+  function renderAppChips() {
+    const box = $('#f-product');
+    box.innerHTML = APP_NAMES.map(a =>
+      `<button type="button" class="chip${a === state.f.product ? ' active' : ''}" data-v="${a}">${a}</button>`).join('');
+    updateFoldHint();
+  }
+
+  function updateFoldHint() {
+    const box = $('#f-product');
+    const btn = $('#f-app-fold');
+    if (!box || !btn || !box.children.length) return;
+    const top0 = box.children[0].offsetTop;
+    const wraps = Array.from(box.children).some(k => k.offsetTop > top0 + 2);
+    btn.hidden = !wraps;
+  }
+
+  function selectApp(app) {
+    state.f.product = app;
+    markChip($('#f-product'), app);
+    const t = tplEffective('funnel', app);
+    state.f.tplId = t ? t.id : '';
+    state.f.steps = t ? itemsOf(t.id) : [];
+    refreshTplSelect($('#f-tpl'), 'funnel', app, state.f.tplId);
+    renderFunnel();
+  }
+
   function syncControls() {
-    setActive($('#f-product'), 'v', state.f.product);
+    markChip($('#f-product'), state.f.product);
     setActive($('#f-scene'), 'v', state.f.sceneType || 'none');
     $('#f-channel').value = state.f.channel;
     $('#f-channel').classList.toggle('is-empty', !state.f.channel);
@@ -2509,6 +2730,7 @@ window.TD = (function () {
     if (msChannels) msChannels.set(state.f.channels);
     if (msSubchannels) msSubchannels.refresh();
     if (msVersions) msVersions.set(state.f.versions);
+    refreshTplSelect($('#f-tpl'), 'funnel', state.f.product, state.f.tplId);
     updateSceneFields();
     syncDateInputs();
   }
@@ -2535,11 +2757,11 @@ window.TD = (function () {
 
   function stepTag(k, metric) {
     const ev = byKey[k];
-    return ev && ev.kind === 'result' ? '业务' : String(metric).toUpperCase();
+    if (ev && ev.kind === 'result') return '业务';
+    return String(metric || 'pv').toUpperCase();
   }
 
   function funnelReady(f) {
-    if (f.product === '快测') return false;
     if (f.sceneType === 'channel') return f.channels.length > 0 && !!f.version;
     if (f.sceneType === 'version') return f.versions.length > 0 && !!f.channel;
     return !!f.channel;
@@ -2562,40 +2784,31 @@ window.TD = (function () {
     updateSummary();
 
     if (!ready) {
-      if (f.product === '快测') {
-        setEmptyUI('快测类应用数据即将开放', '当前版本先支持舌诊类应用，其他应用敬请期待。', '切回舌诊', () => {
-          state.f.product = '舌诊';
-          state.f.cfgId = (fnCfgDefault('舌诊') || {}).id || state.f.cfgId;
-          setActive($('#f-product'), 'v', '舌诊');
-          renderFunnel();
-        });
-      } else {
-        let desc = '筛选条件默认不选中，因此暂无数据；选择渠道后即展示数据。';
-        if (f.sceneType === 'channel') desc = '「分渠道」需勾选渠道（支持全选）并选择一个应用版本；子渠道可选，选中后按每个子渠道分别展示一双漏斗与明细。';
-        if (f.sceneType === 'version') desc = '「分应用版本」需勾选应用版本（支持全选）并选择一个渠道后展示数据。';
-        setEmptyUI('请先选择筛选条件', desc, '去选择筛选条件', () => {
-          const box = f.sceneType === 'channel' ? $('#ms-channels') : f.sceneType === 'version' ? $('#ms-versions') : null;
-          if (box) {
-            box.scrollIntoView({ block: 'center', behavior: 'smooth' });
-            const btn = box.querySelector('.msel-btn');
-            if (btn && box.querySelector('.msel-panel').hidden) btn.click();
-          } else {
-            $('#f-channel').scrollIntoView({ block: 'center', behavior: 'smooth' });
-          }
-        });
-      }
+      let desc = '筛选条件默认不选中，因此暂无数据；选择渠道后即展示数据。';
+      if (f.sceneType === 'channel') desc = '「分渠道」需勾选渠道（支持全选）并选择一个应用版本；子渠道可选，选中后按每个子渠道分别展示漏斗与明细。';
+      if (f.sceneType === 'version') desc = '「分应用版本」需勾选应用版本（支持全选）并选择一个渠道后展示数据。';
+      setEmptyUI('请先选择筛选条件', desc, '去选择筛选条件', () => {
+        const box = f.sceneType === 'channel' ? $('#ms-channels') : f.sceneType === 'version' ? $('#ms-versions') : null;
+        if (box) {
+          box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          const btn = box.querySelector('.msel-btn');
+          if (btn && box.querySelector('.msel-panel').hidden) btn.click();
+        } else {
+          $('#f-channel').scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      });
       state.last.funnel = null;
       return;
     }
 
-    const conf = currentFunnelConf();
+    const items = (f.steps && f.steps.length) ? f.steps : itemsOf(f.tplId);
     const cfg = {
       start: f.start, end: f.end, product: f.product, sceneType: f.sceneType,
       channel: f.channel, subchannel: f.subchannel, version: f.version,
       channels: f.channels, subchannels: f.subchannels, versions: f.versions,
-      steps: conf.steps, metric: conf.metric
+      steps: items
     };
-    if (!cfg.steps || cfg.steps.length < 2) {
+    if (!items || items.length < 2) {
       state.last.funnel = null;
       $('#f-view').hidden = true;
       $('#f-empty').hidden = false;
@@ -2606,13 +2819,16 @@ window.TD = (function () {
     const data = buildFunnel(cfg, state.tick);
     state.last.funnel = data;
 
-    const confNow = fnCfgStore.get(f.cfgId) || fnCfgDefault(f.product);
-    $('#f-cfg-name').textContent = (confNow ? confNow.name : '自定义漏斗') + ' · ' + cfg.metric.toUpperCase() + (confNow && confNow.isDefault ? '（默认）' : '');
-    $('#f-meta').textContent = window.TD.dimensionLabel(cfg) + ` · ${cfg.steps.length} 个步骤 · ${cfg.metric.toUpperCase()} 口径`;
+    const tplNow = tplStore.get(f.tplId) || tplEffective('funnel', f.product);
+    $('#f-cfg-name').textContent = (tplNow ? tplNow.name : '自定义漏斗')
+      + (tplNow && tplNow.isDefault ? '（默认）' : '')
+      + (tplNow && tplNow.isFallback ? '（兜底）' : '');
+    $('#f-meta').textContent = window.TD.dimensionLabel(cfg) + ` · ${items.length} 个步骤 · ${window.TD.describeMetrics(items)}`;
+    refreshTplSelect($('#f-tpl'), 'funnel', f.product, tplNow ? tplNow.id : f.tplId);
 
     const sceneText = f.sceneType === 'channel' ? '分渠道 · 按子渠道拆分' : f.sceneType === 'version' ? '分应用版本' : '不增加场景值';
     $('#f-legend').innerHTML =
-      `<span><i style="background:#2f6bff"></i>${cfg.metric.toUpperCase()} 口径</span>` +
+      `<span><i style="background:#2f6bff"></i>口径：${window.TD.describeMetrics(items)}</span>` +
       `<span><i style="background:#00b3a4"></i>场景值：${sceneText}</span>` +
       `<span><i style="background:#c9cdd4"></i>向下转化率 = 本步 ÷ 上一步</span>`;
 
@@ -2625,7 +2841,7 @@ window.TD = (function () {
     $('#f-table-title').textContent = data.sceneType === 'none' ? '分日明细' : `${data.axisLabel}维度汇总`;
     $('#f-table-sub').textContent = axisText;
 
-    $('#f-footnote').innerHTML = `漏斗按 <b>${cfg.metric.toUpperCase()}</b> 口径计算；整体转化率 = 末步 ÷ 首步（${shortName(cfg.steps[0])} → ${shortName(cfg.steps[cfg.steps.length - 1])}）。
+    $('#f-footnote').innerHTML = `漏斗按 <b>${window.TD.describeMetrics(items)}</b> 口径计算；整体转化率 = 末步 ÷ 首步（${shortName(items[0].key)} → ${shortName(items[items.length - 1].key)}）。
       ${data.sceneType === 'none' ? '未选择场景值：展示 1 个整体漏斗 + 日期维度明细。'
         : data.sceneType === 'channel' ? `选择场景值：按「渠道 / 子渠道」拆分，展示 ${data.groups.length} 个漏斗 + ${data.groups.length} 行明细。`
         : `选择场景值：展示 ${data.groups.length} 个应用版本漏斗 + 应用版本维度汇总。`}原型数据为模拟生成。`;
@@ -2682,7 +2898,7 @@ window.TD = (function () {
 
   function renderFunnelCharts(data) {
     const box = $('#f-funnel');
-    const steps = data.steps, metric = data.metric;
+    const steps = data.steps, metric = window.TD.describeMetrics(data.items);
 
     if (data.sceneType === 'none') {
       box.className = 'funnel-layout';
@@ -2710,7 +2926,7 @@ window.TD = (function () {
 
     let head = `<table class="grid"><thead><tr><th class="sticky-col" style="width:150px">${data.axisLabel}</th>`;
     steps.forEach((k, i) => {
-      head += `<th>${names[i]}<small>${stepTag(k, data.metric)}${i === 0 ? ' · 起点' : ''}</small></th>`;
+      head += `<th>${names[i]}<small>${stepTag(k, data.metrics[i])}${i === 0 ? ' · 起点' : ''}</small></th>`;
       if (i < steps.length - 1) {
         head += `<th class="conv-th">${names[i]} → ${names[i + 1]}<small>向下转化率</small></th>`;
       }
@@ -2750,8 +2966,10 @@ window.TD = (function () {
     $('#f-end').max = dateKey(TODAY);
     syncDateInputs();
 
-    const def = fnCfgDefault('舌诊');
-    if (def) state.f.cfgId = def.id;
+    renderAppChips();
+    const initT = tplEffective('funnel', state.f.product);
+    state.f.tplId = initT ? initT.id : '';
+    state.f.steps = initT ? itemsOf(initT.id) : [];
 
     msChannels = makeMSel($('#ms-channels'), {
       placeholder: '请选择',
@@ -2790,14 +3008,26 @@ window.TD = (function () {
     });
 
     $('#f-product').addEventListener('click', e => {
-      const btn = e.target.closest('button[data-v]');
-      if (!btn) return;
-      state.f.product = btn.dataset.v;
-      setActive($('#f-product'), 'v', state.f.product);
-      const d = fnCfgDefault(state.f.product);
-      if (d) state.f.cfgId = d.id;
+      const chip = e.target.closest('.chip');
+      if (!chip || chip.dataset.v === state.f.product) return;
+      selectApp(chip.dataset.v);
+    });
+    $('#f-app-fold').addEventListener('click', () => {
+      const box = $('#f-product');
+      const open = box.classList.toggle('open');
+      const btn = $('#f-app-fold');
+      btn.classList.toggle('open', open);
+      btn.firstChild.textContent = open ? '收起' : '展开更多';
+    });
+    window.addEventListener('resize', () => { if (!$('#f-product').classList.contains('open')) updateFoldHint(); });
+    $('#f-tpl').addEventListener('change', e => {
+      const t = tplStore.get(e.target.value);
+      if (!t) return;
+      state.f.tplId = t.id;
+      state.f.steps = itemsOf(t.id);
       renderFunnel();
     });
+    $('#f-tpl-manage').addEventListener('click', () => window.TD.openTplManager('funnel'));
 
     $('#f-scene').addEventListener('click', e => {
       const btn = e.target.closest('button[data-v]');
@@ -2841,8 +3071,7 @@ window.TD = (function () {
 
     $('#f-query').addEventListener('click', () => {
       if (!funnelReady(state.f)) {
-        window.TD.toast(state.f.product === '快测' ? '快测类应用暂未开放' : '请先选择渠道后查询');
-        $('#f-more-panel').classList.add('open');
+        window.TD.toast('请先选择筛选条件后查询');
         return;
       }
       const view = $('#f-view');
@@ -2863,7 +3092,7 @@ window.TD = (function () {
         start: s, end: en, product: '舌诊', sceneType: 'none',
         channel: '', subchannel: '', version: '',
         channels: [], subchannels: [], versions: [],
-        cfgId: state.f.cfgId
+        tplId: state.f.tplId, steps: state.f.steps
       };
       state.tick++;
       if (msChannels) msChannels.set([]);

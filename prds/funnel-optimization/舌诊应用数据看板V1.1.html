@@ -201,18 +201,24 @@ select.is-empty { color: var(--ink-4); }
 .ev-cat > h4 { display: flex; align-items: center; gap: 7px; margin: 0 0 7px; font-size: 12.5px; font-weight: 600; color: var(--ink); }
 .ev-cat > h4 .count { font-size: 11px; color: var(--ink-4); font-weight: 400; }
 .ev-cat > h4 .tag { font-size: 10px; font-weight: 500; color: #0e9f9a; background: #e6f7f5; border-radius: 3px; padding: 1px 5px; }
-.ev-list { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.ev-head, .ev-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 64px; align-items: center; }
-.ev-head { background: #fafbfc; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--ink-4); }
-.ev-head > span { padding: 6px 12px; }
-.ev-head > span + span { text-align: center; padding: 6px 0; border-left: 1px solid var(--line-soft); }
-.ev-row { border-top: 1px solid var(--line-soft); }
-.ev-head + .ev-row { border-top: 0; }
-.ev-row.hide { display: none; }
-.ev-row > .nm { padding: 6px 12px; font-size: 12px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; min-width: 0; }
-.ev-row > .nm span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ev-row > .nm em { font-style: normal; font-size: 10px; color: var(--ink-4); background: #f2f3f5; padding: 1px 4px; border-radius: 3px; flex: none; }
-.ev-row > .mc { display: flex; justify-content: center; padding: 6px 0; border-left: 1px solid var(--line-soft); }
+.ev-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.ev-cell { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-top: 1px solid var(--line-soft); min-width: 0; }
+.ev-cell:nth-child(1), .ev-cell:nth-child(2) { border-top: 0; }
+.ev-cell:nth-child(odd) { border-right: 1px solid var(--line-soft); }
+.ev-cell.hide { display: none; }
+.ev-cell > .nm { flex: 1; min-width: 0; display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-2); }
+.ev-cell > .nm > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-cell > .nm em { font-style: normal; font-size: 10px; color: var(--ink-4); background: #f2f3f5; padding: 0 4px; border-radius: 3px; flex: none; }
+.ev-cell .mcs { display: inline-flex; gap: 4px; flex: none; }
+.mcb { height: 21px; min-width: 32px; padding: 0 7px; border: 1px solid #dcdfe6; border-radius: 3px; background: #fff; font-size: 10.5px; color: var(--ink-4); }
+.mcb:hover { border-color: var(--brand); color: var(--brand); }
+.mcb.on { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 500; }
+/* 配置弹窗页签 */
+.cfg-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: -2px 0 14px; }
+.cfg-tabs button { border: 0; background: none; padding: 6px 12px 9px; font-size: 13px; color: var(--ink-3); position: relative; }
+.cfg-tabs button:hover { color: var(--brand); }
+.cfg-tabs button.active { color: var(--brand); font-weight: 600; }
+.cfg-tabs button.active::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px; background: var(--brand); border-radius: 2px; }
 .cb {
   width: 18px; height: 18px; border: 1.3px solid #c9cdd4; border-radius: 4px; background: #fff;
   display: grid; place-items: center; color: #fff; transition: all .12s;
@@ -232,6 +238,7 @@ select.is-empty { color: var(--ink-4); }
 .o-chip .x { width: 15px; height: 15px; border: 0; border-radius: 50%; background: none; color: #9db6f5; font-size: 12px; line-height: 1; display: grid; place-items: center; }
 .o-chip .x:hover { background: #eef3ff; color: #2f5fe8; }
 .o-empty { font-size: 11.5px; color: var(--ink-4); }
+.cfg-tip { margin: 0 0 10px; font-size: 11.5px; color: var(--ink-3); background: #fafbfc; border: 1px solid var(--line); border-radius: 5px; padding: 7px 10px; line-height: 1.5; }
 .tpl-note { font-size: 11.5px; color: #b8860b; background: #fff8e6; border: 1px solid #ffe3a8; border-radius: 5px; padding: 6px 10px; margin: 10px 0 0; }
 .tpl-table { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .tpl-row { display: grid; grid-template-columns: minmax(0,1fr) 88px 128px 216px; align-items: center; gap: 8px; padding: 9px 12px; border-top: 1px solid var(--line-soft); font-size: 12px; }
@@ -248,7 +255,7 @@ select.is-empty { color: var(--ink-4); }
 .tpl-row input { height: 26px; border: 1px solid var(--brand); border-radius: 4px; padding: 0 6px; font-size: 12px; width: 100%; }
 
 /* ---------- more filter ---------- */
-.more-filter { margin-top: 11px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.more-filter { margin-top: 10px; }
 .more-toggle {
   display: inline-flex; align-items: center; gap: 7px;
   border: 0; background: none; color: var(--ink-2); font-size: 12px; padding: 2px 0;
@@ -328,7 +335,7 @@ select.is-empty { color: var(--ink-4); }
 .view-toggle button + button { border-left: 1px solid var(--line); }
 .view-toggle button.active { color: var(--brand); background: var(--brand-soft); font-weight: 500; }
 
-.chart-wrap { padding: 8px 18px 10px; height: 322px; position: relative; }
+.chart-wrap { padding: 8px 18px 12px; height: 322px; position: relative; border-bottom: 1px solid var(--line-soft); }
 .chart-wrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .chart-tip-line { stroke: #c9cdd4; stroke-dasharray: 3 3; }
 .axis-text { fill: #86909c; font-size: 10.5px; font-variant-numeric: tabular-nums; }
@@ -357,6 +364,9 @@ table.grid tbody td {
 table.grid tbody td:first-child { text-align: left; color: var(--ink-2); font-variant-numeric: normal; }
 table.grid tbody tr:last-child td { border-bottom: 0; }
 table.grid tbody tr:hover td { background: #f7f9ff; }
+table.grid tbody tr.grp td { background: #f4f7ff; font-weight: 600; }
+table.grid tbody tr.grp:hover td { background: #eef3ff; }
+table.grid tbody tr.sub-row td:first-child { padding-left: 28px; color: var(--ink-3); }
 table.grid tfoot td {
   background: #fafbfc; font-weight: 600; padding: 10px 14px;
   border-top: 1px solid var(--line); text-align: right; white-space: nowrap;
@@ -424,6 +434,16 @@ tfoot .sticky-col { background: #fafbfc; }
 /* 多漏斗 */
 .funnel-layout.multi { padding: 6px 18px 18px; }
 .funnel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 14px; }
+.funnel-cards { position: relative; }
+.funnel-cards.clamped { overflow: hidden; }
+.funnel-cards.clamped::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 60px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0), #fff 82%);
+}
+.funnel-more { display: flex; justify-content: center; padding: 10px 0 4px; }
+.funnel-more[hidden] { display: none; }
+.funnel-more button { height: 28px; padding: 0 16px; border: 1px solid var(--line); background: #fff; border-radius: 14px; font-size: 12px; color: var(--brand); }
+.funnel-more button:hover { background: var(--brand-soft); border-color: #b9caf7; }
 .funnel-card {
   border: 1px solid var(--line); border-radius: 6px; background: #fff;
   padding: 12px 14px 4px;
@@ -706,7 +726,7 @@ tfoot .sticky-col { background: #fafbfc; }
         <div class="field">
           <label>应用版本</label>
           <div class="select-wrap"><select id="e-version">
-            <option value="">全部版本</option>
+            <option value="">全部</option>
           </select></div>
         </div>
         <div class="field">
@@ -756,10 +776,6 @@ tfoot .sticky-col { background: #fafbfc; }
               <span id="e-cfg-name">—</span>
             </button>
             <div class="legend" id="e-legend"></div>
-            <div class="view-toggle" id="e-viewtoggle">
-              <button data-mode="table" class="active">表格</button>
-              <button data-mode="chart">趋势图</button>
-            </div>
           </div>
         </div>
         <div class="chart-wrap" id="e-chart" hidden></div>
@@ -852,8 +868,8 @@ tfoot .sticky-col { background: #fafbfc; }
             </div>
             <div class="field" id="f-field-version">
               <label>应用版本</label>
-              <div class="select-wrap"><select id="f-version" class="is-empty">
-                <option value="">请选择</option>
+              <div class="select-wrap"><select id="f-version">
+                <option value="">全部</option>
               </select></div>
             </div>
             <div class="field" id="f-field-versions">
@@ -921,7 +937,7 @@ tfoot .sticky-col { background: #fafbfc; }
             <div class="legend" id="f-legend"></div>
           </div>
         </div>
-        <div class="funnel-layout" id="f-funnel"></div>
+        <div class="funnel-layout multi" id="f-funnel"></div>
       </div>
 
       <div class="card">
@@ -1325,7 +1341,7 @@ window.TD = (function () {
       product: '舌诊',
       sceneType: 'none',
       channel: '', subchannel: '', version: '',
-      channels: [], subchannels: [], versions: [],
+      channels: [], subchannels: [], versions: ['全部'],
       tplId: initFnTpl ? initFnTpl.id : '',
       steps: initFnTpl ? initFnTpl.items.map(it => Object.assign({}, it)) : []
     },
@@ -1430,29 +1446,34 @@ window.TD = (function () {
       return picked.length ? picked : allowed;
     };
 
-    let groups = [];
-    if (sceneType === 'channel') {
-      groups = [];
-      (cfg.channels || []).forEach(ch => {
-        subsOf(ch).forEach(sub => {
-          groups.push({
-            name: ch + '/' + sub,
-            label: ch + ' / ' + sub,
-            ch, sub,
-            totals: aggregate({ channel: ch, subs: [sub], version: cfg.version })
-          });
-        });
-      });
-    } else if (sceneType === 'version') {
-      groups = cfg.versions.map(v => ({ name: v, label: v, totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: v }) }));
-    } else {
-      groups = [{ name: '', label: '整体', totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: cfg.version }) }];
-    }
-
-    groups.forEach(g => {
+    function withRates(g) {
       g.rates = g.totals.slice(1).map((v, i) => (g.totals[i] ? v / g.totals[i] : 0));
       g.overall = g.totals[0] ? g.totals[g.totals.length - 1] / g.totals[0] : 0;
-    });
+      return g;
+    }
+
+    let groups = [], channelGroups = [];
+    const ALL = '全部';
+    if (sceneType === 'channel') {
+      (cfg.channels || []).forEach(ch => {
+        const subGroups = subsOf(ch).map(sub => withRates({
+          name: ch + '/' + sub, label: ch + ' / ' + sub, ch, sub,
+          totals: aggregate({ channel: ch, subs: [sub], version: cfg.version })
+        }));
+        groups = groups.concat(subGroups);
+        const chTotals = steps.map((_, i) => subGroups.reduce((a, g) => a + g.totals[i], 0));
+        channelGroups.push(withRates({ ch, label: ch, groups: subGroups, totals: chTotals }));
+      });
+    } else if (sceneType === 'version') {
+      const picked = cfg.versions || [];
+      if (!picked.length || picked.indexOf(ALL) >= 0) {
+        groups = [withRates({ name: ALL, label: '全部版本', totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: '' }) })];
+      } else {
+        groups = picked.map(v => withRates({ name: v, label: v, totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: v }) }));
+      }
+    } else {
+      groups = [withRates({ name: '', label: '整体', totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: cfg.version }) })];
+    }
 
     let rows, axisLabel;
     if (sceneType === 'none') {
@@ -1467,17 +1488,27 @@ window.TD = (function () {
       }).reverse();
     } else if (sceneType === 'channel') {
       axisLabel = '渠道 / 子渠道';
-      rows = groups.map(g => ({ label: g.ch, sub: g.sub, counts: g.totals, rates: g.rates, overall: g.overall }));
+      rows = [];
+      const grouped = channelGroups.length > 1;
+      channelGroups.forEach(cg => {
+        if (grouped) rows.push({ groupHead: true, label: cg.ch, counts: cg.totals, rates: cg.rates, overall: cg.overall });
+        cg.groups.forEach(g => rows.push({
+          label: grouped ? g.sub : g.ch,
+          subTag: grouped ? '' : g.sub,
+          indent: grouped,
+          counts: g.totals, rates: g.rates, overall: g.overall
+        }));
+      });
     } else {
       axisLabel = '应用版本';
-      rows = groups.map(g => ({ label: g.label, sub: '应用版本', counts: g.totals, rates: g.rates, overall: g.overall }));
+      rows = groups.map(g => ({ label: g.label, subTag: '应用版本', counts: g.totals, rates: g.rates, overall: g.overall }));
     }
 
     const totals = steps.map((_, i) => groups.reduce((s, g) => s + g.totals[i], 0));
     const rates = totals.slice(1).map((v, i) => (totals[i] ? v / totals[i] : 0));
     const overall = totals[0] ? totals[totals.length - 1] / totals[0] : 0;
 
-    return { dates, steps, items, metrics, sceneType, groups, rows, totals, rates, overall, axisLabel, cfg };
+    return { dates, steps, items, metrics, sceneType, groups, channelGroups, rows, totals, rates, overall, axisLabel, cfg };
   }
 
   /* ---------------- 文案 ---------------- */
@@ -1644,47 +1675,51 @@ window.TD = (function () {
   window.TD.tplOptionsHTML = tplOptionsHTML;
   window.TD.refreshTplSelect = refreshTplSelect;
 
-  function openConfig(kind) {
+  function openConfig(kind, initialTab) {
     const meta = tplKindMeta(kind);
     const st = kind === 'funnel' ? state.f : state.e;
     const app = st.product;
+    const tabLabel = kind === 'funnel' ? '配置步骤' : '配置指标';
     const base = tplStore.get(st.tplId) || tplEffective(kind, app);
     let fromFallback = !!(base && base.isFallback);
     let draft = fromFallback
       ? { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(base.id) }
       : { id: base.id, kind, app, name: base.name, items: itemsOf(base.id) };
+    let tab = initialTab === 'manage' ? 'manage' : 'edit';
+    let renaming = null;
 
     const modal = openModal({
       title: `配置${meta.label}`,
-      subtitle: `模版与「${app}」关联并保存在当前账号下；每个应用一个默认模版，未设置时使用兜底模版。行为事件分「页面浏览 / 元素曝光 / 元素点击 / 计算转化」，每个分类最多展示 4 行，可展开更多。勾选先后顺序决定${kind === 'funnel' ? '漏斗步骤' : '表格横坐标'}顺序。最多 ${meta.max} ${meta.unit}。`,
-      width: 880
+      subtitle: `模版与「${app}」关联并保存在当前账号下；每个应用一个默认模版，未设置时使用兜底模版。勾选先后顺序决定${kind === 'funnel' ? '漏斗步骤' : '表格横坐标'}顺序，最多 ${meta.max} ${meta.unit}。`,
+      width: 940
     });
     const body = modal.body, foot = modal.foot;
 
     function idxOf(key, metric) {
       return draft.items.findIndex(it => it.key === key && it.metric === metric);
     }
+    /* ---------------- 配置 tab ---------------- */
     function catHTML(cat) {
-      const rows = cat.keys.map(k => {
+      const cells = cat.keys.map(k => {
         const ev = byKey[k];
         const single = singleValue(ev);
-        const cell = m => {
-          if (single && m === 'uv') return `<div class="mc"><span class="cb-na">—</span></div>`;
+        const btn = m => {
+          if (single && m === 'uv') return '';
           const metric = single ? '-' : m;
           const on = idxOf(k, metric) >= 0;
-          return `<div class="mc"><button type="button" class="cb${on ? ' on' : ''}" data-key="${k}" data-metric="${metric}" title="${esc(ev.name)}">${CHECK_SVG}</button></div>`;
+          return `<button type="button" class="mcb${on ? ' on' : ''}" data-key="${k}" data-metric="${metric}" title="${esc(ev.name)}">${single ? '选择' : m.toUpperCase()}</button>`;
         };
-        return `<div class="ev-row"><div class="nm"><span>${ev.name}</span>${single ? `<em>${ev.kind === 'calc' ? '计算值' : '单值'}</em>` : ''}</div>${cell('pv')}${cell('uv')}</div>`;
+        return `<div class="ev-cell" data-key="${k}">` +
+          `<span class="nm"><span title="${esc(ev.name)}">${ev.name}</span>${single ? `<em>${ev.kind === 'calc' ? '计算值' : '单值'}</em>` : ''}</span>` +
+          `<span class="mcs">${btn('pv')}${btn('uv')}</span></div>`;
       });
-      const more = rows.length - FOLD_LIMIT;
-      const inner = rows.map((r, i) => (i >= FOLD_LIMIT ? r.replace('class="ev-row"', 'class="ev-row hide"') : r)).join('');
+      const limit = FOLD_LIMIT * 2;
+      const more = cells.length - limit;
+      const inner = cells.map((c, i) => (i >= limit ? c.replace('class="ev-cell"', 'class="ev-cell hide"') : c)).join('');
       return `<div class="ev-cat" data-cat="${cat.id}">
         <h4>${cat.name}<span class="count">${cat.keys.length} 项</span>${cat.calc ? '<span class="tag">计算值</span>' : ''}</h4>
-        <div class="ev-list">
-          <div class="ev-head"><span>事件</span><span>${cat.calc ? '选择' : 'PV'}</span><span>${cat.calc ? '—' : 'UV'}</span></div>
-          ${inner}
-          ${more > 0 ? `<div class="fold-bar"><button type="button" data-fold="${cat.id}">展开更多（${more}）</button></div>` : ''}
-        </div>
+        <div class="ev-grid">${inner}</div>
+        ${more > 0 ? `<div class="fold-bar"><button type="button" data-fold="${cat.id}">展开更多（${more}）</button></div>` : ''}
       </div>`;
     }
     function orderStrip() {
@@ -1703,18 +1738,17 @@ window.TD = (function () {
       if (fb) html += `<option value="${fb.id}"${fb.id === draft.id ? ' selected' : ''}>${esc(fb.name)}（兜底）</option>`;
       return html;
     }
-    function renderBody() {
+    function editHTML() {
       const cur = tplStore.get(draft.id);
-      let html = `<div class="cfg-bar">
+      return `<div class="cfg-bar">
         <span class="lbl">应用</span><span class="badge-product">${app}</span>
-        <span class="lbl" style="margin-left:10px">配置模版</span>
+        <span class="lbl" style="margin-left:10px">当前模版</span>
         <select id="cfg-sel">${selectOptions()}</select>
         <span class="badge-default" ${cur && cur.isDefault ? '' : 'hidden'}>默认模版</span>
         <span class="spacer"></span>
         <button class="btn" data-act="new">新建模版</button>
         <button class="btn" data-act="copy">复制</button>
         <button class="btn" data-act="setdefault">设为默认</button>
-        <button class="btn" data-act="del">删除</button>
       </div>
       <div class="cfg-name-row"><label>模版名称</label>
         <input id="cfg-name" maxlength="20" value="${esc(draft.name)}" placeholder="如：${app}默认${meta.label}"></div>
@@ -1723,10 +1757,60 @@ window.TD = (function () {
       <div class="order-strip" id="order-strip">${orderStrip()}</div>
       ${fromFallback ? `<p class="tpl-note">当前为系统兜底模版，修改后保存为「${app}」的自定义模版。</p>` : ''}
       ${meta.cats.map(catHTML).join('')}`;
-      body.innerHTML = html;
+    }
+    /* ---------------- 管理 tab ---------------- */
+    function rowHTML(t, isFb) {
+      const nameCell = renaming === t.id
+        ? `<div class="tpl-name"><input id="tpl-rename" maxlength="20" value="${esc(t.name)}"><button class="btn" data-mact="rename-ok" data-id="${t.id}" style="height:24px;padding:0 8px">保存</button></div>`
+        : `<div class="tpl-name"><span>${esc(t.name)}</span>${t.isDefault ? '<span class="tpl-badge">默认</span>' : ''}${isFb ? '<span class="tpl-badge gray">兜底</span>' : ''}<span class="tpl-badge gray">${t.items.length} ${meta.unit}</span></div>`;
+      const acts = isFb
+        ? `<button data-mact="use" data-id="${t.id}">使用</button><button data-mact="edit" data-id="${t.id}">基于此编辑</button>`
+        : `<button data-mact="use" data-id="${t.id}">使用</button>
+           <button data-mact="edit" data-id="${t.id}">编辑</button>
+           <button data-mact="rename" data-id="${t.id}">重命名</button>
+           ${t.isDefault ? '' : `<button data-mact="default" data-id="${t.id}">设为默认</button>`}
+           <button data-mact="del" data-id="${t.id}" class="danger">删除</button>`;
+      return `<div class="tpl-row">
+        ${nameCell}
+        <span class="tpl-meta">${isFb ? '全部应用' : esc(t.app)}</span>
+        <span class="tpl-meta">${esc(t.owner || '—')} · ${fmtDateShort(t.updated_at)}</span>
+        <span class="acts">${acts}</span>
+      </div>`;
+    }
+    function manageHTML() {
+      const own = tplOwn(kind, app);
+      const fb = tplFallback(kind);
+      let html = `<p class="cfg-tip">「${app}」的${meta.label}保存在当前账号（${state.user}）下，可新建、重命名、设为默认或删除；每个应用一个默认模版，未设置的应用自动使用兜底模版。</p>
+        <div class="tpl-table">
+        <div class="tpl-row head"><span>模版名称</span><span>关联应用</span><span>更新</span><span style="text-align:right">操作</span></div>`;
+      own.forEach(t => { html += rowHTML(t, false); });
+      if (fb) html += rowHTML(fb, true);
+      html += '</div>';
+      if (!own.length) html += `<p class="tpl-note">「${app}」暂无自定义模版，当前使用兜底模版。</p>`;
+      return html;
+    }
+    /* ---------------- 渲染 ---------------- */
+    function renderPane() {
+      body.innerHTML = `<div class="cfg-tabs">
+          <button type="button" data-tab="edit" class="${tab === 'edit' ? 'active' : ''}">${tabLabel}</button>
+          <button type="button" data-tab="manage" class="${tab === 'manage' ? 'active' : ''}">管理模版</button>
+        </div><div id="cfg-pane"></div>`;
+      body.querySelector('#cfg-pane').innerHTML = tab === 'edit' ? editHTML() : manageHTML();
       updateFoot();
+      body.scrollTop = 0;
+      if (tab === 'manage' && renaming) {
+        const inp = body.querySelector('#tpl-rename');
+        if (inp) { inp.focus(); inp.select(); }
+      }
     }
     function updateFoot() {
+      if (tab === 'manage') {
+        foot.innerHTML = `<span class="counter">共 <b>${tplOwn(kind, app).length}</b> 个自定义模版 · 1 个兜底模版</span>
+          <span class="spacer"></span>
+          <button class="btn" data-act="cancel">关闭</button>
+          <button class="btn primary" data-act="new">新建模版</button>`;
+        return;
+      }
       const n = draft.items.length;
       const ok = n >= meta.min;
       foot.innerHTML = `<span class="counter${n >= meta.max ? ' max' : ''}">已选 <b>${n}</b> / ${meta.max} ${meta.unit}${meta.min > 1 ? ` · 至少 ${meta.min} ${meta.unit}` : ''}</span>
@@ -1735,9 +1819,8 @@ window.TD = (function () {
         <button class="btn primary" data-act="apply"${ok ? '' : ' disabled'}>保存并应用</button>`;
     }
     function refresh() {
-      body.querySelectorAll('.cb').forEach(b => {
-        const on = idxOf(b.dataset.key, b.dataset.metric) >= 0;
-        b.classList.toggle('on', on);
+      body.querySelectorAll('.mcb').forEach(b => {
+        b.classList.toggle('on', idxOf(b.dataset.key, b.dataset.metric) >= 0);
       });
       const strip = body.querySelector('#order-strip');
       if (strip) strip.innerHTML = orderStrip();
@@ -1761,26 +1844,93 @@ window.TD = (function () {
         window.TD.renderEvents();
       }
     }
+    function loadDraft(t) {
+      if (!t) return;
+      if (t.isFallback) {
+        draft = { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(t.id) };
+        fromFallback = true;
+      } else {
+        draft = { id: t.id, kind, app, name: t.name, items: itemsOf(t.id) };
+        fromFallback = false;
+      }
+    }
+    function gotoManage() { tab = 'manage'; renaming = null; renderPane(); }
 
+    /* ---------------- 事件 ---------------- */
     body.addEventListener('click', e => {
+      const tabBtn = e.target.closest('[data-tab]');
+      if (tabBtn) {
+        if (tab === tabBtn.dataset.tab) return;
+        tab = tabBtn.dataset.tab;
+        renaming = null;
+        renderPane();
+        return;
+      }
       const fold = e.target.closest('[data-fold]');
       if (fold) {
         const cat = fold.closest('.ev-cat');
         const open = cat.classList.toggle('open');
-        cat.querySelectorAll('.ev-row').forEach((r, i) => r.classList.toggle('hide', !open && i >= FOLD_LIMIT));
-        fold.textContent = open ? '收起' : `展开更多（${cat.querySelectorAll('.ev-row').length - FOLD_LIMIT}）`;
+        const cells = cat.querySelectorAll('.ev-cell');
+        cells.forEach((c, i) => c.classList.toggle('hide', !open && i >= FOLD_LIMIT * 2));
+        fold.textContent = open ? '收起' : `展开更多（${cells.length - FOLD_LIMIT * 2}）`;
         return;
       }
       const rm = e.target.closest('[data-rm]');
       if (rm) { draft.items.splice(Number(rm.dataset.rm), 1); refresh(); return; }
 
+      /* 管理 tab 操作 */
+      const mact = e.target.closest('[data-mact]');
+      if (mact) {
+        const a = mact.dataset.mact, id = mact.dataset.id;
+        const t = id ? tplStore.get(id) : null;
+        if (a === 'use' && t) {
+          st.tplId = t.id;
+          applyState(t.id);
+          toast(`已切换为「${t.name}」`);
+          modal.close();
+          return;
+        }
+        if (a === 'edit' && t) { loadDraft(t); tab = 'edit'; renderPane(); return; }
+        if (a === 'rename' && t) { renaming = t.id; renderPane(); return; }
+        if (a === 'rename-ok') {
+          const inp = body.querySelector('#tpl-rename');
+          const v = (inp ? inp.value : '').trim();
+          if (v) tplStore.save(Object.assign({}, t, { name: v }));
+          renaming = null;
+          renderPane();
+          toast('已重命名');
+          return;
+        }
+        if (a === 'default' && t) {
+          setTplDefault(kind, app, t.id);
+          toast(`已将「${t.name}」设为${app}的默认${meta.label}`);
+          renderPane();
+          return;
+        }
+        if (a === 'del' && t) {
+          if (mact.dataset.confirm !== '1') { mact.dataset.confirm = '1'; mact.textContent = '确认删除'; return; }
+          tplStore.remove(t.id);
+          const next = tplEffective(kind, app);
+          st.tplId = next.id;
+          applyState(next.id);
+          if (draft.id === t.id) loadDraft(next);
+          renaming = null;
+          renderPane();
+          toast(`已删除「${t.name}」，当前切换为「${next.name}」`);
+          return;
+        }
+        return;
+      }
+
+      /* 配置 tab 操作 */
       const act = e.target.closest('[data-act]');
       if (act && body.contains(act)) {
         const a = act.dataset.act;
         if (a === 'new') {
           draft = { id: tplNewId(kind), kind, app, name: app + meta.label, items: [] };
           fromFallback = false;
-          renderBody();
+          tab = 'edit';
+          renderPane();
           const inp = body.querySelector('#cfg-name');
           if (inp) { inp.focus(); inp.select(); }
           return;
@@ -1788,7 +1938,8 @@ window.TD = (function () {
         if (a === 'copy') {
           draft = { id: tplNewId(kind), kind, app, name: draft.name + ' 副本', items: draft.items.map(it => Object.assign({}, it)) };
           fromFallback = false;
-          renderBody();
+          tab = 'edit';
+          renderPane();
           return;
         }
         if (a === 'setdefault') {
@@ -1796,27 +1947,13 @@ window.TD = (function () {
           const saved = saveDraft();
           setTplDefault(kind, app, saved.id);
           toast(`已将「${saved.name}」设为${app}的默认${meta.label}`);
-          renderBody();
+          renderPane();
           applyState(saved.id);
-          return;
-        }
-        if (a === 'del') {
-          if (tplOwn(kind, app).length <= 1) { toast('每个应用至少保留一个模版'); return; }
-          if (act.dataset.confirm !== '1') { act.dataset.confirm = '1'; act.textContent = '确认删除'; return; }
-          tplStore.remove(draft.id);
-          const next = tplEffective(kind, app);
-          draft = next.isFallback
-            ? { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(next.id) }
-            : { id: next.id, kind, app, name: next.name, items: itemsOf(next.id) };
-          fromFallback = !!next.isFallback;
-          toast(`已删除，当前切换为「${next.name}」`);
-          renderBody();
-          applyState(next.id);
           return;
         }
         return;
       }
-      const cb = e.target.closest('.cb');
+      const cb = e.target.closest('.mcb');
       if (!cb) return;
       const key = cb.dataset.key, metric = cb.dataset.metric;
       const idx = idxOf(key, metric);
@@ -1831,24 +1968,37 @@ window.TD = (function () {
     body.addEventListener('change', e => {
       if (e.target.id !== 'cfg-sel') return;
       const t = tplStore.get(e.target.value);
-      if (!t) return;
-      if (t.isFallback) {
-        draft = { id: tplNewId(kind), kind, app, name: app + meta.label, items: itemsOf(t.id) };
-        fromFallback = true;
-      } else {
-        draft = { id: t.id, kind, app, name: t.name, items: itemsOf(t.id) };
-        fromFallback = false;
-      }
-      renderBody();
+      loadDraft(t);
+      tab = 'edit';
+      renderPane();
     });
     body.addEventListener('input', e => {
       if (e.target.id === 'cfg-name') draft.name = e.target.value;
     });
+    body.addEventListener('keydown', e => {
+      if (e.target.id === 'tpl-rename' && e.key === 'Enter') {
+        e.preventDefault();
+        const btn = body.querySelector('[data-mact="rename-ok"]');
+        if (btn) btn.click();
+      }
+    });
     foot.addEventListener('click', e => {
       const act = e.target.closest('[data-act]');
       if (!act) return;
-      if (act.dataset.act === 'cancel') { modal.close(); return; }
-      if (act.dataset.act === 'apply') {
+      const a = act.dataset.act;
+      if (a === 'cancel') { modal.close(); return; }
+      if (tab === 'manage') {
+        if (a === 'new') {
+          draft = { id: tplNewId(kind), kind, app, name: app + meta.label, items: [] };
+          fromFallback = false;
+          tab = 'edit';
+          renderPane();
+          const inp = body.querySelector('#cfg-name');
+          if (inp) { inp.focus(); inp.select(); }
+        }
+        return;
+      }
+      if (a === 'apply') {
         if (draft.items.length < meta.min) { toast(`请至少选择 ${meta.min} ${meta.unit}`); return; }
         const saved = saveDraft();
         modal.close();
@@ -1857,131 +2007,10 @@ window.TD = (function () {
       }
     });
 
-    renderBody();
+    renderPane();
   }
   window.TD.openConfig = openConfig;
-
-  /* ---------------- 配置模版管理（增删改查） ---------------- */
-  function openTplManager(kind) {
-    const meta = tplKindMeta(kind);
-    const st = kind === 'funnel' ? state.f : state.e;
-    const app = st.product;
-    let renaming = null;
-    let renameVal = '';
-
-    const modal = openModal({
-      title: `${meta.label}管理`,
-      subtitle: `模版与「${app}」关联，保存在当前账号（${state.user}）下；每个应用可设置一个默认模版，未设置的应用自动使用兜底模版。`,
-      width: 780
-    });
-    const body = modal.body, foot = modal.foot;
-
-    function rowHTML(t, isFb) {
-      const nameCell = renaming === t.id
-        ? `<div class="tpl-name"><input id="tpl-rename" maxlength="20" value="${esc(t.name)}"><button class="btn" data-act="rename-ok" data-id="${t.id}" style="height:24px;padding:0 8px">保存</button></div>`
-        : `<div class="tpl-name"><span>${esc(t.name)}</span>${t.isDefault ? '<span class="tpl-badge">默认</span>' : ''}${isFb ? '<span class="tpl-badge gray">兜底</span>' : ''}<span class="tpl-badge gray">${t.items.length} ${meta.unit}</span></div>`;
-      const acts = isFb
-        ? `<button data-act="use" data-id="${t.id}">使用</button>`
-        : `<button data-act="use" data-id="${t.id}">使用</button>
-           <button data-act="rename" data-id="${t.id}">重命名</button>
-           ${t.isDefault ? '' : `<button data-act="default" data-id="${t.id}">设为默认</button>`}
-           <button data-act="del" data-id="${t.id}" class="danger">删除</button>`;
-      return `<div class="tpl-row">
-        ${nameCell}
-        <span class="tpl-meta">${isFb ? '全部应用' : esc(t.app)}</span>
-        <span class="tpl-meta">${esc(t.owner || '—')} · ${fmtDateShort(t.updated_at)}</span>
-        <span class="acts">${acts}</span>
-      </div>`;
-    }
-    function render() {
-      const own = tplOwn(kind, app);
-      const fb = tplFallback(kind);
-      let html = `<div class="tpl-table">
-        <div class="tpl-row head"><span>模版名称</span><span>关联应用</span><span>更新</span><span style="text-align:right">操作</span></div>`;
-      own.forEach(t => { html += rowHTML(t, false); });
-      if (fb) html += rowHTML(fb, true);
-      html += '</div>';
-      if (!own.length) html += `<p class="tpl-note">「${app}」暂无自定义模版，当前使用兜底模版。</p>`;
-      body.innerHTML = html;
-      foot.innerHTML = `<span class="counter">共 <b>${own.length}</b> 个自定义模版 · 1 个兜底模版</span>
-        <span class="spacer"></span>
-        <button class="btn" data-act="close">关闭</button>
-        <button class="btn primary" data-act="new">新建模版</button>`;
-    }
-
-    body.addEventListener('click', e => {
-      const btn = e.target.closest('[data-act]');
-      if (!btn) return;
-      const a = btn.dataset.act;
-      const id = btn.dataset.id;
-      const t = id ? tplStore.get(id) : null;
-      if (a === 'use' && t) {
-        if (t.isFallback) {
-          state[kind === 'funnel' ? 'f' : 'e'].tplId = t.id;
-        } else {
-          state[kind === 'funnel' ? 'f' : 'e'].tplId = t.id;
-        }
-        if (kind === 'funnel') { state.f.steps = itemsOf(t.id); window.TD.renderFunnel(); }
-        else { state.e.cols = itemsOf(t.id); window.TD.renderEvents(); }
-        toast(`已切换为「${t.name}」`);
-        modal.close();
-        return;
-      }
-      if (a === 'rename' && t) { renaming = t.id; render(); const inp = body.querySelector('#tpl-rename'); if (inp) { inp.focus(); inp.select(); } return; }
-      if (a === 'rename-ok') {
-        const inp = body.querySelector('#tpl-rename');
-        const v = (inp ? inp.value : '').trim();
-        if (v) tplStore.save(Object.assign({}, t, { name: v }));
-        renaming = null;
-        render();
-        toast('已重命名');
-        return;
-      }
-      if (a === 'default' && t) {
-        setTplDefault(kind, app, t.id);
-        toast(`已将「${t.name}」设为${app}的默认${meta.label}`);
-        render();
-        return;
-      }
-      if (a === 'del' && t) {
-        if (btn.dataset.confirm !== '1') { btn.dataset.confirm = '1'; btn.textContent = '确认删除'; return; }
-        tplStore.remove(t.id);
-        const next = tplEffective(kind, app);
-        st.tplId = next.id;
-        if (kind === 'funnel') { state.f.steps = itemsOf(next.id); window.TD.renderFunnel(); }
-        else { state.e.cols = itemsOf(next.id); window.TD.renderEvents(); }
-        toast(`已删除「${t.name}」`);
-        render();
-        return;
-      }
-    });
-    body.addEventListener('keydown', e => {
-      if (e.target.id === 'tpl-rename' && e.key === 'Enter') {
-        e.preventDefault();
-        const btn = body.querySelector('[data-act="rename-ok"]');
-        if (btn) btn.click();
-      }
-    });
-    foot.addEventListener('click', e => {
-      const btn = e.target.closest('[data-act]');
-      if (!btn) return;
-      if (btn.dataset.act === 'close') { modal.close(); return; }
-      if (btn.dataset.act === 'new') {
-        const fb = tplFallback(kind);
-        const t = tplStore.save({
-          id: tplNewId(kind), kind, app, name: app + meta.label,
-          owner: state.user, items: fb ? itemsOf(fb.id) : []
-        });
-        st.tplId = t.id;
-        if (kind === 'funnel') { state.f.steps = itemsOf(t.id); window.TD.renderFunnel(); }
-        else { state.e.cols = itemsOf(t.id); window.TD.renderEvents(); }
-        modal.close();
-        openConfig(kind);
-      }
-    });
-    render();
-  }
-  window.TD.openTplManager = openTplManager;
+  window.TD.openTplManager = (kind) => openConfig(kind, 'manage');
   window.TD.openEventsConfig = () => openConfig('events');
   window.TD.openFunnelConfig = () => openConfig('funnel');
 
@@ -1996,7 +2025,8 @@ window.TD = (function () {
     function renderOptions() {
       const list = opts.options();
       if (!list.length) { optsBox.innerHTML = '<div class="msel-empty">暂无可选项</div>'; return; }
-      const allOn = list.every(o => values.includes(o));
+      const allPool = list.filter(o => !(opts.excludeAll || []).includes(o));
+      const allOn = allPool.length > 0 && allPool.every(o => values.includes(o));
       optsBox.innerHTML =
         `<label class="msel-opt msel-all${allOn ? ' checked' : ''}" data-all="1">
           <span class="box">${CHECK_SVG}</span><span>全选</span>
@@ -2059,7 +2089,7 @@ window.TD = (function () {
       const b = e.target.closest('[data-act]');
       if (!b) return;
       const a = b.dataset.act;
-      if (a === 'all') { values = opts.options().slice(); renderOptions(); renderText(); if (opts.onChange) opts.onChange(values.slice()); }
+      if (a === 'all') { values = opts.options().filter(o => !(opts.excludeAll || []).includes(o)); renderOptions(); renderText(); if (opts.onChange) opts.onChange(values.slice()); }
       if (a === 'none') { values = []; renderOptions(); renderText(); if (opts.onChange) opts.onChange(values.slice()); }
       if (a === 'ok') { panel.hidden = true; }
       e.stopPropagation();
@@ -2121,7 +2151,7 @@ window.TD = (function () {
     const cfg = d.cfg;
     const names = d.steps.map(k => d.steps && window.TD.byKey[k] ? window.TD.byKey[k].name : k);
     const rows = [
-      ['应用漏斗分析（' + cfg.metric.toUpperCase() + '）', window.TD.dimensionLabel(cfg)],
+      ['应用漏斗分析（' + window.TD.describeMetrics(d.items) + '）', window.TD.dimensionLabel(cfg)],
       ['步骤', '人数', '向下转化率', '累计转化率']
     ];
     d.totals.forEach((v, i) => {
@@ -2189,7 +2219,7 @@ window.TD = (function () {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      if (state.tab === 'events' && state.eventsView === 'chart' && window.TD.redrawChart) window.TD.redrawChart();
+      if (state.tab === 'events' && window.TD.redrawChart) window.TD.redrawChart();
     }, 160);
   });
 
@@ -2258,7 +2288,7 @@ window.TD = (function () {
     const sel = $('#e-version');
     const list = versionOptions();
     if (state.e.version && !list.includes(state.e.version)) state.e.version = '';
-    sel.innerHTML = '<option value="">全部版本</option>' + list.map(v => `<option value="${v}">${v}</option>`).join('');
+    sel.innerHTML = '<option value="">全部</option>' + list.map(v => `<option value="${v}">${v}</option>`).join('');
     sel.value = state.e.version;
     setSelectEmpty(sel, false);
   }
@@ -2367,21 +2397,14 @@ window.TD = (function () {
       + (shownCfg && shownCfg.isFallback ? '（兜底）' : '');
     refreshTplSelect($('#e-tpl'), 'events', cfg.product, shownCfg ? shownCfg.id : cfg.tplId);
 
-    const view = state.eventsView;
-    $('#e-legend').innerHTML = view === 'chart'
-      ? cols.map((c, i) => {
-          const ev = byKey[c.key];
-          const color = ev.color || ['#2f6bff', '#00b3a4', '#f59e0b', '#8b5cf6', '#ec4899', '#0e9f9a'][i % 6];
-          return `<span><i style="background:${color}"></i>${colLabel(c)} ${colMetricTag(c)}</span>`;
-        }).join('')
-      : `<span>指标来源：配置中 PV / UV 行为事件 + 结果事件 + 计算值</span>`;
+    const COLORS = ['#2f6bff', '#00b3a4', '#f59e0b', '#8b5cf6', '#ec4899', '#0e9f9a', '#f97316', '#4f7ff0', '#d946ef', '#00a870'];
+    $('#e-legend').innerHTML = cols.map((c, i) =>
+      `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${colLabel(c)} ${colMetricTag(c)}</span>`).join('');
 
-    $('#e-chart').hidden = view !== 'chart';
-    $('#e-table').hidden = view !== 'table';
-    setActive($('#e-viewtoggle'), 'mode', view);
-
-    if (view === 'chart') renderChart(data);
-    else renderTable(data);
+    $('#e-chart').hidden = false;
+    $('#e-table').hidden = false;
+    renderChart(data);
+    renderTable(data);
 
     $('#e-footnote').innerHTML = `口径说明：行为事件可分别勾选 <b>PV / UV</b>（列名带口径标记）；结果事件取后端业务成功数；计算值为派生指标（比率类保留 1 位小数）。
       列顺序：按配置中的勾选先后顺序展示（列头序号即顺序）。配置模版：每个应用一个默认模版，未配置的应用使用兜底模版；模版与账号绑定，可增删改查。原型数据为模拟生成。`;
@@ -2492,7 +2515,7 @@ window.TD = (function () {
       hoverDots.innerHTML = '';
       window.TD.hideTip();
     });
-    window.TD.redrawChart = () => { if (state.eventsView === 'chart') renderChart(data); };
+    window.TD.redrawChart = () => renderChart(data);
   }
 
   /* ---------------- bindings ---------------- */
@@ -2531,7 +2554,7 @@ window.TD = (function () {
       state.e.cols = itemsOf(t.id);
       renderEvents();
     });
-    $('#e-tpl-manage').addEventListener('click', () => window.TD.openTplManager('events'));
+    $('#e-tpl-manage').addEventListener('click', () => window.TD.openConfig('events', 'manage'));
     $('#e-channel').addEventListener('change', e => {
       state.e.channel = e.target.value;
       state.e.subchannel = '';
@@ -2546,13 +2569,6 @@ window.TD = (function () {
     });
     $('#e-version').addEventListener('change', e => {
       state.e.version = e.target.value;
-      renderEvents();
-    });
-
-    $('#e-viewtoggle').addEventListener('click', e => {
-      const btn = e.target.closest('button[data-mode]');
-      if (!btn) return;
-      state.eventsView = btn.dataset.mode;
       renderEvents();
     });
 
@@ -2583,7 +2599,6 @@ window.TD = (function () {
         tplId: state.e.tplId, cols
       };
       state.tick++;
-      state.eventsView = 'table';
       syncControls();
       renderEvents();
       window.TD.toast('已重置筛选条件');
@@ -2649,9 +2664,9 @@ window.TD = (function () {
     const sel = $('#f-version');
     const list = versionsOfSelectedChannels();
     if (state.f.version && !list.includes(state.f.version)) state.f.version = '';
-    sel.innerHTML = '<option value="">请选择</option>' + list.map(v => `<option value="${v}">${v}</option>`).join('');
+    sel.innerHTML = '<option value="">全部</option>' + list.map(v => `<option value="${v}"${state.f.version === v ? ' selected' : ''}>${v}</option>`).join('');
     sel.value = state.f.version;
-    sel.classList.toggle('is-empty', !state.f.version);
+    sel.classList.toggle('is-empty', false);
   }
 
   function updateSceneFields() {
@@ -2683,7 +2698,7 @@ window.TD = (function () {
     if (f.sceneType === 'channel') bits.push('渠道：' + (f.channels.length ? (f.channels.length > 2 ? f.channels.length + ' 个' : f.channels.join('、')) : '未选择'));
     if (f.sceneType === 'channel') bits.push('子渠道：' + (f.subchannels.length ? (f.subchannels.length > 2 ? f.subchannels.length + ' 个' : f.subchannels.join('、')) : '全部'));
     if (f.sceneType === 'version') bits.push('渠道：' + (f.channel || '未选择'));
-    if (f.sceneType === 'channel') bits.push('版本：' + (f.version || '未选择'));
+    if (f.sceneType === 'channel') bits.push('版本：' + (f.version || '全部'));
     if (f.sceneType === 'version') bits.push('版本：' + (f.versions.length ? (f.versions.length > 2 ? f.versions.length + ' 个' : f.versions.join('、')) : '未选择'));
     if (f.sceneType === 'none') bits.push('版本：' + (f.version || '全部'));
     bits.push(`${dateKey(f.start)} ~ ${dateKey(f.end)}`);
@@ -2762,7 +2777,7 @@ window.TD = (function () {
   }
 
   function funnelReady(f) {
-    if (f.sceneType === 'channel') return f.channels.length > 0 && !!f.version;
+    if (f.sceneType === 'channel') return f.channels.length > 0;
     if (f.sceneType === 'version') return f.versions.length > 0 && !!f.channel;
     return !!f.channel;
   }
@@ -2785,7 +2800,7 @@ window.TD = (function () {
 
     if (!ready) {
       let desc = '筛选条件默认不选中，因此暂无数据；选择渠道后即展示数据。';
-      if (f.sceneType === 'channel') desc = '「分渠道」需勾选渠道（支持全选）并选择一个应用版本；子渠道可选，选中后按每个子渠道分别展示漏斗与明细。';
+      if (f.sceneType === 'channel') desc = '「分渠道」需勾选渠道（支持全选）；应用版本默认全部，可按需指定；子渠道可选，选中后按每个子渠道分别展示漏斗与明细。';
       if (f.sceneType === 'version') desc = '「分应用版本」需勾选应用版本（支持全选）并选择一个渠道后展示数据。';
       setEmptyUI('请先选择筛选条件', desc, '去选择筛选条件', () => {
         const box = f.sceneType === 'channel' ? $('#ms-channels') : f.sceneType === 'version' ? $('#ms-versions') : null;
@@ -2896,9 +2911,13 @@ window.TD = (function () {
     });
   }
 
+  let funnelExpanded = false;
+  let funnelLastData = null;
+
   function renderFunnelCharts(data) {
     const box = $('#f-funnel');
     const steps = data.steps, metric = window.TD.describeMetrics(data.items);
+    funnelLastData = data;
 
     if (data.sceneType === 'none') {
       box.className = 'funnel-layout';
@@ -2908,15 +2927,39 @@ window.TD = (function () {
     }
 
     box.className = 'funnel-layout multi';
-    box.innerHTML = `<div class="funnel-grid">` + data.groups.map(g => `
+    const cards = data.groups.map(g => `
       <div class="funnel-card">
         <h3><span>${g.label}</span><span class="ov">整体 ${fmtRate(g.overall, 2)}</span></h3>
         <div class="fc-body" data-group="${g.label}">${funnelBodyHTML(g.totals, steps, metric)}</div>
-      </div>`).join('') + '</div>';
+      </div>`).join('');
+    box.innerHTML = `<div class="funnel-cards" id="funnel-cards"><div class="funnel-grid">${cards}</div></div>
+      <div class="funnel-more" id="funnel-more" hidden><button type="button" id="funnel-more-btn"></button></div>`;
     $$('.fc-body', box).forEach(card => {
       const g = data.groups.find(x => String(x.label) === card.dataset.group);
       if (g) bindBarTips(card, g.totals, steps, metric);
     });
+    applyFunnelClamp(box);
+  }
+
+  // 漏斗图最多展示两行，超出折叠
+  function applyFunnelClamp(box) {
+    const holder = box.querySelector('#funnel-cards');
+    const more = box.querySelector('#funnel-more');
+    const btn = box.querySelector('#funnel-more-btn');
+    const cards = $$('.funnel-card', box);
+    if (!holder || !more || !btn) return;
+    holder.classList.remove('clamped');
+    holder.style.maxHeight = '';
+    if (!cards.length) { more.hidden = true; return; }
+    const rects = cards.map(c => c.getBoundingClientRect());
+    const base = rects[0].top;
+    const rowTops = Array.from(new Set(rects.map(r => Math.round(r.top - base)))).sort((a, b) => a - b);
+    if (rowTops.length <= 2) { more.hidden = true; return; }
+    more.hidden = false;
+    if (funnelExpanded) { btn.textContent = '收起'; return; }
+    holder.style.maxHeight = Math.max(160, rowTops[2] - 8) + 'px';
+    holder.classList.add('clamped');
+    btn.textContent = `展开全部（${cards.length} 个漏斗）`;
   }
 
   /* ---------------- 漏斗表格：横坐标按步骤顺序交错 ---------------- */
@@ -2935,10 +2978,19 @@ window.TD = (function () {
 
     let body = '<tbody>';
     data.rows.forEach(r => {
+      if (r.groupHead) {
+        body += `<tr class="grp"><td class="sticky-col">${r.label}<span class="axis-tag">渠道汇总</span></td>`;
+        r.counts.forEach((v, i) => {
+          body += `<td>${fmtInt(v)}</td>`;
+          if (i < r.counts.length - 1) body += `<td class="rate">${fmtRate(r.rates[i], 1)}</td>`;
+        });
+        body += `<td class="rate good">${fmtRate(r.overall, 2)}</td></tr>`;
+        return;
+      }
       const first = r.date
         ? `${r.label}<span class="weekday">${WEEK[r.date.getDay()]}</span>`
-        : `${r.label}<span class="axis-tag">${r.sub || data.axisLabel}</span>`;
-      body += `<tr><td class="sticky-col">${first}</td>`;
+        : `${r.label}${r.subTag ? `<span class="axis-tag">${r.subTag}</span>` : ''}`;
+      body += `<tr${r.indent ? ' class="sub-row"' : ''}><td class="sticky-col">${first}</td>`;
       r.counts.forEach((v, i) => {
         body += `<td>${fmtInt(v)}</td>`;
         if (i < r.counts.length - 1) {
@@ -2982,7 +3034,9 @@ window.TD = (function () {
           msSubchannels.set(state.f.subchannels);
         }
         if (msVersions) {
-          state.f.versions = state.f.versions.filter(v => versionsOfSelectedChannels().includes(v));
+          const pool = versionsOfSelectedChannels();
+          state.f.versions = state.f.versions.filter(v => v === '全部' || pool.includes(v));
+          if (!state.f.versions.length) state.f.versions = ['全部'];
           msVersions.set(state.f.versions);
         }
         fillSingleVersion();
@@ -2997,10 +3051,21 @@ window.TD = (function () {
       onChange: vals => { state.f.subchannels = vals; updateSummary(); renderFunnel(); }
     });
     msVersions = makeMSel($('#ms-versions'), {
-      placeholder: '请选择',
-      options: () => versionsOfSelectedChannels(),
+      placeholder: '全部',
+      excludeAll: ['全部'],
+      options: () => ['全部'].concat(versionsOfSelectedChannels()),
       values: state.f.versions,
-      onChange: vals => { state.f.versions = vals; updateSummary(); renderFunnel(); }
+      onChange: vals => {
+        let v = vals.slice();
+        const hadAll = state.f.versions.indexOf('全部') >= 0;
+        if (!hadAll && v.indexOf('全部') >= 0) v = ['全部'];           // 新勾「全部」→ 只保留全部
+        else if (hadAll && v.length > 1) v = v.filter(x => x !== '全部'); // 勾具体版本 → 取消全部
+        if (!v.length) v = ['全部'];
+        state.f.versions = v;
+        if (String(v) !== String(vals)) msVersions.set(v);
+        updateSummary();
+        renderFunnel();
+      }
     });
 
     ['f-start', 'f-end'].forEach(id => {
@@ -3020,6 +3085,13 @@ window.TD = (function () {
       btn.firstChild.textContent = open ? '收起' : '展开更多';
     });
     window.addEventListener('resize', () => { if (!$('#f-product').classList.contains('open')) updateFoldHint(); });
+    let fResizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(fResizeTimer);
+      fResizeTimer = setTimeout(() => {
+        if (funnelLastData && funnelLastData.sceneType !== 'none') applyFunnelClamp($('#f-funnel'));
+      }, 160);
+    });
     $('#f-tpl').addEventListener('change', e => {
       const t = tplStore.get(e.target.value);
       if (!t) return;
@@ -3027,7 +3099,12 @@ window.TD = (function () {
       state.f.steps = itemsOf(t.id);
       renderFunnel();
     });
-    $('#f-tpl-manage').addEventListener('click', () => window.TD.openTplManager('funnel'));
+    $('#f-tpl-manage').addEventListener('click', () => window.TD.openConfig('funnel', 'manage'));
+    $('#f-funnel').addEventListener('click', e => {
+      if (!e.target.closest('#funnel-more-btn')) return;
+      funnelExpanded = !funnelExpanded;
+      if (funnelLastData) renderFunnelCharts(funnelLastData);
+    });
 
     $('#f-scene').addEventListener('click', e => {
       const btn = e.target.closest('button[data-v]');
@@ -3041,7 +3118,7 @@ window.TD = (function () {
       } else if (v === 'version') {
         state.f.channel = '';
         state.f.subchannel = '';
-        state.f.versions = [];
+        state.f.versions = ['全部'];
       }
       syncControls();
       renderFunnel();
@@ -3091,13 +3168,13 @@ window.TD = (function () {
       state.f = {
         start: s, end: en, product: '舌诊', sceneType: 'none',
         channel: '', subchannel: '', version: '',
-        channels: [], subchannels: [], versions: [],
+        channels: [], subchannels: [], versions: ['全部'],
         tplId: state.f.tplId, steps: state.f.steps
       };
       state.tick++;
       if (msChannels) msChannels.set([]);
       if (msSubchannels) msSubchannels.set([]);
-      if (msVersions) msVersions.set([]);
+      if (msVersions) msVersions.set(['全部']);
       syncControls();
       renderFunnel();
       window.TD.toast('已重置筛选条件');

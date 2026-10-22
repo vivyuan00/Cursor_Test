@@ -1,0 +1,2886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>舌诊应用数据看板 · 事件与漏斗分析 V1.1</title>
+<style>
+:root {
+  --brand: #2f5fe8;
+  --brand-strong: #1e4bd1;
+  --brand-soft: #eef3ff;
+  --ink: #1d2129;
+  --ink-2: #4e5969;
+  --ink-3: #86909c;
+  --ink-4: #a9aeb8;
+  --line: #e5e6eb;
+  --line-soft: #f0f1f3;
+  --bg: #f2f3f5;
+  --green: #00a870;
+  --red: #f53f3f;
+  --amber: #d97706;
+  --radius: 6px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, .04);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+svg { flex: none; }
+b, strong { font-weight: 600; }
+
+/* ---------- top bars ---------- */
+.topbar {
+  height: 46px;
+  background: linear-gradient(90deg, #1b3ec0, #2c5ce8 46%, #3768f2);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.brand { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; letter-spacing: .2px; white-space: nowrap; }
+.logo {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .3);
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 700;
+}
+.top-tabs { margin-left: 30px; display: flex; height: 100%; }
+.top-tab {
+  height: 100%; padding: 0 13px; border: 0; background: none;
+  color: rgba(255, 255, 255, .68); font-size: 13px; position: relative;
+}
+.top-tab.active { color: #fff; font-weight: 600; }
+.top-tab.active::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: 0;
+  height: 2px; border-radius: 2px 2px 0 0; background: #fff;
+}
+.top-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.icon-btn {
+  width: 30px; height: 30px; border: 0; border-radius: 5px; background: none;
+  color: rgba(255, 255, 255, .85); display: grid; place-items: center;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, .14); }
+.avatar {
+  width: 26px; height: 26px; border-radius: 50%; margin-left: 8px;
+  background: linear-gradient(135deg, #a5c0ff, #6f96ff);
+  border: 1.5px solid rgba(255, 255, 255, .6);
+}
+
+.sub-tabs {
+  height: 44px; background: #fff; border-bottom: 1px solid var(--line);
+  display: flex; align-items: stretch; padding: 0 20px; gap: 2px;
+  position: sticky; top: 46px; z-index: 30;
+}
+.sub-tab {
+  height: 100%; padding: 0 14px; border: 0; background: none;
+  color: var(--ink-2); font-size: 13px; display: inline-flex; align-items: center; gap: 6px;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;
+}
+.sub-tab:hover { color: var(--brand); }
+.sub-tab.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+.sub-tab.dim { color: var(--ink-3); }
+.tag-new {
+  font-size: 9.5px; font-weight: 600; line-height: 1;
+  color: var(--brand); background: var(--brand-soft);
+  border: 1px solid #d6e2ff; padding: 2px 4px; border-radius: 3px;
+}
+.proto-badge {
+  margin-left: auto; align-self: center;
+  font-size: 11px; color: #a86300; background: #fff5dd;
+  border: 1px solid #ffe3a8; padding: 2px 9px; border-radius: 99px;
+}
+
+/* ---------- layout ---------- */
+main { padding: 14px 20px 56px; max-width: 1560px; margin: 0 auto; }
+.page { animation: rise .32s ease both; }
+@keyframes rise { from { transform: translateY(6px); } to { transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+.filter-card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 13px 16px 12px; box-shadow: var(--shadow-card);
+}
+.filter-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 18px; }
+.field { display: flex; align-items: center; gap: 8px; }
+.field > label { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+
+.segment { display: inline-flex; background: #f2f3f5; border-radius: 5px; padding: 2px; gap: 1px; }
+.segment button {
+  height: 26px; padding: 0 10px; border: 0; background: none; border-radius: 4px;
+  font-size: 12px; color: var(--ink-2); white-space: nowrap;
+}
+.segment button:hover { color: var(--brand); }
+.segment button.active { background: #fff; color: var(--brand); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, .09); }
+
+.select-wrap { position: relative; display: inline-flex; }
+.select-wrap::after {
+  content: ""; position: absolute; right: 9px; top: 50%; margin-top: -2px;
+  width: 6px; height: 6px; border-right: 1.4px solid #86909c; border-bottom: 1.4px solid #86909c;
+  transform: rotate(45deg); pointer-events: none;
+}
+select {
+  height: 30px; min-width: 108px; padding: 0 26px 0 9px;
+  border: 1px solid #dcdfe6; border-radius: 4px; background: #fff;
+  font-size: 12px; color: var(--ink); appearance: none; outline: none;
+}
+select:focus { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(47, 95, 232, .12); }
+select:disabled { background: #f7f8fa; color: var(--ink-4); cursor: not-allowed; }
+select.is-empty { color: var(--ink-4); }
+.date-range { display: inline-flex; align-items: center; gap: 6px; }
+.date-input {
+  height: 30px; width: 128px; padding: 0 8px;
+  border: 1px solid #dcdfe6; border-radius: 4px; background: #fff;
+  font-size: 12px; color: var(--ink); outline: none; font-variant-numeric: tabular-nums;
+}
+.date-input:focus { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(47, 95, 232, .12); }
+.date-range em { font-style: normal; color: var(--ink-4); }
+
+.ops { margin-top: 11px; padding-top: 11px; border-top: 1px dashed var(--line); align-items: center; }
+.hint-icon {
+  width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--ink-4);
+  color: var(--ink-4); font-size: 10px; display: inline-grid; place-items: center; margin-left: 2px;
+}
+.spacer { flex: 1; }
+
+.btn {
+  height: 30px; padding: 0 12px; border: 1px solid #dcdfe6; background: #fff;
+  border-radius: 4px; font-size: 12px; color: var(--ink-2);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: border-color .15s, color .15s, background .15s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--brand); color: var(--brand); }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; padding: 0 16px; }
+.btn.primary:hover { background: var(--brand-strong); border-color: var(--brand-strong); }
+.btn.ghost { border-color: transparent; color: var(--ink-2); }
+.btn.ghost:hover { background: var(--brand-soft); border-color: transparent; color: var(--brand); }
+.btn:active { transform: translateY(.5px); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+/* ---------- more filter ---------- */
+.more-filter { margin-top: 11px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.more-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 0; background: none; color: var(--ink-2); font-size: 12px; padding: 2px 0;
+}
+.more-toggle:hover { color: var(--brand); }
+.more-toggle .chev {
+  width: 6px; height: 6px; border-right: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor;
+  transform: rotate(45deg); margin-top: -3px; transition: transform .16s;
+}
+.more-toggle.open .chev { transform: rotate(-135deg); margin-top: 2px; }
+.more-toggle b { color: var(--ink-4); font-weight: 400; }
+.more-panel { display: none; margin-top: 12px; }
+.more-panel.open { display: block; animation: fade .18s ease both; }
+.more-filter { position: relative; z-index: 30; }
+
+/* ---------- multi select ---------- */
+.msel { position: relative; display: inline-flex; }
+.msel-btn {
+  height: 30px; min-width: 136px; max-width: 230px; padding: 0 26px 0 9px;
+  border: 1px solid #dcdfe6; border-radius: 4px; background: #fff;
+  font-size: 12px; color: var(--ink); text-align: left; position: relative;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.msel-btn.is-empty { color: var(--ink-4); }
+.msel-btn:hover { border-color: #b9caf7; }
+.msel-btn .chev {
+  position: absolute; right: 9px; top: 50%; width: 6px; height: 6px; margin-top: -4px;
+  border-right: 1.4px solid #86909c; border-bottom: 1.4px solid #86909c; transform: rotate(45deg);
+}
+.msel-panel {
+  position: absolute; z-index: 60; top: 34px; left: 0; min-width: 208px;
+  background: #fff; border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .14); padding: 6px;
+}
+.msel-opts { max-height: 216px; overflow: auto; display: grid; gap: 2px; }
+.msel-opt {
+  display: flex; align-items: center; gap: 7px; padding: 5px 8px;
+  border-radius: 4px; font-size: 12px; cursor: pointer; color: var(--ink-2); user-select: none;
+}
+.msel-opt:hover { background: #f7f9ff; }
+.msel-opt .box {
+  width: 13px; height: 13px; border: 1.3px solid #c9cdd4; border-radius: 3px;
+  display: grid; place-items: center; background: #fff; flex: none; color: #fff;
+}
+.msel-opt.checked .box { background: var(--brand); border-color: var(--brand); }
+.msel-opt .box svg { opacity: 0; }
+.msel-opt.checked .box svg { opacity: 1; }
+.msel-opt.msel-all { border-bottom: 1px solid var(--line-soft); border-radius: 4px 4px 0 0; margin-bottom: 3px; font-weight: 600; color: var(--ink-2); }
+.msel-foot { display: flex; align-items: center; gap: 4px; border-top: 1px solid var(--line-soft); margin-top: 6px; padding-top: 6px; }
+.msel-foot button { border: 0; background: none; color: var(--brand); font-size: 11.5px; padding: 2px 6px; border-radius: 3px; }
+.msel-foot button:hover { background: var(--brand-soft); }
+.msel-foot .spacer { flex: 1; }
+.msel-empty { padding: 8px; font-size: 11.5px; color: var(--ink-4); }
+
+/* ---------- cards ---------- */
+.data-area { margin-top: 14px; transition: opacity .2s; }
+.data-area.is-loading { opacity: .5; pointer-events: none; }
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.card + .card { margin-top: 14px; }
+.card-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  padding: 14px 18px 12px; flex-wrap: wrap;
+}
+.card-head h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: .1px; }
+.card-head .sub { margin: 4px 0 0; font-size: 12px; color: var(--ink-3); }
+.card-head .sub b { color: var(--ink-2); font-weight: 500; }
+.head-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-top: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 11.5px; color: var(--ink-2); max-width: 720px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.legend i { width: 7px; height: 7px; border-radius: 2px; display: inline-block; }
+
+.view-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.view-toggle button { height: 26px; padding: 0 11px; border: 0; background: #fff; font-size: 12px; color: var(--ink-2); }
+.view-toggle button + button { border-left: 1px solid var(--line); }
+.view-toggle button.active { color: var(--brand); background: var(--brand-soft); font-weight: 500; }
+
+.chart-wrap { padding: 8px 18px 10px; height: 322px; position: relative; }
+.chart-wrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.chart-tip-line { stroke: #c9cdd4; stroke-dasharray: 3 3; }
+.axis-text { fill: #86909c; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.axis-line { stroke: #eef0f3; }
+.series-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.hover-dot { stroke: #fff; stroke-width: 1.5; }
+
+/* ---------- tables ---------- */
+.table-wrap { overflow: auto; max-height: 586px; border-top: 1px solid var(--line); }
+.table-wrap.tall { max-height: none; }
+table.grid { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12px; }
+table.grid thead th {
+  position: sticky; top: 0; z-index: 2;
+  background: #f7f8fa; color: var(--ink-3); font-weight: 500;
+  text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line);
+  white-space: nowrap; line-height: 1.35;
+}
+table.grid thead th:first-child { text-align: left; }
+table.grid thead th small { display: block; font-weight: 400; color: var(--ink-4); font-size: 10.5px; margin-top: 1px; }
+table.grid thead th.conv-th { color: var(--ink-3); background: #f2f4f8; }
+table.grid tbody td {
+  padding: 8px 14px; border-bottom: 1px solid var(--line-soft);
+  text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+table.grid tbody td:first-child { text-align: left; color: var(--ink-2); font-variant-numeric: normal; }
+table.grid tbody tr:last-child td { border-bottom: 0; }
+table.grid tbody tr:hover td { background: #f7f9ff; }
+table.grid tfoot td {
+  background: #fafbfc; font-weight: 600; padding: 10px 14px;
+  border-top: 1px solid var(--line); text-align: right; white-space: nowrap;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+table.grid tfoot td:first-child { text-align: left; color: var(--ink-3); font-weight: 500; }
+.rate { font-variant-numeric: tabular-nums; }
+.rate.low { color: var(--ink-3); }
+.rate.good { color: var(--green); }
+.sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; }
+thead .sticky-col { z-index: 3; background: #f7f8fa; }
+tbody tr:hover .sticky-col { background: #f7f9ff; }
+tfoot .sticky-col { background: #fafbfc; }
+.weekday { color: var(--ink-4); font-size: 11px; margin-left: 6px; }
+.axis-tag {
+  display: inline-block; font-size: 9.5px; line-height: 1.5; font-weight: 400;
+  color: var(--ink-3); background: #f2f3f5; border-radius: 3px; padding: 0 5px; margin-left: 6px;
+  vertical-align: 1px;
+}
+
+.footnote { font-size: 11.5px; color: var(--ink-3); margin: 8px 2px 0; line-height: 1.7; }
+.footnote b { color: var(--ink-2); font-weight: 500; }
+
+/* ---------- funnel ---------- */
+.funnel-layout { padding: 20px 26px 4px; }
+.funnel-step { display: grid; grid-template-columns: 200px minmax(0, 1fr) 128px; align-items: center; gap: 16px; height: 38px; }
+.fs-name { display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); text-align: right; line-height: 1.3; }
+.fs-index {
+  flex: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--brand-soft); color: var(--brand);
+  font-size: 10.5px; font-weight: 600; display: grid; place-items: center;
+}
+.fs-bar-zone { display: flex; justify-content: center; height: 32px; }
+.fs-bar {
+  height: 100%; min-width: 10px; border-radius: 4px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 11px; font-weight: 500; letter-spacing: .3px;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .08);
+  transition: width .55s cubic-bezier(.22, .7, .25, 1), filter .15s;
+  overflow: hidden;
+}
+.fs-bar:hover { filter: brightness(1.06); }
+.fs-bar span { opacity: .92; white-space: nowrap; padding: 0 10px; }
+.fs-count { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
+.fs-count small { display: block; font-weight: 400; font-size: 10.5px; color: var(--ink-3); margin-top: 1px; }
+.funnel-gap { display: grid; grid-template-columns: 200px minmax(0, 1fr) 128px; gap: 16px; height: 32px; align-items: center; }
+.fg-pill {
+  grid-column: 2; justify-self: center;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--ink-2);
+  background: #f7f8fa; border: 1px solid var(--line-soft);
+  border-radius: 99px; padding: 2px 10px; line-height: 1.6;
+}
+.fg-pill b { color: var(--green); font-weight: 600; }
+.fg-pill em { font-style: normal; color: var(--ink-3); }
+.fg-pill .arr { color: #c2c7d0; font-size: 10px; }
+.funnel-total {
+  display: flex; justify-content: center; align-items: baseline; gap: 12px;
+  border-top: 1px dashed var(--line); margin-top: 8px; padding: 18px 0 20px;
+}
+.funnel-total span { font-size: 12px; color: var(--ink-3); }
+.funnel-total b { font-size: 28px; font-weight: 700; color: var(--brand); letter-spacing: -.8px; font-variant-numeric: tabular-nums; }
+.funnel-total small { font-size: 12px; color: var(--ink-3); margin-left: 2px; }
+
+/* 多漏斗 */
+.funnel-layout.multi { padding: 6px 18px 18px; }
+.funnel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 14px; }
+.funnel-card {
+  border: 1px solid var(--line); border-radius: 6px; background: #fff;
+  padding: 12px 14px 4px;
+}
+.funnel-card > h3 {
+  margin: 0 0 10px; font-size: 12.5px; font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding-bottom: 8px; border-bottom: 1px dashed var(--line);
+}
+.funnel-card > h3 .ov { font-size: 11.5px; color: var(--brand); font-weight: 600; font-variant-numeric: tabular-nums; }
+.funnel-card .funnel-step { grid-template-columns: 112px minmax(0, 1fr) 88px; height: 30px; gap: 10px; }
+.funnel-card .funnel-gap { grid-template-columns: 112px minmax(0, 1fr) 88px; height: 26px; gap: 10px; }
+.funnel-card .fs-bar-zone { height: 24px; }
+.funnel-card .fs-name { font-size: 11.5px; gap: 5px; }
+.funnel-card .fs-index { width: 15px; height: 15px; font-size: 9.5px; }
+.funnel-card .fs-bar { font-size: 10px; }
+.funnel-card .fs-count { font-size: 12px; }
+.funnel-card .fs-count small { font-size: 9.5px; }
+.funnel-card .fg-pill { font-size: 10px; padding: 1px 8px; }
+.funnel-card .funnel-total { padding: 10px 0 12px; margin-top: 4px; }
+.funnel-card .funnel-total b { font-size: 20px; }
+.funnel-card .funnel-total span, .funnel-card .funnel-total small { font-size: 11px; }
+
+/* ---------- empty ---------- */
+.empty-state {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 70px 20px 76px; text-align: center; margin-top: 14px;
+  animation: rise .3s ease both;
+}
+.empty-state svg { margin-bottom: 14px; opacity: .9; }
+.empty-state h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.empty-state p { margin: 0 auto 18px; font-size: 12px; color: var(--ink-3); max-width: 460px; line-height: 1.7; }
+
+/* ---------- info banner / channel page ---------- */
+.info-banner {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: #f0f6ff; border: 1px solid #d6e4ff; color: #1d4ed8;
+  border-radius: var(--radius); padding: 11px 14px; font-size: 12px; line-height: 1.65;
+  margin-bottom: 14px;
+}
+.info-banner svg { margin-top: 2px; color: #2f5fe8; }
+.info-banner b { font-weight: 600; }
+.info-banner .muted { color: #5b7bbd; }
+.channel-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.link-btn {
+  border: 0; background: none; color: var(--brand); font-size: 12px; padding: 2px 4px;
+  border-radius: 3px; white-space: nowrap;
+}
+.link-btn:hover { background: var(--brand-soft); }
+.link-btn:disabled { color: var(--ink-4); cursor: default; background: none; }
+.channel-page .card-head { align-items: center; }
+.change-list { margin: 12px 18px 16px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.change-list li {
+  display: flex; gap: 9px; font-size: 12px; color: var(--ink-2); align-items: flex-start;
+  background: #fafbfc; border: 1px solid var(--line-soft); border-radius: 5px; padding: 8px 12px;
+}
+.change-list .ck { color: var(--green); margin-top: 1px; }
+.change-list em { font-style: normal; color: var(--ink-3); }
+
+/* ---------- modal ---------- */
+.modal-mask {
+  position: fixed; inset: 0; z-index: 80; background: rgba(15, 23, 42, .45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal {
+  width: 760px; max-width: 100%; max-height: 86vh; background: #fff;
+  border-radius: 8px; box-shadow: 0 24px 64px rgba(15, 23, 42, .3);
+  display: flex; flex-direction: column; animation: pop .22s cubic-bezier(.2, .8, .2, 1);
+}
+@keyframes pop { from { transform: translateY(10px) scale(.985); } to { transform: none; } }
+.modal-head {
+  padding: 15px 20px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+}
+.modal-head h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.modal-head p { margin: 4px 0 0; font-size: 12px; color: var(--ink-3); }
+.modal-close { border: 0; background: none; color: var(--ink-3); width: 26px; height: 26px; border-radius: 4px; display: grid; place-items: center; }
+.modal-close:hover { background: #f2f3f5; color: var(--ink); }
+.modal-body { padding: 4px 20px 18px; overflow: auto; }
+.opt-group h4 { margin: 16px 0 8px; font-size: 12px; font-weight: 500; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
+.opt-group h4 .count { color: var(--ink-4); font-weight: 400; font-size: 11px; }
+.opt-group h4 .soon { font-size: 10px; color: #a86300; background: #fff5dd; border: 1px solid #ffe3a8; padding: 0 5px; border-radius: 3px; }
+.opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.opt {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); border-radius: 5px; padding: 8px 10px;
+  font-size: 12px; cursor: pointer; transition: border-color .12s, background .12s, box-shadow .12s;
+  user-select: none; background: #fff; text-align: left;
+}
+.opt:hover { border-color: #b9caf7; background: #fafcff; }
+.opt.checked { border-color: var(--brand); background: #f4f7ff; box-shadow: inset 0 0 0 1px var(--brand); }
+.opt .box {
+  width: 14px; height: 14px; border-radius: 3px; border: 1.3px solid #c9cdd4;
+  flex: none; display: grid; place-items: center; background: #fff;
+}
+.opt.checked .box { background: var(--brand); border-color: var(--brand); }
+.opt .box svg { opacity: 0; color: #fff; }
+.opt.checked .box svg { opacity: 1; }
+.opt.locked { opacity: .5; cursor: not-allowed; }
+.opt.locked:hover { border-color: var(--line); background: #fff; }
+.opt .o-tag { margin-left: auto; font-size: 10px; color: var(--ink-4); background: #f7f8fa; border-radius: 3px; padding: 0 5px; }
+.opt .o-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modal-foot {
+  padding: 12px 20px; border-top: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-foot .counter { font-size: 12px; color: var(--ink-3); }
+.modal-foot .counter b { color: var(--brand); font-weight: 600; }
+.modal-foot .counter.max b { color: var(--amber); }
+.modal-foot .spacer { flex: 1; }
+.order-list { display: grid; gap: 7px; margin-top: 10px; }
+.order-item {
+  display: flex; align-items: center; gap: 10px; border: 1px solid var(--line);
+  border-radius: 5px; padding: 7px 10px; font-size: 12px; background: #fafbfc;
+}
+.order-item .oi-idx { width: 18px; height: 18px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-size: 10px; font-weight: 600; display: grid; place-items: center; flex: none; }
+.order-item .oi-move { margin-left: auto; display: flex; gap: 2px; }
+.oi-btn { width: 22px; height: 22px; border: 1px solid var(--line); background: #fff; border-radius: 3px; color: var(--ink-3); display: grid; place-items: center; }
+.oi-btn:hover:not(:disabled) { color: var(--brand); border-color: var(--brand); }
+.oi-btn:disabled { opacity: .35; cursor: not-allowed; }
+.pool-picker { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.pool-chip {
+  border: 1px solid var(--line); border-radius: 99px; padding: 4px 11px;
+  font-size: 12px; background: #fff; color: var(--ink-2); display: inline-flex; align-items: center; gap: 5px;
+}
+.pool-chip:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+.pool-chip.used { background: #f2f3f5; color: var(--ink-4); border-style: dashed; cursor: default; }
+.pool-chip:disabled { opacity: .55; cursor: not-allowed; }
+.pool-chip .plus { color: var(--ink-4); }
+
+/* ---------- config chip & bar ---------- */
+.cfg-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 26px; padding: 0 11px; border-radius: 99px;
+  border: 1px solid #d6e2ff; background: var(--brand-soft); color: var(--brand);
+  font-size: 12px; white-space: nowrap;
+}
+.cfg-chip:hover { border-color: var(--brand); }
+.cfg-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: 12px; padding: 9px 11px;
+  background: #fafbfc; border: 1px solid var(--line-soft); border-radius: 6px;
+}
+.cfg-bar .lbl { font-size: 11.5px; color: var(--ink-3); }
+.cfg-bar select { height: 28px; min-width: 190px; }
+.cfg-bar .spacer { flex: 1; }
+.badge-default { font-size: 10px; color: var(--green); background: #e8f8f2; border: 1px solid #b8ecd9; padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+.badge-product { font-size: 10px; color: var(--ink-3); background: #f2f3f5; border: 1px solid var(--line); padding: 1px 6px; border-radius: 3px; }
+.cfg-name-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.cfg-name-row label { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.cfg-name-row input {
+  flex: 1; max-width: 320px; height: 28px; border: 1px solid var(--line);
+  border-radius: 5px; padding: 0 9px; font-size: 12.5px; background: #fff;
+}
+.cfg-name-row input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 2px rgba(47, 95, 232, .12); }
+.fm-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 14px 0 4px; }
+.fm-tabs button {
+  border: 0; background: none; padding: 7px 12px; font-size: 13px; color: var(--ink-2);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 6px;
+}
+.fm-tabs button:hover { color: var(--brand); }
+.fm-tabs button.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+.fm-tabs .cnt { font-size: 11px; color: var(--ink-4); font-weight: 400; }
+.cfg-sec-title {
+  margin: 20px 0 2px; padding-top: 12px; border-top: 1px dashed var(--line);
+  font-size: 12px; font-weight: 500; color: var(--ink-2); display: flex; align-items: center; gap: 8px;
+}
+.cfg-sec-title .hint { font-size: 11px; color: var(--ink-4); font-weight: 400; }
+.link-btn.danger { color: var(--red); }
+.link-btn.danger:hover { background: #fff0f0; }
+
+/* ---------- toast & tooltip ---------- */
+.toast-root {
+  position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
+  z-index: 120; display: flex; flex-direction: column; gap: 8px; align-items: center;
+  pointer-events: none;
+}
+.toast {
+  background: #1f2329; color: #fff; font-size: 12.5px;
+  padding: 9px 16px; border-radius: 6px; box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+  animation: toastIn .22s ease; display: flex; align-items: center; gap: 8px;
+}
+.toast svg { color: #4ade80; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.tooltip {
+  position: fixed; z-index: 90; background: rgba(31, 35, 41, .94); color: #fff;
+  font-size: 11.5px; line-height: 1.6; padding: 8px 11px; border-radius: 6px;
+  pointer-events: none; box-shadow: 0 6px 20px rgba(0, 0, 0, .2);
+  transform: translate(-50%, -100%); white-space: nowrap; max-width: 340px;
+}
+.tooltip .tt-row { display: flex; justify-content: space-between; gap: 18px; }
+.tooltip .tt-row i { display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 6px; }
+.tooltip b { font-weight: 600; }
+
+.demo-badge {
+  position: fixed; left: 16px; bottom: 16px; z-index: 20;
+  font-size: 11px; color: var(--ink-3); background: rgba(255, 255, 255, .92);
+  border: 1px solid var(--line); border-radius: 99px; padding: 4px 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .06); backdrop-filter: blur(4px);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1280px) {
+  .field > label { display: none; }
+  .field { gap: 6px; }
+  .funnel-step, .funnel-gap { grid-template-columns: 150px minmax(0, 1fr) 112px; }
+}
+@media (max-width: 960px) {
+  main { padding: 12px 12px 48px; }
+  .top-tabs { display: none; }
+  .opt-grid { grid-template-columns: repeat(2, 1fr); }
+  .funnel-layout { padding: 16px 14px 4px; }
+  .funnel-step, .funnel-gap { grid-template-columns: 96px minmax(0, 1fr) 92px; gap: 10px; }
+  .fs-name { font-size: 11.5px; }
+  .funnel-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">灵</div>
+    <span>灵辰CRM管理系统</span>
+  </div>
+  <nav class="top-tabs">
+    <button class="top-tab active">数据统计</button>
+    <button class="top-tab">投放管理</button>
+    <button class="top-tab">系统设置</button>
+  </nav>
+  <div class="top-actions">
+    <button class="icon-btn" title="应用" aria-label="应用">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+    </button>
+    <button class="icon-btn" title="搜索" aria-label="搜索">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4 14 14" stroke-linecap="round"/></svg>
+    </button>
+    <button class="icon-btn" title="通知" aria-label="通知">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3.5 6.5a4.5 4.5 0 0 1 9 0c0 3 1.2 4 1.2 4H2.3s1.2-1 1.2-4Z" stroke-linejoin="round"/><path d="M6.5 13a1.7 1.7 0 0 0 3 0" stroke-linecap="round"/></svg>
+    </button>
+    <div class="avatar" title="侯金业"></div>
+  </div>
+</header>
+
+<nav class="sub-tabs">
+  <button class="sub-tab active" data-nav="events" data-page="events">应用事件统计 <span class="tag-new">NEW</span></button>
+  <button class="sub-tab" data-nav="funnel" data-page="funnel">应用漏斗分析 <span class="tag-new">NEW</span></button>
+  <span class="proto-badge">需求原型 · 演示数据</span>
+</nav>
+
+<main>
+
+  <!-- ======================== 应用事件统计 ======================== -->
+  <section class="page" id="page-events">
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="field">
+          <label>应用类型</label>
+          <div class="segment" id="e-product">
+            <button type="button" data-v="舌诊" class="active">舌诊</button>
+            <button type="button" data-v="快测">快测</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>渠道</label>
+          <div class="select-wrap"><select id="e-channel" class="is-empty">
+            <option value="">请选择</option>
+            <option>百度</option><option>抖音</option><option>微信</option><option>自然流量</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label>子渠道</label>
+          <div class="select-wrap"><select id="e-subchannel" disabled>
+            <option value="">请选择</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label>应用版本</label>
+          <div class="select-wrap"><select id="e-version">
+            <option value="">全部版本</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label>时间段</label>
+          <div class="date-range">
+            <input type="date" class="date-input" id="e-start">
+            <em>至</em>
+            <input type="date" class="date-input" id="e-end">
+          </div>
+        </div>
+      </div>
+      <div class="filter-row ops">
+        <button class="btn primary" id="e-query">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4 14 14" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" id="e-reset">重置</button>
+        <button class="btn" id="e-export">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v8m0 0 3-3m-3 3L5 7" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1" stroke-linecap="round"/></svg>
+          导出 Excel
+        </button>
+        <span class="spacer"></span>
+        <button class="btn ghost" id="e-config">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.1"/><path d="M8 1.6v1.7M8 12.7v1.7M1.6 8h1.7M12.7 8h1.7M3.5 3.5l1.2 1.2M11.3 11.3l1.2 1.2M12.5 3.5l-1.2 1.2M4.7 11.3l-1.2 1.2" stroke-linecap="round"/></svg>
+          配置指标
+        </button>
+      </div>
+    </div>
+
+    <div class="data-area" id="e-view" hidden>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>应用事件统计</h2>
+            <p class="sub" id="e-meta">—</p>
+          </div>
+          <div class="head-right">
+            <button class="cfg-chip" id="e-cfg-chip" title="当前指标配置，点击修改">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 5.5 8 2l6 3.5v5L8 14l-6-3.5v-5Z" stroke-linejoin="round"/><path d="M8 8.6 2.2 5.3M8 8.6l5.8-3.3M8 8.6V14" stroke-linejoin="round"/></svg>
+              <span id="e-cfg-name">—</span>
+            </button>
+            <div class="legend" id="e-legend"></div>
+            <div class="view-toggle" id="e-viewtoggle">
+              <button data-mode="table" class="active">表格</button>
+              <button data-mode="chart">趋势图</button>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap" id="e-chart" hidden></div>
+        <div class="table-wrap" id="e-table"></div>
+      </div>
+      <p class="footnote" id="e-footnote">—</p>
+    </div>
+
+    <div class="empty-state" id="e-empty" hidden>
+      <svg width="120" height="92" viewBox="0 0 120 92" fill="none">
+        <rect x="22" y="18" width="76" height="58" rx="7" fill="#eef3ff"/>
+        <rect x="30" y="10" width="60" height="60" rx="7" fill="#fff" stroke="#d6e2ff" stroke-width="1.5"/>
+        <path d="M42 28h36M42 38h24" stroke="#c8d8fa" stroke-width="3" stroke-linecap="round"/>
+        <rect x="42" y="48" width="24" height="9" rx="4.5" fill="#2f5fe8" opacity=".85"/>
+        <circle cx="92" cy="66" r="15" fill="#fff4d6" stroke="#ffe3a8"/>
+        <path d="M86 66.5h12M92 60.5v12" stroke="#e0a020" stroke-width="2" stroke-linecap="round" transform="rotate(45 92 66.5)"/>
+      </svg>
+      <h3 id="e-empty-title">请先选择筛选条件</h3>
+      <p id="e-empty-desc">筛选条件默认不选中，选择「渠道」后展示数据。</p>
+      <button class="btn primary" id="e-empty-btn" hidden></button>
+    </div>
+  </section>
+
+  <!-- ======================== 应用漏斗分析 ======================== -->
+  <section class="page" id="page-funnel" hidden>
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="field">
+          <label>应用类型</label>
+          <div class="segment" id="f-product">
+            <button data-v="舌诊" class="active">舌诊</button>
+            <button data-v="快测">快测</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>场景值</label>
+          <div class="segment" id="f-scene">
+            <button data-v="none" class="active">不增加</button>
+            <button data-v="channel">分渠道</button>
+            <button data-v="version">分应用版本</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="more-filter">
+        <div class="more-panel open" id="f-more-panel">
+          <div class="filter-row">
+            <div class="field" id="f-field-channel">
+              <label>渠道</label>
+              <div class="select-wrap"><select id="f-channel" class="is-empty">
+                <option value="">请选择</option>
+                <option>百度</option><option>抖音</option><option>微信</option><option>自然流量</option>
+              </select></div>
+            </div>
+            <div class="field" id="f-field-subchannel">
+              <label>子渠道</label>
+              <div class="select-wrap"><select id="f-subchannel" disabled>
+                <option value="">请选择</option>
+              </select></div>
+            </div>
+            <div class="field" id="f-field-channels">
+              <label>渠道</label>
+              <div class="msel" id="ms-channels">
+                <button type="button" class="msel-btn is-empty"><span class="msel-text">请选择</span><i class="chev"></i></button>
+                <div class="msel-panel" hidden>
+                  <div class="msel-opts"></div>
+                  <div class="msel-foot">
+                    <button type="button" data-act="none">清空</button>
+                    <span class="spacer"></span>
+                    <button type="button" data-act="ok">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field" id="f-field-subchannels">
+              <label>子渠道</label>
+              <div class="msel" id="ms-subchannels">
+                <button type="button" class="msel-btn is-empty"><span class="msel-text">全部</span><i class="chev"></i></button>
+                <div class="msel-panel" hidden>
+                  <div class="msel-opts"></div>
+                  <div class="msel-foot">
+                    <button type="button" data-act="none">清空</button>
+                    <span class="spacer"></span>
+                    <button type="button" data-act="ok">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field" id="f-field-version">
+              <label>应用版本</label>
+              <div class="select-wrap"><select id="f-version" class="is-empty">
+                <option value="">请选择</option>
+              </select></div>
+            </div>
+            <div class="field" id="f-field-versions">
+              <label>应用版本</label>
+              <div class="msel" id="ms-versions">
+                <button type="button" class="msel-btn is-empty"><span class="msel-text">请选择</span><i class="chev"></i></button>
+                <div class="msel-panel" hidden>
+                  <div class="msel-opts"></div>
+                  <div class="msel-foot">
+                    <button type="button" data-act="none">清空</button>
+                    <span class="spacer"></span>
+                    <button type="button" data-act="ok">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>时间段</label>
+              <div class="date-range">
+                <input type="date" class="date-input" id="f-start">
+                <em>至</em>
+                <input type="date" class="date-input" id="f-end">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-row ops">
+        <button class="btn primary" id="f-query">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4 14 14" stroke-linecap="round"/></svg>
+          查询
+        </button>
+        <button class="btn" id="f-reset">重置</button>
+        <button class="btn" id="f-export">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2v8m0 0 3-3m-3 3L5 7" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1" stroke-linecap="round"/></svg>
+          导出 Excel
+        </button>
+        <span class="spacer"></span>
+        <button class="btn ghost" id="f-config">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.1"/><path d="M8 1.6v1.7M8 12.7v1.7M1.6 8h1.7M12.7 8h1.7M3.5 3.5l1.2 1.2M11.3 11.3l1.2 1.2M12.5 3.5l-1.2 1.2M4.7 11.3l-1.2 1.2" stroke-linecap="round"/></svg>
+          配置步骤
+        </button>
+      </div>
+    </div>
+
+    <div class="data-area" id="f-view" hidden>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>应用漏斗分析</h2>
+            <p class="sub" id="f-meta">—</p>
+          </div>
+          <div class="head-right">
+            <button class="cfg-chip" id="f-cfg-chip" title="当前漏斗配置，点击修改">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 5.5 8 2l6 3.5v5L8 14l-6-3.5v-5Z" stroke-linejoin="round"/><path d="M8 8.6 2.2 5.3M8 8.6l5.8-3.3M8 8.6V14" stroke-linejoin="round"/></svg>
+              <span id="f-cfg-name">默认转化漏斗</span>
+            </button>
+            <div class="legend" id="f-legend"></div>
+          </div>
+        </div>
+        <div class="funnel-layout" id="f-funnel"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 id="f-table-title">分日明细</h2>
+            <p class="sub" id="f-table-sub">纵坐标为日期 · 每行展示当日各步骤人数与向下转化率</p>
+          </div>
+        </div>
+        <div class="table-wrap" id="f-table"></div>
+      </div>
+      <p class="footnote" id="f-footnote">—</p>
+    </div>
+
+    <div class="empty-state" id="f-empty" hidden>
+      <svg width="120" height="92" viewBox="0 0 120 92" fill="none">
+        <rect x="22" y="18" width="76" height="58" rx="7" fill="#e8f8f2"/>
+        <rect x="30" y="10" width="60" height="60" rx="7" fill="#fff" stroke="#c8ecdd" stroke-width="1.5"/>
+        <path d="M42 28h36M42 38h24" stroke="#c8ecdd" stroke-width="3" stroke-linecap="round"/>
+        <rect x="42" y="48" width="24" height="9" rx="4.5" fill="#00a870" opacity=".8"/>
+        <circle cx="92" cy="66" r="15" fill="#fff4d6" stroke="#ffe3a8"/>
+        <path d="M86 66.5h12M92 60.5v12" stroke="#e0a020" stroke-width="2" stroke-linecap="round" transform="rotate(45 92 66.5)"/>
+      </svg>
+      <h3 id="f-empty-title">请先选择筛选条件</h3>
+      <p id="f-empty-desc">筛选条件默认不选中，因此暂无数据；选择渠道后展示数据。</p>
+      <button class="btn primary" id="f-empty-btn" hidden></button>
+    </div>
+  </section>
+
+  <!-- ======================== 渠道 × 应用（改造后） ======================== -->
+  <section class="page channel-page" id="page-channel" hidden>
+    <div class="info-banner">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.4"/><path d="M8 7.2v4" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".8" fill="currentColor" stroke="none"/></svg>
+      <div>
+        <b>改造说明：</b>已移除「首页 PV / UV、报告数」及相关计算列，移除「查看详情」入口；行级详情改由 <b>应用事件统计</b> 与 <b>应用漏斗分析</b> 承接。
+        <span class="muted">日常转化观察请前往这两个新页面，按渠道、版本、时间段筛选后查看。</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>渠道 × 应用</h2>
+          <p class="sub">时间范围：2026-10-14 ~ 2026-10-20 · 仅保留加粉口径数据</p>
+        </div>
+      </div>
+      <div class="table-wrap tall">
+        <table class="grid">
+          <thead>
+            <tr>
+              <th style="width:190px">渠道</th>
+              <th>子渠道</th>
+              <th>产品</th>
+              <th>版本</th>
+              <th>加粉数（汇总）</th>
+              <th>加粉转化率</th>
+              <th style="width:170px; text-align:right">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2">流量分配测试<br><span style="color:var(--ink-4);font-size:11px">test_traffic</span></td>
+              <td>—</td><td>舌诊 Agent</td><td>v1</td><td>6,208</td><td>7.6%</td>
+              <td><div class="channel-actions"><button class="link-btn" data-goto="events">事件分析</button><button class="link-btn" data-goto="funnel">漏斗分析</button></div></td>
+            </tr>
+            <tr>
+              <td>—</td><td>舌诊 Agent（快测）</td><td>v1</td><td>3,133</td><td>6.4%</td>
+              <td><div class="channel-actions"><button class="link-btn" data-goto="events">事件分析</button><button class="link-btn" data-goto="funnel">漏斗分析</button></div></td>
+            </tr>
+            <tr>
+              <td rowspan="2">百度测试<br><span style="color:var(--ink-4);font-size:11px">baidu</span></td>
+              <td>Peter</td><td>舌诊 Agent</td><td>v1</td><td>1,842</td><td>8.1%</td>
+              <td><div class="channel-actions"><button class="link-btn" data-goto="events">事件分析</button><button class="link-btn" data-goto="funnel">漏斗分析</button></div></td>
+            </tr>
+            <tr>
+              <td>houJiNye</td><td>舌诊 Agent</td><td>v1</td><td>1,536</td><td>7.4%</td>
+              <td><div class="channel-actions"><button class="link-btn" data-goto="events">事件分析</button><button class="link-btn" data-goto="funnel">漏斗分析</button></div></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr><td class="sticky-col">合计</td><td>—</td><td>—</td><td>—</td><td>12,719</td><td>7.4%</td><td></td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>每日 AI 工具转化 · 同步改造</h2>
+          <p class="sub">按需求精简数据列，去掉 PV / UV 及相关计算口径</p>
+        </div>
+      </div>
+      <ul class="change-list">
+        <li><span class="ck">✓</span><span>移除 <b>首页 PV、首页 UV</b> 及相关计算列 <em>（含 首页-报告转化率 PV 等依赖 PV 的派生指标）</em></span></li>
+        <li><span class="ck">✓</span><span>保留 AI 工具转化链路：报告数、报告人次、报告-加粉转化率、加粉数（报告转化）、加粉数（渠道汇总）</span></li>
+        <li><span class="ck">✓</span><span>医助转化链路保持不变：加粉数（全量）、开方、支付、加粉-支付转化率</span></li>
+      </ul>
+      <div class="table-wrap" style="border-top:1px solid var(--line)">
+        <table class="grid">
+          <thead><tr><th>日期</th><th>报告数</th><th>报告人次</th><th>报告-加粉转化率</th><th>加粉数（报告转化）</th><th>加粉数（渠道汇总）</th><th>加粉数（全量）</th><th>开方</th><th>支付</th><th>加粉-支付转化率</th></tr></thead>
+          <tbody>
+            <tr><td>2026-10-20</td><td>20,761</td><td>15,197</td><td>4.9%</td><td>1,008</td><td>1,008</td><td>1,019</td><td>185</td><td>122</td><td>12.0%</td></tr>
+            <tr><td>2026-10-19</td><td>26,358</td><td>19,383</td><td>5.2%</td><td>1,374</td><td>1,377</td><td>1,395</td><td>265</td><td>163</td><td>11.7%</td></tr>
+            <tr><td>2026-10-18</td><td>30,069</td><td>22,003</td><td>5.0%</td><td>1,490</td><td>1,493</td><td>1,514</td><td>303</td><td>190</td><td>12.6%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast-root" id="toast-root"></div>
+<div class="tooltip" id="tooltip" hidden></div>
+<div id="modal-root"></div>
+
+<script>
+/* 舌诊应用数据看板 · 交互原型 — 数据与状态层 */
+window.TD = (function () {
+  'use strict';
+
+  /* ---------------- basic utils ---------------- */
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+  const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const pad = n => String(n).padStart(2, '0');
+  const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const dateKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parseKey = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const fmtInt = n => Number(n).toLocaleString('zh-CN');
+  const fmtShort = n => {
+    if (n >= 100000000) return (n / 100000000).toFixed(1) + '亿';
+    if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+    return fmtInt(n);
+  };
+  const fmtRate = (x, digits) => (x * 100).toFixed(digits == null ? 1 : digits) + '%';
+  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const rngOf = seedStr => mulberry32(hashStr(seedStr));
+
+  function eachDay(start, end) {
+    const out = [];
+    for (let d = startOfDay(start); d <= end; d = addDays(d, 1)) out.push(new Date(d));
+    return out;
+  }
+
+  const TODAY = startOfDay(new Date());
+  function defaultRange() { return [addDays(TODAY, -6), TODAY]; }
+
+  /* ---------------- 维度 ---------------- */
+  const PRODUCTS = [
+    { v: '舌诊', label: '舌诊类应用' },
+    { v: '快测', label: '快测类应用' }
+  ];
+  const VERSIONS = ['v1.0.0', 'v1.1.2', 'v2.0.0'];
+  const VERSION_SHARE = { 'v1.0.0': 0.26, 'v1.1.2': 0.39, 'v2.0.0': 0.35 };
+  const CHANNELS = {
+    '百度':     { subs: ['信息流', '搜索'],   share: 0.34, subShare: { '信息流': 0.62, '搜索': 0.38 }, conv: 1.03, versions: ['v1.0.0', 'v1.1.2'] },
+    '抖音':     { subs: ['达人视频', '直播'], share: 0.29, subShare: { '达人视频': 0.68, '直播': 0.32 }, conv: 0.94, versions: ['v1.0.0', 'v1.1.2', 'v2.0.0'] },
+    '微信':     { subs: ['公众号', '朋友圈'], share: 0.22, subShare: { '公众号': 0.57, '朋友圈': 0.43 }, conv: 1.07, versions: ['v1.1.2', 'v2.0.0'] },
+    '自然流量': { subs: ['直接访问'],         share: 0.15, subShare: { '直接访问': 1 }, conv: 0.86, versions: ['v2.0.0'] }
+  };
+  const CHANNEL_NAMES = Object.keys(CHANNELS);
+
+  /* ---------------- 指标字典 ---------------- */
+  const CATALOG = [
+    // ===== 行为事件 · 页面浏览（有 PV / UV 两个值）=====
+    { key: 'home',         name: '首页',                 group: '页面浏览', kind: 'behavior', type: 'count', base: 214000, uv: 0.70, stage: 1,     color: '#2f6bff' },
+    { key: 'capture',      name: '拍摄页',               group: '页面浏览', kind: 'behavior', type: 'count', base: 126000, uv: 0.69, stage: 0.58,  color: '#1a9fd4' },
+    { key: 'reporting',    name: '报告生成中',           group: '页面浏览', kind: 'behavior', type: 'count', base: 67000,  uv: 0.72, stage: 0.31,  color: '#6b8afd' },
+    { key: 'agentPage',    name: '医生agent',            group: '页面浏览', kind: 'behavior', type: 'count', base: 51000,  uv: 0.75, stage: 0.24,  color: '#4f7ff0' },
+    { key: 'qrPage',       name: '二维码加v页',          group: '页面浏览', kind: 'behavior', type: 'count', base: 17600,  uv: 0.80, stage: 0.078, color: '#19b8a6' },
+    { key: 'historyPage',  name: '历史报告详情页',       group: '页面浏览', kind: 'behavior', type: 'count', base: 45000,  uv: 0.77, stage: 0.12,  color: '#7c9cf5' },
+    // ===== 行为事件 · 元素曝光和点击 =====
+    { key: 'allRecords',   name: '全部记录',             group: '元素曝光和点击 · 首页', kind: 'behavior', type: 'count', base: 95000,  uv: 0.73, stage: 0.62, color: '#f59e0b' },
+    { key: 'healthGoal',   name: '健康目标选择',         group: '元素曝光和点击 · 首页', kind: 'behavior', type: 'count', base: 139000, uv: 0.70, stage: 0.64, color: '#f97316' },
+    { key: 'startDiag',    name: '开始舌诊',             group: '元素曝光和点击 · 首页', kind: 'behavior', type: 'count', base: 119000, uv: 0.70, stage: 0.56, color: '#eab308' },
+    { key: 'clickShoot',   name: '点击拍摄',             group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 106000, uv: 0.69, stage: 0.52, color: '#f59e0b' },
+    { key: 'albumUpload',  name: '相册上传',             group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 41000,  uv: 0.71, stage: 0.20, color: '#f97316' },
+    { key: 'switchCam',    name: '切换摄像头',           group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 23500,  uv: 0.72, stage: 0.11, color: '#eab308' },
+    { key: 'upload',       name: '舌象上传',             group: '元素曝光和点击 · 拍摄页', kind: 'behavior', type: 'count', base: 94000,  uv: 0.70, stage: 0.49, color: '#8b5cf6' },
+    { key: 'reportCard',   name: '舌诊报告留资卡',       group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 23400, uv: 0.86, stage: 0.08,  color: '#ec4899' },
+    { key: 'consultCard',  name: '问诊报告留资卡',       group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 14900, uv: 0.87, stage: 0.055, color: '#f97316' },
+    { key: 'doctorBubble', name: '医生加v气泡胶囊',      group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 30500, uv: 0.84, stage: 0.068, color: '#d946ef' },
+    { key: 'continueChat', name: '继续对话',             group: '元素曝光和点击 · 医生agent', kind: 'behavior', type: 'count', base: 57000, uv: 0.76, stage: 0.23,  color: '#a855f7' },
+    { key: 'leadCard',     name: '留资卡',               group: '元素曝光和点击 · 历史报告详情页', kind: 'behavior', type: 'count', base: 12400, uv: 0.88, stage: 0.05, color: '#f43f5e' },
+    // ===== 计算值 · 行为转化 =====
+    { key: 'homeCaptureRate', name: '舌诊首页-拍摄转化率', group: '计算值 · 行为转化', kind: 'calc', type: 'ratio', calc: ['capture', 'home'], stage: 0.58 },
+    { key: 'uploadRate',      name: '舌象上传率',          group: '计算值 · 行为转化', kind: 'calc', type: 'ratio', calc: ['upload', 'capture'], stage: 0.49 },
+    { key: 'uploadLossRate',  name: '上传折损率',          group: '计算值 · 行为转化', kind: 'calc', type: 'ratioInv', calc: ['upload', 'capture'], stage: 0.51 },
+    // ===== 结果事件 · 报告 =====
+    { key: 'reportPv',       name: '舌诊成功报告数（PV）', group: '结果事件 · 报告', kind: 'result', type: 'count', base: 26800, uv: 0.74, stage: 0.125, color: '#0e9f9a' },
+    { key: 'reportUv',       name: '舌诊成功报告数（UV）', group: '结果事件 · 报告', kind: 'result', type: 'count', base: 19800, uv: 1,    stage: 0.092, color: '#12b3ad' },
+    { key: 'consultSummary', name: '问诊小结数',           group: '结果事件 · 报告', kind: 'result', type: 'count', base: 9100,  uv: 0.94, stage: 0.043, color: '#0d9488' },
+    // ===== 结果事件 · 医生agent会话 =====
+    { key: 'agentSession',     name: '医生agent会话数（舌诊报告）', group: '结果事件 · 医生agent会话', kind: 'result', type: 'count', base: 17600, uv: 0.90, stage: 0.083, color: '#0e9f9a' },
+    { key: 'openSession',      name: '开口会话数',                  group: '结果事件 · 医生agent会话', kind: 'result', type: 'count', base: 11200, uv: 0.92, stage: 0.052, color: '#14b8a6' },
+    { key: 'openRate',         name: '会话开口率',                  group: '结果事件 · 医生agent会话', kind: 'calc', type: 'ratio', calc: ['openSession', 'agentSession'], stage: 0.62 },
+    { key: 'avgRounds',        name: '平均对话轮次',                group: '结果事件 · 医生agent会话', kind: 'result', type: 'avg', base: 4.8, stage: 0.083 },
+    { key: 'avgSummaryRounds', name: '平均出小结轮次',              group: '结果事件 · 医生agent会话', kind: 'result', type: 'avg', base: 6.3, stage: 0.05 },
+    // ===== 结果事件 · 加粉 =====
+    { key: 'addFriend', name: '加粉数（报告转化）', group: '结果事件 · 加粉', kind: 'result', type: 'count', base: 7200, uv: 0.96, stage: 0.034, color: '#00a870' },
+    // ===== 计算值 · 结果转化 =====
+    { key: 'reportPerUser',     name: '人均舌诊报告数',          group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['reportPv', 'reportUv'], stage: 0.125 },
+    { key: 'reportSummaryRate', name: '舌诊报告-小结转化率',      group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['consultSummary', 'reportPv'], stage: 0.043 },
+    { key: 'summaryAddRate',    name: '问诊小结-加粉转化率',      group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'consultSummary'], stage: 0.034 },
+    { key: 'reportAddRate',     name: '舌诊报告-加粉转化率',      group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'reportPv'], stage: 0.034 },
+    { key: 'homeAddRate',       name: '首页PV-加粉转化率',        group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'home'], stage: 0.034 },
+    { key: 'captureAddRate',    name: '舌诊拍摄页PV-加粉转化率',  group: '计算值 · 结果转化', kind: 'calc', type: 'ratio', calc: ['addFriend', 'capture'], stage: 0.034 }
+  ];
+  const byKey = Object.fromEntries(CATALOG.map(e => [e.key, e]));
+
+  const BEHAVIOR_GROUPS = [
+    { name: '页面浏览', keys: ['home', 'capture', 'reporting', 'agentPage', 'qrPage', 'historyPage'] },
+    { name: '元素曝光和点击 · 首页', keys: ['allRecords', 'healthGoal', 'startDiag'] },
+    { name: '元素曝光和点击 · 拍摄页', keys: ['clickShoot', 'albumUpload', 'switchCam', 'upload'] },
+    { name: '元素曝光和点击 · 医生agent', keys: ['reportCard', 'consultCard', 'doctorBubble', 'continueChat'] },
+    { name: '元素曝光和点击 · 历史报告详情页', keys: ['leadCard'] },
+    { name: '计算值 · 行为转化', keys: ['homeCaptureRate', 'uploadRate', 'uploadLossRate'], tag: '计算值' }
+  ];
+  const RESULT_GROUPS = [
+    { name: '结果事件 · 报告', keys: ['reportPv', 'reportUv', 'consultSummary'] },
+    { name: '结果事件 · 医生agent会话', keys: ['agentSession', 'openSession', 'openRate', 'avgRounds', 'avgSummaryRounds'] },
+    { name: '结果事件 · 加粉', keys: ['addFriend'] },
+    { name: '计算值 · 结果转化', keys: ['reportPerUser', 'reportSummaryRate', 'summaryAddRate', 'reportAddRate', 'homeAddRate', 'captureAddRate'], tag: '计算值' }
+  ];
+  // 漏斗步骤池：前端埋点行为事件 + 后端业务结果事件（不含计算值 / 均值）
+  const FUNNEL_GROUPS = [
+    { name: '页面浏览', keys: ['home', 'capture', 'reporting', 'agentPage', 'qrPage', 'historyPage'] },
+    { name: '元素曝光和点击 · 首页', keys: ['allRecords', 'healthGoal', 'startDiag'] },
+    { name: '元素曝光和点击 · 拍摄页', keys: ['clickShoot', 'albumUpload', 'switchCam', 'upload'] },
+    { name: '元素曝光和点击 · 医生agent', keys: ['reportCard', 'consultCard', 'doctorBubble', 'continueChat'] },
+    { name: '元素曝光和点击 · 历史报告详情页', keys: ['leadCard'] },
+    { name: '结果事件 · 报告', keys: ['reportPv', 'reportUv', 'consultSummary'] },
+    { name: '结果事件 · 医生agent会话', keys: ['agentSession', 'openSession'] },
+    { name: '结果事件 · 加粉', keys: ['addFriend'] }
+  ];
+
+  /* ---------------- 默认配置 ---------------- */
+  const MAX_COLS = 10;
+  const MAX_STEPS = 10;
+  const DEFAULT_EVENT_COLS = [
+    { key: 'home', metric: 'pv' },
+    { key: 'capture', metric: 'pv' },
+    { key: 'upload', metric: 'pv' },
+    { key: 'agentSession', metric: '-' },
+    { key: 'reportCard', metric: 'pv' },
+    { key: 'avgRounds', metric: '-' },
+    { key: 'consultCard', metric: 'pv' },
+    { key: 'addFriend', metric: '-' }
+  ];
+  const DEFAULT_STEPS = ['home', 'capture', 'agentSession', 'consultSummary', 'addFriend'];
+
+  function makeStore(key, seedFn) {
+    let mem = null;
+    function read() {
+      try { const raw = localStorage.getItem(key); if (raw) return JSON.parse(raw); } catch (e) { /* file:// 下退回内存 */ }
+      return mem;
+    }
+    function write(list) {
+      mem = list;
+      try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) {}
+    }
+    if (!read()) write(seedFn());
+    const all = () => read() || [];
+    return {
+      all,
+      list: product => all().filter(c => !product || c.product === product),
+      get: id => all().find(c => c.id === id) || null,
+      newId: pfx => pfx + Math.random().toString(36).slice(2, 9),
+      save(cfg) {
+        const list = all().slice();
+        const i = list.findIndex(c => c.id === cfg.id);
+        cfg.updated_at = Date.now();
+        if (i >= 0) list[i] = cfg; else { cfg.created_at = Date.now(); list.push(cfg); }
+        write(list);
+        return cfg;
+      },
+      remove(id) { write(all().filter(c => c.id !== id)); },
+      setDefault(product, id) {
+        const list = all().slice();
+        list.forEach(c => { if (c.product === product) c.isDefault = (c.id === id); });
+        write(list);
+      },
+      reset() { write(seedFn()); }
+    };
+  }
+
+  const evCfgStore = makeStore('td_events_cfg_v3', function () {
+    const now = Date.now(), day = 86400000;
+    return [
+      { id: 'ev_zd_default', product: '舌诊', name: '默认指标配置', isDefault: true, owner: 'system',
+        cols: DEFAULT_EVENT_COLS.map(c => Object.assign({}, c)), created_at: now - 10 * day, updated_at: now - 1 * day },
+      { id: 'ev_zd_core', product: '舌诊', name: '核心转化监控', isDefault: false, owner: '陈晨',
+        cols: [{ key: 'home', metric: 'pv' }, { key: 'home', metric: 'uv' }, { key: 'capture', metric: 'uv' },
+               { key: 'reportPv', metric: '-' }, { key: 'addFriend', metric: '-' }, { key: 'homeAddRate', metric: '-' }],
+        created_at: now - 6 * day, updated_at: now - 2 * day },
+      { id: 'ev_kc_default', product: '快测', name: '默认指标配置', isDefault: true, owner: 'system',
+        cols: [{ key: 'home', metric: 'pv' }, { key: 'capture', metric: 'pv' }, { key: 'upload', metric: 'pv' }],
+        created_at: now - 10 * day, updated_at: now - 1 * day }
+    ];
+  });
+
+  const fnCfgStore = makeStore('td_funnel_cfg_v3', function () {
+    const now = Date.now(), day = 86400000;
+    return [
+      { id: 'fn_default', product: '舌诊', name: '默认转化漏斗', isDefault: true, owner: 'system', metric: 'pv',
+        paths: { pv: DEFAULT_STEPS.slice(), uv: DEFAULT_STEPS.slice() },
+        created_at: now - 10 * day, updated_at: now - 1 * day },
+      { id: 'fn_lead', product: '舌诊', name: '留资转化专项', isDefault: false, owner: '陈晨', metric: 'pv',
+        paths: { pv: ['home', 'agentPage', 'reportCard', 'consultCard', 'leadCard', 'addFriend'],
+                 uv: ['home', 'agentPage', 'reportCard', 'consultCard', 'leadCard', 'addFriend'] },
+        created_at: now - 8 * day, updated_at: now - 3 * day },
+      { id: 'fn_kc', product: '快测', name: '默认转化漏斗', isDefault: true, owner: 'system', metric: 'pv',
+        paths: { pv: DEFAULT_STEPS.slice(), uv: DEFAULT_STEPS.slice() },
+        created_at: now - 10 * day, updated_at: now - 1 * day }
+    ];
+  });
+
+  function evCfgDefault(product) {
+    return evCfgStore.list(product).find(c => c.isDefault) || evCfgStore.list(product)[0] || null;
+  }
+  function fnCfgDefault(product) {
+    return fnCfgStore.list(product).find(c => c.isDefault) || fnCfgStore.list(product)[0] || null;
+  }
+
+  /* ---------------- state ---------------- */
+  const [defStart, defEnd] = defaultRange();
+  const state = {
+    tab: 'events',
+    tick: 1,
+    eventsView: 'table',
+    user: '陈晨',
+    e: {
+      start: defStart, end: defEnd,
+      product: '舌诊',
+      channel: '', subchannel: '', version: '',
+      cfgId: 'ev_zd_default'
+    },
+    f: {
+      start: defStart, end: defEnd,
+      product: '舌诊',
+      sceneType: 'none',
+      channel: '', subchannel: '', version: '',
+      channels: [], subchannels: [], versions: [],
+      cfgId: 'fn_default'
+    },
+    last: { events: null, funnel: null }
+  };
+
+  /* ---------------- 数据引擎 ---------------- */
+  function dimensionFactor(dim) {
+    let f = 1;
+    if (dim.channel && CHANNELS[dim.channel]) {
+      f *= CHANNELS[dim.channel].share;
+      if (dim.subchannel) f *= (CHANNELS[dim.channel].subShare[dim.subchannel] || 1);
+    }
+    if (dim.version && VERSION_SHARE[dim.version]) f *= VERSION_SHARE[dim.version];
+    return f;
+  }
+
+  function eventValue(key, date, dim, metric, tick) {
+    const ev = byKey[key];
+    if (!ev) return 0;
+    metric = metric || 'pv';
+
+    if (ev.type === 'ratio' || ev.type === 'ratioInv') {
+      const a = eventValue(ev.calc[0], date, dim, 'pv', tick);
+      const b = eventValue(ev.calc[1], date, dim, 'pv', tick);
+      if (!b) return 0;
+      const v = ev.type === 'ratioInv' ? 1 - a / b : a / b;
+      const r = rngOf(['calc', key, dateKey(date), tick || 1].join('|'));
+      return Math.max(0, v * (0.98 + r() * 0.04));
+    }
+    if (ev.type === 'avg') {
+      const r = rngOf(['avg', key, dateKey(date), dim.channel, dim.version, tick || 1].join('|'));
+      return parseFloat((ev.base * (0.92 + r() * 0.16)).toFixed(1));
+    }
+
+    const dk = dateKey(date);
+    const r = rngOf([key, dk, dim.channel || '', dim.subchannel || '', dim.version || '', metric, tick || 1].join('|'));
+    const weekday = date.getDay();
+    const weekend = (weekday === 0 || weekday === 6) ? 0.88 : 1;
+    const wave = 1 + Math.sin((hashStr(dk) % 97) / 97 * Math.PI * 2 + hashStr(key) % 31) * 0.045;
+    const jitter = 0.9 + r() * 0.2;
+    let n = ev.base * dimensionFactor(dim) * weekend * wave * jitter;
+    if (metric === 'uv') n *= ev.uv * (0.985 + r() * 0.03);
+    return Math.max(1, Math.round(n));
+  }
+
+  function funnelRate(prevKey, nextKey) {
+    const a = byKey[prevKey] ? byKey[prevKey].stage : 1;
+    const b = byKey[nextKey] ? byKey[nextKey].stage : 1;
+    let rate = b / a;
+    if (!isFinite(rate) || rate <= 0) rate = 0.5;
+    return clamp(rate, 0.02, 0.95);
+  }
+
+  function funnelCountsForDate(date, dim, steps, metric, tick) {
+    const counts = [eventValue(steps[0], date, dim, metric, tick)];
+    const conv = dim.channel && CHANNELS[dim.channel] ? CHANNELS[dim.channel].conv : 1;
+    for (let i = 1; i < steps.length; i++) {
+      const r = rngOf(['fr', steps[i - 1], steps[i], dateKey(date), dim.channel || '', dim.subchannel || '', dim.version || '', tick || 1].join('|'));
+      const rate = clamp(funnelRate(steps[i - 1], steps[i]) * conv * (0.97 + r() * 0.06), 0.015, 0.95);
+      counts.push(Math.max(1, Math.round(counts[i - 1] * rate)));
+    }
+    return counts;
+  }
+
+  /* ---------------- builders ---------------- */
+  function buildEvents(cfg, tick) {
+    const dates = eachDay(cfg.start, cfg.end);
+    const cols = cfg.cols || [];
+    const asc = dates.map(d => ({
+      date: d,
+      vals: cols.map(c => eventValue(c.key, d, cfg, c.metric, tick))
+    }));
+    return { dates, rows: asc.slice().reverse(), cols, cfg };
+  }
+
+  function buildFunnel(cfg, tick) {
+    const dates = eachDay(cfg.start, cfg.end);
+    const steps = cfg.steps;
+    const metric = cfg.metric || 'pv';
+    const sceneType = cfg.sceneType || 'none';
+
+    function dateCounts(dim, date) {
+      const subs = (dim.subs && dim.subs.length) ? dim.subs : [''];
+      const parts = subs.map(sub => funnelCountsForDate(date, { channel: dim.channel, subchannel: sub, version: dim.version }, steps, metric, tick));
+      return parts[0].map((_, i) => parts.reduce((s, a) => s + a[i], 0));
+    }
+    function aggregate(dim) {
+      const perDay = dates.map(d => dateCounts(dim, d));
+      return steps.map((_, i) => perDay.reduce((s, a) => s + a[i], 0));
+    }
+
+    const subsOf = ch => {
+      const allowed = (CHANNELS[ch] && CHANNELS[ch].subs) || [];
+      const picked = (cfg.subchannels || []).filter(s => allowed.indexOf(s) >= 0);
+      return picked.length ? picked : allowed;
+    };
+
+    let groups = [];
+    if (sceneType === 'channel') {
+      // 分渠道：按「渠道 / 子渠道」逐一展开，每个子渠道一个漏斗 + 一行明细
+      groups = [];
+      (cfg.channels || []).forEach(ch => {
+        subsOf(ch).forEach(sub => {
+          groups.push({
+            name: ch + '/' + sub,
+            label: ch + ' / ' + sub,
+            ch, sub,
+            totals: aggregate({ channel: ch, subs: [sub], version: cfg.version })
+          });
+        });
+      });
+    } else if (sceneType === 'version') {
+      groups = cfg.versions.map(v => ({ name: v, label: v, totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: v }) }));
+    } else {
+      groups = [{ name: '', label: '整体', totals: aggregate({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: cfg.version }) }];
+    }
+
+    groups.forEach(g => {
+      g.rates = g.totals.slice(1).map((v, i) => (g.totals[i] ? v / g.totals[i] : 0));
+      g.overall = g.totals[0] ? g.totals[g.totals.length - 1] / g.totals[0] : 0;
+    });
+
+    let rows, axisLabel;
+    if (sceneType === 'none') {
+      axisLabel = '日期';
+      rows = dates.map(d => {
+        const counts = dateCounts({ channel: cfg.channel, subs: cfg.subchannel ? [cfg.subchannel] : [], version: cfg.version }, d);
+        return {
+          date: d, label: dateKey(d), sub: WEEK[d.getDay()], counts,
+          rates: counts.slice(1).map((v, i) => (counts[i] ? v / counts[i] : 0)),
+          overall: counts[0] ? counts[counts.length - 1] / counts[0] : 0
+        };
+      }).reverse();
+    } else if (sceneType === 'channel') {
+      axisLabel = '渠道 / 子渠道';
+      rows = groups.map(g => ({ label: g.ch, sub: g.sub, counts: g.totals, rates: g.rates, overall: g.overall }));
+    } else {
+      axisLabel = '应用版本';
+      rows = groups.map(g => ({ label: g.label, sub: '应用版本', counts: g.totals, rates: g.rates, overall: g.overall }));
+    }
+
+    const totals = steps.map((_, i) => groups.reduce((s, g) => s + g.totals[i], 0));
+    const rates = totals.slice(1).map((v, i) => (totals[i] ? v / totals[i] : 0));
+    const overall = totals[0] ? totals[totals.length - 1] / totals[0] : 0;
+
+    return { dates, steps, metric, sceneType, groups, rows, totals, rates, overall, axisLabel, cfg };
+  }
+
+  /* ---------------- 文案 ---------------- */
+  function rangeLabel(cfg) {
+    return `${dateKey(cfg.start)} ~ ${dateKey(cfg.end)}`;
+  }
+  function dimensionLabel(cfg) {
+    const productName = cfg.product === '快测' ? '快测类应用' : '舌诊类应用';
+    const parts = [productName, rangeLabel(cfg)];
+    if (cfg.channels && cfg.channels.length) {
+      parts.push(cfg.channels.length > 2 ? `渠道 ${cfg.channels.length} 个` : cfg.channels.join('、'));
+    } else {
+      parts.push(cfg.channel ? cfg.channel + (cfg.subchannel ? ' / ' + cfg.subchannel : '') : '未选渠道');
+    }
+    if (cfg.versions && cfg.versions.length) parts.push(cfg.versions.length > 2 ? `版本 ${cfg.versions.length} 个` : cfg.versions.join('、'));
+    else parts.push(cfg.version || '全部版本');
+    return parts.join(' · ');
+  }
+
+  function fmtByType(ev, v) {
+    if (!ev) return fmtInt(v);
+    if (ev.type === 'ratio' || ev.type === 'ratioInv') return fmtRate(v, 1);
+    if (ev.type === 'avg') return Number(v).toFixed(1);
+    return fmtInt(v);
+  }
+  function colMetricTag(col) {
+    const ev = byKey[col.key];
+    if (ev && ev.kind === 'calc') return '计算值';
+    if (col.metric === 'uv') return 'UV';
+    if (col.metric === 'pv') return 'PV';
+    return '业务';
+  }
+  function colLabel(col) {
+    const ev = byKey[col.key];
+    return ev ? ev.name : col.key;
+  }
+
+  return {
+    $, $$, WEEK, pad, startOfDay, addDays, dateKey, parseKey, fmtInt, fmtShort, fmtRate, clamp,
+    hashStr, rngOf, eachDay, TODAY, defaultRange,
+    CATALOG, byKey, BEHAVIOR_GROUPS, RESULT_GROUPS, FUNNEL_GROUPS,
+    PRODUCTS, VERSIONS, VERSION_SHARE, CHANNELS, CHANNEL_NAMES,
+    MAX_COLS, MAX_STEPS, DEFAULT_STEPS,
+    evCfgStore, fnCfgStore, evCfgDefault, fnCfgDefault,
+    state, eventValue, funnelRate, funnelCountsForDate, buildEvents, buildFunnel,
+    rangeLabel, dimensionLabel, fmtByType, colMetricTag, colLabel
+  };
+})();
+
+
+/* 舌诊应用数据看板 · 交互原型 — 通用交互层 */
+(function () {
+  'use strict';
+  const {
+    $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtRate, clamp,
+    BEHAVIOR_GROUPS, RESULT_GROUPS, FUNNEL_GROUPS,
+    MAX_COLS, MAX_STEPS, DEFAULT_STEPS,
+    evCfgStore, fnCfgStore, evCfgDefault, fnCfgDefault
+  } = window.TD;
+
+  /* ---------------- toast ---------------- */
+  const toastRoot = $('#toast-root');
+  function toast(msg) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 8.4 3.1 3.1L13 4.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span></span>`;
+    el.querySelector('span').textContent = msg;
+    toastRoot.appendChild(el);
+    while (toastRoot.children.length > 3) toastRoot.firstChild.remove();
+    setTimeout(() => { el.style.transition = 'opacity .25s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 260); }, 2200);
+  }
+  window.TD.toast = toast;
+
+  /* ---------------- tooltip ---------------- */
+  const tipEl = $('#tooltip');
+  function showTip(html, x, y) {
+    tipEl.innerHTML = html;
+    tipEl.hidden = false;
+    const pad = 12;
+    const rect = tipEl.getBoundingClientRect();
+    let left = clamp(x, rect.width / 2 + pad, window.innerWidth - rect.width / 2 - pad);
+    let top = y - 10;
+    if (top - rect.height < 8) top = y + rect.height + 24;
+    tipEl.style.left = left + 'px';
+    tipEl.style.top = top + 'px';
+  }
+  function hideTip() { tipEl.hidden = true; }
+  window.TD.showTip = showTip;
+  window.TD.hideTip = hideTip;
+
+  /* ---------------- modal ---------------- */
+  function openModal(opts) {
+    const mask = document.createElement('div');
+    mask.className = 'modal-mask';
+    mask.innerHTML = `
+      <div class="modal" style="width:${opts.width || 760}px" role="dialog" aria-modal="true">
+        <div class="modal-head">
+          <div><h3></h3>${opts.subtitle ? '<p></p>' : ''}</div>
+          <button class="modal-close" aria-label="关闭">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m4 4 8 8M12 4l-8 8" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-foot"></div>
+      </div>`;
+    mask.querySelector('h3').textContent = opts.title;
+    if (opts.subtitle) mask.querySelector('.modal-head p').textContent = opts.subtitle;
+    document.getElementById('modal-root').appendChild(mask);
+
+    const body = mask.querySelector('.modal-body');
+    const foot = mask.querySelector('.modal-foot');
+    const onKey = e => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey);
+    function close() {
+      document.removeEventListener('keydown', onKey);
+      mask.remove();
+    }
+    mask.addEventListener('click', e => { if (e.target === mask) close(); });
+    mask.querySelector('.modal-close').addEventListener('click', close);
+    requestAnimationFrame(() => { body.scrollTop = 0; });
+    return { mask, body, foot, close };
+  }
+
+  const CHECK_SVG = '<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m3 8.4 3.1 3.1L13 4.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  /* ---------------- 配置 · 应用事件统计 ---------------- */
+  function openEventsConfig() {
+    const product = state.e.product;
+    const productLabel = product === '快测' ? '快测类应用' : '舌诊类应用';
+    let cfg = evCfgStore.get(state.e.cfgId) || evCfgDefault(product);
+    let draft = { id: cfg.id, product, name: cfg.name, cols: cfg.cols.map(c => Object.assign({}, c)) };
+    let tab = 'pv';
+    let isNew = false;
+
+    const modal = openModal({
+      title: '配置统计指标',
+      subtitle: `按应用维护默认配置与自定义配置；行为事件分 PV / UV 两类，用两个 tab 切换选择，结果事件与计算值在下方直接勾选。最多 ${MAX_COLS} 项。`,
+      width: 900
+    });
+
+    function cfgOptions() {
+      return evCfgStore.list(product).map(c =>
+        `<option value="${c.id}"${c.id === draft.id ? ' selected' : ''}>${c.name}${c.isDefault ? '（默认）' : ''}</option>`).join('');
+    }
+
+    function effMetric(key, t) {
+      return byKey[key].kind === 'calc' ? '-' : (t || '-');
+    }
+    function isChecked(key, t) {
+      const m = effMetric(key, t);
+      return draft.cols.some(c => c.key === key && c.metric === m);
+    }
+    function tabCount(t) {
+      return draft.cols.filter(c => c.metric === t).length;
+    }
+
+    function groupHTML(g, t) {
+      let html = `<div class="opt-group"><h4>${g.name}<span class="count">${g.keys.length} 项</span>${g.tag ? `<span class="soon">${g.tag}</span>` : ''}</h4><div class="opt-grid">`;
+      g.keys.forEach(k => {
+        const ev = byKey[k];
+        const on = isChecked(k, t);
+        const tag = ev.kind === 'calc' ? '计算' : ev.kind === 'result' ? '业务' : (ev.group === '页面浏览' ? '页面' : '元素');
+        html += `<button type="button" class="opt${on ? ' checked' : ''}" data-key="${k}" data-metric="${effMetric(k, t)}">
+          <span class="box">${CHECK_SVG}</span>
+          <span class="o-name">${ev.name}</span><span class="o-tag">${tag}</span>
+        </button>`;
+      });
+      html += '</div></div>';
+      return html;
+    }
+
+    function renderBody() {
+      const cur = evCfgStore.get(draft.id) || cfg;
+      let html = `<div class="cfg-bar">
+        <span class="lbl">应用</span><span class="badge-product">${productLabel}</span>
+        <span class="lbl" style="margin-left:10px">当前配置</span>
+        <select id="cfg-sel">${cfgOptions()}</select>
+        <span class="badge-default" data-def-badge ${cur.isDefault ? '' : 'hidden'}>默认配置</span>
+        <span class="spacer"></span>
+        <button class="btn" data-act="new">新建配置</button>
+        <button class="btn" data-act="setdefault">设为默认</button>
+        <button class="btn" data-act="del">删除</button>
+      </div>
+      <div class="cfg-name-row"><label>配置名称</label>
+        <input id="cfg-name" maxlength="20" value="${draft.name.replace(/"/g, '&quot;')}" placeholder="如：默认指标配置"></div>
+      <div class="fm-tabs">
+        <button type="button" data-tab="pv" class="${tab === 'pv' ? 'active' : ''}">行为事件 · PV<span class="cnt">${tabCount('pv')}</span></button>
+        <button type="button" data-tab="uv" class="${tab === 'uv' ? 'active' : ''}">行为事件 · UV<span class="cnt">${tabCount('uv')}</span></button>
+      </div>
+      <div id="tab-area">${BEHAVIOR_GROUPS.map(g => groupHTML(g, tab)).join('')}</div>
+      <div class="cfg-sec-title">结果事件 / 计算值 <span class="hint">后端业务库口径，无需区分 PV / UV</span></div>
+      <div id="res-area">${RESULT_GROUPS.map(g => groupHTML(g, null)).join('')}</div>`;
+      modal.body.innerHTML = html;
+      updateFoot();
+    }
+
+    function updateFoot() {
+      const n = draft.cols.length;
+      modal.foot.innerHTML = `<span class="counter${n >= MAX_COLS ? ' max' : ''}">已选 <b>${n}</b> / ${MAX_COLS} 项</span>
+        <span class="spacer"></span>
+        <button class="btn" data-act="cancel">取消</button>
+        <button class="btn primary" data-act="apply">保存并应用</button>`;
+    }
+
+    function refreshChecks() {
+      modal.body.querySelectorAll('.opt').forEach(btn => {
+        const key = btn.dataset.key;
+        const m = btn.dataset.metric;
+        const on = draft.cols.some(c => c.key === key && c.metric === m);
+        btn.classList.toggle('checked', on);
+        btn.classList.toggle('locked', !on && draft.cols.length >= MAX_COLS);
+      });
+      modal.body.querySelectorAll('.fm-tabs .cnt').forEach((el, i) => {
+        el.textContent = tabCount(i === 0 ? 'pv' : 'uv');
+      });
+      updateFoot();
+    }
+
+    modal.body.addEventListener('click', e => {
+      const tabBtn = e.target.closest('[data-tab]');
+      if (tabBtn) {
+        tab = tabBtn.dataset.tab;
+        renderBody();
+        return;
+      }
+      const act = e.target.closest('[data-act]');
+      if (act && modal.body.contains(act)) {
+        const a = act.dataset.act;
+        if (a === 'new') {
+          draft = { id: evCfgStore.newId('ev_'), product, name: '新建配置', cols: [] };
+          isNew = true;
+          renderBody();
+          const input = modal.body.querySelector('#cfg-name');
+          if (input) { input.focus(); input.select(); }
+          return;
+        }
+        if (a === 'setdefault') {
+          if (!draft.cols.length) { toast('请先选择指标'); return; }
+          evCfgStore.save(draft);
+          evCfgStore.setDefault(product, draft.id);
+          isNew = false;
+          toast(`已将「${draft.name}」设为${productLabel}的默认配置`);
+          renderBody();
+          applyToState();
+          return;
+        }
+        if (a === 'del') {
+          const list = evCfgStore.list(product);
+          if (list.length <= 1) { toast('每个应用至少保留一个配置'); return; }
+          if (act.dataset.confirm !== '1') { act.dataset.confirm = '1'; act.textContent = '确认删除'; return; }
+          evCfgStore.remove(draft.id);
+          const next = evCfgDefault(product) || evCfgStore.list(product)[0];
+          draft = { id: next.id, product, name: next.name, cols: next.cols.map(c => Object.assign({}, c)) };
+          state.e.cfgId = next.id;
+          toast(`已删除，当前切换为「${next.name}」`);
+          renderBody();
+          applyToState();
+          return;
+        }
+        return;
+      }
+      const opt = e.target.closest('.opt');
+      if (!opt) return;
+      const key = opt.dataset.key;
+      const m = opt.dataset.metric;
+      const idx = draft.cols.findIndex(c => c.key === key && c.metric === m);
+      if (idx >= 0) draft.cols.splice(idx, 1);
+      else {
+        if (draft.cols.length >= MAX_COLS) { toast(`最多选择 ${MAX_COLS} 项指标`); return; }
+        draft.cols.push({ key, metric: m });
+      }
+      refreshChecks();
+    });
+
+    modal.body.addEventListener('change', e => {
+      if (e.target.id === 'cfg-sel') {
+        const c = evCfgStore.get(e.target.value);
+        if (!c) return;
+        draft = { id: c.id, product, name: c.name, cols: c.cols.map(x => Object.assign({}, x)) };
+        isNew = false;
+        renderBody();
+      }
+    });
+    modal.body.addEventListener('input', e => {
+      if (e.target.id === 'cfg-name') draft.name = e.target.value;
+    });
+
+    function applyToState() {
+      state.e.cfgId = draft.id;
+      state.e.cols = draft.cols.map(c => Object.assign({}, c));
+      window.TD.renderEvents();
+    }
+
+    modal.foot.addEventListener('click', e => {
+      const act = e.target.closest('[data-act]');
+      if (!act) return;
+      if (act.dataset.act === 'cancel') { modal.close(); return; }
+      if (act.dataset.act === 'apply') {
+        if (!draft.cols.length) { toast('请至少选择 1 个指标'); return; }
+        draft.name = (draft.name || '').trim() || '未命名配置';
+        const saved = evCfgStore.save(draft);
+        if (isNew) evCfgStore.setDefault(product, saved.id);
+        state.e.cfgId = saved.id;
+        state.e.cols = saved.cols.map(c => Object.assign({}, c));
+        modal.close();
+        window.TD.renderEvents();
+        toast(`配置「${saved.name}」已保存并应用`);
+      }
+    });
+
+    renderBody();
+  }
+
+  /* ---------------- 配置 · 漏斗步骤 ---------------- */
+  function currentFunnelConf() {
+    const c = fnCfgStore.get(state.f.cfgId) || fnCfgDefault(state.f.product);
+    const metric = c.metric || 'pv';
+    return { cfg: c, steps: (c.paths[metric] || []).slice(), metric };
+  }
+  window.TD.currentFunnelConf = currentFunnelConf;
+
+  function openFunnelConfig() {
+    const product = state.f.product;
+    const productLabel = product === '快测' ? '快测类应用' : '舌诊类应用';
+    let cfg = fnCfgStore.get(state.f.cfgId) || fnCfgDefault(product);
+    let draft = {
+      id: cfg.id, product, name: cfg.name, metric: cfg.metric || 'pv',
+      paths: { pv: (cfg.paths.pv || []).slice(), uv: (cfg.paths.uv || []).slice() }
+    };
+    let isNew = false;
+
+    const modal = openModal({
+      title: '配置漏斗步骤',
+      subtitle: `行为事件分 PV / UV 两个口径，用两个 tab 切换配置；最少 2 步、最多 ${MAX_STEPS} 步，向下转化率与整体转化率自动计算。`,
+      width: 820
+    });
+
+    const steps = () => draft.paths[draft.metric];
+
+    function cfgOptions() {
+      return fnCfgStore.list(product).map(c =>
+        `<option value="${c.id}"${c.id === draft.id ? ' selected' : ''}>${c.name}${c.isDefault ? '（默认）' : ''}</option>`).join('');
+    }
+
+    function renderBody() {
+      const cur = fnCfgStore.get(draft.id) || cfg;
+      const list = steps();
+      let html = `<div class="cfg-bar">
+        <span class="lbl">应用</span><span class="badge-product">${productLabel}</span>
+        <span class="lbl" style="margin-left:10px">当前配置</span>
+        <select id="fn-cfg-sel">${cfgOptions()}</select>
+        <span class="badge-default" ${cur.isDefault ? '' : 'hidden'}>默认配置</span>
+        <span class="spacer"></span>
+        <button class="btn" data-act="new">新建配置</button>
+        <button class="btn" data-act="setdefault">设为默认</button>
+        <button class="btn" data-act="del">删除</button>
+      </div>
+      <div class="cfg-name-row"><label>配置名称</label>
+        <input id="fn-cfg-name" maxlength="20" value="${draft.name.replace(/"/g, '&quot;')}" placeholder="如：默认转化漏斗"></div>
+      <div class="fm-tabs">
+        <button type="button" data-tab="pv" class="${draft.metric === 'pv' ? 'active' : ''}">PV 口径<span class="cnt">${draft.paths.pv.length}</span></button>
+        <button type="button" data-tab="uv" class="${draft.metric === 'uv' ? 'active' : ''}">UV 口径<span class="cnt">${draft.paths.uv.length}</span></button>
+      </div>
+      <h4 style="font-size:12px;color:var(--ink-3);margin:14px 0 0;font-weight:500">已选步骤
+        <span style="color:var(--ink-4);font-weight:400">（${list.length} / ${MAX_STEPS}）</span></h4>
+      <div class="order-list">`;
+      list.forEach((k, i) => {
+        html += `<div class="order-item">
+          <span class="oi-idx">${i + 1}</span>
+          <span>${byKey[k] ? byKey[k].name : k}</span>
+          <span class="oi-move">
+            <button class="oi-btn" data-act="up" data-i="${i}" ${i === 0 ? 'disabled' : ''} title="上移">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m4 10 4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="oi-btn" data-act="down" data-i="${i}" ${i === list.length - 1 ? 'disabled' : ''} title="下移">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m4 6 4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="oi-btn" data-act="remove" data-i="${i}" ${list.length <= 2 ? 'disabled' : ''} title="移除">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m4 4 8 8M12 4l-8 8" stroke-linecap="round"/></svg>
+            </button>
+          </span>
+        </div>`;
+      });
+      html += `</div><h4 style="font-size:12px;color:var(--ink-3);margin:18px 0 0;font-weight:500">添加步骤
+        <span style="color:var(--ink-4);font-weight:400">（点击添加到漏斗末尾）</span></h4>`;
+      FUNNEL_GROUPS.forEach(g => {
+        html += `<div style="margin-top:12px"><div style="font-size:11.5px;color:var(--ink-4);margin-bottom:6px">${g.name}</div><div class="pool-picker">`;
+        g.keys.forEach(k => {
+          const used = list.includes(k);
+          html += `<button type="button" class="pool-chip${used ? ' used' : ''}" data-add="${k}" ${used || list.length >= MAX_STEPS ? 'disabled' : ''}>
+            ${used ? '<span style="font-size:10px">✓</span>' : '<span class="plus">＋</span>'}${byKey[k].name}</button>`;
+        });
+        html += '</div></div>';
+      });
+      html += `<p style="font-size:11.5px;color:var(--ink-3);margin-top:16px">说明：漏斗步骤只支持「次数型」指标（行为事件 / 后端业务结果），计算值与均值型指标不可作为步骤。原型数据为模拟生成。</p>`;
+      modal.body.innerHTML = html;
+
+      modal.foot.innerHTML = `<span class="counter">共 <b>${list.length}</b> 步 · 上限 ${MAX_STEPS} 步 · 当前 ${draft.metric.toUpperCase()} 口径</span>
+        <span class="spacer"></span>
+        <button class="btn" data-act="cancel">取消</button>
+        <button class="btn primary" data-act="apply">保存并应用</button>`;
+    }
+
+    modal.body.addEventListener('click', e => {
+      const tabBtn = e.target.closest('[data-tab]');
+      if (tabBtn) { draft.metric = tabBtn.dataset.tab; renderBody(); return; }
+
+      const act = e.target.closest('[data-act]');
+      if (act && modal.body.contains(act)) {
+        const a = act.dataset.act;
+        if (a === 'new') {
+          draft = { id: fnCfgStore.newId('fn_'), product, name: '新建漏斗', metric: draft.metric, paths: { pv: [], uv: [] } };
+          isNew = true;
+          renderBody();
+          const input = modal.body.querySelector('#fn-cfg-name');
+          if (input) { input.focus(); input.select(); }
+          return;
+        }
+        if (a === 'setdefault') {
+          if (steps().length < 2) { toast('漏斗至少需要 2 个步骤'); return; }
+          fnCfgStore.save(draft);
+          fnCfgStore.setDefault(product, draft.id);
+          isNew = false;
+          toast(`已将「${draft.name}」设为${productLabel}的默认配置`);
+          renderBody();
+          applyToState();
+          return;
+        }
+        if (a === 'del') {
+          if (fnCfgStore.list(product).length <= 1) { toast('每个应用至少保留一个配置'); return; }
+          if (act.dataset.confirm !== '1') { act.dataset.confirm = '1'; act.textContent = '确认删除'; return; }
+          fnCfgStore.remove(draft.id);
+          const next = fnCfgDefault(product) || fnCfgStore.list(product)[0];
+          draft = { id: next.id, product, name: next.name, metric: next.metric || 'pv', paths: { pv: next.paths.pv.slice(), uv: next.paths.uv.slice() } };
+          state.f.cfgId = next.id;
+          toast(`已删除，当前切换为「${next.name}」`);
+          renderBody();
+          applyToState();
+          return;
+        }
+        if (a === 'up' || a === 'down' || a === 'remove') {
+          const i = Number(act.dataset.i);
+          const l = steps();
+          if (a === 'up' && i > 0) { [l[i - 1], l[i]] = [l[i], l[i - 1]]; }
+          if (a === 'down' && i < l.length - 1) { [l[i + 1], l[i]] = [l[i], l[i + 1]]; }
+          if (a === 'remove' && l.length > 2) l.splice(i, 1);
+          renderBody();
+          return;
+        }
+        return;
+      }
+      const add = e.target.closest('[data-add]');
+      if (add && !add.disabled) {
+        if (steps().length >= MAX_STEPS) { toast(`最多 ${MAX_STEPS} 步`); return; }
+        steps().push(add.dataset.add);
+        renderBody();
+      }
+    });
+
+    modal.body.addEventListener('change', e => {
+      if (e.target.id === 'fn-cfg-sel') {
+        const c = fnCfgStore.get(e.target.value);
+        if (!c) return;
+        draft = { id: c.id, product, name: c.name, metric: c.metric || 'pv', paths: { pv: c.paths.pv.slice(), uv: c.paths.uv.slice() } };
+        isNew = false;
+        renderBody();
+      }
+    });
+    modal.body.addEventListener('input', e => {
+      if (e.target.id === 'fn-cfg-name') draft.name = e.target.value;
+    });
+
+    function applyToState() {
+      state.f.cfgId = draft.id;
+      window.TD.renderFunnel();
+    }
+
+    modal.foot.addEventListener('click', e => {
+      const act = e.target.closest('[data-act]');
+      if (!act) return;
+      if (act.dataset.act === 'cancel') { modal.close(); return; }
+      if (act.dataset.act === 'apply') {
+        if (steps().length < 2) { toast('漏斗至少需要 2 个步骤'); return; }
+        draft.name = (draft.name || '').trim() || '未命名配置';
+        const saved = fnCfgStore.save(draft);
+        if (isNew) fnCfgStore.setDefault(product, saved.id);
+        state.f.cfgId = saved.id;
+        modal.close();
+        window.TD.renderFunnel();
+        toast(`配置「${saved.name}」已保存并应用（${draft.metric.toUpperCase()} 口径）`);
+      }
+    });
+
+    renderBody();
+  }
+  window.TD.openFunnelConfig = openFunnelConfig;
+
+  /* ---------------- 多选组件 ---------------- */
+  function makeMSel(rootEl, opts) {
+    const btn = rootEl.querySelector('.msel-btn');
+    const panel = rootEl.querySelector('.msel-panel');
+    const optsBox = rootEl.querySelector('.msel-opts');
+    const textEl = rootEl.querySelector('.msel-text');
+    let values = (opts.values || []).slice();
+
+    function renderOptions() {
+      const list = opts.options();
+      if (!list.length) { optsBox.innerHTML = '<div class="msel-empty">暂无可选项</div>'; return; }
+      const allOn = list.every(o => values.includes(o));
+      optsBox.innerHTML =
+        `<label class="msel-opt msel-all${allOn ? ' checked' : ''}" data-all="1">
+          <span class="box">${CHECK_SVG}</span><span>全选</span>
+        </label>` +
+        list.map(o =>
+        `<label class="msel-opt${values.includes(o) ? ' checked' : ''}" data-v="${o}">
+          <span class="box">${CHECK_SVG}</span><span>${o}</span>
+        </label>`).join('');
+    }
+    function renderText() {
+      const all = opts.options();
+      if (!values.length) {
+        textEl.textContent = opts.placeholder || '请选择';
+        btn.classList.add('is-empty');
+      } else if (all.length > 1 && values.length === all.length) {
+        textEl.textContent = `全部（${values.length}）`;
+        btn.classList.remove('is-empty');
+      } else if (values.length > 2) {
+        textEl.textContent = `已选 ${values.length} 项`;
+        btn.classList.remove('is-empty');
+      } else {
+        textEl.textContent = values.join('、');
+        btn.classList.remove('is-empty');
+      }
+      btn.title = values.join('、');
+    }
+    function sync(notify) {
+      values = values.filter(v => opts.options().includes(v));
+      renderOptions();
+      renderText();
+      if (notify && opts.onChange) opts.onChange(values.slice());
+    }
+
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = !panel.hidden;
+      if (open) { panel.hidden = true; return; }
+      renderOptions();
+      panel.hidden = false;
+    });
+    optsBox.addEventListener('click', e => {
+      const o = e.target.closest('.msel-opt');
+      if (!o) return;
+      if (o.dataset.all) {
+        const list = opts.options();
+        values = list.every(v => values.includes(v)) ? [] : list.slice();
+        renderOptions();
+        renderText();
+        if (opts.onChange) opts.onChange(values.slice());
+        return;
+      }
+      const v = o.dataset.v;
+      const i = values.indexOf(v);
+      if (i >= 0) values.splice(i, 1); else values.push(v);
+      o.classList.toggle('checked');
+      renderText();
+      if (opts.onChange) opts.onChange(values.slice());
+    });
+    panel.addEventListener('click', e => {
+      const b = e.target.closest('[data-act]');
+      if (!b) return;
+      const a = b.dataset.act;
+      if (a === 'all') { values = opts.options().slice(); renderOptions(); renderText(); if (opts.onChange) opts.onChange(values.slice()); }
+      if (a === 'none') { values = []; renderOptions(); renderText(); if (opts.onChange) opts.onChange(values.slice()); }
+      if (a === 'ok') { panel.hidden = true; }
+      e.stopPropagation();
+    });
+    document.addEventListener('click', e => {
+      if (!rootEl.contains(e.target)) panel.hidden = true;
+    });
+
+    renderText();
+    renderOptions();
+    return {
+      get: () => values.slice(),
+      set(v) { values = (v || []).slice(); sync(false); },
+      refresh() { sync(false); },
+      setOptions() { renderOptions(); }
+    };
+  }
+
+  /* ---------------- 导出 ---------------- */
+  function csvCell(v) {
+    const s = String(v == null ? '' : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function downloadCSV(filename, rows) {
+    const text = rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + text], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1200);
+  }
+
+  function exportEvents() {
+    const d = state.last.events;
+    if (!d) { toast('当前无数据可导出，请先选择渠道'); return; }
+    const names = d.cols.map(c => window.TD.colLabel(c) + '（' + (window.TD.byKey[c.key].kind === 'calc' ? '计算值' : c.metric === 'uv' ? 'UV' : c.metric === 'pv' ? 'PV' : '业务') + '）');
+    const rows = [
+      ['应用事件统计', window.TD.rangeLabel(d.cfg)],
+      ['日期', '星期'].concat(names)
+    ];
+    d.rows.forEach(r => {
+      rows.push([dateKey(r.date), WEEK[r.date.getDay()]].concat(r.vals.map((v, i) => {
+        const ev = window.TD.byKey[d.cols[i].key];
+        return ev.type === 'avg' ? v.toFixed(1) : ev.type === 'ratio' || ev.type === 'ratioInv' ? fmtRate(v, 1) : v;
+      })));
+    });
+    rows.push([]);
+    rows.push(['导出时间', new Date().toLocaleString('zh-CN')]);
+    downloadCSV(`应用事件统计_${dateKey(d.cfg.start)}_${dateKey(d.cfg.end)}.csv`, rows);
+    toast('导出成功，已生成 CSV（可用 Excel 打开）');
+  }
+
+  function exportFunnel() {
+    const d = state.last.funnel;
+    if (!d) { toast('当前无数据可导出，请先选择渠道'); return; }
+    const cfg = d.cfg;
+    const names = d.steps.map(k => d.steps && window.TD.byKey[k] ? window.TD.byKey[k].name : k);
+    const rows = [
+      ['应用漏斗分析（' + cfg.metric.toUpperCase() + '）', window.TD.dimensionLabel(cfg)],
+      ['步骤', '人数', '向下转化率', '累计转化率']
+    ];
+    d.totals.forEach((v, i) => {
+      rows.push([names[i], v, i === 0 ? '—' : fmtRate(d.rates[i - 1], 2), fmtRate(v / d.totals[0], 2)]);
+    });
+    rows.push([]);
+    rows.push([d.sceneType === 'none' ? '分日明细' : (d.sceneType === 'channel' ? '分渠道汇总' : '分版本汇总')]);
+    const head = [{ label: d.axisLabel }];
+    d.steps.forEach((k, i) => {
+      head.push({ label: names[i] });
+      if (i < d.steps.length - 1) head.push({ label: '向下转化率' });
+    });
+    head.push({ label: '整体转化率' });
+    rows.push(head.map(h => h.label));
+    d.rows.forEach(r => {
+      const line = [r.label];
+      r.counts.forEach((v, i) => {
+        line.push(v);
+        if (i < r.counts.length - 1) line.push(fmtRate(r.rates[i], 2));
+      });
+      line.push(fmtRate(r.overall, 2));
+      rows.push(line);
+    });
+    downloadCSV(`应用漏斗分析_${dateKey(cfg.start)}_${dateKey(cfg.end)}.csv`, rows);
+    toast('导出成功，已生成 CSV（可用 Excel 打开）');
+  }
+
+  /* ---------------- tab nav ---------------- */
+  function switchTab(name) {
+    state.tab = name;
+    $$('.sub-tab').forEach(b => {
+      const match = name === 'channel' ? b.dataset.nav === 'channel' : b.dataset.page === name;
+      b.classList.toggle('active', match);
+    });
+    ['events', 'funnel', 'channel'].forEach(n => {
+      const el = document.getElementById('page-' + n);
+      if (el) el.hidden = n !== name;
+    });
+    if (name === 'events') window.TD.renderEvents();
+    if (name === 'funnel') window.TD.renderFunnel();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  window.TD.switchTab = switchTab;
+
+  $('.sub-tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.sub-tab');
+    if (!btn) return;
+    if (btn.dataset.nav === 'placeholder') { toast('该页面不在本次需求原型范围内'); return; }
+    const target = btn.dataset.page || btn.dataset.nav;
+    if (target) switchTab(target);
+  });
+  document.addEventListener('click', e => {
+    const go = e.target.closest('[data-goto]');
+    if (go) switchTab(go.dataset.goto);
+  });
+
+  $('#e-config').addEventListener('click', openEventsConfig);
+  $('#e-cfg-chip').addEventListener('click', openEventsConfig);
+  $('#f-config').addEventListener('click', openFunnelConfig);
+  $('#f-cfg-chip').addEventListener('click', openFunnelConfig);
+  $('#e-export').addEventListener('click', exportEvents);
+  $('#f-export').addEventListener('click', exportFunnel);
+
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (state.tab === 'events' && state.eventsView === 'chart' && window.TD.redrawChart) window.TD.redrawChart();
+    }, 160);
+  });
+
+  window.TD.openModal = openModal;
+  window.TD.makeMSel = makeMSel;
+
+  /* ---------------- boot ---------------- */
+  function boot() {
+    window.TD.initEvents();
+    window.TD.initFunnel();
+    window.TD.renderEvents();
+    window.TD.renderFunnel();
+    const hash = (location.hash || '').replace('#', '');
+    if (hash === 'funnel' || hash === 'channel') switchTab(hash);
+  }
+  // 延迟到所有脚本模块就绪后再启动
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else setTimeout(boot, 0);
+})();
+
+
+/* 舌诊应用数据看板 · 交互原型 — 应用事件统计 */
+(function () {
+  'use strict';
+  const {
+    $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtShort, fmtRate, clamp,
+    CHANNELS, buildEvents, addDays, startOfDay, TODAY, parseKey,
+    evCfgStore, evCfgDefault, fmtByType, colMetricTag, colLabel, MAX_COLS
+  } = window.TD;
+
+  function setActive(container, attr, value) {
+    $$('button', container).forEach(b => b.classList.toggle('active', b.dataset[attr] === value));
+  }
+
+  function syncDateInputs() {
+    $('#e-start').value = dateKey(state.e.start);
+    $('#e-end').value = dateKey(state.e.end);
+  }
+
+  function setSelectEmpty(sel, empty) {
+    sel.classList.toggle('is-empty', empty);
+  }
+
+  function versionOptions() {
+    const ch = state.e.channel;
+    return ch && CHANNELS[ch] ? CHANNELS[ch].versions : window.TD.VERSIONS;
+  }
+
+  function fillSubchannels() {
+    const ch = state.e.channel;
+    const sel = $('#e-subchannel');
+    if (!ch || !CHANNELS[ch]) {
+      sel.innerHTML = '<option value="">请选择</option>';
+      sel.disabled = true;
+      state.e.subchannel = '';
+      setSelectEmpty(sel, true);
+      return;
+    }
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">全部</option>' +
+      CHANNELS[ch].subs.map(s => `<option value="${s}"${state.e.subchannel === s ? ' selected' : ''}>${s}</option>`).join('');
+  }
+
+  function fillVersions() {
+    const sel = $('#e-version');
+    const list = versionOptions();
+    if (state.e.version && !list.includes(state.e.version)) state.e.version = '';
+    sel.innerHTML = '<option value="">全部版本</option>' + list.map(v => `<option value="${v}">${v}</option>`).join('');
+    sel.value = state.e.version;
+    setSelectEmpty(sel, false);
+  }
+
+  function syncControls() {
+    setActive($('#e-product'), 'v', state.e.product);
+    $('#e-channel').value = state.e.channel;
+    setSelectEmpty($('#e-channel'), !state.e.channel);
+    fillSubchannels();
+    $('#e-subchannel').value = state.e.subchannel;
+    fillVersions();
+    syncDateInputs();
+  }
+
+  function applyDateRange() {
+    const s = $('#e-start').value, e = $('#e-end').value;
+    if (!s || !e) return;
+    let start = parseKey(s), end = parseKey(e);
+    if (start > end) { const t = start; start = end; end = t; }
+    if ((end - start) / 86400000 > 91) {
+      start = addDays(end, -91);
+      window.TD.toast('原型最多支持 92 天范围');
+    }
+    state.e.start = start; state.e.end = end;
+    syncDateInputs();
+    renderEvents();
+  }
+
+  function setEmptyUI(title, desc, btnText, onClick) {
+    $('#e-empty-title').textContent = title;
+    $('#e-empty-desc').textContent = desc;
+    const btn = $('#e-empty-btn');
+    if (btnText) {
+      btn.hidden = false;
+      btn.textContent = btnText;
+      btn.onclick = onClick;
+    } else {
+      btn.hidden = true;
+      btn.onclick = null;
+    }
+  }
+
+  /* ---------------- render ---------------- */
+  function renderEvents() {
+    const cfg = state.e;
+    const productEmpty = cfg.product === '快测';
+    const ready = !productEmpty && !!cfg.channel;
+
+    $('#e-view').hidden = !ready;
+    $('#e-empty').hidden = ready;
+    if (!ready) {
+      if (productEmpty) {
+        setEmptyUI('快测类应用数据即将开放', '当前版本先支持舌诊类应用，其他应用敬请期待。', '切回舌诊', () => {
+          state.e.product = '舌诊';
+          state.e.cfgId = (evCfgDefault('舌诊') || {}).id || state.e.cfgId;
+          state.e.cols = ((evCfgDefault('舌诊') || {}).cols || []).slice();
+          setActive($('#e-product'), 'v', '舌诊');
+          renderEvents();
+        });
+      } else {
+        setEmptyUI(
+          '请先选择筛选条件',
+          '筛选默认不选中，因此暂无数据；选择「渠道」后即展示数据，子渠道、应用版本可按需细化。',
+          '去选择渠道',
+          () => { $('#e-channel').focus(); }
+        );
+      }
+      state.last.events = null;
+      return;
+    }
+
+    const curCfg = evCfgStore.get(cfg.cfgId);
+    if (curCfg && (!cfg.cols || !cfg.cols.length)) cfg.cols = curCfg.cols.slice();
+    if (!cfg.cols || !cfg.cols.length) {
+      cfg.cols = (evCfgDefault(cfg.product) || { cols: [] }).cols.slice();
+    }
+
+    const data = buildEvents(cfg, state.tick);
+    state.last.events = data;
+    const cols = data.cols;
+
+    $('#e-meta').textContent = window.TD.dimensionLabel(cfg) + ` · 共 ${data.rows.length} 天 · ${cols.length} 个指标`;
+    const shownCfg = evCfgStore.get(cfg.cfgId) || evCfgDefault(cfg.product);
+    $('#e-cfg-name').textContent = (shownCfg ? shownCfg.name : '自定义指标') + (shownCfg && shownCfg.isDefault ? '（默认）' : '');
+
+    const view = state.eventsView;
+    $('#e-legend').innerHTML = view === 'chart'
+      ? cols.map((c, i) => {
+          const ev = byKey[c.key];
+          const color = ev.color || ['#2f6bff', '#00b3a4', '#f59e0b', '#8b5cf6', '#ec4899', '#0e9f9a'][i % 6];
+          return `<span><i style="background:${color}"></i>${colLabel(c)} ${colMetricTag(c)}</span>`;
+        }).join('')
+      : `<span>指标来源：配置中 PV / UV 行为事件 + 结果事件 + 计算值</span>`;
+
+    $('#e-chart').hidden = view !== 'chart';
+    $('#e-table').hidden = view !== 'table';
+    setActive($('#e-viewtoggle'), 'mode', view);
+
+    if (view === 'chart') renderChart(data);
+    else renderTable(data);
+
+    $('#e-footnote').innerHTML = `口径说明：行为事件按配置里的 <b>PV / UV</b> tab 分别取数（列名带 PV / UV）；结果事件取后端业务成功数；计算值为派生指标（比率类保留 1 位小数）。
+      筛选说明：渠道 / 子渠道不默认选中，选中渠道后展示数据；应用版本默认全部，可选具体版本。配置支持「每个应用一个默认配置 + 若干自定义配置，可设为默认」。原型数据为模拟生成。`;
+  }
+
+  function renderTable(data) {
+    const cols = data.cols;
+    let html = '<table class="grid"><thead><tr><th class="sticky-col" style="width:150px">日期</th>';
+    cols.forEach(c => {
+      html += `<th>${colLabel(c)}<small>${colMetricTag(c)}</small></th>`;
+    });
+    html += '</tr></thead><tbody>';
+    data.rows.forEach(r => {
+      html += `<tr><td class="sticky-col">${dateKey(r.date)}<span class="weekday">${WEEK[r.date.getDay()]}</span></td>`;
+      cols.forEach((c, i) => {
+        html += `<td>${fmtByType(byKey[c.key], r.vals[i])}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    $('#e-table').innerHTML = html;
+  }
+
+  /* ---------------- trend chart ---------------- */
+  function niceMax(v) {
+    if (v <= 0) return 10;
+    const exp = Math.floor(Math.log10(v));
+    const base = Math.pow(10, exp);
+    const n = v / base;
+    const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10;
+    return step * base;
+  }
+
+  const PALETTE = ['#2f6bff', '#00b3a4', '#f59e0b', '#8b5cf6', '#ec4899', '#0e9f9a', '#f97316', '#4f7ff0', '#d946ef', '#00a870'];
+
+  function renderChart(data) {
+    const wrap = $('#e-chart');
+    wrap.innerHTML = '';
+    const W = Math.max(520, wrap.clientWidth);
+    const H = Math.max(240, wrap.clientHeight);
+    const m = { l: 52, r: 16, t: 14, b: 28 };
+    const pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const asc = data.dates.map(d => {
+      const row = data.rows.find(r => dateKey(r.date) === dateKey(d));
+      return { date: d, vals: row ? row.vals : [] };
+    });
+    const cols = data.cols;
+    const maxV = niceMax(Math.max(1, ...asc.flatMap(r => r.vals)));
+    const n = asc.length;
+    const x = i => n === 1 ? m.l + pw / 2 : m.l + (i / (n - 1)) * pw;
+    const y = v => m.t + ph - (v / maxV) * ph;
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="事件趋势图">`;
+    for (let i = 0; i <= 4; i++) {
+      const gy = m.t + ph - (i / 4) * ph;
+      svg += `<line class="axis-line" x1="${m.l}" y1="${gy}" x2="${W - m.r}" y2="${gy}"/>`;
+      svg += `<text class="axis-text" x="${m.l - 8}" y="${gy + 3.5}" text-anchor="end">${fmtShort(Math.round(maxV / 4 * i))}</text>`;
+    }
+    const labelStep = n <= 10 ? 1 : Math.ceil(n / (n > 20 ? 10 : 8));
+    asc.forEach((r, i) => {
+      if (i % labelStep === 0 || i === n - 1) {
+        const d = r.date;
+        svg += `<text class="axis-text" x="${x(i)}" y="${H - 8}" text-anchor="middle">${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}</text>`;
+      }
+    });
+
+    cols.forEach((c, ci) => {
+      const ev = byKey[c.key];
+      const color = ev.color || PALETTE[ci % PALETTE.length];
+      const dash = c.metric === 'uv' ? ' stroke-dasharray="4 3"' : '';
+      const pts = asc.map((r, i) => `${x(i)},${y(r.vals[ci])}`).join(' ');
+      svg += `<polyline class="series-line" points="${pts}" stroke="${color}"${dash}/>`;
+      asc.forEach((r, i) => {
+        svg += `<circle cx="${x(i)}" cy="${y(r.vals[ci])}" r="${n <= 16 ? 2.4 : 1.6}" fill="${color}" opacity="${n <= 16 ? 1 : .55}"/>`;
+      });
+    });
+
+    svg += `<line id="axis-hover" class="chart-tip-line" x1="0" y1="${m.t}" x2="0" y2="${m.t + ph}" style="display:none"/>`;
+    svg += `<g id="hover-dots"></g>`;
+    svg += `<rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="transparent" id="chart-overlay" style="cursor:crosshair"/>`;
+    svg += '</svg>';
+    wrap.innerHTML = svg;
+
+    const overlay = wrap.querySelector('#chart-overlay');
+    const hoverLine = wrap.querySelector('#axis-hover');
+    const hoverDots = wrap.querySelector('#hover-dots');
+    const scale = wrap.clientWidth / W;
+
+    overlay.addEventListener('mousemove', e => {
+      const rect = wrap.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / scale;
+      const idx = clamp(Math.round((px - m.l) / pw * (n - 1)), 0, n - 1);
+      const cx = x(idx);
+      hoverLine.setAttribute('x1', cx); hoverLine.setAttribute('x2', cx);
+      hoverLine.style.display = '';
+      hoverDots.innerHTML = cols.map((c, ci) => {
+        const ev = byKey[c.key];
+        const color = ev.color || PALETTE[ci % PALETTE.length];
+        return `<circle cx="${cx}" cy="${y(asc[idx].vals[ci])}" r="3.4" fill="${color}" class="hover-dot"/>`;
+      }).join('');
+      const d = asc[idx].date;
+      const rows = cols.map((c, ci) =>
+        `<div class="tt-row"><span>${colLabel(c)} ${colMetricTag(c)}</span><b>${fmtByType(byKey[c.key], asc[idx].vals[ci])}</b></div>`).join('');
+      window.TD.showTip(`<div style="margin-bottom:4px;font-weight:600">${dateKey(d)} ${WEEK[d.getDay()]}</div>${rows}`, e.clientX, e.clientY);
+    });
+    overlay.addEventListener('mouseleave', () => {
+      hoverLine.style.display = 'none';
+      hoverDots.innerHTML = '';
+      window.TD.hideTip();
+    });
+    window.TD.redrawChart = () => { if (state.eventsView === 'chart') renderChart(data); };
+  }
+
+  /* ---------------- bindings ---------------- */
+  function initEvents() {
+    $('#e-start').max = dateKey(TODAY);
+    $('#e-end').max = dateKey(TODAY);
+    syncDateInputs();
+
+    const def = evCfgDefault('舌诊');
+    if (def) { state.e.cfgId = def.id; state.e.cols = def.cols.map(c => Object.assign({}, c)); }
+    syncControls();
+
+    ['e-start', 'e-end'].forEach(id => {
+      $('#' + id).addEventListener('change', applyDateRange);
+    });
+
+    $('#e-product').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-v]');
+      if (!btn || btn.dataset.v === state.e.product) return;
+      state.e.product = btn.dataset.v;
+      setActive($('#e-product'), 'v', state.e.product);
+      const d = evCfgDefault(state.e.product);
+      if (d) { state.e.cfgId = d.id; state.e.cols = d.cols.map(c => Object.assign({}, c)); }
+      renderEvents();
+    });
+    $('#e-channel').addEventListener('change', e => {
+      state.e.channel = e.target.value;
+      state.e.subchannel = '';
+      setSelectEmpty(e.target, !state.e.channel);
+      fillSubchannels();
+      fillVersions();
+      renderEvents();
+    });
+    $('#e-subchannel').addEventListener('change', e => {
+      state.e.subchannel = e.target.value;
+      renderEvents();
+    });
+    $('#e-version').addEventListener('change', e => {
+      state.e.version = e.target.value;
+      renderEvents();
+    });
+
+    $('#e-viewtoggle').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-mode]');
+      if (!btn) return;
+      state.eventsView = btn.dataset.mode;
+      renderEvents();
+    });
+
+    $('#e-query').addEventListener('click', () => {
+      if (!state.e.channel && state.e.product !== '快测') {
+        window.TD.toast('请先选择渠道');
+        $('#e-channel').focus();
+        return;
+      }
+      const view = $('#e-view');
+      view.classList.add('is-loading');
+      const btn = $('#e-query');
+      btn.disabled = true;
+      setTimeout(() => {
+        state.tick++;
+        renderEvents();
+        view.classList.remove('is-loading');
+        btn.disabled = false;
+      }, 380);
+    });
+
+    $('#e-reset').addEventListener('click', () => {
+      const [s, en] = window.TD.defaultRange();
+      const cols = state.e.cols.slice();
+      state.e = {
+        start: s, end: en, product: '舌诊',
+        channel: '', subchannel: '', version: '',
+        cfgId: state.e.cfgId, cols
+      };
+      state.tick++;
+      state.eventsView = 'table';
+      syncControls();
+      renderEvents();
+      window.TD.toast('已重置筛选条件');
+    });
+  }
+
+  window.TD.initEvents = initEvents;
+  window.TD.renderEvents = renderEvents;
+})();
+
+
+/* 舌诊应用数据看板 · 交互原型 — 应用漏斗分析 */
+(function () {
+  'use strict';
+  const {
+    $, $$, state, byKey, WEEK, dateKey, fmtInt, fmtRate, clamp,
+    CHANNELS, buildFunnel, addDays, TODAY, parseKey,
+    fnCfgStore, fnCfgDefault, currentFunnelConf, makeMSel
+  } = window.TD;
+
+  let msChannels = null, msSubchannels = null, msVersions = null;
+
+  function setActive(container, attr, value) {
+    $$('button', container).forEach(b => b.classList.toggle('active', b.dataset[attr] === value));
+  }
+
+  function syncDateInputs() {
+    $('#f-start').value = dateKey(state.f.start);
+    $('#f-end').value = dateKey(state.f.end);
+  }
+
+  function versionsOfSelectedChannels() {
+    const chs = state.f.channels.length ? state.f.channels : (state.f.channel ? [state.f.channel] : []);
+    const set = new Set();
+    chs.forEach(ch => { (CHANNELS[ch] ? CHANNELS[ch].versions : []).forEach(v => set.add(v)); });
+    return set.size ? Array.from(set) : window.TD.VERSIONS.slice();
+  }
+  function subsOfSelectedChannels() {
+    const chs = state.f.channels.length ? state.f.channels : (state.f.channel ? [state.f.channel] : []);
+    const arr = [];
+    chs.forEach(ch => { (CHANNELS[ch] ? CHANNELS[ch].subs : []).forEach(s => arr.push(s)); });
+    return Array.from(new Set(arr));
+  }
+
+  function fillSingleSubchannels() {
+    const ch = state.f.channel;
+    const sel = $('#f-subchannel');
+    if (!ch || !CHANNELS[ch]) {
+      sel.innerHTML = '<option value="">请选择</option>';
+      sel.disabled = true;
+      sel.classList.add('is-empty');
+      state.f.subchannel = '';
+      return;
+    }
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">全部</option>' +
+      CHANNELS[ch].subs.map(s => `<option value="${s}"${state.f.subchannel === s ? ' selected' : ''}>${s}</option>`).join('');
+    sel.value = state.f.subchannel;
+    sel.classList.toggle('is-empty', !state.f.subchannel);
+  }
+
+  function fillSingleVersion() {
+    const sel = $('#f-version');
+    const list = versionsOfSelectedChannels();
+    if (state.f.version && !list.includes(state.f.version)) state.f.version = '';
+    sel.innerHTML = '<option value="">请选择</option>' + list.map(v => `<option value="${v}">${v}</option>`).join('');
+    sel.value = state.f.version;
+    sel.classList.toggle('is-empty', !state.f.version);
+  }
+
+  function updateSceneFields() {
+    const scene = state.f.sceneType || 'none';
+    const show = (id, on) => { const el = $(id); if (el) el.style.display = on ? '' : 'none'; };
+    const order = (id, n) => { const el = $(id); if (el) el.style.order = n; };
+    // 分应用版本：应用版本筛选提到最前
+    order('#f-field-version', scene === 'version' ? '-2' : '');
+    order('#f-field-versions', scene === 'version' ? '-2' : '');
+    if (scene === 'none') {
+      show('#f-field-channel', true); show('#f-field-subchannel', true); show('#f-field-version', true);
+      show('#f-field-channels', false); show('#f-field-subchannels', false); show('#f-field-versions', false);
+    } else if (scene === 'channel') {
+      show('#f-field-channel', false); show('#f-field-subchannel', false); show('#f-field-version', true);
+      show('#f-field-channels', true); show('#f-field-subchannels', true); show('#f-field-versions', false);
+    } else {
+      show('#f-field-channel', true); show('#f-field-subchannel', true); show('#f-field-version', false);
+      show('#f-field-channels', false); show('#f-field-subchannels', false); show('#f-field-versions', true);
+    }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const el = $('#f-more-summary');
+    if (!el) return;
+    const f = state.f;
+    const bits = [];
+    if (f.sceneType === 'none') bits.push('渠道：' + (f.channel ? f.channel + (f.subchannel ? '/' + f.subchannel : '') : '未选择'));
+    if (f.sceneType === 'channel') bits.push('渠道：' + (f.channels.length ? (f.channels.length > 2 ? f.channels.length + ' 个' : f.channels.join('、')) : '未选择'));
+    if (f.sceneType === 'channel') bits.push('子渠道：' + (f.subchannels.length ? (f.subchannels.length > 2 ? f.subchannels.length + ' 个' : f.subchannels.join('、')) : '全部'));
+    if (f.sceneType === 'version') bits.push('渠道：' + (f.channel || '未选择'));
+    if (f.sceneType === 'channel') bits.push('版本：' + (f.version || '未选择'));
+    if (f.sceneType === 'version') bits.push('版本：' + (f.versions.length ? (f.versions.length > 2 ? f.versions.length + ' 个' : f.versions.join('、')) : '未选择'));
+    if (f.sceneType === 'none') bits.push('版本：' + (f.version || '全部'));
+    bits.push(`${dateKey(f.start)} ~ ${dateKey(f.end)}`);
+    el.textContent = bits.join(' · ');
+  }
+
+  function syncControls() {
+    setActive($('#f-product'), 'v', state.f.product);
+    setActive($('#f-scene'), 'v', state.f.sceneType || 'none');
+    $('#f-channel').value = state.f.channel;
+    $('#f-channel').classList.toggle('is-empty', !state.f.channel);
+    fillSingleSubchannels();
+    fillSingleVersion();
+    if (msChannels) msChannels.set(state.f.channels);
+    if (msSubchannels) msSubchannels.refresh();
+    if (msVersions) msVersions.set(state.f.versions);
+    updateSceneFields();
+    syncDateInputs();
+  }
+
+  function applyDateRange() {
+    const s = $('#f-start').value, e = $('#f-end').value;
+    if (!s || !e) return;
+    let start = parseKey(s), end = parseKey(e);
+    if (start > end) { const t = start; start = end; end = t; }
+    if ((end - start) / 86400000 > 91) {
+      start = addDays(end, -91);
+      window.TD.toast('原型最多支持 92 天范围');
+    }
+    state.f.start = start; state.f.end = end;
+    syncDateInputs();
+    renderFunnel();
+  }
+
+  function shortName(k) {
+    const ev = byKey[k];
+    if (!ev) return k;
+    return ev.name.replace('（舌诊报告）', '').replace('医生agent会话数', '医生agent会话');
+  }
+
+  function stepTag(k, metric) {
+    const ev = byKey[k];
+    return ev && ev.kind === 'result' ? '业务' : String(metric).toUpperCase();
+  }
+
+  function funnelReady(f) {
+    if (f.product === '快测') return false;
+    if (f.sceneType === 'channel') return f.channels.length > 0 && !!f.version;
+    if (f.sceneType === 'version') return f.versions.length > 0 && !!f.channel;
+    return !!f.channel;
+  }
+
+  function setEmptyUI(title, desc, btnText, onClick) {
+    $('#f-empty-title').textContent = title;
+    $('#f-empty-desc').textContent = desc;
+    const btn = $('#f-empty-btn');
+    if (btnText) { btn.hidden = false; btn.textContent = btnText; btn.onclick = onClick; }
+    else { btn.hidden = true; btn.onclick = null; }
+  }
+
+  /* ---------------- render ---------------- */
+  function renderFunnel() {
+    const f = state.f;
+    const ready = funnelReady(f);
+    $('#f-view').hidden = !ready;
+    $('#f-empty').hidden = ready;
+    updateSummary();
+
+    if (!ready) {
+      if (f.product === '快测') {
+        setEmptyUI('快测类应用数据即将开放', '当前版本先支持舌诊类应用，其他应用敬请期待。', '切回舌诊', () => {
+          state.f.product = '舌诊';
+          state.f.cfgId = (fnCfgDefault('舌诊') || {}).id || state.f.cfgId;
+          setActive($('#f-product'), 'v', '舌诊');
+          renderFunnel();
+        });
+      } else {
+        let desc = '筛选条件默认不选中，因此暂无数据；选择渠道后即展示数据。';
+        if (f.sceneType === 'channel') desc = '「分渠道」需勾选渠道（支持全选）并选择一个应用版本；子渠道可选，选中后按每个子渠道分别展示一双漏斗与明细。';
+        if (f.sceneType === 'version') desc = '「分应用版本」需勾选应用版本（支持全选）并选择一个渠道后展示数据。';
+        setEmptyUI('请先选择筛选条件', desc, '去选择筛选条件', () => {
+          const box = f.sceneType === 'channel' ? $('#ms-channels') : f.sceneType === 'version' ? $('#ms-versions') : null;
+          if (box) {
+            box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            const btn = box.querySelector('.msel-btn');
+            if (btn && box.querySelector('.msel-panel').hidden) btn.click();
+          } else {
+            $('#f-channel').scrollIntoView({ block: 'center', behavior: 'smooth' });
+          }
+        });
+      }
+      state.last.funnel = null;
+      return;
+    }
+
+    const conf = currentFunnelConf();
+    const cfg = {
+      start: f.start, end: f.end, product: f.product, sceneType: f.sceneType,
+      channel: f.channel, subchannel: f.subchannel, version: f.version,
+      channels: f.channels, subchannels: f.subchannels, versions: f.versions,
+      steps: conf.steps, metric: conf.metric
+    };
+    if (!cfg.steps || cfg.steps.length < 2) {
+      state.last.funnel = null;
+      $('#f-view').hidden = true;
+      $('#f-empty').hidden = false;
+      setEmptyUI('漏斗配置步骤不足', '请打开「配置步骤」选择至少 2 个步骤。', '去配置步骤', () => window.TD.openFunnelConfig());
+      return;
+    }
+
+    const data = buildFunnel(cfg, state.tick);
+    state.last.funnel = data;
+
+    const confNow = fnCfgStore.get(f.cfgId) || fnCfgDefault(f.product);
+    $('#f-cfg-name').textContent = (confNow ? confNow.name : '自定义漏斗') + ' · ' + cfg.metric.toUpperCase() + (confNow && confNow.isDefault ? '（默认）' : '');
+    $('#f-meta').textContent = window.TD.dimensionLabel(cfg) + ` · ${cfg.steps.length} 个步骤 · ${cfg.metric.toUpperCase()} 口径`;
+
+    const sceneText = f.sceneType === 'channel' ? '分渠道 · 按子渠道拆分' : f.sceneType === 'version' ? '分应用版本' : '不增加场景值';
+    $('#f-legend').innerHTML =
+      `<span><i style="background:#2f6bff"></i>${cfg.metric.toUpperCase()} 口径</span>` +
+      `<span><i style="background:#00b3a4"></i>场景值：${sceneText}</span>` +
+      `<span><i style="background:#c9cdd4"></i>向下转化率 = 本步 ÷ 上一步</span>`;
+
+    renderFunnelCharts(data);
+    renderFunnelTable(data);
+
+    const axisText = data.sceneType === 'none'
+      ? '纵坐标为日期，逐日展示各步骤人数与向下转化率。'
+      : `纵坐标为${data.axisLabel}（汇总所选时间段的全部数据）。`;
+    $('#f-table-title').textContent = data.sceneType === 'none' ? '分日明细' : `${data.axisLabel}维度汇总`;
+    $('#f-table-sub').textContent = axisText;
+
+    $('#f-footnote').innerHTML = `漏斗按 <b>${cfg.metric.toUpperCase()}</b> 口径计算；整体转化率 = 末步 ÷ 首步（${shortName(cfg.steps[0])} → ${shortName(cfg.steps[cfg.steps.length - 1])}）。
+      ${data.sceneType === 'none' ? '未选择场景值：展示 1 个整体漏斗 + 日期维度明细。'
+        : data.sceneType === 'channel' ? `选择场景值：按「渠道 / 子渠道」拆分，展示 ${data.groups.length} 个漏斗 + ${data.groups.length} 行明细。`
+        : `选择场景值：展示 ${data.groups.length} 个应用版本漏斗 + 应用版本维度汇总。`}原型数据为模拟生成。`;
+  }
+
+  /* ---------------- 漏斗图表（支持多个） ---------------- */
+  function funnelBodyHTML(totals, steps, metric, compact) {
+    const max = Math.max(1, totals[0]);
+    let html = '';
+    totals.forEach((v, i) => {
+      const pct = Math.max(3, v / max * 100);
+      const hue = 222 - (i / Math.max(1, totals.length - 1)) * 46;
+      const color = `hsl(${hue}, ${72 - i * 2}%, ${58 - i * 1.2}%)`;
+      const inside = pct >= 16 ? `<span>${fmtRate(v / totals[0], 1)}</span>` : '';
+      html += `<div class="funnel-step">
+        <div class="fs-name"><span>${shortName(steps[i])}</span><span class="fs-index">${i + 1}</span></div>
+        <div class="fs-bar-zone"><div class="fs-bar" data-i="${i}" style="width:${pct}%;background:linear-gradient(90deg, hsl(${hue}, 74%, 62%), ${color});" title="${shortName(steps[i])}">${inside}</div></div>
+        <div class="fs-count">${fmtInt(v)}<small>${i === 0 ? '起点' : '占首步 ' + fmtRate(v / totals[0], 1)}</small></div>
+      </div>`;
+      if (i < totals.length - 1) {
+        const rate = totals[i + 1] / totals[i];
+        const loss = totals[i] - totals[i + 1];
+        html += `<div class="funnel-gap">
+          <div></div>
+          <div class="fg-pill"><span class="arr">▼</span>转化率 <b>${fmtRate(rate, 1)}</b><em>流失 ${fmtInt(loss)}</em></div>
+          <div></div>
+        </div>`;
+      }
+    });
+    const overall = totals[0] ? totals[totals.length - 1] / totals[0] : 0;
+    html += `<div class="funnel-total"><span>整体转化率</span><b>${fmtRate(overall, 2)}</b><small>${shortName(steps[0])} → ${shortName(steps[steps.length - 1])}</small></div>`;
+    return html;
+  }
+
+  function bindBarTips(scope, totals, steps, metric) {
+    $$('.fs-bar', scope).forEach(bar => {
+      bar.addEventListener('mousemove', e => {
+        const i = Number(bar.dataset.i);
+        const v = totals[i];
+        const rows = [
+          `<div style="margin-bottom:3px;font-weight:600">${shortName(steps[i])}</div>`,
+          `<div class="tt-row"><span>人数（${metric.toUpperCase()}）</span><b>${fmtInt(v)}</b></div>`,
+          `<div class="tt-row"><span>占首步</span><b>${fmtRate(v / totals[0], 2)}</b></div>`
+        ];
+        if (i > 0) {
+          rows.push(`<div class="tt-row"><span>上一步转化率</span><b>${fmtRate(v / totals[i - 1], 1)}</b></div>`);
+          rows.push(`<div class="tt-row"><span>本步流失</span><b>${fmtInt(totals[i - 1] - v)}</b></div>`);
+        }
+        window.TD.showTip(rows.join(''), e.clientX, e.clientY);
+      });
+      bar.addEventListener('mouseleave', () => window.TD.hideTip());
+    });
+  }
+
+  function renderFunnelCharts(data) {
+    const box = $('#f-funnel');
+    const steps = data.steps, metric = data.metric;
+
+    if (data.sceneType === 'none') {
+      box.className = 'funnel-layout';
+      box.innerHTML = funnelBodyHTML(data.totals, steps, metric);
+      bindBarTips(box, data.totals, steps, metric);
+      return;
+    }
+
+    box.className = 'funnel-layout multi';
+    box.innerHTML = `<div class="funnel-grid">` + data.groups.map(g => `
+      <div class="funnel-card">
+        <h3><span>${g.label}</span><span class="ov">整体 ${fmtRate(g.overall, 2)}</span></h3>
+        <div class="fc-body" data-group="${g.label}">${funnelBodyHTML(g.totals, steps, metric)}</div>
+      </div>`).join('') + '</div>';
+    $$('.fc-body', box).forEach(card => {
+      const g = data.groups.find(x => String(x.label) === card.dataset.group);
+      if (g) bindBarTips(card, g.totals, steps, metric);
+    });
+  }
+
+  /* ---------------- 漏斗表格：横坐标按步骤顺序交错 ---------------- */
+  function renderFunnelTable(data) {
+    const steps = data.steps;
+    const names = steps.map(shortName);
+
+    let head = `<table class="grid"><thead><tr><th class="sticky-col" style="width:150px">${data.axisLabel}</th>`;
+    steps.forEach((k, i) => {
+      head += `<th>${names[i]}<small>${stepTag(k, data.metric)}${i === 0 ? ' · 起点' : ''}</small></th>`;
+      if (i < steps.length - 1) {
+        head += `<th class="conv-th">${names[i]} → ${names[i + 1]}<small>向下转化率</small></th>`;
+      }
+    });
+    head += '<th>整体转化率<small>末步 ÷ 首步</small></th></tr></thead>';
+
+    let body = '<tbody>';
+    data.rows.forEach(r => {
+      const first = r.date
+        ? `${r.label}<span class="weekday">${WEEK[r.date.getDay()]}</span>`
+        : `${r.label}<span class="axis-tag">${r.sub || data.axisLabel}</span>`;
+      body += `<tr><td class="sticky-col">${first}</td>`;
+      r.counts.forEach((v, i) => {
+        body += `<td>${fmtInt(v)}</td>`;
+        if (i < r.counts.length - 1) {
+          const rate = r.rates[i];
+          body += `<td class="rate${rate < 0.15 ? ' low' : ''}">${fmtRate(rate, 1)}</td>`;
+        }
+      });
+      body += `<td class="rate good">${fmtRate(r.overall, 2)}</td></tr>`;
+    });
+    body += '</tbody>';
+
+    let foot = `<tfoot><tr><td class="sticky-col">${data.sceneType === 'none' ? '合计 / 整体' : '合计'}</td>`;
+    data.totals.forEach((v, i) => {
+      foot += `<td>${fmtInt(v)}</td>`;
+      if (i < data.totals.length - 1) foot += `<td>${fmtRate(data.rates[i], 1)}</td>`;
+    });
+    foot += `<td>${fmtRate(data.overall, 2)}</td></tr></tfoot>`;
+
+    $('#f-table').innerHTML = head + body + foot + '</table>';
+  }
+
+  /* ---------------- bindings ---------------- */
+  function initFunnel() {
+    $('#f-start').max = dateKey(TODAY);
+    $('#f-end').max = dateKey(TODAY);
+    syncDateInputs();
+
+    const def = fnCfgDefault('舌诊');
+    if (def) state.f.cfgId = def.id;
+
+    msChannels = makeMSel($('#ms-channels'), {
+      placeholder: '请选择',
+      options: () => window.TD.CHANNEL_NAMES.slice(),
+      values: state.f.channels,
+      onChange: vals => {
+        state.f.channels = vals;
+        if (msSubchannels) {
+          state.f.subchannels = state.f.subchannels.filter(s => subsOfSelectedChannels().includes(s));
+          msSubchannels.set(state.f.subchannels);
+        }
+        if (msVersions) {
+          state.f.versions = state.f.versions.filter(v => versionsOfSelectedChannels().includes(v));
+          msVersions.set(state.f.versions);
+        }
+        fillSingleVersion();
+        updateSummary();
+        renderFunnel();
+      }
+    });
+    msSubchannels = makeMSel($('#ms-subchannels'), {
+      placeholder: '全部',
+      options: () => subsOfSelectedChannels(),
+      values: state.f.subchannels,
+      onChange: vals => { state.f.subchannels = vals; updateSummary(); renderFunnel(); }
+    });
+    msVersions = makeMSel($('#ms-versions'), {
+      placeholder: '请选择',
+      options: () => versionsOfSelectedChannels(),
+      values: state.f.versions,
+      onChange: vals => { state.f.versions = vals; updateSummary(); renderFunnel(); }
+    });
+
+    ['f-start', 'f-end'].forEach(id => {
+      $('#' + id).addEventListener('change', applyDateRange);
+    });
+
+    $('#f-product').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-v]');
+      if (!btn) return;
+      state.f.product = btn.dataset.v;
+      setActive($('#f-product'), 'v', state.f.product);
+      const d = fnCfgDefault(state.f.product);
+      if (d) state.f.cfgId = d.id;
+      renderFunnel();
+    });
+
+    $('#f-scene').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-v]');
+      if (!btn) return;
+      const v = btn.dataset.v;
+      if (v === state.f.sceneType) return;
+      state.f.sceneType = v;
+      setActive($('#f-scene'), 'v', v);
+      if (v === 'channel') {
+        state.f.version = '';
+      } else if (v === 'version') {
+        state.f.channel = '';
+        state.f.subchannel = '';
+        state.f.versions = [];
+      }
+      syncControls();
+      renderFunnel();
+    });
+
+    $('#f-channel').addEventListener('change', e => {
+      state.f.channel = e.target.value;
+      state.f.subchannel = '';
+      e.target.classList.toggle('is-empty', !state.f.channel);
+      fillSingleSubchannels();
+      fillSingleVersion();
+      updateSummary();
+      renderFunnel();
+    });
+    $('#f-subchannel').addEventListener('change', e => {
+      state.f.subchannel = e.target.value;
+      e.target.classList.toggle('is-empty', !state.f.subchannel);
+      updateSummary();
+      renderFunnel();
+    });
+    $('#f-version').addEventListener('change', e => {
+      state.f.version = e.target.value;
+      e.target.classList.toggle('is-empty', !state.f.version);
+      updateSummary();
+      renderFunnel();
+    });
+
+    $('#f-query').addEventListener('click', () => {
+      if (!funnelReady(state.f)) {
+        window.TD.toast(state.f.product === '快测' ? '快测类应用暂未开放' : '请先选择渠道后查询');
+        $('#f-more-panel').classList.add('open');
+        return;
+      }
+      const view = $('#f-view');
+      view.classList.add('is-loading');
+      const btn = $('#f-query');
+      btn.disabled = true;
+      setTimeout(() => {
+        state.tick++;
+        renderFunnel();
+        view.classList.remove('is-loading');
+        btn.disabled = false;
+      }, 380);
+    });
+
+    $('#f-reset').addEventListener('click', () => {
+      const [s, en] = window.TD.defaultRange();
+      state.f = {
+        start: s, end: en, product: '舌诊', sceneType: 'none',
+        channel: '', subchannel: '', version: '',
+        channels: [], subchannels: [], versions: [],
+        cfgId: state.f.cfgId
+      };
+      state.tick++;
+      if (msChannels) msChannels.set([]);
+      if (msSubchannels) msSubchannels.set([]);
+      if (msVersions) msVersions.set([]);
+      syncControls();
+      renderFunnel();
+      window.TD.toast('已重置筛选条件');
+    });
+
+    syncControls();
+  }
+
+  window.TD.initFunnel = initFunnel;
+  window.TD.renderFunnel = renderFunnel;
+})();
+
+</script>
+</body>
+</html>
